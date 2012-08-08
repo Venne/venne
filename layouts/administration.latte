@@ -100,7 +100,6 @@
 							</div>
 
 							{* content *}
-
 							<div class="container-fluid" n:snippet="toolbar">
 								<ul id="toolbar" class="nav nav-tabs  pull-right" style="margin-bottom: -0px; border-bottom: 0;">
 								{block #toolbar}
@@ -120,7 +119,7 @@
 							{* footer *}
 							<footer>
 								<p>
-									<span>Copyright © 2011 - 2012 Josef Kříž</span> | <span>version {=VENNE_VERSION_ID} {=VENNE_VERSION_STATE}</span>{if !$presenter instanceof \Venne\Application\UI\InstallationPresenter} | <span><a href="{link :Cms:Admin:About:}">about Venne:CMS</a></span>{/if}
+									<span>Copyright © 2011 - 2012 Josef Kříž</span> | <span>version {=\Venne\Framework::VERSION}</span>{if !$presenter instanceof \Venne\Application\UI\InstallationPresenter} | <span><a href="{link :Cms:Admin:About:}">about Venne:CMS</a></span>{/if}
 								</p>
 							</footer>
 
