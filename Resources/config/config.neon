@@ -1,0 +1,105 @@
+parameters:
+	administration:
+		login:
+			name: ""
+			password: ""
+		routePrefix: admin
+
+	website:
+		title: ""
+		titleSeparator: |
+		keywords: ""
+		description: ""
+		author: ""
+		routePrefix: ""
+		languages: []
+		defaultLanguage: cs
+		defaultPresenter: Homepage
+		errorPresenter: Error
+
+services:
+
+	cms.formRenderer:
+		class: CmsModule\Forms\Rendering\BootstrapFormRenderer
+
+	cms.contentManager:
+		class: CmsModule\Content\ContentManager
+
+	cms.administrationManager:
+		class: CmsModule\Administration\AdministrationManager
+
+	cms.scannerService:
+		class: CmsModule\Services\ScannerService
+
+
+	cms.pageRepository:
+		class: CmsModule\Content\Entities\PageEntity
+		tags: [repository]
+
+	cms.routeRepository:
+		class: CmsModule\Content\Entities\RouteEntity
+		tags: [repository]
+
+	cms.languageRepository:
+		class: CmsModule\Content\Entities\LanguageEntity
+		tags: [repository]
+
+	cms.loginRepository:
+		class: CmsModule\Security\Entities\LoginEntity
+		tags: [repository]
+
+	cms.roleRepository:
+		class: CmsModule\Security\Entities\RoleEntity
+		tags: [repository]
+
+	cms.userRepository:
+		class: CmsModule\Security\Entities\UserEntity
+		tags: [repository]
+
+	cms.permissionRepository:
+		class: CmsModule\Security\Entities\PermissionEntity
+		tags: [repository]
+
+	cms.fileRepository:
+		class: CmsModule\Content\Entities\FileEntity
+		tags: [repository]
+
+	cms.dirRepository:
+		class: CmsModule\Content\Entities\DirEntity
+		tags: [repository]
+
+
+	cms.pageListener:
+		class: CmsModule\Content\Listeners\PageListener
+		tags: [listener]
+
+	cms.fileListener:
+		class: CmsModule\Content\Listeners\FileListener
+		tags: [listener]
+
+	cms.contentHelper:
+		class: CmsModule\Helpers\ContentHelper
+		tags: [helper: content]
+
+factories:
+
+	confirmMacro:
+		factory: CmsModule\Macros\ConfirmMacro::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
+
+	headMacro:
+		factory: CmsModule\Macros\HeadMacro::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
+
+	dialogMacro:
+		factory: CmsModule\Macros\DialogMacro::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
+
+includes:
+	- presenters.neon
+	- components.neon
+	- commands.neon
+	- administration.neon

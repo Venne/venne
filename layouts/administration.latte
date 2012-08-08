@@ -1,0 +1,134 @@
+{**
+ * Venne:CMS layout template.
+ *
+ * @copyright  Copyright (c) 2011, 2012 Josef Kříž 
+ *
+ * @param string   $basePath	web base path
+ * @param array    $flashes		flash messages
+ *}
+<!DOCTYPE html>
+<html>
+	{head}
+		{js @CmsModule/js/jquery/jquery-1.7.2.min.js}
+		{js @CmsModule/js/jquery/jquery-ui-1.8.16.custom.min.js}
+		{js @CmsModule/js/jquery.ajax.js}
+		{js @CmsModule/js/jquery.contextMenu.js}
+		{js @CmsModule/js/netteForms.js}
+		{js @CmsModule/js/venne.js}
+		{css @CmsModule/css/jquery-ui-1.8.16.custom.css, media=>'screen, projection, tv'}
+	
+		{css /css/bootstrap.css}
+		{css @CmsModule/css/style.css}
+		{css @CmsModule/css/jquery.contextMenu.css}
+		{js /js/bootstrap.js}
+	{/head}
+
+	{body}
+
+
+		{* Top navigation *}
+		{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
+		<div class="navbar navbar-fixed-top" id="navigation">
+			<div class="navbar-inner">
+				<div class="container-fluid">
+
+					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</a>
+					<a class="brand" href="{$basePath}/admin"><img src="{$basePath}/resources/cmsModule/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
+					
+					<div class="nav-collapse">
+			
+						{include navigation.latte}
+
+						<ul class="nav pull-right">
+							<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$presenter->user->identity->id} <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li class="nav-header">Actions</li>
+								<li><a href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">Account settings</a></li>
+								<li><a href="{link logout!}">Log out</a></li>
+							</ul>
+							</li>
+						</ul>
+						
+						<p class="navbar-text pull-right">
+							Logged in as:
+						</p>
+
+						<ul class="nav pull-right">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge badge-warning">23</span></a> 
+								<ul class="dropdown-menu">
+									<li class="nav-header">Actions</li>
+									<li><a href="">Account settings</a></li>
+									<li><a href="{link logout!}">Log out</a></li>
+								</ul>
+							</li>
+						</ul>
+
+							<ul class="nav pull-right">
+									<li>
+										<a href="{$basePath}/">Show website</a>
+									</li>
+							</ul>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		{/if}
+
+		{* Center *}
+		<div class="container-fluid" style="min-width: 990px;">
+			<div class="row-fluid">
+
+				{if $presenter->user->isLoggedIn() && $presenter->context->doctrine->createCheckConnection() && !isset($hideMenuItems)}
+				<div class="span4" style="width: 320px; margin-top: 7px; {*position: fixed;*}">
+					{control panel}
+				</div>
+				{/if}
+
+				<div class="content" style="margin-left: 330px;">
+					<div class="row-fluid">
+						<div class="span12">
+
+							<div class="page-header" n:snippet="header">	
+								<h1>{block #header}Header{/block}</h1>
+							</div>
+
+							{* content *}
+
+							<div class="container-fluid" n:snippet="toolbar">
+								<ul id="toolbar" class="nav nav-tabs  pull-right" style="margin-bottom: -0px; border-bottom: 0;">
+								{block #toolbar}
+								{/block}
+								</ul>
+							</div>
+							<div class="well" n:snippet="content">
+								{foreach $flashes as $flash}
+								<div class="alert alert-{$flash->type}">
+									<a class="close" data-dismiss="alert">×</a>
+									{$flash->message}
+								</div>
+								{/foreach}
+								{include #content}
+							</div>
+
+							{* footer *}
+							<footer>
+								<p>
+									<span>Copyright © 2011 - 2012 Josef Kříž</span> | <span>version {=VENNE_VERSION_ID} {=VENNE_VERSION_STATE}</span>{if !$presenter instanceof \Venne\Application\UI\InstallationPresenter} | <span><a href="{link :Cms:Admin:About:}">about Venne:CMS</a></span>{/if}
+								</p>
+							</footer>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	{/body}
+</html>

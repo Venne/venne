@@ -1,0 +1,8 @@
+	<li n:if="$presenter->isAllowed('Environments:default')"{if $presenter->isLinkCurrent("Environments:default")} class="active"{/if}>
+		<a href="{plink Environments:}">List</a>
+	</li>
+
+	<li n:if="$presenter->isAllowed('Environments:create')"{if $presenter->isLinkCurrent("Environments:create")} class="active"{/if}>
+		<a href="{plink Environments:create}">Create</a>
+	</li>
+

@@ -1,0 +1,8 @@
+services:
+#	cms.exampleCommand:
+#		class: CmsModule\Commands\InstallationCommand
+#		tags: [command]
+#
+#	cms.databaseCommand:
+#		class: CmsModule\Commands\DatabaseCommand
+#		tags: [command]

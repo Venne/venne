@@ -1,0 +1,254 @@
+{block header}
+Files and attachements
+{/block}
+
+{block toolbar}
+{include "./head.latte"}
+{/block}
+
+{block #breadcrumb}
+	{if $entity->parent}{include #breadcrumb, entity=>$entity->parent, ok=>true}{/if}
+<li{if !isset($ok)} class="active"{/if}>
+	<span class="divider">/</span> {if isset($ok)}<a
+		href="{link :Cms:Admin:Files: key=>$entity->id}">{/if}{$entity->name}{if isset($ok)}</a>{/if}
+</li>
+{/block}
+
+{block content}
+
+{var entity=>$presenter->key ? $dirRepository->find($presenter->key) : NULL}
+
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="container">
+			<ul class="nav">
+				<li>
+					<a href="{if !$presenter->key}#{else}{if $presenter->key}{link :Cms:Admin:Files: key=>($entity->parent) ? $entity->parent->id : NULL}{/if}{/if}"><span
+							class="icon icon-white icon-arrow-up"></span> Up</a></li>
+				<li><a data-backdrop="static" data-toggle="modal" href="#directory"><span
+						class="icon icon-white icon-folder-open"></span>
+					Create new directory</a></li>
+				<li><a data-toggle="modal" href="#file"><span class="icon icon-white icon-upload"></span> Upload new
+					file</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+<ul class="breadcrumb">
+	<li{if !$entity} class="active"{/if}>
+		<span class="divider">/</span> {if $entity}<a href="{link :Cms:Admin:Files: key=>NULL}">{/if}
+	root{if $entity}</a>{/if}
+	</li>
+{if $entity}{include #breadcrumb, entity=>$entity}{/if}
+</ul>
+
+
+<ul id="fileMenu" class="contextMenu">
+	<li class="view"><a href="#edit">View</a></li>
+	<li class="edit"><a href="#edit">Edit</a></li>
+	<li class="rename"><a href="#rename"">Rename</a></li>
+	<li class="delete"><a href="#delete">Delete</a></li>
+</ul>
+
+<script>
+	$(function () {
+
+		var shifted;
+
+		var clicked;
+
+		$("#sortable").selectable();
+
+		$(document).mousedown(function (event) {
+			clicked = true;
+		});
+
+		$(document).mouseup(function (event) {
+			clicked = false;
+		});
+
+		$(document).bind('keydown keyup', function (e) {
+			if (e.keyCode == 16) {
+				shifted = !shifted;
+			}
+		});
+
+		$("#sortable li").live('mouseover', function (e) {
+			if (!$(this).hasClass('ui-selecting') && !clicked) {
+				$(this).addClass('ui-selecting');
+			}
+		});
+
+		$("#sortable li").live('mouseout', function () {
+			if ($(this).hasClass('ui-selecting')) {
+				$(this).removeClass('ui-selecting');
+			}
+		});
+
+		$("#sortable li").contextMenu({ menu:"fileMenu"}, function (action, el, pos) {
+
+			if (action == "delete") {
+				$('#sortable li.ui-selected').each(function () {
+					$.nette.ajax({ url: {link delete!} +'&key2=' + $(this).attr("id") });
+				});
+			} else if (action == "rename") {
+				$.nette.ajax({ url: {link edit!} +'&key2=' + $(el).attr("id") });
+			}
+
+		});
+
+		$("#sortable li").live("click", function (event) {
+
+			event.preventDefault();
+
+			if (!shifted) {
+				$(this).parent().find("li").each(function () {
+					$(this).removeClass('ui-selected');
+				});
+			}
+
+			$(this).removeClass('ui-selecting');
+			$(this).addClass('ui-selected');
+		});
+
+		$("#sortable li.d").dblclick(function () {
+			$.nette.ajax({ url:$(this).find("a").attr("href") });
+		});
+
+		$("#sortable li").trigger({
+			type:'mousedown',
+			which:3
+		});
+
+		$("#sortable li").draggable({
+			drag:function (e, ui) {
+
+				$(this).addClass('ui-selected');
+
+				// set selected group position to main dragged object
+				// this works because the position is relative to the starting position
+				$('#sortable .ui-selected').css({
+					top:ui.position.top,
+					left:ui.position.left
+				});
+			}
+		});
+
+		$("#sortable li").droppable({
+			drop:function (event, ui) {
+				if (confirm('Move to folder?')) {
+					var id = $(this).attr('id');
+					$('#sortable li.ui-selected').each(function () {
+						$.nette.ajax({ url: {link setParent!} +'&from=' + $(this).attr('id') + "&to=" + id + "&dropmode=" + 'into'});
+					});
+				}
+			}
+		});
+
+	{if $presenter->browserMode}
+		// Helper function to get parameters from the query string.
+		function getUrlParam(paramName) {
+			var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i');
+			var match = window.location.search.match(reParam);
+
+			return (match && match.length > 1) ? match[1] : '';
+		}
+
+		$("#sortable li.f").dblclick(function () {
+			var funcNum = getUrlParam('CKEditorFuncNum');
+			window.opener.CKEDITOR.tools.callFunction(funcNum, $(this).find('a').attr('href'));
+			window.close();
+		});
+	{/if}
+	});
+</script>
+
+<ul class="thumbnails" id="sortable">
+	{if $presenter->key}
+		<li class="d" style="text-align: center;" id="d_{($entity->parent? $entity->parent->id : NULL)}">
+			<div href="#" class="thumbnail">
+				<a class="noAjax" href="{=$control->presenter->link('this', array('key'=>($entity->parent? $entity->parent->id : NULL)))}">
+					<img src="{=$presenter->template->basePath}/resources/cmsModule/icons/places/64/folder.png" alt="">
+				</a>
+				<h5>..</h5>
+			</div>
+		</li>
+	{/if}
+{control table}
+
+{control fileTable}
+</ul>
+
+
+<div class="modal hide" id="file">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>Upload files</h3>
+	</div>
+	<div class="modal-body">
+	{control file}
+	</div>
+</div>
+
+<div class="modal hide" id="directory">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>Create directory</h3>
+	</div>
+	<div class="modal-body">
+	{control dir}
+	</div>
+</div>
+
+<script>
+	$(function () {
+		$('#file').modal({
+			backdrop:false,
+			show:false
+		});
+		$('#directory').modal({
+			backdrop:false,
+			show:false
+		});
+	});
+</script>
+
+{if isset($edit)}
+	{if $edit == 'f'}
+	<div class="modal hide" id="fileEdit">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">×</button>
+			<h3>Edit file</h3>
+		</div>
+		<div class="modal-body">
+			{control fileEdit}
+		</div>
+	</div>
+	<script>
+		$(function () {
+			$('#fileEdit').modal({
+				backdrop:false
+			});
+		});
+	</script>
+		{else}
+	<div class="modal hide" id="directoryEdit">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">×</button>
+			<h3>Edit directory</h3>
+		</div>
+		<div class="modal-body">
+			{control dirEdit}
+		</div>
+	</div>
+	<script>
+		$(function () {
+			$('#directoryEdit').modal({
+				backdrop:false
+			});
+		});
+	</script>
+	{/if}
+{/if}

@@ -1,0 +1,2 @@
+	<li><a n:href="default"{if $presenter->isLinkCurrent("Roles:default")} class="active"{/if}>list</a></li>
+	<li n:if="$presenter->isAllowed('create')"><a n:href="create"{if $presenter->isLinkCurrent("Roles:create")} class="active"{/if}>create new</a></li>

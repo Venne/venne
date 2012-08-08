@@ -1,0 +1,103 @@
+factories:
+
+	cms.websiteBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Informations:'
+			category: 'Website'
+			name: 'Basic meta informations'
+			description: 'Edit base meta informations about this website'
+			priority: 155
+		]]
+
+	cms.languageBackedPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Language:'
+			category: 'Website'
+			name: 'Language settings'
+			description: 'Manage website languages, aliases,...'
+			priority: 150
+		]]
+
+	cms.aclBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Users:'
+			category: 'Security'
+			name: 'Manage users'
+			description: 'Add, edit users and their roles'
+			priority: 55
+		]]
+
+	cms.accessBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Roles:'
+			category: 'Security'
+			name: 'Access control'
+			description: 'Manage access policies, roles,...'
+			priority: 50
+		]]
+
+	cms.applicationBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Application:'
+			category: 'System'
+			name: 'Application settings'
+			description: 'Set up database, environment,...'
+			priority: 15
+		]]
+
+	cms.environmentBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Environments:'
+			category: 'System'
+			name: 'Environments'
+			description: 'Manage environments for ,...'
+			priority: 5
+		]]
+
+	cms.modulesBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Module:'
+			category: 'System'
+			name: 'Modules settings'
+			description: 'Manage CMS modules, donwload, install, setup,...'
+			priority: 10
+		]]
+
+	cms.logsBackendPage:
+		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Logs:'
+			category: 'System'
+			name: 'Log browser'
+			description: 'Show logs, errors, warnings,...'
+			priority: 0
+		]]
+
+	cms.contentBackendPage:
+		class: CmsModule\Administration\AdministrationPage('Manage pages', 'Cms:Admin:Content:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Content:default'
+			category: 'Content'
+			name: 'Manage pages'
+			description: 'Manage existing pages and content'
+			priority: 105
+		]]
+
+	cms.filesBackendPage:
+		class: CmsModule\Administration\AdministrationPage('Manage files', 'Cms:Admin:Files:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Files:default'
+			category: 'Content'
+			name: 'Manage files'
+			description: 'Manage files'
+			priority: 100
+		]]
+
+	

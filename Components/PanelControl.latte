@@ -1,0 +1,45 @@
+<div class="container-fluid" n:snippet="tabs">
+	<ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
+		<li{if $control->tab == 0} class="active"{/if}><a href="{link tab! tab=>0}">Pages</a></li>
+		<li{if $control->tab == 1} class="active"{/if}><a href="{link tab! tab=>1}">Widgets</a></li>
+		<li{if $control->tab == 2} class="active"{/if}><a href="{link tab! tab=>2}">Files</a></li>
+		<li{if $control->tab == 3} class="active"{/if}><a href="{link tab! tab=>3}">Layouts</a></li>
+	</ul>
+</div>
+
+<div class="well sidebar-nav" n:snippet="content">
+	<div class="container-fluid">
+		<div class="btn-toolbar">
+			<div class="btn-group">
+			{if $control->tab == 0}
+				<a class="btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> Show in table</a>
+			{/if}
+			{if $control->tab == 2}
+				<a class="btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> Show in table</a>
+			{/if}
+			</div>
+			<div class="btn-group pull-right">
+				<button id="create-new" class="btn"><span class="icon icon-file"></span> Create new</button>
+				<button class="btn dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+
+					{if $control->tab == 2}
+						{*}<li><a data-toggle="modal" href="#uploader" >Upload file</a> </li>
+						<li><a data-toggle="modal" href="#directory" >Create directory</a></li>{*}
+					{else}
+						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
+							<li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a></li>
+						{/foreach}
+				    {/if}
+
+					<!-- dropdown menu links -->
+				</ul>
+			</div>
+		</div>
+
+		{control browser}
+
+	</div>
+</div>

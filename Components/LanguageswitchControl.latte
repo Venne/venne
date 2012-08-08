@@ -1,0 +1,16 @@
+{dump generate-languageswitch}
+
+{var languages=>$control->getItems()}
+
+<ul class="nav">
+	<li class="active dropdown">
+		<a href="javaScript:;" class="dropdown-toogle" data-toggle="dropdown">{$language}</a>
+
+		<ul class="dropdown-menu">
+		{foreach $languages as $language}
+			<li><a href="{plink changeLanguage! $language->alias}">{$language}</a></li>
+		{/foreach}
+		</ul>
+
+	</li>
+</ul>

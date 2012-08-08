@@ -1,0 +1,9 @@
+	<li n:if="$presenter->isAllowed('default')"{if $presenter->isLinkCurrent("default")} class="active"{/if}>
+		<a href="{link default}">Meta info</a>
+	</li>
+	<li n:if="$presenter->isAllowed('links')"{if $presenter->isLinkCurrent("links")} class="active"{/if}>
+		<a href="{link links}">Default links</a>
+	</li>
+	<li n:if="$presenter->isAllowed('routing')"{if $presenter->isLinkCurrent("routing")} class="active"{/if}>
+		<a href="{link routing}">Routing</a>
+	</li>

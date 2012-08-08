@@ -1,0 +1,19 @@
+<ul class="nav" n:snippet="navigation">
+
+	{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationPages()}
+	{foreach $pages as $category=>$items}
+		<li class="dropdown">
+			<a class="dropdown-toggle" href="javaScript:;{*plink $item["link"]*}" data-toggle="dropdown">{$category}</a>
+		
+			<ul class="dropdown-menu">
+			{foreach $items as $link=>$item}
+				<li class="{if $presenter->isLinkCurrent($link)}active{/if}">
+					<a href="{plink :$link}">{$item['name']}{if isset($item["description"]) && $item["description"]}<span>{$item["description"]}</span>{/if}</a>
+				</li>
+			{/foreach}
+			</ul>
+		</li>
+	{/foreach}
+
+</ul>
+

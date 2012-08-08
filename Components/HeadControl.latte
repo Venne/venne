@@ -1,0 +1,13 @@
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="description" content="{$control->description}" n:if="$control->description">
+	<meta name="keywords" content="{$control->keywords}" n:if="$control->keywords">
+	<meta name="author" content="{$control->author}" n:if="$control->author">
+	<meta name="robots" content="{$control->robots}" n:if="$control->robots">
+
+	<link rel="shortcut icon" href="{$basePath}/themes/favicon.ico" type="image/x-icon">
+
+	<link n:foreach="$css  as $css=>$params" rel="stylesheet"{if isset($params["media"])} media="{$params["media"]}"{/if} href="{$css}" type="text/css">
+
+	<script n:foreach="$js as $js=>$params" type="text/javascript" src="{$js}"></script>
+
+	<title>{str_replace("%s", !$control->title ? "" : $control->titleSeparator, str_replace("%t", $control->title, $control->titleTemplate))}</title>

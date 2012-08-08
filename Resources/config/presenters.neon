@@ -1,0 +1,57 @@
+services:
+
+	cms.admin.administratorPresenter:
+		class: CmsModule\Administration\Presenters\AdministratorPresenter
+		tags: [presenter]
+
+	cms.admin.logsPresenter:
+		class: CmsModule\Administration\Presenters\LogsPresenter
+		tags: [presenter]
+
+	cms.admin.usersPresenter:
+		class: CmsModule\Administration\Presenters\UsersPresenter
+		tags: [presenter]
+
+	cms.admin.rolesPresenter:
+		class: CmsModule\Administration\Presenters\RolesPresenter
+		tags: [presenter]
+
+	cms.admin.defaultPresenter:
+		class: CmsModule\Administration\Presenters\DefaultPresenter
+		tags: [presenter]
+
+	cms.admin.loginPresenter:
+		class: CmsModule\Administration\Presenters\LoginPresenter(@cms.loginFormFactory)
+		tags: [presenter]
+
+	cms.admin.languagePresenter:
+		class: CmsModule\Administration\Presenters\LanguagePresenter(@cms.languageRepository, ..., @cms.languageFormFactory)
+		tags: [presenter]
+
+	cms.admin.informationsPresenter:
+		class: CmsModule\Administration\Presenters\InformationsPresenter(@cms.websiteFormFactory)
+		tags: [presenter]
+
+	cms.admin.applicationPresenter:
+		class: CmsModule\Administration\Presenters\ApplicationPresenter(@cms.systemFormFactory, @cms.applicationFormFactory, @cms.databaseFormFactory, @cms.accountFormFactory)
+		tags: [presenter]
+
+	cms.admin.environmentsPresenter:
+		class: CmsModule\Administration\Presenters\EnvironmentsPresenter(%environments%)
+		tags: [presenter]
+
+	cms.admin.contentPresenter:
+		class: CmsModule\Administration\Presenters\ContentPresenter(@cms.pageRepository, @cms.languageRepository, @cms.contentManager, @cms.contentFormFactory, @cms.contentRoutesFormFactory)
+		tags: [presenter]
+
+	cms.admin.filesPresenter:
+		class: CmsModule\Administration\Presenters\FilesPresenter(@cms.fileRepository, @cms.dirRepository, @cms.fileFormFactory, @cms.dirFormFactory)
+		tags: [presenter]
+
+	cms.admin.modulePresenter:
+		class: CmsModule\Administration\Presenters\ModulePresenter()
+		tags: [presenter]
+
+	cms.admin.databasePresenter:
+		class: CmsModule\Administration\Presenters\DatabasePresenter(@cms.databaseFormFactory)
+		tags: [presenter]

@@ -1,0 +1,18 @@
+
+		{foreach $control->getItems() as $item}
+
+		<li class="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
+			<div href="#" class="thumbnail">
+				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
+					{var type=>'folder'}
+				{else}
+					{var type=>'text-plain'}
+				{/if}
+				<a class="noAjax" href="{if $type=='folder'}{=$control->presenter->link('this', array('key'=>$item->id))}{else}{$control->presenter->template->basePath}/public/media/{$item->path}{/if}">
+					<img src="{=$control->presenter->template->basePath}/resources/cmsModule/icons/places/64/{$type}.png" alt="">
+				</a>
+				<h5>{$item->name}</h5>
+			</div>
+		</li>
+
+		{/foreach}

@@ -1,0 +1,26 @@
+{*
+ * @version    $Id: template.phtml 2 2009-07-13 20:58:52Z david@grudl.com $
+ * @param Paginator $paginator
+ * @param array     $steps
+ *}
+
+{if $paginator->pageCount > 1}
+<div class="pagination">
+	<ul>
+
+	<li{if $paginator->isFirst()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isFirst()}#{else}{link this, 'page' => $paginator->page - 1}{/if}">« Previous</a></li>
+
+	{foreach $steps as $step}
+	{if $step == $paginator->page}
+		<li class="disabled"><a href="#">{$step}</a></li>
+	{else}
+		<li><a class="ajax" href="{link this, 'page' => $step}">{$step}</a></li>
+	{/if}
+	{if $iterator->nextValue > $step + 1}<li class="disabled"><a href="#">{$step}</a></li>{/if}
+	{/foreach}
+
+	<li{if $paginator->isLast()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isLast()}#{else}{link this, 'page' => $paginator->page + 1}{/if}">Next »</a></li>
+
+	</ul>
+</div>
+{/if}

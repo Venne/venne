@@ -1,0 +1,101 @@
+factories:
+	cms.headControl:
+		class: CmsModule\Components\HeadControl
+		tags: [component]
+
+	cms.websiteForm:
+		class: CmsModule\Forms\WebsiteForm
+		setup:
+			- setRoot(parameters.website)
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.languageForm:
+		class: CmsModule\Forms\LanguageForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.modulesDefaultForm:
+		class: CmsModule\Forms\ModulesDefaultForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.userForm:
+		class: CmsModule\Forms\UserForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.roleForm:
+		class: CmsModule\Forms\RoleForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.systemForm:
+		class: CmsModule\Forms\SystemForm
+		setup:
+			- setRoot(parameters)
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.applicationForm:
+		class: CmsModule\Forms\SystemApplicationForm
+		setup:
+			- setRoot('')
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.databaseForm:
+		class: CmsModule\Forms\SystemDatabaseForm
+		setup:
+			- setRoot(parameters.database)
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.accountForm:
+		class: CmsModule\Forms\SystemAccountForm
+		setup:
+			- setRoot(parameters.administration.login)
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.loginForm:
+		class: CmsModule\Forms\LoginForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.contentForm:
+		class: CmsModule\Content\Forms\BasicForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.contentRoutesForm:
+		class: CmsModule\Content\RoutesForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.dirForm:
+		class: CmsModule\Content\Forms\DirForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.fileForm:
+		class: CmsModule\Content\Forms\FileForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+		tags: [component]
+
+	cms.navigationControl:
+		class: CmsModule\Components\NavigationControl(@cms.pageRepository)
+		tags: [widget: navigation]
+
+	cms.languageswitchControl:
+		class: CmsModule\Components\LanguageswitchControl(@cms.languageRepository)
+		tags: [widget: languageswitch]

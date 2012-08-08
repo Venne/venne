@@ -1,0 +1,57 @@
+{
+	"name": "venne/cms-module",
+	"description": "CMS module with administration",
+	"keywords": ["cms", "nette", "venne", "module"],
+	"type": "venne-module",
+	"authors": [
+		{
+			"name": "Josef Kříž",
+			"homepage": "http://josef-kriz.cz"
+		}
+	],
+	"require": {
+		"php" : ">=5.3.2",
+		"venne/doctrine-module" : "2.0.x-dev",
+		"venne/assets-module" : "2.0.x-dev"
+	},
+	"autoload": {
+		"psr-0": { "CmsModule": "" }
+	},
+	"target-dir": "CmsModule",
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.0.x-dev"
+		},
+		"venne": {
+			"configuration": {
+				"parameters": {
+					"administration": {
+						"login": {
+							"name": "",
+							"password": ""
+						},
+						"routePrefix": "admin"
+					},
+					"website": {
+						"title": "Blog %s %t",
+						"titleSeparator": "|",
+						"keywords": "",
+						"description": "",
+						"author": "",
+						"routePrefix": "",
+						"languages": {},
+						"defaultLanguage": "cs",
+						"defaultPresenter": "Homepage",
+						"errorPresenter": "Error"
+					}
+				},
+				"extensions": {
+					"cms": "CmsModule\\DI\\CmsExtension"
+				},
+				"includes": [
+					"%libsDir%/venne/cms-module/CmsModule/Resources/config/config.neon"
+				]
+			}
+		}
+	}
+}
