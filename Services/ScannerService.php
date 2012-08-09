@@ -61,8 +61,8 @@ class scannerService extends Object
 	public function getLayoutFiles()
 	{
 		$data = array();
-		foreach ($this->context->findByTag("module") as $module => $item) {
-			$path = $this->context->$module->getPath() . "/layouts";
+		foreach ($this->context->parameters['modules'] as $module => $item) {
+			$path = $item['path'] . "/layouts";
 			if (file_exists($path)) {
 				foreach (\Nette\Utils\Finder::findDirectories("*")->in($path) as $file) {
 					if (!isset($data[$module])) {

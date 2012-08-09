@@ -84,11 +84,11 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$pos = strpos($this->route->layout, "/");
 		$module = lcfirst(substr($this->route->layout, 1, $pos - 1));
 
-		if (!$this->context->hasService($module)) {
+		if (!isset($this->context->parameters['modules'][$module]['path'])) {
 			return NULL;
 		}
 
-		return $this->context->$module->getPath() . "/layouts/" . substr($this->route->layout, $pos + 1);
+		return $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($this->route->layout, $pos + 1);
 	}
 
 
@@ -155,6 +155,5 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$this["head"]->setTitle($this->route->title);
 		$this["head"]->setRobots($this->route->robots);
 	}
-
 }
 
