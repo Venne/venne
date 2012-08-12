@@ -88,29 +88,21 @@ class CmsExtension extends CompilerExtension
 			->addTag("route", array("priority" => 9999999))
 			->setAutowired(false);
 
-		if (!file_exists($container->expand($container->parameters["tempDir"]) . "/installed")) {
-
+		if (!$container->parameters['administration']['login']['name']) {
 			$container->addDefinition($this->prefix("basicRoute"))
 				->setClass("Nette\Application\Routers\Route", array('<module>/<presenter>[/<action>[/<id>]]',
 				array('module' => "Cms:Admin", 'presenter' => 'Default', 'action' => 'default',)
 			))
 				->addTag("route")
 				->setAutowired(false);
-
-			// CMS route
-			$container->addDefinition($this->prefix("pageRoute"))
-				->setClass("CmsModule\Content\Routes\Page", array('@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
-			)
-				->addTag("route", array("priority" => 100))
-				->setAutowired(false);
-
-		} else {
-			// default route
-			$container->addDefinition($this->prefix("defaultRoute"))
-				->setClass("Nette\Application\Routers\Route", array('', array("presenter" => $container->parameters["website"]["defaultPresenter"], "lang" => NULL), Route::ONE_WAY))
-				->addTag("route", array("priority" => -9999999))
-				->setAutowired(false);
 		}
+
+		// CMS route
+		$container->addDefinition($this->prefix("pageRoute"))
+			->setClass("CmsModule\Content\Routes\Page", array('@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
+		)
+			->addTag("route", array("priority" => 100))
+			->setAutowired(false);
 
 		// config manager
 		$container->addDefinition("configService")

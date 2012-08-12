@@ -65,9 +65,9 @@ class AdministratorPresenter extends BasePresenter
 
 		$this->getUser()->login($name, $password);
 
-		umask(0000);
-		@file_put_contents($this->context->parameters["tempDir"] . "/installed", "");
-		touch($this->context->parameters["configDir"] . "/global.neon");
+		/** @var $cache \Nette\Caching\Cache */
+		$cache = new \Nette\Caching\Cache($this->context->nette->templateCacheStorage, 'Nette.Configurator');
+		$cache->clean();
 
 		$this->redirect(':Cms:Admin:Default:');
 	}
