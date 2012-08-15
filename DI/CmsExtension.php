@@ -109,10 +109,12 @@ class CmsExtension extends CompilerExtension
 			->setClass("CmsModule\Services\ConfigBuilder", array("%configDir%/config.neon"))
 			->addTag("service");
 
-		// debugger
-		if ($config["stopwatch"]["debugger"]) {
-			$container->getDefinition("user")
-				->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)', array(new \Nette\DI\Statement('CmsModule\Panels\Stopwatch')));
+		// Stopwatch
+		if($config['stopwatch']['debugger']){
+			$application = $container->getDefinition('application');
+			$application->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)', array(
+				new \Nette\DI\Statement('CmsModule\Panels\Stopwatch')
+			));
 		}
 	}
 

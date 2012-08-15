@@ -30,14 +30,12 @@ class AdminPresenter extends BasePresenter
 	public function checkRequirements($element)
 	{
 		// check admin account
-		if (!$this->context->parameters['administration']['login']['name']){
-			if($this->getName() != "Cms:Admin:Administrator") {
+		if (!$this->context->parameters['administration']['login']['name']) {
+			if ($this->getName() != "Cms:Admin:Administrator") {
 				$this->redirect(":Cms:Admin:Administrator:");
 			}
 			$this->template->hideMenuItems = true;
-		}
-
-		// check database
+		} // check database
 		elseif (!$this->context->createCheckConnection()) {
 			if ($this->getName() != "Cms:Admin:Database" && $this->getName() != "Cms:Admin:Login") {
 				$this->redirect(":Cms:Admin:Database:");
@@ -95,10 +93,6 @@ class AdminPresenter extends BasePresenter
 
 		$this["head"]->setTitle("Venne:CMS");
 		$this["head"]->setRobots($this["head"]::ROBOTS_NOINDEX | $this["head"]::ROBOTS_NOFOLLOW);
-
-		$this->template->adminMenu = new \CmsModule\Events\AdminEventArgs;
-		$this->context->eventManager->dispatchEvent(\CmsModule\Events\AdminEvents::onAdminMenu, $this->template->adminMenu);
-		$this->template->adminMenu = $this->template->adminMenu->getNavigations();
 	}
 }
 

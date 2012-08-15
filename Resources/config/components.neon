@@ -1,7 +1,7 @@
 factories:
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
-		tags: [component]
+		tags: [widget: head]
 
 	cms.websiteForm:
 		class: CmsModule\Forms\WebsiteForm

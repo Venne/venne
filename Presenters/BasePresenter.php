@@ -23,13 +23,10 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 	/** @persistent */
 	public $lang;
 
-	/** @var array of array */
-	protected $paths = array();
-
 
 	public function __construct()
 	{
-		Stopwatch::start();
+		//Stopwatch::start();
 		parent::__construct();
 	}
 
@@ -86,28 +83,6 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 
 
 	/**
-	 * Get module
-	 *
-	 * @return \Venne\Module\IModule
-	 */
-	public function getModule()
-	{
-		return $this->context->{$this->getModuleName() . "Module"};
-	}
-
-
-	/**
-	 * Get module name
-	 *
-	 * @return string
-	 */
-	public function getModuleName()
-	{
-		return lcfirst(substr($this->name, 0, strpos($this->name, ":")));
-	}
-
-
-	/**
 	 * Common render method.
 	 *
 	 * @return void
@@ -134,42 +109,4 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 		Stopwatch::start();
 	}
 
-
-	/**
-	 * @param string $name
-	 * @param string $url
-	 */
-	public function addPath($name, $url)
-	{
-		$this->paths[] = array("name" => $name, "url" => $url);
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getPaths()
-	{
-		return $this->paths;
-	}
-
-
-	/**
-	 * @return \CmsModule\Components\Head\HeadControl
-	 */
-	public function createComponentHead()
-	{
-		$head = $this->context->cms->createHeadControl();
-		return $head;
-	}
-
-
-	/**
-	 * @return \CmsModule\Components\Panel\PanelControl
-	 */
-	public function createComponentVennePanel()
-	{
-		$head = $this->context->cms->createPanelControl();
-		return $head;
-	}
 }
