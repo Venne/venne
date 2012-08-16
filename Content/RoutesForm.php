@@ -28,7 +28,7 @@ class RoutesForm extends Form
 	{
 		$this->addMany('routes', function(\Nette\Forms\Container $container)
 		{
-			$container->setCurrentGroup($container->getForm()->addGroup('Route: ' . $container->entity->url));
+			$container->setCurrentGroup($container->getForm()->addGroup('Route' . $container->entity->url));
 			$container->addText('title', 'Title');
 			$container->addText('keywords', 'Keywords');
 			$container->addText('description', 'Description');
