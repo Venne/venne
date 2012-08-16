@@ -47,6 +47,11 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 			$this->lang = $this->context->parameters["website"]["defaultLanguage"];
 		}
 
+		// Setup translator
+		if (($translator = $this->context->getByType('Nette\Localization\ITranslator', FALSE)) !== NULL) {
+			$translator->setLang($this->lang);
+		}
+
 		// Stopwatch
 		Stopwatch::stop("base startup");
 		Stopwatch::start();
@@ -108,5 +113,4 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 		Stopwatch::stop("template render");
 		Stopwatch::start();
 	}
-
 }
