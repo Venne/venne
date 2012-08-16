@@ -12,7 +12,8 @@
 	"require": {
 		"php" : ">=5.3.2",
 		"venne/doctrine-module" : "2.0.x-dev",
-		"venne/assets-module" : "2.0.x-dev"
+		"venne/assets-module" : "2.0.x-dev",
+		"venne/translation-module" : "2.0.x-dev"
 	},
 	"autoload": {
 		"psr-0": { "CmsModule": "" }
