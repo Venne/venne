@@ -1,2 +1,2 @@
-	<li{if $presenter->isLinkCurrent("Users:default")} class="active"{/if}><a n:href="default">list</a></li>
-	<li{if $presenter->isLinkCurrent("Users:create")} class="active"{/if} n:if="$presenter->isAllowed('create')"><a n:href="create">create new</a></li>
+	<li{if $presenter->isLinkCurrent("Users:default")} class="active"{/if}><a n:href="default">{_'list'}</a></li>
+	<li{if $presenter->isLinkCurrent("Users:create")} class="active"{/if} n:if="$presenter->isAllowed('create')"><a n:href="create">{_'create new'}</a></li>

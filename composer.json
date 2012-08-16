@@ -51,7 +51,12 @@
 				},
 				"includes": [
 					"%libsDir%/venne/cms-module/CmsModule/Resources/config/config.neon"
-				]
+				],
+				"translator": {
+					"dictionaries": [
+						"%modules.cms.path%/Resources/translations"
+					]
+				}
 			}
 		}
 	}

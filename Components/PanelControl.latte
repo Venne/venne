@@ -1,9 +1,8 @@
 <div class="container-fluid" n:snippet="tabs">
 	<ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
-		<li{if $control->tab == 0} class="active"{/if}><a href="{link tab! tab=>0}">Pages</a></li>
-		<li{if $control->tab == 1} class="active"{/if}><a href="{link tab! tab=>1}">Widgets</a></li>
-		<li{if $control->tab == 2} class="active"{/if}><a href="{link tab! tab=>2}">Files</a></li>
-		<li{if $control->tab == 3} class="active"{/if}><a href="{link tab! tab=>3}">Layouts</a></li>
+		<li{if $control->tab == 0} class="active"{/if}><a href="{link tab! tab=>0}">{_'Pages'}</a></li>
+		<li{if $control->tab == 2} class="active"{/if}><a href="{link tab! tab=>2}">{_'Files'}</a></li>
+		<li{if $control->tab == 3} class="active"{/if}><a href="{link tab! tab=>3}">{_'Layouts'}</a></li>
 	</ul>
 </div>
 
@@ -12,14 +11,14 @@
 		<div class="btn-toolbar">
 			<div class="btn-group">
 			{if $control->tab == 0}
-				<a class="btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> Show in table</a>
+				<a class="btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 2}
-				<a class="btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> Show in table</a>
+				<a class="btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			</div>
 			<div class="btn-group pull-right">
-				<button id="create-new" class="btn"><span class="icon icon-file"></span> Create new</button>
+				<button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
 				<button class="btn dropdown-toggle" data-toggle="dropdown">
 					<span class="caret"></span>
 				</button>

@@ -8,7 +8,7 @@
 			<ul class="dropdown-menu">
 			{foreach $items as $link=>$item}
 				<li class="{if $presenter->isLinkCurrent($link)}active{/if}">
-					<a href="{plink :$link}">{$item['name']}{if isset($item["description"]) && $item["description"]}<span>{$item["description"]}</span>{/if}</a>
+					<a href="{plink :$link}">{_$item['name']}{if isset($item["description"]) && $item["description"]}<span>{$item["description"]}</span>{/if}</a>
 				</li>
 			{/foreach}
 			</ul>
