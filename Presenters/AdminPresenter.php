@@ -35,36 +35,33 @@ class AdminPresenter extends BasePresenter
 				$this->redirect(":Cms:Admin:Administrator:");
 			}
 			$this->template->hideMenuItems = true;
-		} // check database
+		} // end
+
+		// check login
+		elseif (!$this->getUser()->loggedIn && $this->getName() != "Cms:Admin:Login") {
+			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
+				$this->flashMessage("You have been logged out due to inactivity. Please login again.", 'info');
+			}
+			$this->template->hideMenuItems = true;
+			$this->redirect(":Cms:Admin:Login:", array('backlink' => $this->storeRequest()));
+		}
+
+		// check database
 		elseif (!$this->context->createCheckConnection()) {
-			if ($this->getName() != "Cms:Admin:Database" && $this->getName() != "Cms:Admin:Login") {
+			if ($this->getName() != "Cms:Admin:Database") {
 				$this->redirect(":Cms:Admin:Database:");
 			}
 			$this->template->hideMenuItems = true;
 			$this->flashMessage("Database connection not found. Please fix it.", "warning");
 		}
 
-		// check login
-		elseif (!$this->getUser()->loggedIn && $this->getName() != "Cms:Admin:Login") {
-			if ($this->getUser()->logoutReason === \Nette\Security\User::INACTIVITY) {
-				$this->flashMessage("You have been logged out due to inactivity. Please login again.", 'info');
+		// check languages
+		elseif (count($this->context->parameters['website']['languages']) == 0) {
+			if ($this->getName() != 'Cms:Admin:Language') {
+				$this->redirect(':Cms:Admin:Language:');
 			}
 			$this->template->hideMenuItems = true;
-			$this->redirect(":Cms:Admin:Login:", array('backlink' => $this->getApplication()->storeRequest()));
-		}
-
-		// check updates
-		else {
-			foreach ($this->context->findByTag("module") as $module => $item) {
-				$to = $this->context->{$module}->getVersion();
-				$from = (string)$this->context->parameters["modules"][lcfirst(substr($module, 0, -6))]["version"];
-				if (!version_compare($to, $from, '==')) {
-					if ($this->getName() != "Cms:Admin:Module" && $this->getName() != "Cms:Admin:Login") {
-						$this->redirect(":Cms:Admin:Module:");
-					}
-					$this->flashMessage("Some modules need update or downgrade own database. Please fix it. ({$module}: {$from} => {$to})", "warning");
-				}
-			}
+			$this->flashMessage("Please enter at least one language.", "warning");
 		}
 
 		parent::checkRequirements($element);

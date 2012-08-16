@@ -55,7 +55,7 @@ class BasicForm extends \CmsModule\Content\Form
 		// languages
 		/** @var $repository \DoctrineModule\ORM\BaseRepository */
 		$repository = $this->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
-		if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 0) {
+		if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 1) {
 			$this->addGroup("Languages");
 			$this->addManyToMany("languages", "Content is in");
 		}

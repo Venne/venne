@@ -99,6 +99,7 @@ abstract class PageEntity extends TreeEntity
 
 		$this->name = "";
 		$this->languages = new ArrayCollection;
+		$this->translations = new ArrayCollection;
 		$this->routes = new ArrayCollection;
 		$this->created = new \Nette\DateTime;
 		$this->updated = new \Nette\DateTime;
