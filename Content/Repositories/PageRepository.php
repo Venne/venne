@@ -27,22 +27,21 @@ class PageRepository extends BaseRepository
 		$class = '\\' . $entityName;
 		$entity = new $class;
 
-		if(!$entity instanceof PageEntity){
+		if (!$entity instanceof PageEntity) {
 			throw new \Nette\InvalidArgumentException('Entity must be instance of CmsModule\Content\Entities\PageEntity.');
 		}
 
 		// set default language
-		$entity->languages->add($this->getEntityManager()->getRepository('CmsModule\Content\Entities\LanguageEntity')->find(1));
+		$entity->languages->add($this->getEntityManager()->getRepository('CmsModule\Content\Entities\LanguageEntity')->findOneBy(array(), array('id' => 'ASC'), 1));
 
 		// set to root as last entity
-		$last = $this->findBy(array('parent'=>NULL), array('order'=>'DESC'), 1);
-		if(isset($last[0])) {
+		$last = $this->findBy(array('parent' => NULL), array('order' => 'DESC'), 1);
+		if (isset($last[0])) {
 			$entity->setParent(NULL, true, $last[0]);
 		}
 
 		return $entity;
 	}
-
 
 
 	/**
@@ -72,5 +71,4 @@ class PageRepository extends BaseRepository
 //		}
 		return true;
 	}
-
 }
