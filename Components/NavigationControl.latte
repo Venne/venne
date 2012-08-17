@@ -19,12 +19,12 @@
 
 		{if $item instanceof \PagesModule\Entities\RedirectEntity}
 			{if $item->page}
-				{var link=>$presenter->link(':Cms:Base:default', array('lang'=>$presenter->lang, 'route'=>$item->page->mainRoute))}
+				{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$item->page->mainRoute))}
 			{else}
 				{var link=>$basePath . '/' . $item->redirectUrl}
 			{/if}
 		{else}
-			{var link=>$presenter->link(':Cms:Base:default', array('lang'=>$presenter->lang, 'route'=>$item->mainRoute))}
+			{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$item->mainRoute))}
 		{/if}
 
 		{var childrens=>($sub < ($startDepth + $maxDepth - 1)) && ($active || !$followActive) && count($item->childrens) > 0}
