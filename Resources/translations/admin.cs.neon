@@ -10,6 +10,7 @@ application is already installed:
 application settings: nastavení aplikace
 base settings: základní nastavení
 basic setup: základní nastavení
+basic meta informations: základní meta informace
 connection settings: nastavení připojení
 content: obsah
 create: vytvořit
@@ -63,6 +64,7 @@ upload new file: nahrát nový soubor
 user: uživatel
 user manager: správce uživatelů
 version: verze
+website: webová stránka
 website settings: nastavení webové stránky
 widgets: widgety
 save changes: uložit změny
@@ -74,3 +76,36 @@ title separator: oddělovač titulku
 keywords: klíčová slova
 author: autor
 route prefix: předpona routování
+edit base meta informations about this website: editace základních meta informací webu
+manage pages: správa stránek
+manage existing pages and content: správa vytvořených stránek a obsahů
+manage files: správa souborů
+manage files and directories: správa souborů a adresářů
+manage users: správa uživatelů
+access control: správa přístupu
+module manager: správa modulů
+environments: prostředí
+manage environments: správa prostředí
+mode: mód
+strict mode: striktní mód
+iPs for devel: iP adresy pro vývoj
+e-mail for logs: e-mail pro logování
+expiration: expirace
+security panel: panel pro zabezpečení
+routing panel: routovací panel
+debugger panel in bluescreen: debugovací panel v laděnce
+yes: ano
+no: ne
+database panel: panel pro databázi
+driver: ovladač
+user name: uživatelské jméno
+password: heslo
+path: cesta
+db in memory: databáze v paměti
+charset: znaková sada
+collation: porovnání
+confirm password: potvrzení hesla
+sync: synchronizovat
+enable: povolit
+set password: nastavit heslo
+authentization key: autentizační klíč

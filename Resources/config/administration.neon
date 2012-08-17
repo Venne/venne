@@ -56,7 +56,7 @@ factories:
 			link: 'Cms:Admin:Environments:'
 			category: 'System'
 			name: 'Environments'
-			description: 'Manage environments for ,...'
+			description: 'Manage environments'
 			priority: 5
 		]]
 
@@ -65,7 +65,7 @@ factories:
 		tags: [administrationPage: [
 			link: 'Cms:Admin:Module:'
 			category: 'System'
-			name: 'Modules settings'
+			name: 'Module manager'
 			description: 'Manage CMS modules, donwload, install, setup,...'
 			priority: 10
 		]]
@@ -96,7 +96,7 @@ factories:
 			link: 'Cms:Admin:Files:default'
 			category: 'Content'
 			name: 'Manage files'
-			description: 'Manage files'
+			description: 'Manage files and directories'
 			priority: 100
 		]]
 
