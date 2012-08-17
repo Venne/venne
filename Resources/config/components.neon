@@ -8,30 +8,35 @@ factories:
 		setup:
 			- setRoot(parameters.website)
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.languageForm:
 		class: CmsModule\Forms\LanguageForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.modulesDefaultForm:
 		class: CmsModule\Forms\ModulesDefaultForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.userForm:
 		class: CmsModule\Forms\UserForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.roleForm:
 		class: CmsModule\Forms\RoleForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.systemForm:
@@ -39,6 +44,7 @@ factories:
 		setup:
 			- setRoot(parameters)
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.applicationForm:
@@ -46,6 +52,7 @@ factories:
 		setup:
 			- setRoot('')
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.databaseForm:
@@ -53,6 +60,7 @@ factories:
 		setup:
 			- setRoot(parameters.database)
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.accountForm:
@@ -60,36 +68,42 @@ factories:
 		setup:
 			- setRoot(parameters.administration.login)
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.loginForm:
 		class: CmsModule\Forms\LoginForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.contentForm:
 		class: CmsModule\Content\Forms\BasicForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.contentRoutesForm:
 		class: CmsModule\Content\RoutesForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.dirForm:
 		class: CmsModule\Content\Forms\DirForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.fileForm:
 		class: CmsModule\Content\Forms\FileForm
 		setup:
 			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
 		tags: [component]
 
 	cms.navigationControl:
