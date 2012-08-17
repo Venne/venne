@@ -49,21 +49,21 @@ class PageListener implements EventSubscriber
 		$uow = $em->getUnitOfWork();
 
 		foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-			if ($entity instanceof \CmsModule\Entities\PageEntity) {
+			if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
 				$this->invalidateCache();
 				return;
 			}
 		}
 
 		foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-			if ($entity instanceof \CmsModule\Entities\PageEntity) {
+			if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
 				$this->invalidateCache();
 				return;
 			}
 		}
 
 		foreach ($uow->getScheduledEntityDeletions() AS $entity) {
-			if ($entity instanceof \CmsModule\Entities\PageEntity) {
+			if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
 				$this->invalidateCache();
 				return;
 			}
