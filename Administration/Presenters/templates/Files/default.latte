@@ -45,9 +45,8 @@
 
 
 <ul id="fileMenu" class="contextMenu">
-	<li class="view"><a href="#edit">View</a></li>
+	<li class="view"><a href="#view">View</a></li>
 	<li class="edit"><a href="#edit">Edit</a></li>
-	<li class="rename"><a href="#rename"">Rename</a></li>
 	<li class="delete"><a href="#delete">Delete</a></li>
 </ul>
 
@@ -89,11 +88,18 @@
 		$("#sortable li").contextMenu({ menu:"fileMenu"}, function (action, el, pos) {
 
 			if (action == "delete") {
+				var id = $(el).attr("id");
+				$.nette.ajax({ url: {link delete!} +'&key2=' + $(el).attr("id") });
+
 				$('#sortable li.ui-selected').each(function () {
-					$.nette.ajax({ url: {link delete!} +'&key2=' + $(this).attr("id") });
+					if($(this).attr("id") != id){
+						$.nette.ajax({ url: {link delete!} +'&key2=' + $(this).attr("id") });
+					}
 				});
-			} else if (action == "rename") {
+			} else if (action == "edit") {
 				$.nette.ajax({ url: {link edit!} +'&key2=' + $(el).attr("id") });
+			} else if (action == "view") {
+				window.location = $(el).find('a').attr('href');
 			}
 
 		});
