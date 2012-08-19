@@ -136,20 +136,22 @@ class BaseFileEntity extends \DoctrineModule\ORM\BaseEntity
 	{
 		$old = $this->path;
 
-		if($this->parent){
+		if ($this->parent && is_callable($this->parent, '__load')) {
 			$this->parent->__load();
 		}
 
 		$this->path = ($this->parent ? $this->parent->path . '/' : '') . Strings::webalize($this->name, '.');
 
-		if($this->path == $old){
+		if ($this->path == $old) {
 			return;
 		}
 
-		if (!$this->_oldPath && $old != $this->path) {
-			$this->_oldPath = $old;
-		} else if ($this->_oldPath && $this->_oldPath == $this->path) {
-			$this->_oldPath = NULL;
+		if ($this->id) {
+			if (!$this->_oldPath && $old != $this->path) {
+				$this->_oldPath = $old;
+			} else if ($this->_oldPath && $this->_oldPath == $this->path) {
+				$this->_oldPath = NULL;
+			}
 		}
 	}
 
