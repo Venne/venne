@@ -54,16 +54,19 @@
 	$(function () {
 
 		var shifted;
-
-		var clicked;
+		var clicked = false;
+		var moused = false;
 
 		$("#sortable").selectable();
 
 		$(document).mousedown(function (event) {
-			clicked = true;
+			if(moused){
+				clicked = true;
+			}
 		});
 
 		$(document).mouseup(function (event) {
+			moused = true;
 			clicked = false;
 		});
 
@@ -80,7 +83,7 @@
 		});
 
 		$("#sortable li").live('mouseout', function () {
-			if ($(this).hasClass('ui-selecting')) {
+			if ($(this).hasClass('ui-selecting') && !clicked) {
 				$(this).removeClass('ui-selecting');
 			}
 		});
