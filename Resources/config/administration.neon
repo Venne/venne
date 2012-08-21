@@ -50,15 +50,15 @@ factories:
 			priority: 15
 		]]
 
-	cms.environmentBackendPage:
-		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
-		tags: [administrationPage: [
-			link: 'Cms:Admin:Environments:'
-			category: 'System'
-			name: 'Environments'
-			description: 'Manage environments'
-			priority: 5
-		]]
+#	cms.environmentBackendPage:
+#		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
+#		tags: [administrationPage: [
+#			link: 'Cms:Admin:Environments:'
+#			category: 'System'
+#			name: 'Environments'
+#			description: 'Manage environments'
+#			priority: 5
+#		]]
 
 	cms.modulesBackendPage:
 		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
