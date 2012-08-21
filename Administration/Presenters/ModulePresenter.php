@@ -87,7 +87,7 @@ class ModulePresenter extends BasePresenter
 		foreach ($this->moduleManager->findRepositoryModules() as $name => $items) {
 			$versions = explode(', ', $items->versions);
 
-			if (($pos = array_search('dev-master', $versions)) !== false) {
+			if (($pos = array_search('* dev-master', $versions)) !== false || ($pos = array_search('dev-master', $versions)) !== false) {
 				unset($versions[$pos]);
 			}
 
