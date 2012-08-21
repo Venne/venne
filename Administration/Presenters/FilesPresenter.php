@@ -75,28 +75,6 @@ class FilesPresenter extends BasePresenter
 			return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
 		});
 		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
-		$table->setPaginator(10);
-		$table->enableSorter();
-
-		$presenter = $this;
-		$table->addColumn('name', 'Name', '50%', function($entity) use ($presenter)
-		{
-			$html = \Nette\Utils\Html::el('a')
-				->setText($entity->name);
-			$html->attrs['href'] = $presenter->link('this', array('parent' => $entity->id));
-			return $html;
-		});
-		$table->addColumn('path', 'Path', '50%');
-
-		$presenter = $this;
-		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
-		{
-			$presenter->redirect('edit', array('key' => $entity->id));
-		});
-		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->redirect('delete!', array('id' => $entity->id));
-		});
 
 		return $table;
 	}
@@ -116,21 +94,6 @@ class FilesPresenter extends BasePresenter
 			return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
 		});
 		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
-		$table->setPaginator(10);
-		$table->enableSorter();
-
-		$table->addColumn('name', 'Name', '50%');
-		$table->addColumn('path', 'Path', '50%');
-
-		$presenter = $this;
-		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
-		{
-			$presenter->redirect('edit', array('key' => $entity->id));
-		});
-		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->redirect('delete!', array('id' => $entity->id));
-		});
 
 		return $table;
 	}
