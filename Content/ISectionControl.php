@@ -12,7 +12,6 @@
 namespace CmsModule\Content;
 
 use Venne;
-use Venne\Application\UI\Control;
 use CmsModule\Content\Entities\PageEntity;
 
 /**

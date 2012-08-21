@@ -33,6 +33,9 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	/** @var \CmsModule\Entities\RouteEntity */
 	public $route;
 
+	/** @var string */
+	protected $_layoutPath;
+
 
 	/**
 	 * @return void
@@ -75,26 +78,30 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 *
 	 * @return null|string
 	 */
-	protected function getLayoutPath()
+	public function getLayoutPath()
 	{
-		if (!$this->route->layout) {
-			return NULL;
+		if ($this->_layoutPath === NULL) {
+			if (!$this->route->layout) {
+				$this->_layoutPath = false;
+			}
+
+			if ($this->route->layout == 'default') {
+				$layout = $this->context->parameters['website']['layout'];
+			} else {
+				$layout = $this->route->layout;
+			}
+
+			$pos = strpos($layout, "/");
+			$module = lcfirst(substr($layout, 1, $pos - 1));
+
+			if (!isset($this->context->parameters['modules'][$module]['path'])) {
+				$this->_layoutPath = false;
+			}
+
+			$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
 		}
 
-		if ($this->route->layout == 'default') {
-			$layout = $this->context->parameters['website']['layout'];
-		} else {
-			$layout = $this->route->layout;
-		}
-
-		$pos = strpos($layout, "/");
-		$module = lcfirst(substr($layout, 1, $pos - 1));
-
-		if (!isset($this->context->parameters['modules'][$module]['path'])) {
-			return NULL;
-		}
-
-		return $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
+		return $this->_layoutPath === false ? NULL: $this->_layoutPath;
 	}
 
 

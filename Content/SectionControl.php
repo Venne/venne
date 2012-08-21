@@ -12,13 +12,12 @@
 namespace CmsModule\Content;
 
 use Venne;
-use Venne\Application\UI\Control;
 use CmsModule\Content\Entities\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SectionControl extends Control implements ISectionControl
+class SectionControl extends \Venne\Application\UI\Control implements ISectionControl
 {
 
 	/** @var PageEntity */
