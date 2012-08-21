@@ -1,4 +1,3 @@
-
 		{foreach $control->getItems() as $item}
 
 		<li class="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
@@ -8,8 +7,13 @@
 				{else}
 					{var type=>'text-plain'}
 				{/if}
+				{var ext=>substr($item->getName(), strrpos($item->getName(), '.') + 1)}
 				<a class="noAjax" href="{if $type=='folder'}{=$control->presenter->link('this', array('key'=>$item->id))}{else}{$control->presenter->template->basePath}/public/media/{$item->path}{/if}">
-					<img src="{=$control->presenter->template->basePath}/resources/cmsModule/icons/places/64/{$type}.png" alt="">
+					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
+						<img n:src="$item->getPath(), size=>'64x64'" alt="" />
+					{else}
+						<img src="{=$control->presenter->template->basePath}/resources/cmsModule/icons/places/64/{$type}.png" alt="">
+					{/if}
 				</a>
 				<h5>{$item->name}</h5>
 			</div>
