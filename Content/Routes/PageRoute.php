@@ -20,7 +20,7 @@ use CmsModule\Content\ContentManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Page extends Route
+class PageRoute extends Route
 {
 
 

@@ -99,9 +99,16 @@ class CmsExtension extends CompilerExtension
 
 		// CMS route
 		$container->addDefinition($this->prefix("pageRoute"))
-			->setClass("CmsModule\Content\Routes\Page", array('@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
+			->setClass("CmsModule\Content\Routes\PageRoute", array('@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
 		)
 			->addTag("route", array("priority" => 100))
+			->setAutowired(false);
+
+		// File route
+		$container->addDefinition($this->prefix("fileRoute"))
+			->setClass("CmsModule\Content\Routes\FileRoute", array('@cms.fileRepository')
+		)
+			->addTag("route", array("priority" => 99999999))
 			->setAutowired(false);
 
 		// config manager

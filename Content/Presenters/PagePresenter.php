@@ -12,7 +12,7 @@
 namespace CmsModule\Content\Presenters;
 
 use Venne;
-use CmsModule\Routes\Page as PageRoute;
+use CmsModule\Routes\PageRoute;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
