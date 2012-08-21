@@ -59,3 +59,7 @@ services:
 	cms.admin.databasePresenter:
 		class: CmsModule\Administration\Presenters\DatabasePresenter(@cms.databaseFormFactory)
 		tags: [presenter]
+
+	cms.admin.aboutPresenter:
+		class: CmsModule\Administration\Presenters\AboutPresenter
+		tags: [presenter]
