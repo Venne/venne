@@ -38,7 +38,7 @@ class SystemModeForm extends \Venne\Application\UI\Form {
 	{
 		$this->configManager = $configManager;
 		$this->mode = $container->parameters["mode"];
-		$this->configDir = $container->parameters["$configDir"];
+		$this->configDir = $container->parameters["configDir"];
 		parent::__construct();
 	}
 
