@@ -20,8 +20,10 @@ class WebsiteForm extends BaseConfigForm
 {
 
 
-
-	public function startup()
+	/**
+	 * @param \Nette\ComponentModel\Container $obj
+	 */
+	protected function attached($obj)
 	{
 		$this->addGroup("Global meta informations");
 		$this->addText("title", "Title")->setOption("description", "(%s - separator, %t - local title)");
@@ -29,27 +31,17 @@ class WebsiteForm extends BaseConfigForm
 		$this->addText("keywords", "Keywords");
 		$this->addText("description", "Description");
 		$this->addText("author", "Author");
+		$this->addSelect('layout', 'Layout', $this->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');
 
 		$this->addGroup("System");
 		$this->addTextWithSelect("routePrefix", "Route prefix");
-
-		parent::startup();
-	}
-
-
-
-	/**
-	 * @param \Nette\ComponentModel\Container $obj
-	 */
-	protected function attached($obj)
-	{
-		parent::attached($obj);
 
 		$url = $this->presenter->context->httpRequest->url;
 		$domain = trim($url->host . $url->scriptPath, "/") . "/";
 		$params = array("<lang>/", "//$domain<lang>/", "//<lang>.$domain");
 
 		$this['routePrefix']->setItems($params, false);
-	}
 
+		parent::attached($obj);
+	}
 }

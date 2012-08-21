@@ -34,6 +34,7 @@ class RoutesForm extends Form
 			$container->addText('description', 'Description');
 			$container->addText('author', 'Author');
 			$container->addSelect('robots', 'Robots', \CmsModule\Content\Entities\RouteEntity::$robotsValues);
+			$container->addCheckbox('copyLayoutFromParent', 'Layout from parent');
 			$container->addSelect('layout', 'Layout', $container->form->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');
 		});
 

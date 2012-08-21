@@ -43,7 +43,8 @@
 						"languages": {},
 						"defaultLanguage": "cs",
 						"defaultPresenter": "Homepage",
-						"errorPresenter": "Error"
+						"errorPresenter": "Error",
+						"layout": ""
 					}
 				},
 				"extensions": {

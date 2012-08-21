@@ -22,6 +22,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 {
 
+	const DEFAULT_LAYOUT = 'default';
+
 	public static $robotsValues = array(
 		"index, follow",
 		"noindex, follow",
@@ -52,18 +54,21 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 	protected $paramCounter;
 
 	/**
+	 * @var PageEntity
 	 * @ManyToOne(targetEntity="PageEntity", inversedBy="routes")
 	 * @JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $page;
 
 	/**
+	 * @var RouteEntity
 	 * @ManyToOne(targetEntity="RouteEntity", inversedBy="childrens")
 	 * @JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
+	 * @var RouteEntity[]
 	 * @OneToMany(targetEntity="RouteEntity", mappedBy="parent")
 	 */
 	protected $childrens;
@@ -89,6 +94,9 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 	/** @Column(type="string", nullable=true) */
 	protected $layout;
 
+	/** @Column(type="boolean") */
+	protected $copyLayoutFromParent;
+
 
 	/**
 	 * @return string
@@ -110,8 +118,9 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 		$this->params = json_encode(array());
 		$this->paramCounter = 0;
 		$this->childrens = new ArrayCollection;
-		$this->layout = '';
-		
+		$this->layout = 'default';
+		$this->copyLayoutFromParent = true;
+
 		$this->title = '';
 		$this->keywords = '';
 		$this->description = '';
@@ -152,6 +161,27 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 		if ($recursively) {
 			foreach ($this->childrens as $children) {
 				$children->generateUrl();
+			}
+		}
+	}
+
+
+	/**
+	 * @param bool $recursively
+	 */
+	public function generateLayouts($recursively = true)
+	{
+		if ($this->parent !== NULL && method_exists($this->parent, "__load")) {
+			$this->parent->__load();
+		}
+
+		if ($this->copyLayoutFromParent) {
+			$this->layout = $this->parent ? $this->parent->layout : self::DEFAULT_LAYOUT;
+		}
+
+		if ($recursively) {
+			foreach ($this->childrens as $children) {
+				$children->generateLayouts();
 			}
 		}
 	}
@@ -226,8 +256,13 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 	 */
 	public function setParent(RouteEntity $parent = NULL)
 	{
+		if ($this->parent == $parent) {
+			return;
+		}
+
 		$this->parent = $parent;
 		$this->generateUrl();
+		$this->generateLayouts();
 	}
 
 
@@ -260,25 +295,30 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 		$this->page = $page;
 	}
 
+
 	public function setAuthor($author)
 	{
 		$this->author = $author;
 	}
+
 
 	public function getAuthor()
 	{
 		return $this->author;
 	}
 
+
 	public function setKeywords($keywords)
 	{
 		$this->keywords = $keywords;
 	}
 
+
 	public function getKeywords()
 	{
 		return $this->keywords;
 	}
+
 
 	public function setRobots($robots)
 	{
@@ -289,35 +329,47 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 		$this->robots = $robots;
 	}
 
+
 	public function getRobots()
 	{
 		return $this->robots;
 	}
+
 
 	public function setTitle($title)
 	{
 		$this->title = $title;
 	}
 
+
 	public function getTitle()
 	{
 		return $this->title;
 	}
 
+
 	public function setLayout($layout)
 	{
+		if ($this->copyLayoutFromParent) {
+			return;
+		}
+
 		$this->layout = $layout;
+		$this->generateLayouts();
 	}
+
 
 	public function getLayout()
 	{
 		return $this->layout;
 	}
 
+
 	public function setDescription($description)
 	{
 		$this->description = $description;
 	}
+
 
 	public function getDescription()
 	{
@@ -325,4 +377,19 @@ class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 	}
 
 
+	public function setCopyLayoutFromParent($copyLayoutFromParent)
+	{
+		if ($this->copyLayoutFromParent == $copyLayoutFromParent) {
+			return;
+		}
+
+		$this->copyLayoutFromParent = $copyLayoutFromParent;
+		$this->generateLayouts();
+	}
+
+
+	public function getCopyLayoutFromParent()
+	{
+		return $this->copyLayoutFromParent;
+	}
 }

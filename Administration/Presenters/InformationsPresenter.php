@@ -55,7 +55,6 @@ class InformationsPresenter extends BasePresenter
 	{
 		$form = $this->context->cms->createModulesDefaultForm();
 		$form->setRoot("parameters.website");
-		//$form->addSubmit("_submit", "Save");
 		$form->onSuccess[] = function($form)
 		{
 			$form->getPresenter()->flashMessage("Changes has been saved", "success");
