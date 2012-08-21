@@ -14,6 +14,7 @@ namespace CmsModule\Content\Macros;
 use Venne;
 use Nette\Latte\MacroNode;
 use Nette\Latte\Compiler;
+use Nette\Latte\CompileException;
 use DoctrineModule\ORM\BaseRepository;
 
 /**
@@ -71,18 +72,7 @@ class MediaMacro extends \Nette\Latte\Macros\MacroSet
 	 */
 	public static function macroFile(MacroNode $node, $writer)
 	{
-		$data = explode(',', $node->args);
-		foreach ($data as &$value) {
-			$value = trim($value);
-		}
-
-		$path = isset($data[0]) ? $data[0] : '';
-
-		if (($entity = self::$fileRepository->findOneBy(array('path' => $path))) == NULL) {
-			throw new \Nette\Latte\ParseException("File '{$path}' does not exist.");
-		}
-
-		return $writer->write("echo '{$entity->getFileUrl()}'");
+		return $writer->write('echo $basePath . \CmsModule\Content\Macros\MediaMacro::proccessFile(%node.word)');
 	}
 
 
@@ -94,32 +84,45 @@ class MediaMacro extends \Nette\Latte\Macros\MacroSet
 	 */
 	public static function macroImage(MacroNode $node, $writer)
 	{
-		$data = explode(',', $node->args);
-		foreach ($data as &$value) {
-			$value = trim($value);
+		return $writer->write('echo $basePath . \CmsModule\Content\Macros\MediaMacro::proccessImage(%node.word, %node.array)');
+	}
+
+
+	/**
+	 * @static
+	 * @param MacroNode $node
+	 * @param $writer
+	 * @return mixed
+	 */
+	public static function proccessFile($path)
+	{
+		return "/public/media/{$path}";
+	}
+
+
+	/**
+	 * @static
+	 * @param MacroNode $node
+	 * @param $writer
+	 * @return mixed
+	 */
+	public static function proccessImage($path, $args = array())
+	{
+		$size = isset($args['size']) ? $args['size'] : 'default';
+		$format = isset($args['format']) ? $args['format'] : 'default';
+		$type = isset($args['type']) ? $args['type'] : 'default';
+
+		$ext = str_replace('jpg', 'jpeg', substr($path, strrpos($path, '.') + 1));
+
+		if (array_search($ext, self::$imageExtensions) === false || ($type !== 'default' && array_search($type, self::$imageExtensions) === false)) {
+			throw new CompileException("Bad extension of file '{$path}'. You can use only: " . implode(', ', self::$imageExtensions));
 		}
 
-		$path = isset($data[0]) ? $data[0] : '';
-		$size = isset($data[1]) && $data[1] ? $data[1] : 'default';
-		$format = isset($data[2]) && $data[2] ? $data[2] : 'default';
-		$type = isset($data[3]) && $data[3] ? $data[3] : 'default';
-
-		if (($entity = self::$fileRepository->findOneBy(array('path' => $path))) == NULL) {
-			throw new \Nette\Latte\ParseException("File '{$path}' does not exist.");
+		if ($format == 'default' && ($type == 'default' || $type == $ext) && $size == 'default') {
+			return "/public/media/{$path}";
 		}
 
-		// orig file
-		$ext = str_replace('jpg', 'jpeg', substr($entity->getName(), strrpos($entity->getName(), '.') + 1));
-
-		if (array_search($ext, self::$imageExtensions) === false || array_search($type, self::$imageExtensions) === false) {
-			throw new \Nette\Latte\ParseException("Bad extension of file '{$path}'. You can use only: " . implode(', ', self::$imageExtensions));
-		}
-
-		if ($format == 'default' && ($type == 'orig' || $type == $ext)) {
-			return $writer->write("echo '{$entity->getFileUrl()}'");
-		}
-
-		return $writer->write("echo \$basePath . '/public/media/_cache/{$size}/{$format}/{$type}/{$entity->getPath()}'");
+		return "/public/media/_cache/{$size}/{$format}/{$type}/{$path}";
 	}
 
 
