@@ -98,6 +98,13 @@ factories:
 		parameters: [compiler]
 		tags: [macro]
 
+	mediaMacro:
+		factory: CmsModule\Content\Macros\MediaMacro::install(%compiler%)
+		setup:
+			- setFileRepository(@cms.fileRepository)
+		parameters: [compiler]
+		tags: [macro]
+
 includes:
 	- presenters.neon
 	- components.neon

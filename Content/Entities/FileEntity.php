@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Nette\Utils\Finder;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -88,6 +89,12 @@ class FileEntity extends BaseFileEntity
 	public function preRemove()
 	{
 		@unlink($this->getFilePath());
+
+		// remove cache
+		foreach(Finder::findFiles('*/*/*/' . $this->getName())->from($this->publicDir . '/_cache') as $file) {
+			@unlink($file->getPathname());
+
+		}
 	}
 
 

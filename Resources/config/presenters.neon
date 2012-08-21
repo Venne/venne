@@ -48,6 +48,10 @@ services:
 		class: CmsModule\Administration\Presenters\FilesPresenter(@cms.fileRepository, @cms.dirRepository, @cms.fileFormFactory, @cms.dirFormFactory)
 		tags: [presenter]
 
+	cms.filePresenter:
+		class: CmsModule\Content\Presenters\FilePresenter(@cms.fileRepository)
+		tags: [presenter]
+
 	cms.admin.modulePresenter:
 		class: CmsModule\Administration\Presenters\ModulePresenter()
 		tags: [presenter]
