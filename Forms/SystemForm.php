@@ -16,30 +16,16 @@ use Venne;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemForm extends BaseConfigForm {
+class SystemForm extends BaseConfigForm
+{
 
 
 	public function startup()
 	{
 		parent::startup();
 
-		$this->addGroup("Mode settings");
-		$this->addSelect("mode", "Mode");
-
 		$container = $this->addContainer("administration");
 		$container->setCurrentGroup($this->addGroup("Administration settings"));
 		$container->addText("routePrefix", "Route prefix");
 	}
-	
-	
-	/**
-	 * @param \Nette\ComponentModel\Container $obj
-	 */
-	protected function attached($obj)
-	{
-		parent::attached($obj);
-
-		$this['mode']->setItems($this->presenter->context->parameters["environments"], false);
-	}
-
 }

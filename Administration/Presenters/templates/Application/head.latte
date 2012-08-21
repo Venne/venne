@@ -1,12 +1,12 @@
 	<li n:if="$presenter->isAllowed('Application:default')"{if $presenter->isLinkCurrent("Application:default")} class="active"{/if}>
-		<a href="{plink Application:}">{_'General'}</a>
-	</li>
-	<li n:if="$presenter->isAllowed('Application:application')"{if $presenter->isLinkCurrent("Application:application")} class="active"{/if}>
-		<a href="{plink Application:application}">{_'Application'}</a>
+		<a href="{plink Application:default}">{_'Application'}</a>
 	</li>
 	<li n:if="$presenter->isAllowed('Application:database')"{if $presenter->isLinkCurrent("Application:database")} class="active"{/if}>
 		<a href="{plink Application:database}">{_'Database'}</a>
 	</li>
 	<li n:if="$presenter->isAllowed('Application:account')"{if $presenter->isLinkCurrent("Application:account")} class="active"{/if}>
 		<a href="{plink Application:account}">{_'Admin account'}</a>
+	</li>
+	<li n:if="$presenter->isAllowed('Application:admin')"{if $presenter->isLinkCurrent("Application:admin")} class="active"{/if}>
+		<a href="{plink Application:admin}">{_'Administration'}</a>
 	</li>

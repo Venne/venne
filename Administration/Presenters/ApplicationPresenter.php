@@ -53,11 +53,32 @@ class ApplicationPresenter extends BasePresenter
 	public function createComponentSystemForm()
 	{
 		$form = $this->systemForm->invoke();
-		$form->onSuccess[] = function($form) {
-					$form->getPresenter()->flashMessage("Global settings has been updated", "success");
-					$form->getPresenter()->redirect("this");
-				};
+		$form->onSuccess[] = $this->systemFormSuccess;
 		return $form;
+	}
+
+
+
+	public function systemFormSuccess(\CmsModule\Forms\SystemForm $form)
+	{
+		$this->absoluteUrls = true;
+		$url = $this->getHttpRequest()->getUrl();
+
+		$path = "{$url->scheme}://{$url->host}{$url->scriptPath}";
+
+		$oldPath = $path . $this->context->parameters['administration']['routePrefix'];
+		$newPath = $path . $form['administration']['routePrefix']->getValue();
+
+		if($form['administration']['routePrefix']->getValue() == ''){
+			$oldPath .= '/';
+		}
+
+		if($this->context->parameters['administration']['routePrefix'] == ''){
+			$newPath .= '/';
+		}
+
+		$form->getPresenter()->flashMessage("Administration settings has been updated", "success");
+		$form->getPresenter()->redirectUrl(str_replace($oldPath, $newPath, $this->link('this')));
 	}
 
 

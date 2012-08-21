@@ -4,6 +4,7 @@ about: o
 account settings: nastavení účtu
 actions: akce
 admin account: administrátorský účet
+administration: administrace
 administration settings: nastavení administrace
 application: aplikace
 application is already installed: 
@@ -109,3 +110,4 @@ sync: synchronizovat
 enable: povolit
 set password: nastavit heslo
 authentization key: autentizační klíč
+system settings: nastavení systému

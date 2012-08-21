@@ -45,7 +45,7 @@ factories:
 		tags: [administrationPage: [
 			link: 'Cms:Admin:Application:'
 			category: 'System'
-			name: 'Application settings'
+			name: 'System settings'
 			description: 'Set up database, environment,...'
 			priority: 15
 		]]
