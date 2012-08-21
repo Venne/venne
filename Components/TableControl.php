@@ -20,6 +20,8 @@ use Venne\Application\UI\Control;
 class TableControl extends Control
 {
 
+	/** @var string */
+	protected $templateFile;
 
 	/** @var \DoctrineModule\ORM\BaseRepository */
 	protected $repository;
@@ -52,7 +54,6 @@ class TableControl extends Control
 	public $order = 'ASC';
 
 
-
 	public function __construct($primaryColumn = 'id')
 	{
 		parent::__construct();
@@ -63,12 +64,10 @@ class TableControl extends Control
 	}
 
 
-
 	public function setTemplateFile($file)
 	{
-		$this->template->setFile($file);
+		$this->templateFile = $file;
 	}
-
 
 
 	public function enableSorter()
@@ -77,12 +76,10 @@ class TableControl extends Control
 	}
 
 
-
 	public function getRepository()
 	{
 		return $this->repository;
 	}
-
 
 
 	public function setRepository(\DoctrineModule\ORM\BaseRepository $repository)
@@ -91,12 +88,10 @@ class TableControl extends Control
 	}
 
 
-
 	public function setPaginator($itemOnPage = 10)
 	{
 		$this->paginator = $itemOnPage;
 	}
-
 
 
 	public function addColumn($name, $title, $width = NULL, $callback = NULL)
@@ -109,7 +104,6 @@ class TableControl extends Control
 	}
 
 
-
 	public function addAction($name, $title, $callback)
 	{
 		$this->actions[$name] = array(
@@ -117,7 +111,6 @@ class TableControl extends Control
 			'callback' => $callback,
 		);
 	}
-
 
 
 	public function addGlobalAction($name, $title, $callback)
@@ -129,13 +122,11 @@ class TableControl extends Control
 	}
 
 
-
 	public function handleDoAction($name, $id)
 	{
 		$callback = $this->actions[$name]['callback'];
 		$callback($this->repository->find($id));
 	}
-
 
 
 	public function render()
@@ -147,25 +138,28 @@ class TableControl extends Control
 		$this->template->paginator = $this->paginator;
 		$this->template->sorter = $this->sorter;
 
+		if ($this->templateFile) {
+			$this->template->setFile($this->templateFile);
+		}
+
 		parent::render();
 	}
-
 
 
 	public function getItems()
 	{
 		$dql = $this->repository->createQueryBuilder('a');
 
-		if($this->dqlCallback){
+		if ($this->dqlCallback) {
 			$fn = $this->dqlCallback;
 			$fn($dql);
 		}
 
-		if($this->sorter && $this->sort){
-			$dql = $dql->orderBy(array($this->sorter=>$this->sort));
+		if ($this->sorter && $this->sort) {
+			$dql = $dql->orderBy(array($this->sorter => $this->sort));
 		}
 
-		if($this->paginator){
+		if ($this->paginator) {
 			$dql = $dql
 				->setMaxResults($this->paginator)
 				->setFirstResult(($this["vp"]->page - 1) * $this->paginator);
@@ -173,7 +167,6 @@ class TableControl extends Control
 
 		return $dql->getQuery()->getResult();
 	}
-
 
 
 	protected function createComponentVp()
@@ -184,7 +177,6 @@ class TableControl extends Control
 		$pg->setItemCount($this->repository->createQueryBuilder("a")->select("COUNT(a.{$this->primaryColumn})")->getQuery()->getSingleScalarResult());
 		return $vp;
 	}
-
 
 
 	protected function createComponentActionForm()
@@ -210,20 +202,20 @@ class TableControl extends Control
 	}
 
 
-
 	public function formSuccess($form)
 	{
 		$action = $form['action']->getValue();
 		$callback = $this->globalActions[$action]['callback'];
-		
+
 		$values = $form['items']->getValues();
-		foreach($values as $key=>$value){
-			if($value){
+		foreach ($values as $key => $value) {
+			if ($value) {
 				$entity = $this->repository->find(substr($key, 5));
 				$callback($entity);
 			}
 		}
 	}
+
 
 	/**
 	 * @param \Nette\Callback $dql
@@ -233,6 +225,7 @@ class TableControl extends Control
 		$this->dqlCallback = $dql;
 	}
 
+
 	/**
 	 * @return \Nette\Callback
 	 */
@@ -240,5 +233,4 @@ class TableControl extends Control
 	{
 		return $this->dqlCallback;
 	}
-
 }
