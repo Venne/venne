@@ -76,11 +76,10 @@ class CmsExtension extends CompilerExtension
 
 		// Administration
 		$container->addDefinition($this->prefix("adminRoute"))
-			->setClass("CmsModule\Administration\Routes\Admin", array(($adminPrefix ? "$adminPrefix/" : "") . '<module>/<presenter>[/<action>[/<id>]]',
+			->setClass("CmsModule\Administration\Routes\Admin", array(($adminPrefix ? "$adminPrefix/" : "") . '<presenter>[/<action>[/<id>]]',
 			array('module' => "Cms", 'presenter' => 'Default', 'action' => 'default',)
 		))
-			->setInternal(true)
-			->setAutowired(false);
+			->addTag("route");
 
 		$container->addDefinition($this->prefix("adminRouteList"))
 			->setClass("CmsModule\Administration\Routes\RouteList", array("admin"))
@@ -90,26 +89,23 @@ class CmsExtension extends CompilerExtension
 
 		if (!$container->parameters['administration']['login']['name']) {
 			$container->addDefinition($this->prefix("basicRoute"))
-				->setClass("Nette\Application\Routers\Route", array('<module>/<presenter>[/<action>[/<id>]]',
+				->setClass("Nette\Application\Routers\Route", array('<presenter>[/<action>[/<id>]]',
 				array('module' => "Cms:Admin", 'presenter' => 'Default', 'action' => 'default',)
 			))
-				->addTag("route")
-				->setAutowired(false);
+				->addTag("route");
 		}
 
 		// CMS route
 		$container->addDefinition($this->prefix("pageRoute"))
 			->setClass("CmsModule\Content\Routes\PageRoute", array('@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
 		)
-			->addTag("route", array("priority" => 100))
-			->setAutowired(false);
+			->addTag("route", array("priority" => 100));
 
 		// File route
 		$container->addDefinition($this->prefix("fileRoute"))
 			->setClass("CmsModule\Content\Routes\FileRoute", array('@cms.fileRepository')
 		)
-			->addTag("route", array("priority" => 99999999))
-			->setAutowired(false);
+			->addTag("route", array("priority" => 99999999));
 
 		// config manager
 		$container->addDefinition("configService")
