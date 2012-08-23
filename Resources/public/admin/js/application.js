@@ -20,25 +20,6 @@ jQuery.extend({
 });
 
 $(function () {
-	$.nette.ext('spinner', {
-		init:function () {
-			this.spinner = this.createSpinner();
-			this.spinner.appendTo('body').hide();
-		},
-		before:function () {
-			this.spinner.show(this.speed);
-		},
-		complete:function () {
-			this.spinner.hide(this.speed);
-		}
-	}, {
-		createSpinner:function () {
-			return $('<div></div>').attr('id', 'ajax-spinner');
-		},
-		spinner:null,
-		speed:undefined,
-	});
-
 
 	$("#snippet-panel-tabs a").live("click", function (event) {
 		event.preventDefault();
@@ -57,14 +38,8 @@ $(function () {
 
 
 	// Ajax
-	$.nette.init(function (handler) {
-		$('a:not(.noAjax)').live('click', handler);
-		$('form:not(.noAjax)').live('submit', handler);
-		$('form:not(.noAjax) :submit').live('click', handler);
-		//$('#toolbar a').live('click', handler);
-	});
+	$.nette.init();
 
-	//$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
 		var el = $(this);
