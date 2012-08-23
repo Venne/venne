@@ -58,7 +58,7 @@ class AdminPresenter extends BasePresenter
 		}
 
 		// check languages
-		elseif (count($this->context->parameters['website']['languages']) == 0) {
+		elseif (count($this->context->schemaManager->listTables()) > 0 && count($this->context->parameters['website']['languages']) == 0) {
 			if ($this->getName() != 'Cms:Admin:Language') {
 				$this->redirect(':Cms:Admin:Language:');
 			}
