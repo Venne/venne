@@ -39,13 +39,7 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 		parent::startup();
 
 		// Language
-		if (count($this->context->parameters["website"]["languages"]) > 1) {
-			if (!$this->lang && !$this->getParameter("lang")) {
-				$this->lang = $this->getDefaultLanguageAlias();
-			}
-		} else {
-			$this->lang = $this->context->parameters["website"]["defaultLanguage"];
-		}
+		$this->checkLanguage();
 
 		// Setup translator
 		if (($translator = $this->context->getByType('Nette\Localization\ITranslator', FALSE)) !== NULL) {
@@ -58,32 +52,9 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 	}
 
 
-	/**
-	 * @return string
-	 */
-	protected function getDefaultLanguageAlias()
+	protected function checkLanguage()
 	{
-		$httpRequest = $this->context->httpRequest;
 
-		$lang = false; //$httpRequest->getCookie('lang');
-		if (!$lang) {
-			$lang = $httpRequest->detectLanguage($this->context->parameters["website"]["languages"]);
-			if (!$lang) {
-				$lang = $this->context->parameters["website"]["defaultLanguage"];
-			}
-		}
-		return $lang;
-	}
-
-
-	/**
-	 * Redirect to other language.
-	 *
-	 * @param string $alias
-	 */
-	public function handleChangeLanguage($alias)
-	{
-		$this->redirect("this", array("lang" => $alias));
 	}
 
 

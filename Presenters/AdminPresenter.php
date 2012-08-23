@@ -19,11 +19,6 @@ use Venne;
 class AdminPresenter extends BasePresenter
 {
 
-
-	/** @persistent */
-	public $mode = "";
-
-
 	/**
 	 * @param \Nette\Application\UI\PresenterComponentReflection $element
 	 */
@@ -67,6 +62,14 @@ class AdminPresenter extends BasePresenter
 		}
 
 		parent::checkRequirements($element);
+	}
+
+
+	protected function checkLanguage()
+	{
+		if (!$this->lang) {
+			$this->lang = $this->getHttpRequest()->detectLanguage(array('cs', 'en'));
+		}
 	}
 
 

@@ -16,7 +16,7 @@
 		{js @CmsModule/js/netteForms.js}
 		{js @CmsModule/js/venne.js}
 		{css @CmsModule/css/jquery-ui-1.8.16.custom.css, media=>'screen, projection, tv'}
-	
+
 		{css /css/bootstrap.css}
 		{css @CmsModule/css/style.css}
 		{css @CmsModule/css/jquery.contextMenu.css}
@@ -38,9 +38,9 @@
 						<span class="icon-bar"></span>
 					</a>
 					<a class="brand" href="{$basePath}/admin"><img src="{$basePath}/resources/cmsModule/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
-					
+
 					<div class="nav-collapse">
-			
+
 						{include navigation.latte}
 
 						<ul class="nav pull-right">
@@ -53,27 +53,23 @@
 							</ul>
 							</li>
 						</ul>
-						
-						<p class="navbar-text pull-right">
-							{_'Logged in as'}:
-						</p>
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="badge badge-warning">23</span></a> 
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$presenter->lang} <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li class="nav-header">Actions</li>
-									<li><a href="">Account settings</a></li>
-									<li><a href="{link logout!}">Log out</a></li>
+									<li class="nav-header"></li>
+									<li><a n:href="this lang=>cs">cs</a></li>
+									<li><a n:href="this lang=>en">en</a></li>
 								</ul>
 							</li>
 						</ul>
 
-							<ul class="nav pull-right">
-									<li>
-										<a href="{$basePath}/">{_'Show website'}</a>
-									</li>
-							</ul>
+						<ul class="nav pull-right">
+							<li>
+								<a href="{$basePath}/">{_'Show website'}</a>
+							</li>
+						</ul>
 
 					</div>
 				</div>
@@ -95,7 +91,7 @@
 					<div class="row-fluid">
 						<div class="span12">
 
-							<div class="page-header" n:snippet="header">	
+							<div class="page-header" n:snippet="header">
 								<h1>{block #header}Header{/block}</h1>
 							</div>
 

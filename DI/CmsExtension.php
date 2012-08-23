@@ -76,8 +76,8 @@ class CmsExtension extends CompilerExtension
 
 		// Administration
 		$container->addDefinition($this->prefix("adminRoute"))
-			->setClass("CmsModule\Administration\Routes\Admin", array(($adminPrefix ? "$adminPrefix/" : "") . '<presenter>[/<action>[/<id>]]',
-			array('module' => "Cms", 'presenter' => 'Default', 'action' => 'default',)
+			->setClass("CmsModule\Administration\Routes\Admin", array(($adminPrefix ? "$adminPrefix/" : "") . '<presenter>[/<action>[/<id>]]?lang=<lang>',
+			array('module' => "Cms", 'presenter' => 'Default', 'action' => 'default','lang'=>NULL,)
 		))
 			->addTag("route");
 
