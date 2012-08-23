@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Routes;
 
 use Nette\Object;
+use Nette\Callback;
 use DoctrineModule\ORM\BaseRepository;
 use Nette\Application\Routers\Route;
 use CmsModule\Content\Entities\RouteEntity;
@@ -29,6 +30,9 @@ class PageRoute extends Route
 	const DEFAULT_PRESENTER = "Base";
 
 	const DEFAULT_ACTION = "default";
+
+	/** @var Callback */
+	protected $checkConnectionFactory;
 
 	/** @var BaseRepository */
 	protected $langRepository;
@@ -56,15 +60,16 @@ class PageRoute extends Route
 	 * @param bool $multilang
 	 * @param string $defaultLangAlias
 	 */
-	public function __construct(ContentManager $contentManager, BaseRepository $routeRepository, BaseRepository $langRepository, $prefix, $parameters, $languages, $defaultLanguage)
+	public function __construct(Callback $checkConnectionFactory, ContentManager $contentManager, BaseRepository $routeRepository, BaseRepository $langRepository, $prefix, $parameters, $languages, $defaultLanguage)
 	{
+		$this->checkConnectionFactory = $checkConnectionFactory;
 		$this->languages = $languages;
 		$this->defaultLanguage = $defaultLanguage;
 		$this->langRepository = $langRepository;
 		$this->routeRepository = $routeRepository;
 		$this->contentManager = $contentManager;
 
-		parent::__construct($prefix . "<url .+>[/<module Cms>/<presenter Default>]" . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : '') , $parameters + array(
+		parent::__construct($prefix . "<url .+>[/<module Cms>/<presenter Default>]" . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
 			"presenter" => self::DEFAULT_PRESENTER,
 			"module" => self::DEFAULT_MODULE,
 			"action" => self::DEFAULT_ACTION,
@@ -86,6 +91,10 @@ class PageRoute extends Route
 	 */
 	public function match(\Nette\Http\IRequest $httpRequest)
 	{
+		if (!$this->checkConnectionFactory->invoke()) {
+			return NULL;
+		}
+
 		$request = parent::match($httpRequest);
 
 		if ($request === NULL || !array_key_exists("url", $request->parameters)) {
@@ -160,16 +169,20 @@ class PageRoute extends Route
 	 */
 	public function constructUrl(\Nette\Application\Request $appRequest, \Nette\Http\Url $refUrl)
 	{
+		if (!$this->checkConnectionFactory->invoke()) {
+			return NULL;
+		}
+
 		$parameters = $appRequest->getParameters();
 
-		while(true){
+		while (true) {
 
-			if(isset($parameters['route']) && $parameters['route'] instanceof RouteEntity){
+			if (isset($parameters['route']) && $parameters['route'] instanceof RouteEntity) {
 				$url = $parameters['route']->url;
 				break;
 			}
 
-			if(isset($parameters['cmsPage'])){
+			if (isset($parameters['cmsPage'])) {
 				$url = $parameters['url'];
 				break;
 			}
@@ -241,5 +254,4 @@ class PageRoute extends Route
 		) + $parameters);
 		return $request;
 	}
-
 }
