@@ -31,7 +31,7 @@
 				</button>
 				<ul class="dropdown-menu">
 
-					{if $control->tab == 1}
+					{if $control->tab == 0}
 						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
 							<li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a></li>
 						{/foreach}
