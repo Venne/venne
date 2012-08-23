@@ -30,7 +30,7 @@
 			<td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
 				<div class="btn-group pull-right">
 				{foreach $actions as $name=>$action}
-					<a style="float: left;" class="btn" href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action['title']}</a>
+					<a class="btn" href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action['title']}</a>
 				{/foreach}
 				</div>
 			</td>

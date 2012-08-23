@@ -12,7 +12,7 @@
 					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
 						<img n:src="$item->getPath(), size=>'64x64'" alt="" />
 					{else}
-						<img src="{=$control->presenter->template->basePath}/resources/cmsModule/icons/places/64/{$type}.png" alt="">
+						<img src="{=$control->presenter->template->basePath}/resources/cmsModule/admin/icons/places/64/{$type}.png" alt="">
 					{/if}
 				</a>
 				<h5>{$item->name}</h5>

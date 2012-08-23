@@ -9,18 +9,25 @@
 <!DOCTYPE html>
 <html>
 	{head}
-		{js @CmsModule/js/jquery/jquery-1.7.2.min.js}
-		{js @CmsModule/js/jquery/jquery-ui-1.8.16.custom.min.js}
-		{js @CmsModule/js/jquery.ajax.js}
-		{js @CmsModule/js/jquery.contextMenu.js}
-		{js @CmsModule/js/netteForms.js}
-		{js @CmsModule/js/venne.js}
-		{css @CmsModule/css/jquery-ui-1.8.16.custom.css, media=>'screen, projection, tv'}
 
-		{css /css/bootstrap.css}
-		{css @CmsModule/css/style.css}
-		{css @CmsModule/css/jquery.contextMenu.css}
-		{js /js/bootstrap.js}
+		{* jquery *}
+		{js @CmsModule/jquery/js/jquery-1.7.2.min.js}
+		{js @CmsModule/jquery/js/jquery-ui-1.8.23.custom.min.js}
+		{css @CmsModule/jquery/css/ui-lightness/jquery-ui-1.8.23.custom.css, media=>'screen, projection, tv'}
+
+		{* bootstrap *}
+		{css @CmsModule/bootstrap/css/bootstrap.min.css}
+		{js @CmsModule/bootstrap/js/bootstrap.min.js}
+
+		{* application *}
+		{js @CmsModule/admin/js/jquery.ajax.js}
+		{js @CmsModule/admin/js/jquery.contextMenu.js}
+		{css @CmsModule/admin/css/jquery.contextMenu.css}
+		{js @CmsModule/admin/js/netteForms.js}
+
+		{css @CmsModule/admin/css/style.css}
+		{js @CmsModule/admin/js/application.js}
+
 	{/head}
 
 	{body}
@@ -37,11 +44,26 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</a>
-					<a class="brand" href="{$basePath}/admin"><img src="{$basePath}/resources/cmsModule/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
+					<a class="brand" href="{$basePath}/admin"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
 
 					<div class="nav-collapse">
 
-						{include navigation.latte}
+						<ul class="nav" n:snippet="navigation">
+							{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationPages()}
+							{foreach $pages as $category=>$items}
+								<li class="dropdown">
+									<a class="dropdown-toggle" href="javaScript:;" data-toggle="dropdown">{_$category}</a>
+
+									<ul class="dropdown-menu">
+										{foreach $items as $link=>$item}
+											<li class="{if $presenter->isLinkCurrent($link)}active{/if}">
+												<a href="{plink :$link}">{_$item['name']}{if isset($item["description"]) && $item["description"]}<span>{_$item["description"]}</span>{/if}</a>
+											</li>
+										{/foreach}
+									</ul>
+								</li>
+							{/foreach}
+						</ul>
 
 						<ul class="nav pull-right">
 							<li class="dropdown">

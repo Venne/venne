@@ -24,11 +24,11 @@
 			<ul class="nav">
 				<li>
 					<a href="{if !$presenter->key}#{else}{if $presenter->key}{link :Cms:Admin:Files: key=>($entity->parent) ? $entity->parent->id : NULL}{/if}{/if}"><span
-							class="icon icon-white icon-arrow-up"></span> {_'Up'}</a></li>
+							class="icon icon-arrow-up"></span> {_'Up'}</a></li>
 				<li><a data-backdrop="static" data-toggle="modal" href="#directory"><span
-						class="icon icon-white icon-folder-open"></span>
+						class="icon icon-folder-open"></span>
 						{_'Create new directory'}</a></li>
-				<li><a data-toggle="modal" href="#file"><span class="icon icon-white icon-upload"></span> {_'Upload new file'}</a></li>
+				<li><a data-toggle="modal" href="#file"><span class="icon icon-upload"></span> {_'Upload new file'}</a></li>
 			</ul>
 		</div>
 	</div>

@@ -15,7 +15,7 @@ basic meta informations: základní meta informace
 connection settings: nastavení připojení
 content: obsah
 create: vytvořit
-create new: vytvořit nový
+create new: vytvořit
 create new directory: vytvořit nový adresář
 create new language: vytvořit nový jazyk
 database: databáze
@@ -55,7 +55,7 @@ routing: routování
 security: zabezpečení
 sessions: relace
 show: zobrazit
-show in table: zobrazit v tabulce
+show in table: zobrazit tabulku
 show website: zobrazit web
 sign in: přihlásit se
 system: systém
