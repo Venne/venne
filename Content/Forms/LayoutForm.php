@@ -26,9 +26,14 @@ class LayoutForm extends \CmsModule\Forms\BaseForm
 
 	public function attached($obj)
 	{
+		$layouts = array_keys($this->scannerService->getLayoutFiles());
+		if (array_search('app', $layouts) === false) {
+			$layouts = array_merge(array('app'), $layouts);
+		}
+
 		$this->addGroup('Layout settings');
 		$this->addText('name', 'Name');
-		$this->addSelect('parent', 'Save to')->setItems(array_keys($this->scannerService->getLayoutFiles()), FALSE);
+		$this->addSelect('parent', 'Save to')->setItems($layouts, FALSE);
 
 		parent::attached($obj);
 	}
