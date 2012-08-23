@@ -26,7 +26,7 @@ class BasePresenter extends \Venne\Application\UI\Presenter
 
 	public function __construct()
 	{
-		//Stopwatch::start();
+		Stopwatch::start();
 		parent::__construct();
 	}
 

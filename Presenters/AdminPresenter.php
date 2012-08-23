@@ -38,7 +38,7 @@ class AdminPresenter extends BasePresenter
 		} // end
 
 		// check login
-		elseif (!$this->getUser()->loggedIn) {
+		elseif (!$this->getUser()->isLoggedIn()) {
 			if ($this->getName() != "Cms:Admin:Login") {
 				$this->redirect(":Cms:Admin:Login:", array('backlink' => $this->storeRequest()));
 			}
@@ -58,7 +58,7 @@ class AdminPresenter extends BasePresenter
 		}
 
 		// check languages
-		elseif (count($this->context->schemaManager->listTables()) > 0 && count($this->context->parameters['website']['languages']) == 0) {
+		elseif ($this->context->schemaManager->tablesExist('user') && count($this->context->parameters['website']['languages']) == 0) {
 			if ($this->getName() != 'Cms:Admin:Language') {
 				$this->redirect(':Cms:Admin:Language:');
 			}
