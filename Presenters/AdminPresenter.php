@@ -38,12 +38,14 @@ class AdminPresenter extends BasePresenter
 		} // end
 
 		// check login
-		elseif (!$this->getUser()->loggedIn && $this->getName() != "Cms:Admin:Login") {
+		elseif (!$this->getUser()->loggedIn) {
+			if ($this->getName() != "Cms:Admin:Login") {
+				$this->redirect(":Cms:Admin:Login:", array('backlink' => $this->storeRequest()));
+			}
 			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
 				$this->flashMessage("You have been logged out due to inactivity. Please login again.", 'info');
 			}
 			$this->template->hideMenuItems = true;
-			$this->redirect(":Cms:Admin:Login:", array('backlink' => $this->storeRequest()));
 		}
 
 		// check database
