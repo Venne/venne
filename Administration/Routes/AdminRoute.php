@@ -16,7 +16,7 @@ use Venne;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Admin extends \Nette\Application\Routers\Route
+class AdminRoute extends \Nette\Application\Routers\Route
 {
 
 	/**
@@ -48,8 +48,11 @@ class Admin extends \Nette\Application\Routers\Route
 	 */
 	public function constructUrl(\Nette\Application\Request $appRequest, \Nette\Http\Url $refUrl)
 	{
-		$data = parent::constructUrl($appRequest, $refUrl);
-		$data = strtr($data, array(
+		if (($data = parent::constructUrl($appRequest, $refUrl)) === NULL) {
+			return NULL;
+		}
+
+		return strtr($data, array(
 			".admin/" => "/",
 			".admin." => ".",
 			"/admin." => "/",
@@ -57,7 +60,6 @@ class Admin extends \Nette\Application\Routers\Route
 			".Admin." => ".",
 			"/Admin." => "/"
 		));
-		return $data;
 	}
 
 }

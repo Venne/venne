@@ -16,10 +16,6 @@ services:
 		class: CmsModule\Administration\Presenters\RolesPresenter
 		tags: [presenter]
 
-	cms.admin.defaultPresenter:
-		class: CmsModule\Administration\Presenters\DefaultPresenter
-		tags: [presenter]
-
 	cms.admin.loginPresenter:
 		class: CmsModule\Administration\Presenters\LoginPresenter(@cms.loginFormFactory)
 		tags: [presenter]
