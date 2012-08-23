@@ -68,7 +68,7 @@ class CmsExtension extends CompilerExtension
 		$prefix = $container->parameters["website"]["routePrefix"];
 		$adminPrefix = $container->parameters["administration"]["routePrefix"];
 		$languages = $container->parameters["website"]["languages"];
-		$prefix = str_replace("<lang>/", "<lang " . implode("|", $languages) . ">/", $prefix);
+		$prefix = str_replace('<lang>/', '<lang ' . implode('|', $languages) . '>/', $prefix);
 
 		// parameters
 		$parameters = array();
@@ -76,8 +76,8 @@ class CmsExtension extends CompilerExtension
 
 		// Administration
 		$container->addDefinition($this->prefix("adminRoute"))
-			->setClass("CmsModule\Administration\Routes\Admin", array(($adminPrefix ? "$adminPrefix/" : "") . '<presenter>[/<action>[/<id>]]?lang=<lang>',
-			array('module' => "Cms", 'presenter' => 'Default', 'action' => 'default','lang'=>NULL,)
+			->setClass("CmsModule\Administration\Routes\Admin", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<presenter>[/<action>[/<id>]]]?lang=<lang>',
+			array('module' => 'Cms', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default', 'lang' => NULL,)
 		))
 			->addTag("route");
 
@@ -113,7 +113,7 @@ class CmsExtension extends CompilerExtension
 			->addTag("service");
 
 		// Stopwatch
-		if($config['stopwatch']['debugger']){
+		if ($config['stopwatch']['debugger']) {
 			$application = $container->getDefinition('application');
 			$application->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)', array(
 				new \Nette\DI\Statement('CmsModule\Panels\Stopwatch')

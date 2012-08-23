@@ -27,5 +27,6 @@ class SystemForm extends BaseConfigForm
 		$container = $this->addContainer("administration");
 		$container->setCurrentGroup($this->addGroup("Administration settings"));
 		$container->addText("routePrefix", "Route prefix");
+		$container->addText('defaultPresenter', 'Default presenter');
 	}
 }

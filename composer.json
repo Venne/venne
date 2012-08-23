@@ -31,7 +31,8 @@
 							"name": "",
 							"password": ""
 						},
-						"routePrefix": "admin"
+						"routePrefix": "admin",
+						"defaultPresenter": "Content"
 					},
 					"website": {
 						"title": "Blog %s %t",
