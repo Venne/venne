@@ -85,6 +85,21 @@ factories:
 			- setTranslator(@translator.translator)
 		tags: [component]
 
+	cms.layoutForm:
+		class: CmsModule\Content\Forms\LayoutForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+			- setScannerService(@cms.scannerService)
+		tags: [component]
+
+	cms.layouteditForm:
+		class: CmsModule\Content\Forms\LayouteditForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+		tags: [component]
+
 	cms.contentRoutesForm:
 		class: CmsModule\Content\RoutesForm
 		setup:

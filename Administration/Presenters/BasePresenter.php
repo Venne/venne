@@ -54,7 +54,7 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 
 	protected function createComponentPanel()
 	{
-		$panel = new \CmsModule\Components\PanelControl;
+		$panel = new \CmsModule\Components\PanelControl($this->context->cms->scannerService);
 		$panel->setTemplateConfigurator($this->templateConfigurator);
 		return $panel;
 	}

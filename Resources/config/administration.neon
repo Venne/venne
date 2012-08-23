@@ -87,7 +87,7 @@ factories:
 			category: 'Content'
 			name: 'Manage pages'
 			description: 'Manage existing pages and content'
-			priority: 105
+			priority: 110
 		]]
 
 	cms.filesBackendPage:
@@ -97,6 +97,16 @@ factories:
 			category: 'Content'
 			name: 'Manage files'
 			description: 'Manage files and directories'
+			priority: 105
+		]]
+
+	cms.layoutsBackendPage:
+		class: CmsModule\Administration\AdministrationPage('Manage layouts', 'Cms:Admin:Layouts:default')
+		tags: [administrationPage: [
+			link: 'Cms:Admin:Layouts:default'
+			category: 'Content'
+			name: 'Manage layouts'
+			description: 'Manage layouts, edit blocks,...'
 			priority: 100
 		]]
 

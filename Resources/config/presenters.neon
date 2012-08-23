@@ -44,6 +44,10 @@ services:
 		class: CmsModule\Administration\Presenters\ContentPresenter(@cms.pageRepository, @cms.languageRepository, @cms.contentManager, @cms.contentFormFactory, @cms.contentRoutesFormFactory)
 		tags: [presenter]
 
+	cms.admin.layoutsPresenter:
+		class: CmsModule\Administration\Presenters\LayoutsPresenter(@cms.scannerService, @cms.layoutFormFactory, @cms.layouteditFormFactory)
+		tags: [presenter]
+
 	cms.admin.filesPresenter:
 		class: CmsModule\Administration\Presenters\FilesPresenter(@cms.fileRepository, @cms.dirRepository, @cms.fileFormFactory, @cms.dirFormFactory)
 		tags: [presenter]

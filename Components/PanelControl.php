@@ -13,6 +13,7 @@ namespace CmsModule\Components;
 
 use Venne;
 use Venne\Application\UI\Control;
+use CmsModule\Services\ScannerService;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,10 +25,15 @@ class PanelControl extends Control
 	/** @persistent */
 	public $tab = 0;
 
+	/** @var ScannerService */
+	protected $scannerService;
 
-	public function __construct()
+
+	public function __construct(ScannerService $scannerService)
 	{
 		parent::__construct();
+
+		$this->scannerService = $scannerService;
 	}
 
 
@@ -41,17 +47,42 @@ class PanelControl extends Control
 	{
 		if ($this->tab == 0) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key'=>NULL)));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => NULL)));
 		} else if ($this->tab == 1) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
 		} else if ($this->tab == 2) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getFiles"), callback($this, "setFileParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key'=>NULL)));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => NULL)));
 		} else if ($this->tab == 3) {
-			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
+			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getLayouts"), callback($this, "setLayoutParent"));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => NULL)));
 		}
 		$browser->setTemplateConfigurator($this->templateConfigurator);
 		return $browser;
+	}
+
+
+	public function getLayouts($parent = NULL)
+	{
+		$data = array();
+		$layouts = $this->scannerService->getLayoutFiles();
+
+		if (!$parent) {
+			foreach (array_keys($layouts) as $name) {
+				$item = array('title' => $name, 'key' => $name, 'isFolder' => true, 'isLazy' => true);
+				if($name == 'app') {
+					$item['expand'] = true;
+					$item['children'] = $this->getLayouts($name);
+				}
+				$data[] = $item;
+			}
+		} else {
+			foreach ($layouts[$parent] as $key => $name) {
+				$data[] = array('title' => $name, 'key' => $key);
+			}
+		}
+
+		return $data;
 	}
 
 
@@ -61,9 +92,9 @@ class PanelControl extends Control
 		$data = array();
 
 		$dql = $repository->createQueryBuilder('a');
-		if($parent){
+		if ($parent) {
 			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
-		}else{
+		} else {
 			$dql = $dql->andWhere('a.parent IS NULL');
 		}
 		$dql
@@ -93,9 +124,9 @@ class PanelControl extends Control
 		$data = array();
 
 		$dql = $dirRepository->createQueryBuilder('a');
-		if($parent){
+		if ($parent) {
 			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
-		}else{
+		} else {
 			$dql = $dql->andWhere('a.parent IS NULL');
 		}
 
@@ -112,9 +143,9 @@ class PanelControl extends Control
 		}
 
 		$dql = $fileRepository->createQueryBuilder('a');
-		if($parent){
+		if ($parent) {
 			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
-		}else{
+		} else {
 			$dql = $dql->andWhere('a.parent IS NULL');
 		}
 
@@ -175,41 +206,4 @@ class PanelControl extends Control
 
 		$this->presenter->context->entityManager->flush();
 	}
-
-
-	protected function createComponentDir()
-	{
-		$repository = $this->presenter->context->cms->dirRepository;
-		$entity =  new \CmsModule\Content\Entities\DirEntity();
-		$entity->publicDir = $this->presenter->context->parameters['wwwDir'] . '/public/media';
-		$entity->publicUrl = $this->presenter->context->parameters['basePath'] . '/public/media';
-		$entity->protectedDir = $this->presenter->context->parameters['dataDir'] . '/media';
-
-		$form = $this->presenter->context->cms->createDirForm();
-		$form->setEntity($entity);
-		$form->onSuccess[] = function($form) use ($repository) {
-			$repository->save($form->entity);
-			$form->presenter->redirect('this');
-		};
-		return $form;
-	}
-
-	protected function createComponentUpload()
-	{
-		$repository = $this->presenter->context->cms->fileRepository;
-		$entity =  new \CmsModule\Content\Entities\FileEntity();
-		$entity->publicDir = $this->presenter->context->parameters['wwwDir'] . '/public/media';
-		$entity->publicUrl = $this->presenter->context->parameters['basePath'] . '/public/media';
-		$entity->protectedDir = $this->presenter->context->parameters['dataDir'] . '/media';
-
-		$form = $this->presenter->context->cms->createFileForm();
-		$form->setEntity($entity);
-		$form->onSuccess[] = function($form) use ($repository) {
-			$repository->save($form->entity);
-			//$form->presenter->redirect('this');
-		};
-		return $form;
-	}
-
-
 }

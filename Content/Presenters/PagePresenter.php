@@ -94,14 +94,16 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			$pos = strpos($layout, "/");
 			$module = lcfirst(substr($layout, 1, $pos - 1));
 
-			if (!isset($this->context->parameters['modules'][$module]['path'])) {
+			if ($module === 'app') {
+				$this->_layoutPath = $this->context->parameters['appDir'] . '/layouts/' . substr($layout, $pos + 1);
+			} else if (!isset($this->context->parameters['modules'][$module]['path'])) {
 				$this->_layoutPath = false;
+			} else {
+				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
 			}
-
-			$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
 		}
 
-		return $this->_layoutPath === false ? NULL: $this->_layoutPath;
+		return $this->_layoutPath === false ? NULL : $this->_layoutPath;
 	}
 
 

@@ -16,25 +16,28 @@
 			{if $control->tab == 2}
 				<a class="btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
+			{if $control->tab == 3}
+				<a class="btn" href="{plink :Cms:Admin:Layouts: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+			{/if}
 			</div>
 			<div class="btn-group pull-right">
+			{if $control->tab == 3}
+				<a href="{plink :Cms:Admin:Layouts:create}" class="btn"><span class="icon icon-file"></span> {_'Create new'}</a>
+			{else}
+
 				<button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
 				<button class="btn dropdown-toggle" data-toggle="dropdown">
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu">
 
-					{if $control->tab == 2}
-						{*}<li><a data-toggle="modal" href="#uploader" >Upload file</a> </li>
-						<li><a data-toggle="modal" href="#directory" >Create directory</a></li>{*}
-					{else}
+					{if $control->tab == 1}
 						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
 							<li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a></li>
 						{/foreach}
 				    {/if}
-
-					<!-- dropdown menu links -->
 				</ul>
+			{/if}
 			</div>
 		</div>
 

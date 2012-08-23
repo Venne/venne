@@ -19,7 +19,7 @@ use Nette\Object;
  *
  * @property \SystemContainer|\Nette\DI\Container $context
  */
-class scannerService extends Object
+class ScannerService extends Object
 {
 
 
@@ -61,8 +61,12 @@ class scannerService extends Object
 	public function getLayoutFiles()
 	{
 		$data = array();
-		foreach ($this->context->parameters['modules'] as $module => $item) {
-			$path = $item['path'] . "/layouts";
+		$paths = array('app' => $this->context->parameters['appDir'] . '/layouts');
+		foreach($this->context->parameters['modules'] as $module => $item) {
+			$paths[$module] = $item['path'] . "/layouts";
+		}
+
+		foreach ($paths as $module => $path) {
 			if (file_exists($path)) {
 				foreach (\Nette\Utils\Finder::findDirectories("*")->in($path) as $file) {
 					if (!isset($data[$module])) {

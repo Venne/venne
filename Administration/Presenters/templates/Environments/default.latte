@@ -21,7 +21,7 @@
 			<td>
 				{$mode}
 			</td>
-			<td>
+			<td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
 				<div class="btn-group pull-right">
 					<a class="btn btn-primary" href="{link edit key=>$mode}">{_'edit'}</a>
 					{if $mode!="default"}<a class="btn" n:confirm="really?" href="{link delete! key=>$mode}">{_'delete'}</a>{/if}
