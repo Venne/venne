@@ -70,6 +70,6 @@ class DatabasePresenter extends BasePresenter
 
 			$tool->createSchema($classes);
 		}
-		$this->redirect(':Cms:Admin:Default:');
+		$this->redirect(":Cms:Admin:{$this->getContext()->parameters['administration']['defaultPresenter']}:");
 	}
 }

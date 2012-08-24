@@ -76,17 +76,16 @@ class CmsExtension extends CompilerExtension
 
 		// Administration
 		$container->addDefinition($this->prefix("adminRoute"))
-			->setClass("CmsModule\Administration\Routes\AdminRoute", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/<presenter>[/<action>[/<id>]]]?slug=a',
-			array('module' => 'Cms', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default',)
+			->setClass("Nette\Application\Routers\Route", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/]<presenter>[/<action>[/<id>]]',
+			array('module' => 'Cms:Admin', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default',)
 		))
-			->addTag("route", array("priority" => 9999999));
+			->addTag("route", array("priority" => 100000));
 
+		// installation
 		if (!$container->parameters['administration']['login']['name']) {
-			$container->addDefinition($this->prefix("basicRoute"))
-				->setClass("Nette\Application\Routers\Route", array('<presenter>[/<action>[/<id>]]',
-				array('module' => "Cms:Admin", 'presenter' => 'Default', 'action' => 'default',)
-			))
-				->addTag("route");
+			$container->addDefinition($this->prefix("installationRoute"))
+				->setClass("Nette\Application\Routers\Route", array('', "Cms:Admin:{$container->parameters['administration']['defaultPresenter']}:", Route::ONE_WAY))
+				->addTag("route", array("priority" => -1));
 		}
 
 		// CMS route

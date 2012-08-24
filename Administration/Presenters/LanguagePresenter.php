@@ -126,7 +126,7 @@ class LanguagePresenter extends BasePresenter
 		$config["parameters"]["website"]["languages"] = $languages;
 		$config->save();
 
-		if (!$this->isAjax()) {
+		if (!$this->isAjax() || count($this->context->parameters['website']['languages']) == 0) {
 			$this->redirect("default");
 		}
 		$this->payload->url = $this->link('default', array('id' => NULL));
@@ -198,7 +198,7 @@ class LanguagePresenter extends BasePresenter
 
 		$this->flashMessage("Language has been deleted", "success");
 
-		if (!$this->isAjax()) {
+		if (!$this->isAjax() || count($languages) == 0) {
 			$this->redirect("this", array("id" => NULL));
 		}
 	}
@@ -207,17 +207,5 @@ class LanguagePresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$this->template->table = $this->languageRepository->findAll();
-	}
-
-
-	public function renderEdit()
-	{
-		//$this['formEdit']->setAction($this->link('default', array('id' => NULL, 'do' => 'form-submit')));
-	}
-
-
-	public function renderCreate()
-	{
-		//$this['form']->setAction($this->link('default', array('id' => NULL, 'do' => 'form-submit')));
 	}
 }

@@ -30,7 +30,7 @@ class AdministratorPresenter extends BasePresenter
 		}
 
 		// Extensions
-		$modules = array("gd", "gettext", "iconv", "json", "pdo", "pdo_mysql");
+		$modules = array("gd", "iconv", "json", "pdo");
 		foreach ($modules as $item) {
 			if (!extension_loaded($item)) {
 				$this->flashMessage("Module " . $item . " is not enabled.", "warning");
@@ -50,25 +50,24 @@ class AdministratorPresenter extends BasePresenter
 	public function createComponentSystemAccountForm($name)
 	{
 		$form = $this->context->cms->createAccountForm();
-		$form->onSuccess[] = function($form)
-		{
-			$form->presenter->redirect("save!");
-		};
+		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
 
 
-	public function handleSave()
+	public function formSuccess($form)
 	{
-		$name = $this->context->parameters['administration']['login']['name'];
-		$password = $this->context->parameters['administration']['login']['password'];
+		$user = $this->getUser();
+		$values = $form->getValues();
 
-		$this->getUser()->login($name, $password);
+		// login
+		$user->setAuthenticator(new \Venne\Security\Authenticator($values['name'], $values['password']));
+		$user->login($values['name'], $values['password']);
 
 		/** @var $cache \Nette\Caching\Cache */
 		$cache = new \Nette\Caching\Cache($this->context->nette->templateCacheStorage, 'Nette.Configurator');
 		$cache->clean();
 
-		$this->redirect(':Cms:Admin:Default:');
+		$this->redirect(":Cms:Admin:{$this->getContext()->parameters['administration']['defaultPresenter']}:");
 	}
 }
