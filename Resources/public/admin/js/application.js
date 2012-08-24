@@ -21,25 +21,12 @@ jQuery.extend({
 
 $(function () {
 
-	$("#snippet-panel-tabs a").live("click", function (event) {
-		event.preventDefault();
-		history.pushState({
-			module:"leave"
-		}, "page 2", $(this).attr("href"));
-		$("#snippet-panel-tabs li").removeClass("active");
-		$(this).parent().addClass("active");
-
-		$.get(this.href);
-	});
-
 	$('#create-new').live("click", function () {
 		$(this).next().click();
 	});
 
-
 	// Ajax
 	$.nette.init();
-
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
 		var el = $(this);

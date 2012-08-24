@@ -9,7 +9,9 @@
 
 (function($, undefined) {
 
-if (typeof $ != 'function') return;
+if (typeof $ != 'function') {
+	return console.error('nette.ajax.js: jQuery is missing, load it please');
+}
 
 var nette = function () {
 	var inner = {
@@ -28,10 +30,12 @@ var nette = function () {
 		fire: function () {
 			var result = true;
 			var args = Array.prototype.slice.call(arguments);
-			var name = args.shift();
+			var props = args.shift();
+			var name = (typeof props == 'string') ? props : props.name;
+			var off = (typeof props == 'object') ? props.off || {} : {};
 			args.push(inner.self);
 			$.each(inner.on[name], function (index, reaction) {
-				if (reaction === undefined) return true;
+				if (reaction === undefined || $.inArray(index, off) !== -1) return true;
 				var temp = reaction.apply(inner.contexts[index], args);
 				return result = (temp === undefined || temp);
 			});
@@ -39,6 +43,28 @@ var nette = function () {
 		},
 		requestHandler: function (e) {
 			if (!inner.self.ajax({}, this, e)) return;
+		},
+		ext: function (callbacks, context, name) {
+			while (!name) {
+				name = 'ext_' + Math.random();
+				if (inner.context[name]) {
+					name = undefined;
+				}
+			}
+
+			$.each(callbacks, function (event, callback) {
+				inner.on[event][name] = callback;
+			});
+			inner.contexts[name] = $.extend(context ? context : {}, {
+				name: function () {
+					return name;
+				},
+				ext: function (name, force) {
+					var ext = inner.contexts[name];
+					if (!ext && force) throw "Extension '" + this.name() + "' depends on disabled extension '" + name + "'.";
+					return ext;
+				}
+			});
 		}
 	};
 
@@ -61,22 +87,12 @@ var nette = function () {
 				inner.on[event][name] = undefined;
 			});
 			inner.contexts[name] = undefined;
-		} else if (inner.contexts[name] !== undefined) {
+		} else if (typeof name == 'string' && inner.contexts[name] !== undefined) {
 			throw 'Cannot override already registered nette-ajax extension.';
+		} else if (typeof name == 'object') {
+			inner.ext(name, callbacks);
 		} else {
-			$.each(callbacks, function (event, callback) {
-				inner.on[event][name] = callback;
-			});
-			inner.contexts[name] = $.extend(context ? context : {}, {
-				name: function () {
-					return name;
-				},
-				ext: function (name) {
-					var ext = inner.contexts[name];
-					if (!ext) throw "Extension '" + this.name() + "' depends on disabled extension '" + name + "'.";
-					return ext;
-				}
-			});
+			inner.ext(callbacks, context, name);
 		}
 		return this;
 	};
@@ -138,8 +154,8 @@ var nette = function () {
 				ui: ui,
 				el: $el,
 				isForm: $el.is('form'),
-				isSubmit: $el.is(':submit'),
-				isImage: $el.is(':image'),
+				isSubmit: $el.is('input[type=submit]'),
+				isImage: $el.is('input[type=image]'),
 				form: null
 			};
 
@@ -155,25 +171,49 @@ var nette = function () {
 			if (!settings.type) {
 				settings.type = analyze.form ? analyze.form.attr('method') : 'get';
 			}
+
+			if ($el.is('[data-ajax-off]')) {
+				settings.off = $el.data('ajaxOff');
+				if (typeof settings.off == 'string') setting.off = [settings.off];
+			}
 		}
 
-		if (!inner.fire('before', settings, ui, e)) return;
+		if (!inner.fire({
+			name: 'before',
+			off: settings.off || {}
+		}, settings, ui, e)) return;
 
 		return $.ajax($.extend({
 			beforeSend: function (xhr) {
-				return inner.fire('start', xhr);
+				return inner.fire({
+					name: 'start',
+					off: settings.off || {}
+				}, xhr);
 			}
 		}, settings)).done(function (payload) {
-			inner.fire('success', payload);
+			inner.fire({
+				name: 'success',
+				off: settings.off || {}
+			}, payload);
 		}).fail(function (xhr, status, error) {
-			inner.fire('error', xhr, status, error);
+			inner.fire({
+				name :'error',
+				off: settings.off || {}
+			}, xhr, status, error);
 		}).always(function () {
-			inner.fire('complete');
+			inner.fire({
+				name: 'complete',
+				off: settings.off || {}
+			});
 		});
 	};
 };
 
 $.nette = new ($.extend(nette, $.nette ? $.nette : {}));
+
+$.fn.netteAjax = function (e, options) {
+	return $.nette.ajax(options || {}, this[0], e);
+};
 
 $.nette.ext('validation', {
 	before: function (settings, ui, e) {
@@ -231,6 +271,16 @@ $.nette.ext('validation', {
 });
 
 $.nette.ext('forms', {
+	success: function (payload) {
+		var snippets;
+		if (!window.Nette || !payload.snippets || !(snippets = this.ext('snippets'))) return;
+
+		for (var id in payload.snippets) {
+			snippets.getElement(id).find('form').each(function() {
+				window.Nette.initForm(this);
+			});
+		}
+	},
 	before: function (settings, ui, e) {
 		var analyze = settings.nette;
 		if (!analyze || !analyze.form) return;
@@ -347,7 +397,7 @@ $.nette.ext('state', {
 // abort last request if new started
 $.nette.ext('unique', {
 	start: function (xhr) {
-		if (this.req) {
+		if (this.xhr) {
 			this.xhr.abort();
 		}
 		this.xhr = xhr;
@@ -401,4 +451,4 @@ $.nette.ext('init', {
 	buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]'
 });
 
-})(jQuery);
+})(window.jQuery);

@@ -182,6 +182,7 @@ class TableControl extends Control
 	protected function createComponentActionForm()
 	{
 		$form = new Venne\Application\UI\Form;
+		$form->getElementPrototype()->class[] = 'ajax';
 
 		// items
 		$items = $form->addContainer('items');

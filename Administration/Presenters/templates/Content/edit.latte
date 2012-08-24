@@ -4,26 +4,24 @@
 
 {block toolbar}
 	{foreach $contentType->sections as $name=>$item}
-		<li{if $section == $name} class="active"{/if}><a href="{first}{link this section=>NULL}{else}{link this section=>$name}{/first}">{$name}</a></li>
+		<li{if $section == $name} class="active"{/if}><a class="ajax" href="{first}{link this section=>NULL}{else}{link this section=>$name}{/first}">{$name}</a></li>
 	{/foreach}
 
-	<li{if 'basic' == $section} class="active"{/if}><a href="{link this section=>basic}">Basic setup</a></li>
-	<li{if 'routes' == $section} class="active"{/if}><a href="{link this section=>routes}">Routes</a></li>
+	<li{if 'basic' == $section} class="active"{/if}><a class="ajax" href="{link this section=>basic}">Basic setup</a></li>
+	<li{if 'routes' == $section} class="active"{/if}><a class="ajax" href="{link this section=>routes}">Routes</a></li>
 
 
 <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
 	<li class="dropdown">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{=implode(", ", $entity->languages->toArray())} <b class="caret"></b></a>
 		<ul class="dropdown-menu">
-			{dump $entity}
 			{var mainEntity=>($entity->translationFor ?$entity->translationFor: $entity)}
-			{dump $mainEntity}
-			<li><a href="{link this key=>$mainEntity->id}">{=implode(", ", $mainEntity->languages->toArray())}</a></li>
+			<li><a class="ajax" href="{link this key=>$mainEntity->id}">{=implode(", ", $mainEntity->languages->toArray())}</a></li>
 			{foreach $mainEntity->translations as $translation}
-				<li><a href="{link this key=>$translation->id}">{=implode(", ", $translation->languages->toArray())}</a></li>
+				<li><a class="ajax" href="{link this key=>$translation->id}">{=implode(", ", $translation->languages->toArray())}</a></li>
 			{/foreach}
 			<li class="divider"></li>
-			<li><a href="{link translate}">New language</a></li>
+			<li><a class="ajax" href="{link translate}">New language</a></li>
 			{if $entity->translationFor}<li><a href="{link delete! id=>$entity->id, key=>$mainEntity->id}">Remove this language</a></li>{/if}
 		</ul>
 	</li>

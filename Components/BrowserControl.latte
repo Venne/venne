@@ -28,7 +28,6 @@
 	function bindContextMenu(span) {
 		// Add context menu to this node:
 		$(span).contextMenu({ menu: "myMenu"}, function(action, el, pos) {
-			alert("ok");
 			// The event was bound to the <span> tag, but the node object
 			// is stored in the parent <li> tag
 			var node = $.ui.dynatree.getNode(el);
@@ -50,7 +49,11 @@
 			autoFocus:false,
 			onActivate:function (node) {
 				node.deactivate();
-				$.nette.ajax({ url: {$control->onActivateLink} +'&key=' + node.data.key });
+				var url = '{!$control->onActivateLink}'.replace('this', node.data.key);
+				var html = '<a class="ajax" id="obj-{!$control->name}" href="'+url+'">test</a>';
+				$("body").append(html);
+				$.nette.load();
+				$("#obj-{!$control->name}").click().remove();
 			},
 			// persist: true,
 
@@ -60,8 +63,9 @@
 			},
 
 			onLazyRead:function (node) {
+				var url = {link getPages! 'this'}.replace('this', node.data.key);
 				node.appendAjax({
-					url: {$control->link('getPages')} +'&parent=' + node.data.key
+					url: url
 				});
 			},
 
@@ -72,13 +76,10 @@
 
 			dnd:{
 				onDragStart:function (node) {
-					//alert(node.data.key);
 					return true;
 				},
 				onDragStop:function (node) {
-					// This function is optional.
-					//alert(node.data.key);
-					//logMsg("tree.onDragStop(%o)", node);
+
 				},
 				autoExpandMS:1000,
 				preventVoidMoves:true, // Prevent dropping nodes 'before self', etc.
@@ -111,7 +112,9 @@
 				},
 				onDrop:function (node, sourceNode, hitMode, ui, draggable) {
 					node.expand(true);
-					$.nette.ajax({ url: {=$control->link('setParent')} +'&from=' + sourceNode.data.key + "&to=" + node.data.key + "&dropmode=" + hitMode});
+					var url = {link setParent 'from'=>'thisfrom', 'to'=>'thisto', 'dropmode'=>'thisdropmode'};
+					url = url.replace('thisdropmode', hitMode).replace('thisto', node.data.key).replace('thisfrom', sourceNode.data.key);
+					$.nette.ajax({ url: url});
 					//alert("move:" + sourceNode.data.key + " to " + node.data.key + " hit " + hitMode);
 					logMsg("tree.onDrop(%o, %o, %s)", node, sourceNode, hitMode);
 					sourceNode.move(node, hitMode);

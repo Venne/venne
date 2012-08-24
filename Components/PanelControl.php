@@ -39,7 +39,8 @@ class PanelControl extends Control
 
 	public function handleTab($tab)
 	{
-		$this->invalidateControl("content");
+		$this->invalidateControl('content');
+		$this->getPresenter()->payload->url = $this->link('this');
 	}
 
 
@@ -47,15 +48,15 @@ class PanelControl extends Control
 	{
 		if ($this->tab == 0) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => NULL)));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => 'this')));
 		} else if ($this->tab == 1) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
 		} else if ($this->tab == 2) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getFiles"), callback($this, "setFileParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => NULL)));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => 'this')));
 		} else if ($this->tab == 3) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getLayouts"), callback($this, "setLayoutParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => NULL)));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => 'this')));
 		}
 		$browser->setTemplateConfigurator($this->templateConfigurator);
 		return $browser;
@@ -70,7 +71,7 @@ class PanelControl extends Control
 		if (!$parent) {
 			foreach (array_keys($layouts) as $name) {
 				$item = array('title' => $name, 'key' => $name, 'isFolder' => true, 'isLazy' => true);
-				if($name == 'app') {
+				if ($name == 'app') {
 					$item['expand'] = true;
 					$item['children'] = $this->getLayouts($name);
 				}

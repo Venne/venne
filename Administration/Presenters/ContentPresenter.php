@@ -96,11 +96,26 @@ class ContentPresenter extends BasePresenter
 		$presenter = $this;
 		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
 		{
-			$presenter->redirect('edit', array('key' => $entity->id));
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('edit', array('key' => $entity->id));
+			}
+			$presenter->payload->url = $presenter->link('edit', array('key' => $entity->id));
+			$presenter->setView('edit');
+			$presenter->changeAction('edit');
+			$presenter->key = $entity->id;
 		});
 		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
 		{
-			$presenter->redirect('delete!', array('id' => $entity->id));
+			$presenter->delete($entity);
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('default', array('key' => NULL));
+			}
+			$presenter->payload->url = $presenter->link('default', array('id' => NULL));
+		});
+
+		$table->addGlobalAction('delete', 'Delete', function($entity) use ($presenter)
+		{
+			$presenter->delete($entity);
 		});
 
 		return $table;
@@ -115,18 +130,31 @@ class ContentPresenter extends BasePresenter
 
 		$form = $this->contentFormFactory->invoke();
 		$form->setEntity($entity);
-		$form->onSuccess[] = function($form) use ($repository)
-		{
-			if ($repository->isUnique($form->entity)) {
-				$repository->save($form->entity);
-
-				$form->getPresenter()->flashMessage("Page has been created");
-				$form->getPresenter()->redirect("edit", array("type" => null, 'key' => $form->entity->id));
-			} else {
-				$form->presenter->flashMessage("URL is not unique", "warning");
-			}
-		};
+		$form->onSuccess[] = $this->formSuccess;
 		return $form;
+	}
+
+
+	public function formSuccess($form)
+	{
+		$repository = $this->pageRepository;
+
+		if ($repository->isUnique($form->entity)) {
+			$repository->save($form->entity);
+
+			$this->flashMessage("Page has been created");
+
+			if (!$this->isAjax()) {
+				$this->redirect('edit', array('type' => null, 'key' => $form->entity->id));
+			}
+			$this['panel']->invalidateControl('content');
+			$this->payload->url = $this->link('edit', array('type' => null, 'key' => $form->entity->id));
+			$this->setView('edit');
+			$this->changeAction('edit');
+			$this->key = $form->entity->id;
+		} else {
+			$this->flashMessage("URL is not unique", "warning");
+		}
 	}
 
 
@@ -142,18 +170,14 @@ class ContentPresenter extends BasePresenter
 
 		$form = $this->contentFormFactory->invoke();
 		$form->setEntity($entity);
-		$form->onSuccess[] = function($form) use ($repository)
-		{
-			if ($repository->isUnique($form->entity)) {
-				$repository->save($form->entity);
-
-				$form->getPresenter()->flashMessage("Page has been created");
-				$form->getPresenter()->redirect("edit", array("type" => null, 'key' => $form->entity->id));
-			} else {
-				$form->presenter->flashMessage("URL is not unique", "warning");
-			}
-		};
+		$form->onSuccess[] = $this->formTranslateSuccess;
 		return $form;
+	}
+
+
+	public function formTranslateSuccess($form)
+	{
+		$this->formSuccess($form);
 	}
 
 
@@ -183,27 +207,38 @@ class ContentPresenter extends BasePresenter
 		$form->setEntity($entity);
 
 		if ($form instanceof \Nette\Forms\Form) {
-			$form->onSuccess[] = function($form) use ($repository)
-			{
-				if ($repository->isUnique($form->entity)) {
-					$repository->save($form->entity);
-
-					$form->getPresenter()->flashMessage("Page has been updated");
-					$form->getPresenter()->redirect("this");
-				} else {
-					$form->presenter->flashMessage("URL is not unique", "warning");
-				}
-			};
+			$form->onSuccess[] = $this->formEditSuccess;
 		}
 		return $form;
 	}
 
 
-	public function handleDelete($id)
+	public function formEditSuccess($form)
 	{
-		$this->pageRepository->delete($this->pageRepository->find($id));
+		$repository = $this->pageRepository;
+
+		if ($repository->isUnique($form->entity)) {
+			$repository->save($form->entity);
+
+			$this->flashMessage("Page has been updated");
+
+			if (!$this->isAjax()) {
+				$this->redirect("this");
+			}
+		} else {
+			$this->flashMessage("URL is not unique", "warning");
+		}
+	}
+
+
+	public function delete($entity)
+	{
+		$this->pageRepository->delete($entity);
 		$this->flashMessage("Page has been deleted", "success");
-		$this->redirect("this");
+
+		if (!$this->isAjax()) {
+			$this->redirect("this", array("key" => NULL));
+		}
 	}
 
 

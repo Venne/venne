@@ -40,14 +40,14 @@
 		{* Top navigation *}
 		<div class="navbar navbar-fixed-top" id="navigation">
 			<div class="navbar-inner">
-				<div class="container-fluid">
+				<div class="container-fluid" n:snippet="navigation">
 
-					<a class="ajax brand" href="{$basePath}/admin"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
+					<a class="ajax brand" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
 
 					<div class="nav-collapse">
 
 						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
-						<ul class="nav" n:snippet="navigation">
+						<ul class="nav">
 							{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationPages()}
 							{foreach $pages as $category=>$items}
 								<li class="dropdown">
@@ -69,7 +69,7 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$presenter->user->identity->id} <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class="nav-header">{_'Actions'}</li>
-								<li><a href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
+								<li><a class="ajax" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
 								<li><a href="{link logout!}">{_'Log out'}</a></li>
 							</ul>
 							</li>

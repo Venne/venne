@@ -43,6 +43,7 @@ class FilesPresenter extends BasePresenter
 	/** @var Callback */
 	protected $fileFormFactory;
 
+
 	function __construct(BaseRepository $fileRepository, BaseRepository $dirRepository, Callback $fileFormFactory, Callback $dirFormFactory)
 	{
 		$this->fileRepository = $fileRepository;
@@ -50,6 +51,7 @@ class FilesPresenter extends BasePresenter
 		$this->fileFormFactory = $fileFormFactory;
 		$this->dirFormFactory = $dirFormFactory;
 	}
+
 
 	public function startup()
 	{
@@ -127,12 +129,12 @@ class FilesPresenter extends BasePresenter
 
 		$this->flashMessage('File has been moved', 'success');
 
-		$this['panel']->invalidateControl('content');
-
 		if (!$this->isAjax()) {
 			$this->redirect('this');
 		}
+		$this['panel']->invalidateControl('content');
 	}
+
 
 	public function handleDelete($key2)
 	{
@@ -145,6 +147,7 @@ class FilesPresenter extends BasePresenter
 			$this->redirect("this");
 		}
 	}
+
 
 	public function beforeRender()
 	{
@@ -160,6 +163,7 @@ class FilesPresenter extends BasePresenter
 	{
 		$this->template->dirRepository = $this->dirRepository;
 	}
+
 
 	protected function createComponentDir($name, $key = NULL)
 	{
@@ -180,12 +184,13 @@ class FilesPresenter extends BasePresenter
 		{
 			$repository->save($form->entity);
 
-			if(!$form->presenter->isAjax()){
+			if (!$form->presenter->isAjax()) {
 				$form->presenter->redirect('this');
 			}
 		};
 		return $form;
 	}
+
 
 	protected function createComponentFile($name, $key = NULL)
 	{

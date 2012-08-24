@@ -23,14 +23,11 @@ class InformationsPresenter extends BasePresenter
 {
 
 
-	/** @persistent */
-	public $id;
-
 	/** @var Callback */
 	protected $form;
 
 
-	function __construct(Callback $form)
+	public function __construct(Callback $form)
 	{
 		$this->form = $form;
 	}
@@ -39,28 +36,17 @@ class InformationsPresenter extends BasePresenter
 	public function createComponentWebsiteForm()
 	{
 		$form = $this->form->invoke();
-		$form->setRoot("parameters.website");
-		$form->onSuccess[] = function($form)
-		{
-			$form->getPresenter()->flashMessage("Website has been saved", "success");
-			if (!$form->getPresenter()->isAjax()) {
-				$form->getPresenter()->redirect("this");
-			}
-		};
+		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
 
 
-	public function createComponentModulesDefaultForm()
+	public function formSuccess()
 	{
-		$form = $this->context->cms->createModulesDefaultForm();
-		$form->setRoot("parameters.website");
-		$form->onSuccess[] = function($form)
-		{
-			$form->getPresenter()->flashMessage("Changes has been saved", "success");
-			$form->getPresenter()->redirect("this");
-		};
-		return $form;
-	}
+		$this->flashMessage('Website has been saved', 'success');
 
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
+	}
 }

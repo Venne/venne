@@ -23,18 +23,17 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 {
 
 
-
 	public function startup()
 	{
 		parent::startup();
 
-		$this->invalidateControl("content");
-		$this->invalidateControl("header");
-		$this["panel"]->invalidateControl("tabs");
-
-		if (!$this->getParameter("linkFromToolbar")) {
-			$this->invalidateControl("toolbar");
+		if (!$this->getSignal()) {
+			$this->invalidateControl('content');
 		}
+		$this->invalidateControl('header');
+		$this->invalidateControl('toolbar');
+		$this->invalidateControl('navigation');
+		$this['panel']->invalidateControl('tabs');
 
 		if ($this->isAjax()) {
 			$this->template->ajax = true;
@@ -42,14 +41,12 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 	}
 
 
-
 	public function handleLogout()
 	{
 		$this->user->logout(true);
-		$this->flashMessage("Logout success");
-		$this->redirect("this");
+		$this->flashMessage('Logout success');
+		$this->redirect('this');
 	}
-
 
 
 	protected function createComponentPanel()
@@ -58,6 +55,4 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 		$panel->setTemplateConfigurator($this->templateConfigurator);
 		return $panel;
 	}
-
-
 }

@@ -37,6 +37,8 @@ class BrowserControl extends Control
 	 */
 	function __construct($loadItems, $setParent)
 	{
+		parent::__construct();
+
 		$this->loadItems = $loadItems;
 		$this->parentCallback = $setParent;
 	}
@@ -56,7 +58,7 @@ class BrowserControl extends Control
 
 	public function getPages($parent = NULL)
 	{
-		return $this->loadItems->invoke($this->presenter->getParameter("parent"));
+		return $this->loadItems->invoke($parent);
 	}
 
 
@@ -69,9 +71,9 @@ class BrowserControl extends Control
 
 
 
-	public function handleSetParent($from = NULL, $to = NULL)
+	public function handleSetParent($from = NULL, $to = NULL, $dropmode = NULL)
 	{
-		$this->parentCallback->invoke($this->presenter->getParameter("from"), $this->presenter->getParameter("to"), $this->presenter->getParameter("dropmode"));
+		$this->parentCallback->invoke($from, $to, $dropmode);
 	}
 
 	/**

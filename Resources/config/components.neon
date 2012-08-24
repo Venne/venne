@@ -9,6 +9,7 @@ factories:
 			- setRoot(parameters.website)
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.languageForm:
@@ -16,6 +17,7 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.modulesDefaultForm:
@@ -30,6 +32,7 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.roleForm:
@@ -45,6 +48,7 @@ factories:
 			- setRoot(parameters)
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.applicationForm:
@@ -53,6 +57,7 @@ factories:
 			- setRoot('')
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.databaseForm:
@@ -61,6 +66,7 @@ factories:
 			- setRoot(parameters.database)
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.accountForm:
@@ -69,6 +75,7 @@ factories:
 			- setRoot(parameters.administration.login)
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.loginForm:
@@ -83,6 +90,7 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.layoutForm:
@@ -91,6 +99,7 @@ factories:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
 			- setScannerService(@cms.scannerService)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.layouteditForm:
@@ -98,6 +107,7 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.contentRoutesForm:
@@ -105,6 +115,7 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.dirForm:
@@ -112,6 +123,7 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
 	cms.fileForm:

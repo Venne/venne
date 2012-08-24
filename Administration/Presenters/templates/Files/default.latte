@@ -9,7 +9,7 @@
 {block #breadcrumb}
 	{if $entity->parent}{include #breadcrumb, entity=>$entity->parent, ok=>true}{/if}
 <li{if !isset($ok)} class="active"{/if}>
-	<span class="divider">/</span> {if isset($ok)}<a
+	<span class="divider">/</span> {if isset($ok)}<a class="ajax"
 		href="{link :Cms:Admin:Files: key=>$entity->id}">{/if}{$entity->name}{if isset($ok)}</a>{/if}
 </li>
 {/block}
@@ -23,7 +23,7 @@
 		<div class="container">
 			<ul class="nav">
 				<li>
-					<a href="{if !$presenter->key}#{else}{if $presenter->key}{link :Cms:Admin:Files: key=>($entity->parent) ? $entity->parent->id : NULL}{/if}{/if}"><span
+					<a class="ajax" href="{if !$presenter->key}#{else}{if $presenter->key}{link :Cms:Admin:Files: key=>($entity->parent) ? $entity->parent->id : NULL}{/if}{/if}"><span
 							class="icon icon-arrow-up"></span> {_'Up'}</a></li>
 				<li><a data-backdrop="static" data-toggle="modal" href="#directory"><span
 						class="icon icon-folder-open"></span>
@@ -37,7 +37,7 @@
 
 <ul class="breadcrumb">
 	<li{if !$entity} class="active"{/if}>
-		<span class="divider">/</span> {if $entity}<a href="{link :Cms:Admin:Files: key=>NULL}">{/if}
+		<span class="divider">/</span> {if $entity}<a class="ajax" href="{link :Cms:Admin:Files: key=>NULL}">{/if}
 	root{if $entity}</a>{/if}
 	</li>
 {if $entity}{include #breadcrumb, entity=>$entity}{/if}
@@ -178,7 +178,7 @@
 		<li class="d" style="text-align: center;" id="d_{($entity->parent? $entity->parent->id : NULL)}">
 			<div href="#" class="thumbnail">
 				<a class="noAjax" href="{=$control->presenter->link('this', array('key'=>($entity->parent? $entity->parent->id : NULL)))}">
-					<img src="{=$presenter->template->basePath}/resources/cmsModule/icons/places/64/folder.png" alt="">
+					<img src="{=$presenter->template->basePath}/resources/cmsModule/admin/icons/places/64/folder.png" alt="">
 				</a>
 				<h5>..</h5>
 			</div>

@@ -61,13 +61,19 @@ class LanguagePresenter extends BasePresenter
 		$presenter = $this;
 		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
 		{
-			$presenter->redirect('edit', array('id' => $entity->id));
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('edit', array('id' => $entity->id));
+			} else {
+				$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
+				$presenter->setView('edit');
+				$presenter->id = $entity->id;
+			}
 		});
 		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
 		{
 			$presenter->delete($entity);
 			if (!$presenter->isAjax()) {
-				$presenter->redirect('default', array('id' => $entity->id));
+				$presenter->redirect('default', array('id' => NULL));
 			} else {
 				$presenter->payload->url = $presenter->link('default', array('id' => NULL));
 			}
@@ -90,17 +96,10 @@ class LanguagePresenter extends BasePresenter
 
 		$form = $this->form->invoke();
 		$form->setEntity($entity);
-		$form['_submit']->onClick[] = callback($this, 'processForm');
-		$form['_cancel']->onClick[] = function($button)
-		{
-			if (!$button->getForm()->getPresenter()->isAjax()) {
-				$button->getForm()->getPresenter()->redirect("default");
-			} else {
-				$this->presenter->forward('default', array('id' => NULL, 'do' => ''));
-			}
-		};
+		$form['_submit']->onClick[] = $this->processForm;
 		return $form;
 	}
+
 
 	public function processForm($button)
 	{
@@ -126,12 +125,12 @@ class LanguagePresenter extends BasePresenter
 		}
 		$config["parameters"]["website"]["languages"] = $languages;
 		$config->save();
-		if (!$form->getPresenter()->isAjax()) {
-			$form->getPresenter()->redirect("default");
-		} else {
-			$this->getPresenter()->payload->url = $this->getPresenter()->link('default', array('id' => NULL));
-			$this->presenter->forward('default', array('id' => NULL, 'do' => ''));
+
+		if (!$this->isAjax()) {
+			$this->redirect("default");
 		}
+		$this->payload->url = $this->link('default', array('id' => NULL));
+		$this->forward('default', array('id' => NULL, 'do' => ''));
 	}
 
 
@@ -143,45 +142,44 @@ class LanguagePresenter extends BasePresenter
 
 		$form = $this->form->invoke();
 		$form->setEntity($entity);
-		$form['_submit']->onClick[] = function($button) use ($repository, $config)
-		{
-			$form = $button->getForm();
-			try {
-				$repository->save($form->entity);
-				$form->getPresenter()->flashMessage("Language has been updated", "success");
-			} catch (\DoctrineModule\ORM\SqlException $e) {
-				if ($e->getCode() == 23000) {
-					$form->presenter->flashMessage("Language is not unique", "warning");
-					return;
-				} else {
-					throw $e;
-				}
-			}
-
-			$languages = array();
-			foreach ($repository->findAll() as $entity) {
-				$languages[] = $entity->alias;
-			}
-			$config["parameters"]["website"]["languages"] = $languages;
-			if ($form->entity->id == 1) {
-				$config["parameters"]["website"]["defaultLanguage"] = $form->entity->alias;
-			}
-			$config->save();
-			//if (!$form->getPresenter()->isAjax()) {
-			$form->getPresenter()->redirect("default");
-			//} else {
-			//	$form->getPresenter()->setView('default');
-			//}
-		};
-		$form['_cancel']->onClick[] = function($button)
-		{
-			//if (!$button->getForm()->getPresenter()->isAjax()) {
-			$button->getForm()->getPresenter()->redirect("default");
-			//} else {
-			//	$button->getForm()->getPresenter()->setView('default');
-			//}
-		};
+		$form['_submit']->onClick[] = $this->processFormEdit;
 		return $form;
+	}
+
+
+	public function processFormEdit($button)
+	{
+		$form = $button->getForm();
+		$repository = $this->languageRepository;
+		$config = $this->configService;
+
+		try {
+			$repository->save($form->entity);
+			$form->getPresenter()->flashMessage("Language has been updated", "success");
+		} catch (\DoctrineModule\ORM\SqlException $e) {
+			if ($e->getCode() == 23000) {
+				$form->presenter->flashMessage("Language is not unique", "warning");
+				return;
+			} else {
+				throw $e;
+			}
+		}
+
+		$languages = array();
+		foreach ($repository->findAll() as $entity) {
+			$languages[] = $entity->alias;
+		}
+		$config["parameters"]["website"]["languages"] = $languages;
+		if ($form->entity->id == 1) {
+			$config["parameters"]["website"]["defaultLanguage"] = $form->entity->alias;
+		}
+		$config->save();
+
+		if (!$this->isAjax()) {
+			$this->redirect("default");
+		}
+		$this->payload->url = $this->link('default', array('id' => NULL));
+		$this->forward('default', array('id' => NULL, 'do' => ''));
 	}
 
 
@@ -222,5 +220,4 @@ class LanguagePresenter extends BasePresenter
 	{
 		//$this['form']->setAction($this->link('default', array('id' => NULL, 'do' => 'form-submit')));
 	}
-
 }

@@ -11,18 +11,18 @@
 		<div class="btn-toolbar">
 			<div class="btn-group">
 			{if $control->tab == 0}
-				<a class="btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+				<a class="ajax btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 2}
-				<a class="btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+				<a class="ajax btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 3}
-				<a class="btn" href="{plink :Cms:Admin:Layouts: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+				<a class="ajax btn" href="{plink :Cms:Admin:Layouts: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			</div>
 			<div class="btn-group pull-right">
 			{if $control->tab == 3}
-				<a href="{plink :Cms:Admin:Layouts:create}" class="btn"><span class="icon icon-file"></span> {_'Create new'}</a>
+				<a class="ajax btn" href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
 			{else}
 
 				<button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>

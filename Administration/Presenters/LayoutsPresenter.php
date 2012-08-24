@@ -84,7 +84,15 @@ class LayoutsPresenter extends BasePresenter
 		file_put_contents($path . '/@layout.latte', '');
 
 		$this->flashMessage('Layout has been added.', 'success');
-		$this->redirect('edit', array('key'=>"@{$values['parent']}/{$values['name']}"));
+
+		if (!$this->isAjax()) {
+			$this->redirect('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
+		}
+		$this['panel']->invalidateControl('content');
+		$this->payload->url = $this->link('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
+		$this->setView('edit');
+		$this->changeAction('edit');
+		$this->key = "@{$values['parent']}/{$values['name']}";
 	}
 
 
@@ -105,7 +113,10 @@ class LayoutsPresenter extends BasePresenter
 		file_put_contents($path . '/@layout.latte', $values['text']);
 
 		$this->flashMessage('Layout has been saved.', 'success');
-		$this->redirect('this');
+
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
 	}
 
 
@@ -130,7 +141,10 @@ class LayoutsPresenter extends BasePresenter
 		\Venne\Utils\File::rmdir($path, true);
 
 		$this->flashMessage('Layout has been removed.', 'success');
-		$this->redirect('default');
+
+		if (!$this->isAjax()) {
+			$this->redirect('default');
+		}
 	}
 
 

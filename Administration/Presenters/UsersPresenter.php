@@ -33,13 +33,11 @@ class UsersPresenter extends BasePresenter
 	protected $userRepository;
 
 
-
 	public function startup()
 	{
 		parent::startup();
 		$this->userRepository = $this->context->cms->userRepository;
 	}
-
 
 
 	public function handleDelete($id)
@@ -49,24 +47,35 @@ class UsersPresenter extends BasePresenter
 		$this->redirect("this");
 	}
 
-	
+
 	public function createComponentTable()
 	{
 		$table = new \CmsModule\Components\TableControl;
 		$table->setRepository($this->context->cms->userRepository);
 		$table->setPaginator(2);
-		
+
 		$table->addColumn('email', 'E-mail', '60%');
-		$table->addColumn('roles', 'Roles', '40%', function($entity){return implode(", ", $entity->roles);});
-		
+		$table->addColumn('roles', 'Roles', '40%', function($entity)
+		{
+			return implode(", ", $entity->roles);
+		});
+
 		$presenter = $this;
-		$table->addAction('edit', 'Edit', function($entity) use ($presenter){
-			$presenter->redirect('edit', array('id'=>$entity->id));
+		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
+		{
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('edit', array('id' => $entity->id));
+			} else {
+				$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
+				$presenter->setView('edit');
+				$presenter->id = $entity->id;
+			}
 		});
-		$table->addAction('delete', 'Delete', function($entity) use ($presenter){
-			$presenter->redirect('translate', array('id'=>$entity->id));
+		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
+		{
+			$presenter->redirect('translate', array('id' => $entity->id));
 		});
-		
+
 		return $table;
 	}
 
@@ -74,58 +83,74 @@ class UsersPresenter extends BasePresenter
 	public function createComponentForm()
 	{
 		$repository = $this->userRepository;
-		$entity = $this->userRepository->createNew();
+		$entity = $repository->createNew();
 
 		$form = $this->context->cms->createUserForm();
 		$form->setEntity($entity);
 		$form->addSubmit("_submit", "Save");
-		$form->onSuccess[] = function($form) use ($repository)
-		{
-			$form->entity->enable = 1;
-			try {
-				$repository->save($form->entity);
-				$form->presenter->flashMessage("User has been created", "success");
-			} catch (\DoctrineModule\ORM\SqlException $e) {
-				if ($e->getCode() == 23000) {
-					$form->presenter->flashMessage("User {$form->entity->name} already exists", "warning");
-					return ;
-				} else {
-					throw $e;
-				}
-			}
-			$form->presenter->redirect("default");
-		};
+		$form->onSuccess[] = $this->formProcess;
 		return $form;
 	}
 
+
+	public function formProcess($form)
+	{
+		$repository = $this->userRepository;
+
+		$form->entity->enable = 1;
+		try {
+			$repository->save($form->entity);
+			$this->flashMessage("User has been created", "success");
+		} catch (\DoctrineModule\ORM\SqlException $e) {
+			if ($e->getCode() == 23000) {
+				$this->flashMessage("User {$form->entity->name} already exists", "warning");
+				return;
+			} else {
+				throw $e;
+			}
+		}
+
+		if (!$this->isAjax()) {
+			$this->redirect("default");
+		}
+		$this->payload->url = $this->link('default', array('id' => NULL));
+		$this->forward('default', array('id' => NULL, 'do' => ''));
+	}
 
 
 	public function createComponentFormEdit()
 	{
 		$repository = $this->userRepository;
-		$entity = $this->userRepository->find($this->getParameter("id"));
+		$entity = $repository->find($this->getParameter("id"));
 
 		$form = $this->context->cms->createUserForm();
 		$form->setEntity($entity);
 		$form->addSubmit("_submit", "Save");
-		$form->onSuccess[] = function($form) use ($repository)
-		{
-			try {
-				$repository->save($form->entity);
-				$form->presenter->flashMessage("User has been updated", "success");
-			} catch (\DoctrineModule\ORM\SqlException $e) {
-				if ($e->getCode() == 23000) {
-					$form->presenter->flashMessage("User {$form->entity->name} already exists", "warning");
-					return ;
-				} else {
-					throw $e;
-				}
-			}
-			$form->presenter->redirect("this");
-		};
+		$form->onSuccess[] = $this->processFormEdit;
 		return $form;
 	}
 
+
+	public function processFormEdit($form)
+	{
+		$repository = $this->userRepository;
+
+		try {
+			$repository->save($form->entity);
+			$this->flashMessage("User has been updated", "success");
+		} catch (\DoctrineModule\ORM\SqlException $e) {
+			if ($e->getCode() == 23000) {
+				$this->flashMessage("User {$form->entity->name} already exists", "warning");
+				return;
+			} else {
+				throw $e;
+			}
+		}
+
+		if (!$this->isAjax()) {
+			$this->redirect("this");
+		}
+	}
 
 
 	public function createComponentVp()
@@ -138,10 +163,8 @@ class UsersPresenter extends BasePresenter
 	}
 
 
-
 	public function renderDefault()
 	{
 		$this->template->userRepository = $this->userRepository;
 	}
-
 }

@@ -26,8 +26,8 @@ class BaseDoctrineForm extends Form
 
 		$this->setCurrentGroup();
 		$this->addSubmit('_submit', "Save changes")->getControlPrototype()->class[] = 'btn btn-primary';
-		$this->addSubmit('_cancel', "Cancel")
-			->setValidationScope(false)
-			->getControlPrototype()->class[] = 'btn';
+		//$this->addSubmit('_cancel', "Cancel")
+		//	->setValidationScope(false)
+		//	->getControlPrototype()->class[] = 'btn';
 	}
 }

@@ -5,7 +5,7 @@
 		<tr>
 			{foreach $columns as $key=>$column}
 				<th{if $column['width']} style="width: {!$column['width']};"{/if}>
-					{if $sorter}<a n:href="this sort=>$key">{/if}{$column['title']}{if $sorter}</a>{/if}
+					{if $sorter}<a class="ajax" n:href="this sort=>$key">{/if}{$column['title']}{if $sorter}</a>{/if}
 				</th>
 			{/foreach}
 			<th>Actions</th>
@@ -30,7 +30,7 @@
 			<td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
 				<div class="btn-group pull-right">
 				{foreach $actions as $name=>$action}
-					<a class="btn" href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action['title']}</a>
+					<a class="ajax btn" href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action['title']}</a>
 				{/foreach}
 				</div>
 			</td>

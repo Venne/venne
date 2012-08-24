@@ -8,6 +8,19 @@
 
 {block content}
 
+<div class="navbar">
+	<div class="navbar-inner">
+		<div class="container">
+			<ul class="nav">
+
+				<li class="dropdown">
+					<a class="ajax" href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+</div>
 
 {foreach $layouts as $module=>$items}
 <h2>{$module}</h2>
@@ -26,8 +39,8 @@
 		</td>
 		<td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
 			<div class="btn-group pull-right">
-				<a class="btn" href="{link edit key=>$key}">{_'edit'}</a>
-				<a class="btn" n:confirm="really?" href="{link delete! key=>$key}">{_'delete'}</a>
+				<a class="ajax btn" href="{link edit key=>$key}">{_'edit'}</a>
+				<a class="ajax btn" n:confirm="really?" href="{link delete! key=>$key}">{_'delete'}</a>
 			</div>
 		</td>
 	</tr>

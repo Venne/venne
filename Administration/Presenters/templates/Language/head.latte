@@ -1,6 +1,6 @@
 	<li n:if="$presenter->isAllowed('Language:default')" {if $presenter->isLinkCurrent("default")}class="active"{/if}>
-		<a href="{link default type=>null, id=>null}">{_'Language list'}</a>
+		<a class="ajax" href="{link default type=>null, id=>null}">{_'Language list'}</a>
 	</li>
 	<li n:if="$presenter->isAllowed('Language:create')" {if $presenter->isLinkCurrent("create")}class="active"{/if}>
-		<a href="{link create}">{_'Create new language'}</a>
+		<a class="ajax" href="{link create}">{_'Create new language'}</a>
 	</li>
