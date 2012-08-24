@@ -201,6 +201,7 @@ class LanguagePresenter extends BasePresenter
 		if (!$this->isAjax() || count($languages) == 0) {
 			$this->redirect("this", array("id" => NULL));
 		}
+		$this->invalidateControl('content');
 	}
 
 

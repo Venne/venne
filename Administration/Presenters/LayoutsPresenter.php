@@ -145,6 +145,7 @@ class LayoutsPresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect('default');
 		}
+		$this->invalidateControl('content');
 	}
 
 

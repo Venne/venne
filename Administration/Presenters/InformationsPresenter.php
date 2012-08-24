@@ -48,5 +48,6 @@ class InformationsPresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect('this');
 		}
+		$this->invalidateControl('content');
 	}
 }

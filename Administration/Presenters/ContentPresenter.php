@@ -239,6 +239,7 @@ class ContentPresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect("this", array("key" => NULL));
 		}
+		$this->invalidateControl('content');
 	}
 
 

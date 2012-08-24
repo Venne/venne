@@ -44,7 +44,11 @@ class UsersPresenter extends BasePresenter
 	{
 		$this->userRepository->delete($this->userRepository->find($id));
 		$this->flashMessage("User has been deleted", "success");
-		$this->redirect("this");
+
+		if (!$this->isAjax()) {
+			$this->redirect('default');
+		}
+		$this->invalidateControl('content');
 	}
 
 

@@ -146,6 +146,7 @@ class FilesPresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect("this");
 		}
+		$this->invalidateControl('content');
 	}
 
 
@@ -187,6 +188,7 @@ class FilesPresenter extends BasePresenter
 			if (!$form->presenter->isAjax()) {
 				$form->presenter->redirect('this');
 			}
+			$form->presenter->invalidateControl('content');
 		};
 		return $form;
 	}
