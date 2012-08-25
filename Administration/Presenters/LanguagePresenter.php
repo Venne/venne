@@ -63,11 +63,11 @@ class LanguagePresenter extends BasePresenter
 		{
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('edit', array('id' => $entity->id));
-			} else {
-				$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
-				$presenter->setView('edit');
-				$presenter->id = $entity->id;
 			}
+			$this->invalidateControl('content');
+			$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
+			$presenter->setView('edit');
+			$presenter->id = $entity->id;
 		});
 		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
 		{
@@ -92,7 +92,6 @@ class LanguagePresenter extends BasePresenter
 	{
 		$repository = $this->languageRepository;
 		$entity = $repository->createNew();
-		$config = $this->configService;
 
 		$form = $this->form->invoke();
 		$form->setEntity($entity);
