@@ -1,137 +1,83 @@
 factories:
+
+	cms.form:
+		class: CmsModule\Forms\BaseConfigForm
+		setup:
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+		tags: [component]
+
+	cms.ajaxForm:
+		class: CmsModule\Forms\BaseConfigForm
+		setup:
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+		tags: [component]
+
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
 		tags: [widget: head]
 
-	cms.websiteForm:
+	cms.websiteForm < cms.ajaxForm:
 		class: CmsModule\Forms\WebsiteForm
 		setup:
 			- setRoot(parameters.website)
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.languageForm:
+	cms.languageForm < cms.ajaxForm:
 		class: CmsModule\Forms\LanguageForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.modulesDefaultForm:
+	cms.modulesDefaultForm < cms.form:
 		class: CmsModule\Forms\ModulesDefaultForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-		tags: [component]
 
-	cms.userForm:
+	cms.userForm < cms.ajaxForm:
 		class: CmsModule\Forms\UserForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.roleForm:
+	cms.roleForm < cms.ajaxForm:
 		class: CmsModule\Forms\RoleForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-		tags: [component]
 
-	cms.systemForm:
+	cms.systemForm < cms.ajaxForm:
 		class: CmsModule\Forms\SystemForm
 		setup:
 			- setRoot(parameters)
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.applicationForm:
+	cms.applicationForm < cms.ajaxForm:
 		class: CmsModule\Forms\SystemApplicationForm
 		setup:
 			- setRoot('')
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.databaseForm:
+	cms.databaseForm < cms.ajaxForm:
 		class: CmsModule\Forms\SystemDatabaseForm
 		setup:
 			- setRoot(parameters.database)
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.accountForm:
+	cms.accountForm < cms.ajaxForm:
 		class: CmsModule\Forms\SystemAccountForm
 		setup:
 			- setRoot(parameters.administration.login)
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.loginForm:
+	cms.loginForm < cms.form:
 		class: CmsModule\Forms\LoginForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-		tags: [component]
 
-	cms.contentForm:
+	cms.contentForm < cms.ajaxForm:
 		class: CmsModule\Content\Forms\BasicForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.layoutForm:
+	cms.layoutForm < cms.ajaxForm:
 		class: CmsModule\Content\Forms\LayoutForm
 		setup:
 			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- setScannerService(@cms.scannerService)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.layouteditForm:
+	cms.layouteditForm < cms.ajaxForm:
 		class: CmsModule\Content\Forms\LayouteditForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.contentRoutesForm:
+	cms.contentRoutesForm < cms.ajaxForm:
 		class: CmsModule\Content\RoutesForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.dirForm:
+	cms.dirForm < cms.ajaxForm:
 		class: CmsModule\Content\Forms\DirForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
 
-	cms.fileForm:
+	cms.fileForm < cms.form:
 		class: CmsModule\Content\Forms\FileForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-		tags: [component]
 
 	cms.navigationControl:
 		class: CmsModule\Components\NavigationControl(@cms.pageRepository)
