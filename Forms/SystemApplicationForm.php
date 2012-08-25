@@ -29,18 +29,42 @@ class SystemApplicationForm extends BaseConfigForm {
 		$venne = $this->addContainer("venne");
 		$stopwatch = $venne->addContainer("stopwatch");
 		$doctrine = $this->addContainer("doctrine");
-		$debugger = $this->addContainer("parameters")->addContainer("debugger");
+		/** @var $debugger \Nette\Forms\Container */
+		$debugger = $nette->addContainer("debugger");
+		$application = $nette->addContainer("application");
+		$routing = $nette->addContainer("routing");
+		$container = $nette->addContainer("container");
+		$security = $nette->addContainer("security");
 
+		/* application */
+		$application->setCurrentGroup($this->addGroup('Application'));
+		$application->addSelect("catchExceptions", "Catch exceptions", array(true => "yes", false => "no"))->setDefaultValue(true);
 
 		/* debugger */
 		$debugger->setCurrentGroup($group = $this->addGroup("Debugger"));
-		$debugger->addSelect("mode", "Mode")->setItems(array("production", "development", "detect"), false);
-		$debugger->addSelect("strict", "Strict mode")->setItems(array("yes", "no"), false);
-		$debugger->addText("developerIp", "IPs for devel");
-		$debugger->addText("logEmail", "E-mail for logs");
-		$debugger->addText("emailSnooze", "E-mail interval")->addRule(self::NUMERIC, "E-mail interval must be numeric");
+		$debugger->addSelect("strictMode", "Strict mode")->setItems(array("yes", "no"), false);
+		$debugger->addText("edit", "Editor");
+		$debugger->addText("browser", "Browser");
+		$debugger->addText("email", "E-mail for logs")
+			->addCondition(self::FILLED)->addRule(self::EMAIL);
+
 		$stopwatch->setCurrentGroup($group);
 		$stopwatch->addCheckbox("debugger", "Stopwatch panel")->setDefaultValue(true);
+
+		$application->setCurrentGroup($group);
+		$application->addCheckbox("debugger", "Debugger panel in bluescreen")->setDefaultValue(true);
+
+		$routing->setCurrentGroup($group);
+		$routing->addCheckbox("debugger", "Routing panel")->setDefaultValue(true);
+
+		$container->setCurrentGroup($group);
+		$container->addCheckbox("debugger", "DI panel")->setDefaultValue(true);
+
+		$security->setCurrentGroup($group);
+		$security->addCheckbox("debugger", "Security panel")->setDefaultValue(true);
+
+		$doctrine->setCurrentGroup($group);
+		$doctrine->addCheckbox("debugger", "Database panel")->setDefaultValue(true);
 
 
 		/* session */
@@ -49,40 +73,9 @@ class SystemApplicationForm extends BaseConfigForm {
 		$container->addCheckbox("autoStart", "Autostart")->setDefaultValue(false);
 		$container->addTextWithSelect("expiration", "Expiration")->setItems(array("+ 1 day", "+ 10 days", "+ 30 days", "+ 1 year"), false);
 
-
-		/* application */
-		$container = $nette->addContainer("application");
-		$group = $this->addGroup("Application");
-		$container->setCurrentGroup($group);
-		$container->addCheckbox("debugger", "Debugger panel in bluescreen")->setDefaultValue(true);
-
-
-		/* routing */
-		$container = $nette->addContainer("routing");
-		$container->setCurrentGroup($this->addGroup("Routing"));
-		$container->addCheckbox("debugger", "Routing panel")->setDefaultValue(true);
-
-
-		/* DI */
-		$container = $nette->addContainer("container");
-		$container->setCurrentGroup($this->addGroup("Dependency injection"));
-		$container->addCheckbox("debugger", "DI panel")->setDefaultValue(true);
-
-
-		/* security */
-		$container = $nette->addContainer("security");
-		$container->setCurrentGroup($this->addGroup("Security"));
-		$container->addCheckbox("debugger", "Security panel")->setDefaultValue(true);
-
-
 		/* templating */
 		$nette->setCurrentGroup($this->addGroup("Templating"));
 		$nette->addSelect("xhtml", "XHTML", array(true => "yes", false => "no"))->setDefaultValue(true);
-
-
-		/* doctrine */
-		$doctrine->setCurrentGroup($this->addGroup("Database"));
-		$doctrine->addCheckbox("debugger", "Database panel")->setDefaultValue(true);
 	}
 
 }
