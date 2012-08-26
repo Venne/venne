@@ -58,6 +58,8 @@ factories:
 
 	cms.loginForm < cms.form:
 		class: CmsModule\Forms\LoginForm
+		setup:
+			- setRedirect(:Cms:Admin:%administration.defaultPresenter%)
 
 	cms.contentForm < cms.ajaxForm:
 		class: CmsModule\Content\Forms\BasicForm

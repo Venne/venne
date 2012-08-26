@@ -16,19 +16,30 @@ use Venne;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginForm extends \Venne\Application\UI\Form {
+class LoginForm extends \Venne\Application\UI\Form
+{
+
+
+	/** @var string */
+	protected $redirect = 'this';
+
+
+	/**
+	 * @param string $redirect
+	 */
+	public function setRedirect($redirect)
+	{
+		$this->redirect = $redirect;
+	}
 
 
 	public function startup()
 	{
-		$this->getElementPrototype()->class[] = 'noAjax';
-
 		$this->addText('username', 'Login')->setRequired('Please provide a username.');
 		$this->addPassword('password', 'Password')->setRequired('Please provide a password.');
 		$this->addCheckbox('remember', 'Remember me on this computer');
 		$this->addSubmit("_submit", "Sign in")->getControlPrototype()->class[] = 'btn btn-primary';
 	}
-
 
 
 	public function handleSuccess()
@@ -44,10 +55,11 @@ class LoginForm extends \Venne\Application\UI\Form {
 			}
 
 			$this->presenter->restoreRequest($this->presenter->backlink);
-			$this->presenter->redirect(':Cms:Admin:Default:');
+			if ($this->redirect) {
+				$this->presenter->redirect($this->redirect . ':');
+			}
 		} catch (\Nette\Security\AuthenticationException $e) {
 			$this->getPresenter()->flashMessage($e->getMessage(), "warning");
 		}
 	}
-
 }
