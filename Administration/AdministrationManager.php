@@ -54,6 +54,17 @@ class AdministrationManager extends Object
 	 */
 	public function getAdministrationPages()
 	{
+		return $this->administrationPages;
+	}
+
+
+	/**
+	 * Get Administration pages as array
+	 *
+	 * @return array
+	 */
+	public function getAdministrationNavigation()
+	{
 		$ret = array();
 
 		foreach ($this->administrationPages as $link => $item) {

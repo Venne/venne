@@ -53,16 +53,15 @@ class CmsExtension extends CompilerExtension
 		$application = $container->getDefinition('application');
 		$application->addSetup('$service->errorPresenter = ?', $container->parameters['website']['errorPresenter']);
 
-		//$container->addDefinition("authorizatorFactory")
-		//	->setFactory("CmsModule\Security\AuthorizatorFactory")
-		//	->setAutowired(false);
+		$container->addDefinition("authorizatorFactory")
+			->setFactory("CmsModule\Security\AuthorizatorFactory", array('@nette.presenterFactory', '@cms.roleRepository', '@session', '@doctrine.checkConnectionFactory'));
 
-		//$container->addDefinition("authorizator")
-		//	->setClass("Nette\Security\Permission")
-		//	->setFactory("@authorizatorFactory::getCurrentPermissions");
+		$container->addDefinition("authorizator")
+			->setClass("Nette\Security\Permission")
+			->setFactory("@authorizatorFactory::getPermissionsByUser", array('@user', true));
 
 		$container->addDefinition("authenticator")
-			->setClass("Venne\Security\Authenticator", array("%administration.login.name%", "%administration.login.password%"));
+			->setClass("CmsModule\Security\Authenticator", array("%administration.login.name%", "%administration.login.password%", "@doctrine.checkConnectionFactory", "@cms.userRepository"));
 
 		// detect prefix
 		$prefix = $container->parameters["website"]["routePrefix"];

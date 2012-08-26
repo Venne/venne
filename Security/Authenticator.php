@@ -26,15 +26,15 @@ class Authenticator extends Venne\Security\Authenticator
 	protected $userRepository;
 
 	/** @var \Nette\DI\NestedAccessor|\SystemContainer_doctrine */
-	protected $doctrine;
+	protected $checkConnection;
 
 
-	function __construct($doctrine, $adminLogin, $adminPassword, $userRepository)
+	function __construct($adminLogin, $adminPassword, $checkConnection, $userRepository)
 	{
 		parent::__construct($adminLogin, $adminPassword);
 
 		$this->userRepository = $userRepository;
-		$this->doctrine = $doctrine;
+		$this->checkConnection = $checkConnection;
 	}
 
 
@@ -52,7 +52,7 @@ class Authenticator extends Venne\Security\Authenticator
 		} catch (AuthenticationException $ex) {
 			list($username, $password) = $credentials;
 
-			if ($this->doctrine->createCheckConnection()) {
+			if ($this->checkConnection->invoke()) {
 				$user = $this->userRepository->findOneBy(array("email" => $username, "enable" => 1));
 				if ($user && $user->verifyByPassword($password)) {
 					return $user;

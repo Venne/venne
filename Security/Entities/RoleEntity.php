@@ -39,7 +39,7 @@ class RoleEntity extends \DoctrineModule\ORM\BaseEntity {
 	protected $parent;
 
 	/**
-	 * @OneToMany(targetEntity="PermissionEntity", mappedBy="role")
+	 * @OneToMany(targetEntity="PermissionEntity", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
 	 */
 	protected $permissions;
 
@@ -125,9 +125,8 @@ class RoleEntity extends \DoctrineModule\ORM\BaseEntity {
 	}
 
 
-
 	/**
-	 * @return \Nette\Security\Permission
+	 * @return \Doctrine\Common\Collections\ArrayCollection|PermissionEntity[]
 	 */
 	public function getPermissions()
 	{

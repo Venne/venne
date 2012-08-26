@@ -48,28 +48,35 @@
 
 						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 						<ul class="nav">
-							{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationPages()}
+							{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationNavigation()}
 							{foreach $pages as $category=>$items}
+								{var ok=>false}
+								{capture $nav}
 								<li class="dropdown">
 									<a class="dropdown-toggle" href="javaScript:;" data-toggle="dropdown">{_$category}</a>
 
 									<ul class="dropdown-menu">
 										{foreach $items as $link=>$item}
+											{if $presenter->isAllowed(':' . $link)}
+											{var ok=>true}
 											<li class="{if $presenter->isLinkCurrent($link)}active{/if}">
 												<a class="ajax" href="{plink :$link}">{_$item['name']}{if isset($item["description"]) && $item["description"]}<span>{_$item["description"]}</span>{/if}</a>
 											</li>
+											{/if}
 										{/foreach}
 									</ul>
 								</li>
+								{/capture}
+								{if $ok}{!$nav}{/if}
 							{/foreach}
 						</ul>
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$presenter->user->identity->id} <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class="nav-header">{_'Actions'}</li>
-								<li><a class="ajax" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
+								<li n:if="$presenter->isAllowed(':Cms:Admin:Users:edit')"><a class="ajax" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
 								<li><a href="{link logout!}">{_'Log out'}</a></li>
 							</ul>
 							</li>

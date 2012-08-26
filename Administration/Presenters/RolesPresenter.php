@@ -32,15 +32,19 @@ class RolesPresenter extends BasePresenter
 	/** @var Callback */
 	protected $form;
 
+	/** @var Callback */
+	protected $permissionsForm;
 
 	/**
 	 * @param BaseRepository $roleRepository
 	 * @param Callback $form
+	 * @param Callback $permissionsForm
 	 */
-	function __construct(BaseRepository $roleRepository, Callback $form)
+	function __construct(BaseRepository $roleRepository, Callback $form, Callback $permissionsForm)
 	{
 		$this->roleRepository = $roleRepository;
 		$this->form = $form;
+		$this->permissionsForm = $permissionsForm;
 	}
 
 
@@ -71,6 +75,16 @@ class RolesPresenter extends BasePresenter
 			$this->invalidateControl('content');
 			$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
 			$presenter->setView('edit');
+			$presenter->id = $entity->id;
+		});
+		$table->addAction('permissions', 'Permissions', function($entity) use ($presenter)
+		{
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('permissions', array('id' => $entity->id));
+			}
+			$this->invalidateControl('content');
+			$presenter->payload->url = $presenter->link('permissions', array('id' => $entity->id));
+			$presenter->setView('permissions');
 			$presenter->id = $entity->id;
 		});
 		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
@@ -157,34 +171,46 @@ class RolesPresenter extends BasePresenter
 		$form = $button->getForm();
 		$repository = $this->roleRepository;
 
-		try {
+		//try {
 			$repository->save($form->entity);
 			$form->getPresenter()->flashMessage("Role has been saved", "success");
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->presenter->flashMessage("Role is not unique", "warning");
-				if (!$this->isAjax()) {
-					$this->redirect('this');
-				}
-				$this->invalidateControl('content');
-				return;
-			} else {
-				throw $e;
-			}
-		} catch (\Nette\InvalidArgumentException $e) {
-			$form->presenter->flashMessage($e->getMessage(), "warning");
-			if (!$this->isAjax()) {
-				$this->redirect('this');
-			}
-			$this->invalidateControl('content');
-			return;
-		}
+//		} catch (\DoctrineModule\ORM\SqlException $e) {
+//			if ($e->getCode() == 23000) {
+//				$form->presenter->flashMessage("Role is not unique", "warning");
+//				if (!$this->isAjax()) {
+//					$this->redirect('this');
+//				}
+//				$this->invalidateControl('content');
+//				return;
+//			} else {
+//				throw $e;
+//			}
+//		} catch (\Nette\InvalidArgumentException $e) {
+//			$form->presenter->flashMessage($e->getMessage(), "warning");
+//			if (!$this->isAjax()) {
+//				$this->redirect('this');
+//			}
+//			$this->invalidateControl('content');
+//			return;
+//		}
 
 		if (!$this->isAjax()) {
 			$this->redirect("default");
 		}
 		$this->payload->url = $this->link('default', array('id' => NULL));
 		$this->forward('default', array('id' => NULL, 'do' => ''));
+	}
+
+
+	public function createComponentPermissionsForm()
+	{
+		$repository = $this->roleRepository;
+		$entity = $repository->find($this->id);
+
+		$form = $this->permissionsForm->invoke();
+		$form->setEntity($entity);
+		$form->onSuccess[] = $this->processFormEdit;
+		return $form;
 	}
 
 

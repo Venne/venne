@@ -33,6 +33,8 @@ class LoginPresenter extends BasePresenter
 
 	public function __construct($form)
 	{
+		parent::__construct();
+
 		$this->form = $form;
 	}
 
@@ -41,6 +43,7 @@ class LoginPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
+
 		if (!$this->context->createCheckConnection()) {
 			$this->flashMessage("Only administrator can be logged", "warning");
 		}

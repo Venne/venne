@@ -1,6 +1,6 @@
 	<li{if $presenter->isLinkCurrent("Users:default")} class="active"{/if}>
 		<a class="ajax" n:href="default">{_'list'}</a>
 	</li>
-	<li{if $presenter->isLinkCurrent("Users:create")} class="active"{/if} n:if="$presenter->isAllowed('create')">
+	<li{if $presenter->isLinkCurrent("Users:create")} class="active"{/if}>
 		<a class="ajax" n:href="create">{_'create new'}</a>
 	</li>

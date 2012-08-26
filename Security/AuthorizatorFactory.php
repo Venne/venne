@@ -13,12 +13,14 @@ namespace CmsModule\Security;
 
 use Venne;
 use Nette\Object;
-use Nette\Utils\Finder;
 use Nette\Reflection\ClassType;
-use Nette\Caching\Cache;
-use Nette\Caching\Storages\FileStorage;
 use Nette\Security\Permission;
 use Nette\Security\User;
+use Nette\Callback;
+use Venne\Application\PresenterFactory;
+use Nette\Http\SessionSection;
+use Nette\Http\Session;
+use DoctrineModule\ORM\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -29,26 +31,34 @@ class AuthorizatorFactory extends Object
 
 	const SESSION_SECTION = "Venne.Security.Authorizator";
 
-	/** @var \Nette\DI\Container */
-	protected $context;
-
 	/** @var array */
-	protected $defaultRoles = array("admin", "authenticated");
+	protected $defaultRoles = array("admin", "authenticated", "guest");
 
-	/** @var Cache */
-	protected $cache;
+	/** @var PresenterFactory */
+	protected $presenterFactory;
 
+	/** @var BaseRepository */
+	protected $roleRepository;
+
+	/** @var SessionSection */
+	protected $session;
+
+	/** @var Callback */
+	protected $checkConnection;
 
 
 	/**
-	 * @param \Nette\DI\Container
+	 * @param PresenterFactory $presenterFactory
+	 * @param BaseRepository $roleRepository
+	 * @param Session $session
 	 */
-	public function __construct(\Nette\DI\Container $context, FileStorage $cacheStorage)
+	public function __construct(PresenterFactory $presenterFactory, BaseRepository $roleRepository, \Nette\Http\Session $session, Callback $checkConnection)
 	{
-		$this->context = $context;
-		$this->cache = new Cache($cacheStorage);
+		$this->presenterFactory = $presenterFactory;
+		$this->roleRepository = $roleRepository;
+		$this->session = $session->getSection(self::SESSION_SECTION);
+		$this->checkConnection = $checkConnection;
 	}
-
 
 
 	/**
@@ -57,33 +67,18 @@ class AuthorizatorFactory extends Object
 	 * @param User $user
 	 * @return Permission
 	 */
-	public function getCurrentPermissions(User $user)
+	public function getPermissionsByUser(User $user, $fromSession = false)
 	{
-		/** @var $session \Nette\Http\SessionSection */
-		$session = $this->context->session->getSection(self::SESSION_SECTION);
+		if ($fromSession) {
+			if ($this->session["permission"]) {
+				return $this->session["permission"];
+			}
 
-		if ($session["permission"]) {
-			return $session["permission"];
+			return $this->session["permission"] = $this->getPermissionsByUser($user, false);
 		}
 
-		$permission = $this->getPermissionsByUser($user);
-
-		return $session["permission"] = $permission;
+		return $this->getPermissionsByRoles(array_merge($user->roles, array("guest", "authenticated")));
 	}
-
-
-
-	/**
-	 * Get permission for user.
-	 *
-	 * @param User $user
-	 * @return Permission
-	 */
-	public function getPermissionsByUser(User $user)
-	{
-		return $this->getPermissionsByRoles(array_merge($user->roles, array("guest", "authenticated"))); // load with guest
-	}
-
 
 
 	/**
@@ -96,55 +91,12 @@ class AuthorizatorFactory extends Object
 	{
 		$permission = $this->getRawPermissions();
 
-
 		foreach ($roles as $role) {
 			$this->setPermissionsByRole($permission, $role);
 		}
 
 		return $permission;
 	}
-
-
-
-	/**
-	 * Setup permission by role
-	 *
-	 * @param Permission $permission
-	 * @param string $role
-	 * @return Permission
-	 */
-	protected function setPermissionsByRole(Permission $permission, $role)
-	{
-		if ($role == "admin") {
-			$permission->allow("admin", \Nette\Security\Permission::ALL);
-			return $permission;
-		}
-
-		$roleEntity = $this->context->cms->roleRepository->findOneByName($role);
-		if ($roleEntity) {
-			if ($roleEntity->parent) {
-				$this->setPermissionsByRole($permission, $roleEntity->parent->name);
-			}
-
-			if ($roleEntity && !$permission->hasRole($role)) {
-				$permission->addRole($role, $roleEntity->parent ? $roleEntity->parent->name : NULL);
-			}
-
-			// allow/deny
-			foreach ($roleEntity->permissions as $perm) {
-				if ($permission->hasResource($perm->resource)) {
-					if ($perm->allow) {
-						$permission->allow($role, $perm->resource, $perm->privilege ? $perm->privilege : NULL);
-					} else {
-						$permission->deny($role, $perm->resource, $perm->privilege ? $perm->privilege : NULL);
-					}
-				}
-			}
-		}
-
-		return $permission;
-	}
-
 
 
 	/**
@@ -170,6 +122,50 @@ class AuthorizatorFactory extends Object
 	}
 
 
+	/* ************************************ PROTECTED **************************************** */
+
+
+	/**
+	 * Setup permission by role
+	 *
+	 * @param Permission $permission
+	 * @param string $role
+	 * @return Permission
+	 */
+	protected function setPermissionsByRole(Permission $permission, $role)
+	{
+		if ($role == "admin") {
+			$permission->allow("admin", \Nette\Security\Permission::ALL);
+			return $permission;
+		}
+
+		if ($this->checkConnection->invoke()) {
+			$roleEntity = $this->roleRepository->findOneByName($role);
+			if ($roleEntity) {
+				if ($roleEntity->parent) {
+					$this->setPermissionsByRole($permission, $roleEntity->parent->name);
+				}
+
+				if ($roleEntity && !$permission->hasRole($role)) {
+					$permission->addRole($role, $roleEntity->parent ? $roleEntity->parent->name : NULL);
+				}
+
+				// allow/deny
+				foreach ($roleEntity->permissions as $perm) {
+					if ($permission->hasResource($perm->resource)) {
+						if ($perm->allow) {
+							$permission->allow($role, $perm->resource, $perm->privilege ? $perm->privilege : NULL);
+						} else {
+							$permission->deny($role, $perm->resource, $perm->privilege ? $perm->privilege : NULL);
+						}
+					}
+				}
+			}
+		}
+
+		return $permission;
+	}
+
 
 	/**
 	 * Add resource recursively.
@@ -187,70 +183,25 @@ class AuthorizatorFactory extends Object
 	}
 
 
-
 	/**
 	 * Array of all resources.
 	 *
 	 * @return array
 	 */
-	protected function scanResources()
+	public function scanResources()
 	{
 		$ret = array();
 
-		foreach ($this->context->findByTag("module") as $key => $module) {
-			$module = $this->context->{$key};
-			$ret += $this->scanResourcesForPath($module->getPath(), $module->getNamespace());
+		foreach ($this->presenterFactory->getPresenters() as $class => $name) {
+			$refl = ClassType::from($class);
+
+			if ($refl->hasAnnotation('secured')) {
+				$ret[$class] = array();
+			}
 		}
 
 		return $ret;
 	}
-
-
-
-	/**
-	 * Array of resources with path.
-	 *
-	 * @param string $path
-	 * @param string $namespace
-	 */
-	protected function scanResourcesForPath($path, $namespace)
-	{
-		$ret = array();
-
-		foreach (Finder::findFiles("*Presenter.php")->from($path) as $file) {
-			$relative = $file->getRealpath();
-			$relative = str_replace("/libs-all/venne/App/", "/libs/App/", $relative);
-			$relative = strtr($relative, array($path => '', '/' => '\\'));
-			$class = $namespace . '\\' . ltrim(substr($relative, 0, -4), '\\');
-			$class = str_replace("presenters\\", "", $class);
-
-			$ret += $this->getResourcesInPresenter($class);
-		}
-
-		return $ret;
-	}
-
-
-
-	/**
-	 * Array of resources in presenter.
-	 *
-	 * @param string $class
-	 * @return array
-	 */
-	protected function getResourcesInPresenter($class)
-	{
-		$ret = array();
-		$refl = ClassType::from($class);
-
-		/* class */
-		if ($refl->hasAnnotation("secured")) {
-			$ret[$class] = true;
-		}
-
-		return $ret;
-	}
-
 
 
 	/**
@@ -261,7 +212,6 @@ class AuthorizatorFactory extends Object
 	 */
 	protected function getNameOfParentResource($resource)
 	{
-		return substr($resource, 0, strrpos($resource, "\\")) ? : NULL;
+		return substr($resource, 0, strrpos($resource, '\\')) ? : NULL;
 	}
-
 }

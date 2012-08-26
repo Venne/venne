@@ -36,6 +36,13 @@ factories:
 	cms.roleForm < cms.ajaxForm:
 		class: CmsModule\Forms\RoleForm
 
+	cms.permissionsForm < cms.form:
+		class: CmsModule\Forms\PermissionsForm
+		setup:
+			- setAuthorizatorFactory
+			- setAdministrationManager
+			- setPresenterFactory
+
 	cms.systemForm < cms.ajaxForm:
 		class: CmsModule\Forms\SystemForm
 		setup:

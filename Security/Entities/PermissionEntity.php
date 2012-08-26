@@ -18,7 +18,8 @@ use Venne;
  * @Entity(repositoryClass="\DoctrineModule\ORM\BaseRepository")
  * @Table(name="permission")
  */
-class PermissionEntity extends \DoctrineModule\ORM\BaseEntity {
+class PermissionEntity extends \DoctrineModule\ORM\BaseEntity
+{
 
 
 	/**
@@ -37,11 +38,24 @@ class PermissionEntity extends \DoctrineModule\ORM\BaseEntity {
 	protected $allow;
 
 	/**
+	 * @var RoleEntity
 	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="id")
 	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $role;
 
+
+	/**
+	 * @param RoleEntity $role
+	 * @param $resource
+	 */
+	function __construct(RoleEntity $role, $resource, $privilege = NULL, $allow = true)
+	{
+		$this->role = $role;
+		$this->resource = $resource;
+		$this->privilege = $privilege;
+		$this->allow = $allow;
+	}
 
 
 	/**
@@ -53,19 +67,8 @@ class PermissionEntity extends \DoctrineModule\ORM\BaseEntity {
 	}
 
 
-
 	/**
-	 * @param string $resource
-	 */
-	public function setResource($resource)
-	{
-		$this->resource = $resource;
-	}
-
-
-
-	/**
-	 * @return string
+	 * @return RoleEntity
 	 */
 	public function getRole()
 	{
@@ -73,19 +76,13 @@ class PermissionEntity extends \DoctrineModule\ORM\BaseEntity {
 	}
 
 
-
 	/**
-	 * @param string $role
+	 * @return string
 	 */
-	public function setRole($role)
+	public function getPrivilege()
 	{
-		$this->role = $role;
-
-		foreach($this->role->users as $user){
-			$user->invalidateLogins();
-		}
+		return $this->privilege;
 	}
-
 
 
 	/**
@@ -97,7 +94,6 @@ class PermissionEntity extends \DoctrineModule\ORM\BaseEntity {
 	}
 
 
-
 	/**
 	 * @param string $allow
 	 */
@@ -105,19 +101,4 @@ class PermissionEntity extends \DoctrineModule\ORM\BaseEntity {
 	{
 		$this->allow = $allow;
 	}
-
-
-
-	public function getPrivilege()
-	{
-		return $this->privilege;
-	}
-
-
-
-	public function setPrivilege($privilege)
-	{
-		$this->privilege = $privilege;
-	}
-
 }

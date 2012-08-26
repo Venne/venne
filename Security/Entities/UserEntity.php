@@ -91,7 +91,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM
 
 	public function __construct()
 	{
-		$this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->roleEntities = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->logins = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->enable = false;
 		$this->login = "";
@@ -212,7 +212,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM
 	 */
 	public function __toString()
 	{
-		return $this->name;
+		return $this->email;
 	}
 
 
