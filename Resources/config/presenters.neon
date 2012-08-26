@@ -6,15 +6,33 @@ services:
 
 	cms.admin.logsPresenter:
 		class: CmsModule\Administration\Presenters\LogsPresenter
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Logs:'
+			category: 'System'
+			name: 'Log browser'
+			description: 'Show logs, errors, warnings,...'
+			priority: 0
+		]]
 
 	cms.admin.usersPresenter:
 		class: CmsModule\Administration\Presenters\UsersPresenter
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Users:'
+			category: 'Security'
+			name: 'User manager'
+			description: 'Add, edit users and their roles'
+			priority: 55
+		]]
 
 	cms.admin.rolesPresenter:
 		class: CmsModule\Administration\Presenters\RolesPresenter(@cms.roleRepository, @cms.roleFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Roles:'
+			category: 'Security'
+			name: 'Role manager'
+			description: 'Manage roles and their inheriting'
+			priority: 50
+		]]
 
 	cms.admin.loginPresenter:
 		class: CmsModule\Administration\Presenters\LoginPresenter(@cms.loginFormFactory)
@@ -22,15 +40,33 @@ services:
 
 	cms.admin.languagePresenter:
 		class: CmsModule\Administration\Presenters\LanguagePresenter(@cms.languageRepository, ..., @cms.languageFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Language:'
+			category: 'Website'
+			name: 'Language settings'
+			description: 'Manage website languages, aliases,...'
+			priority: 150
+		]]
 
 	cms.admin.informationsPresenter:
 		class: CmsModule\Administration\Presenters\InformationsPresenter(@cms.websiteFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Informations:'
+			category: 'Website'
+			name: 'Basic meta informations'
+			description: 'Edit base meta informations about this website'
+			priority: 155
+		]]
 
 	cms.admin.applicationPresenter:
 		class: CmsModule\Administration\Presenters\ApplicationPresenter(@cms.systemFormFactory, @cms.applicationFormFactory, @cms.databaseFormFactory, @cms.accountFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Application:'
+			category: 'System'
+			name: 'System settings'
+			description: 'Set up database, environment,...'
+			priority: 15
+		]]
 
 #	cms.admin.environmentsPresenter:
 #		class: CmsModule\Administration\Presenters\EnvironmentsPresenter(%environments%)
@@ -38,15 +74,33 @@ services:
 
 	cms.admin.contentPresenter:
 		class: CmsModule\Administration\Presenters\ContentPresenter(@cms.pageRepository, @cms.languageRepository, @cms.contentManager, @cms.contentFormFactory, @cms.contentRoutesFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Content:default'
+			category: 'Content'
+			name: 'Manage pages'
+			description: 'Manage existing pages and content'
+			priority: 110
+		]]
 
 	cms.admin.layoutsPresenter:
 		class: CmsModule\Administration\Presenters\LayoutsPresenter(@cms.scannerService, @cms.layoutFormFactory, @cms.layouteditFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Layouts:default'
+			category: 'Content'
+			name: 'Manage layouts'
+			description: 'Manage layouts, edit blocks,...'
+			priority: 100
+		]]
 
 	cms.admin.filesPresenter:
 		class: CmsModule\Administration\Presenters\FilesPresenter(@cms.fileRepository, @cms.dirRepository, @cms.fileFormFactory, @cms.dirFormFactory)
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Files:default'
+			category: 'Content'
+			name: 'Manage files'
+			description: 'Manage files and directories'
+			priority: 105
+		]]
 
 	cms.filePresenter:
 		class: CmsModule\Content\Presenters\FilePresenter(@cms.fileRepository)
@@ -54,7 +108,13 @@ services:
 
 	cms.admin.modulePresenter:
 		class: CmsModule\Administration\Presenters\ModulePresenter()
-		tags: [presenter]
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Module:'
+			category: 'System'
+			name: 'Module manager'
+			description: 'Manage CMS modules, donwload, install, setup,...'
+			priority: 10
+		]]
 
 	cms.admin.databasePresenter:
 		class: CmsModule\Administration\Presenters\DatabasePresenter(@cms.databaseFormFactory)

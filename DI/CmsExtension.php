@@ -149,9 +149,9 @@ class CmsExtension extends CompilerExtension
 		$container = $this->getContainerBuilder();
 		$manager = $container->getDefinition('cms.administrationManager');
 
-		foreach ($this->getSortedServices('administrationPage') as $item) {
-			$tags = $container->getDefinition($item)->tags['administrationPage'];
-			$manager->addSetup('addAdministrationPage', array($tags['name'], $tags['description'], $tags['category'], $tags['link'], "@{$item}"));
+		foreach ($this->getSortedServices('administration') as $item) {
+			$tags = $container->getDefinition($item)->tags['administration'];
+			$manager->addSetup('addAdministrationPage', array($tags['name'], $tags['description'], $tags['category'], $tags['link']));
 		}
 	}
 }

@@ -109,4 +109,3 @@ includes:
 	- presenters.neon
 	- components.neon
 	- commands.neon
-	- administration.neon

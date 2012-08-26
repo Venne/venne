@@ -31,30 +31,26 @@ class AdministrationManager extends Object
 	protected $administrationPages = array();
 
 
-
 	public function __construct(Container $context)
 	{
 		$this->context = $context;
 	}
 
 
-
-	public function addAdministrationPage($name, $description, $category, $link, Callback $administrationPageFactory)
+	public function addAdministrationPage($name, $description, $category, $link)
 	{
 		$this->administrationPages[$link] = array(
 			'name' => $name,
 			'description' => $description,
 			'category' => $category,
-			'factory' => $administrationPageFactory
 		);
 	}
 
 
-
 	/**
 	 * Get Administration pages as array
-	 * 
-	 * @return array 
+	 *
+	 * @return array
 	 */
 	public function getAdministrationPages()
 	{
@@ -66,6 +62,5 @@ class AdministrationManager extends Object
 
 		return $ret;
 	}
-
 }
 
