@@ -21,21 +21,15 @@ use CmsModule\Entities\UserEntity;
 class RoleRepository extends BaseRepository {
 
 
-	/**
-	 * Save structure
-	 *
-	 * @param array $data
-	 */
-	public function setStructure($data, $withoutFlush = self::FLUSH)
+	public function save($entity, $withoutFlush = self::FLUSH)
 	{
-		foreach ($data as $item) {
-			foreach ($item as $item2) {
-				$entity = $this->find($item2["id"]);
-				$entity->parent = $item2["role_id"] ? $this->find($item2["role_id"]) : NULL;
+		$en = $entity;
+		while(($en = $en->getParent())){
+			if($en ==$entity) {
+				throw new \Nette\InvalidArgumentException('Cyclic recursion detected. Please set else parent.');
 			}
 		}
 
-		$this->flush($withoutFlush);
+		return parent::save($entity, $withoutFlush);
 	}
-
 }

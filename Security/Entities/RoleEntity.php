@@ -17,10 +17,6 @@ use Venne;
  * @author Josef Kříž <pepakriz@gmail.com>
  * @Entity(repositoryClass="\CmsModule\Security\Repositories\RoleRepository")
  * @Table(name="role")
- *
- * @property string $name
- * @property \Doctrine\Common\Collections\ArrayCollection $childrens
- * @property RoleEntity $parent
  */
 class RoleEntity extends \DoctrineModule\ORM\BaseEntity {
 
@@ -37,7 +33,7 @@ class RoleEntity extends \DoctrineModule\ORM\BaseEntity {
 
 	/**
 	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="id")
-	 * @JoinColumn(name="role_id", referencedColumnName="id")
+	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 * @OrderBy({"order" = "ASC"})
 	 */
 	protected $parent;

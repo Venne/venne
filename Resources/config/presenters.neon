@@ -13,7 +13,7 @@ services:
 		tags: [presenter]
 
 	cms.admin.rolesPresenter:
-		class: CmsModule\Administration\Presenters\RolesPresenter
+		class: CmsModule\Administration\Presenters\RolesPresenter(@cms.roleRepository, @cms.roleFormFactory)
 		tags: [presenter]
 
 	cms.admin.loginPresenter:

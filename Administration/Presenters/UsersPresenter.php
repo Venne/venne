@@ -70,6 +70,7 @@ class UsersPresenter extends BasePresenter
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('edit', array('id' => $entity->id));
 			} else {
+				$presenter->invalidateControl('content');
 				$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
 				$presenter->setView('edit');
 				$presenter->id = $entity->id;

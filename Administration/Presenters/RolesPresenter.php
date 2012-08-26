@@ -12,6 +12,8 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use DoctrineModule\ORM\BaseRepository;
+use Nette\Callback;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,152 +23,181 @@ use Venne;
 class RolesPresenter extends BasePresenter
 {
 
-
 	/** @persistent */
 	public $id;
 
+	/** @var BaseRepository */
+	protected $roleRepository;
+
+	/** @var Callback */
+	protected $form;
 
 
-	public function startup()
+	/**
+	 * @param BaseRepository $roleRepository
+	 * @param Callback $form
+	 */
+	function __construct(BaseRepository $roleRepository, Callback $form)
 	{
-		parent::startup();
-
-		$this->template->items = $this->context->cms->roleRepository->findBy(array("parent" => NULL));
+		$this->roleRepository = $roleRepository;
+		$this->form = $form;
 	}
 
 
-
-	public function createComponentForm($name)
+	public function createComponentTable()
 	{
-		$form = new \Venne\Application\UI\Form;
-		$this->formRecursion($form, $this->template->items);
-		$form->onSuccess[] = array($this, "handleSave");
-		return $form;
-	}
+		$table = new \CmsModule\Components\TableControl;
+		$table->setRepository($this->roleRepository);
+		$table->setPaginator(10);
+		$table->enableSorter();
 
-
-
-	public function createComponentFormSort($name)
-	{
-		$form = new \Venne\Application\UI\Form;
-		$form->addHidden("hash");
-		$form->addSubmit("Save", "Save")->onClick[] = array($this, "handleSortSave");
-		return $form;
-	}
-
-
-
-	public function formRecursion($form, $menu)
-	{
-		if ($menu) {
-			foreach ($menu as $item) {
-				$form->addSubmit("settings_" . $item->id, "Settings");
-				$form->addSubmit("delete_" . $item->id, "Delete")->getControlPrototype()->class = "grey";
-				if ($item->childrens)
-					$this->formRecursion($form, $item->childrens);
-			}
-		}
-	}
-
-
-
-	public function formSaveRecursion($form, $menu)
-	{
-		foreach ($menu as $key => $item) {
-			if ($form["delete_" . $item->id]->isSubmittedBy()) {
-				$this->context->cms->roleRepository->delete($this->context->cms->roleRepository->find($item->id));
-				$this->flashMessage("Role has been deleted", "success");
-				$this->redirect("this");
-			}
-			if ($form["settings_" . $item->id]->isSubmittedBy()) {
-				$this->redirect("edit", array("id" => $item->id));
+		$table->addColumn('name', 'Name', '40%');
+		$table->addColumn('parent', 'Parents', '60%', function(\CmsModule\Security\Entities\RoleEntity $entity){
+			$entities = array();
+			$en = $entity;
+			while(($en = $en->getParent())){
+				$entities[] = $en->getName();
 			}
 
-			if ($item->childrens)
-				$this->formSaveRecursion($form, $item->childrens);
-		}
+			return implode(', ', $entities);
+		});
+
+		$presenter = $this;
+		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
+		{
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('edit', array('id' => $entity->id));
+			}
+			$this->invalidateControl('content');
+			$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
+			$presenter->setView('edit');
+			$presenter->id = $entity->id;
+		});
+		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
+		{
+			$presenter->delete($entity);
+			if (!$presenter->isAjax()) {
+				$presenter->redirect('default', array('id' => NULL));
+			} else {
+				$presenter->payload->url = $presenter->link('default', array('id' => NULL));
+			}
+		});
+
+		$table->addGlobalAction('delete', 'Delete', function($entity) use ($presenter)
+		{
+			$presenter->delete($entity);
+		});
+
+		return $table;
 	}
 
 
-
-	public function handleSave()
+	public function createComponentForm()
 	{
-		$this->formSaveRecursion($this["form"], $this->template->items);
-	}
-
-
-
-	public function handleSortSave()
-	{
-		$data = array();
-		$val = $this["formSort"]->getValues();
-		$hash = explode("&", $val["hash"]);
-		foreach ($hash as $item) {
-			$item = explode("=", $item);
-			$depend = $item[1];
-			if ($depend == "root")
-				$depend = Null;
-			$id = \substr($item[0], 5, -1);
-			if (!isset($data[$depend]))
-				$data[$depend] = array();
-			$order = count($data[$depend]) + 1;
-			$data[$depend][] = array("id" => $id, "order" => $order, "role_id" => $depend);
-		}
-		$this->context->cms->roleRepository->setStructure($data);
-		$this->flashMessage("Structure has been saved.", "success");
-		$this->redirect("this");
-	}
-
-
-
-	public function createComponentFormRole()
-	{
-		$repository = $this->context->cms->roleRepository;
+		$repository = $this->roleRepository;
 		$entity = $repository->createNew();
 
-		$form = $this->context->cms->createRoleForm();
+		$form = $this->form->invoke();
 		$form->setEntity($entity);
-		$form->onSuccess[] = function($form) use ($repository) {
-					try {
-						$repository->save($form->entity);
-						$form->getPresenter()->flashMessage("Role has been saved", "success");
-					} catch (\DoctrineModule\ORM\SqlException $e) {
-						if ($e->getCode() == 23000) {
-							$form->presenter->flashMessage("Role {$form->entity->name} already exists", "warning");
-							return;
-						} else {
-							throw $e;
-						}
-					}
-					$form->getPresenter()->redirect("default");
-				};
+		$form['_submit']->onClick[] = $this->processForm;
 		return $form;
 	}
 
 
-
-	public function createComponentFormRoleEdit($name)
+	public function processForm($button)
 	{
-		$repository = $this->context->cms->roleRepository;
-		$entity = $repository->find($this->getParameter("id"));
+		$form = $button->getForm();
+		$repository = $this->roleRepository;
 
-		$form = $this->context->cms->createRoleForm();
+		try {
+			$repository->save($form->entity);
+			$form->getPresenter()->flashMessage("Role has been created", "success");
+		} catch (\DoctrineModule\ORM\SqlException $e) {
+			if ($e->getCode() == 23000) {
+				$form->presenter->flashMessage("Role is not unique", "warning");
+				if (!$this->isAjax()) {
+					$this->redirect('this');
+				}
+				$this->invalidateControl('content');
+				return;
+			} else {
+				throw $e;
+			}
+		} catch (\Nette\InvalidArgumentException $e) {
+			$form->presenter->flashMessage($e->getMessage(), "warning");
+			if (!$this->isAjax()) {
+				$this->redirect('this');
+			}
+			$this->invalidateControl('content');
+			return;
+		}
+
+		if (!$this->isAjax()) {
+			$this->redirect("default");
+		}
+		$this->payload->url = $this->link('default', array('id' => NULL));
+		$this->forward('default', array('id' => NULL, 'do' => ''));
+	}
+
+
+	public function createComponentFormEdit()
+	{
+		$repository = $this->roleRepository;
+		$entity = $repository->find($this->id);
+
+		$form = $this->form->invoke();
 		$form->setEntity($entity);
-		$form->onSuccess[] = function($form) use ($repository) {
-					try {
-						$repository->save($form->entity);
-						$form->getPresenter()->flashMessage("Role has been updated", "success");
-					} catch (\DoctrineModule\ORM\SqlException $e) {
-						if ($e->getCode() == 23000) {
-							$form->presenter->flashMessage("User {$form->entity->name} already exists", "warning");
-							return;
-						} else {
-							throw $e;
-						}
-					}
-					$form->getPresenter()->redirect("this");
-				};
+		$form['_submit']->onClick[] = $this->processFormEdit;
 		return $form;
 	}
 
+
+	public function processFormEdit($button)
+	{
+		$form = $button->getForm();
+		$repository = $this->roleRepository;
+
+		try {
+			$repository->save($form->entity);
+			$form->getPresenter()->flashMessage("Role has been saved", "success");
+		} catch (\DoctrineModule\ORM\SqlException $e) {
+			if ($e->getCode() == 23000) {
+				$form->presenter->flashMessage("Role is not unique", "warning");
+				if (!$this->isAjax()) {
+					$this->redirect('this');
+				}
+				$this->invalidateControl('content');
+				return;
+			} else {
+				throw $e;
+			}
+		} catch (\Nette\InvalidArgumentException $e) {
+			$form->presenter->flashMessage($e->getMessage(), "warning");
+			if (!$this->isAjax()) {
+				$this->redirect('this');
+			}
+			$this->invalidateControl('content');
+			return;
+		}
+
+		if (!$this->isAjax()) {
+			$this->redirect("default");
+		}
+		$this->payload->url = $this->link('default', array('id' => NULL));
+		$this->forward('default', array('id' => NULL, 'do' => ''));
+	}
+
+
+	public function delete($entity)
+	{
+		$repository = $this->roleRepository;
+		$repository->delete($entity);
+
+		$this->flashMessage("Role has been deleted", "success");
+
+		if (!$this->isAjax()) {
+			$this->redirect("this", array("id" => NULL));
+		}
+		$this->invalidateControl('content');
+	}
 }

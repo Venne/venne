@@ -67,19 +67,13 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM
 	 *	  inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")}
 	 *	  )
 	 */
-	protected $roles;
+	protected $roleEntities;
 
 
 	/**
 	 * @OneToMany(targetEntity="LoginEntity", mappedBy="user")
 	 */
 	protected $logins;
-
-
-	/**
-	 * @Form(type="manyToMany", targetEntity="RoleEntity")
-	 */
-	protected $roleEntities;
 
 
 	/**
@@ -248,7 +242,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM
 	public function getRoles()
 	{
 		$ret = array();
-		foreach ($this->roles as $entity) {
+		foreach ($this->roleEntities as $entity) {
 			$ret[] = $entity->name;
 		}
 		return $ret;
@@ -258,7 +252,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM
 
 	public function getRoleEntities()
 	{
-		return $this->roles;
+		return $this->roleEntities;
 	}
 
 
@@ -270,7 +264,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM
 	 */
 	public function setRoleEntities($roles)
 	{
-		$this->roles = $roles;
+		$this->roleEntities = $roles;
 		$this->invalidateLogins();
 	}
 

@@ -1,16 +1,16 @@
 factories:
 
-	cms.form:
+	cms.ajaxForm:
 		class: CmsModule\Forms\BaseConfigForm
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 		tags: [component]
 
-	cms.ajaxForm:
+	cms.form:
 		class: CmsModule\Forms\BaseConfigForm
 		setup:
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
 		tags: [component]

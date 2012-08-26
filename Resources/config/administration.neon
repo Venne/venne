@@ -10,7 +10,7 @@ factories:
 			priority: 155
 		]]
 
-	cms.languageBackedPage:
+	cms.languageBackendPage:
 		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
 		tags: [administrationPage: [
 			link: 'Cms:Admin:Language:'
@@ -20,23 +20,23 @@ factories:
 			priority: 150
 		]]
 
-	cms.aclBackendPage:
+	cms.userBackendPage:
 		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
 		tags: [administrationPage: [
 			link: 'Cms:Admin:Users:'
 			category: 'Security'
-			name: 'Manage users'
+			name: 'User manager'
 			description: 'Add, edit users and their roles'
 			priority: 55
 		]]
 
-	cms.accessBackendPage:
+	cms.roleBackendPage:
 		class: CmsModule\Administration\AdministrationPage('static page', 'Cms:Admin:Content:default')
 		tags: [administrationPage: [
 			link: 'Cms:Admin:Roles:'
 			category: 'Security'
-			name: 'Access control'
-			description: 'Manage access policies, roles,...'
+			name: 'Role manager'
+			description: 'Manage roles and their inheriting'
 			priority: 50
 		]]
 

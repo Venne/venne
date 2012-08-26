@@ -1,5 +1,5 @@
 {block header}
-	Roles
+	{_'Roles'}
 {/block}
 
 {block toolbar}
@@ -8,59 +8,6 @@
 
 {block content}
 
-{js /js/jquery.ui.nestedSortable.js}
-
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('.sortable').nestedSortable({
-			forcePlaceholderSize: true,
-			handle: 'div',
-			items: 'li',
-			opacity: .6,
-			placeholder: 'placeholder',
-			tabSize: 25,
-			tolerance: 'pointer',
-			toleranceElement: '> div',
-			stop: function(event, ui) {
-				$("#frmformSort-hash").val($('.sortable').nestedSortable('serialize'));
-			}
-		});
-		$("#frmformSort-hash").val($('.sortable').nestedSortable('serialize'));
-	});
-</script>
-
-{*control menu*}
-
-{var $form=>$presenter["form"]}
-{var $dep=>NULL}
-
-{form form class=>venne-form}
-
-{block #items}
-<ul{if $dep == ""} class="sortable"{/if}>
-		{if $items}
-			{foreach $items as $item}
-			<li id="item-{$item->id}">
-				<div>
-					<span class="text">
-						{$item->name}
-					</span>
-					<span class="buttons">
-						{if $item->name != "admin" && $item->name != "guest"}
-						{$control['form']["settings_".$item->id]->control}
-						{$control['form']["delete_".$item->id]->control}
-						{/if}
-					</span>
-				</div>
-				{if $item->childrens}{include #items, "items"=>$item->childrens, 'dep' => $item->id}{/if}
-			</li>
-			{/foreach}
-		{/if}
-</ul>
-{/block}
-
-{/form}
-
-{control formSort}
+{control table}
 
 
