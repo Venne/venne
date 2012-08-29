@@ -59,9 +59,10 @@ class BaseFileEntity extends \DoctrineModule\ORM\BaseEntity
 	protected $_oldPath;
 
 
-	function __construct()
+	public function __construct()
 	{
 		$this->invisible = false;
+		$this->name = '';
 	}
 
 
