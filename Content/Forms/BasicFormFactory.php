@@ -60,51 +60,47 @@ class BasicFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->onAttached[] = function($form)
-		{
+		$infoGroup = $form->addGroup('Informations');
 
-			$infoGroup = $form->addGroup('Informations');
+		$form->addText('name', 'Name');
 
-			$form->addText('name', 'Name');
+		//$form->addCheckbox("mainPage", "Main page");
+		if (!$form->data->translationFor) {
+			$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL));
+		}
+		//$form->addText("localUrl", "URL")->setOption("description", "(example: 'contact')")->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
+		$mainRoute = $form->addOne('mainRoute');
+		$mainRoute->setCurrentGroup($infoGroup);
+		$mainRoute->addText('localUrl', 'URL');
 
-			//$form->addCheckbox("mainPage", "Main page");
-			if (!$form->data->translationFor) {
-				$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL));
-			}
-			//$form->addText("localUrl", "URL")->setOption("description", "(example: 'contact')")->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
-			$mainRoute = $form->addOne('mainRoute');
-			$mainRoute->setCurrentGroup($infoGroup);
-			$mainRoute->addText('localUrl', 'URL');
-
-			$form->addGroup("Dates");
-			//$form->addDateTime("created", "Created")->setDefaultValue(new \Nette\DateTime);
-			//$form->addDateTime("updated", "Updated")->setDefaultValue(new \Nette\DateTime);
-			//$form->addDateTime("expired", "Expired");
+		$form->addGroup("Dates");
+		//$form->addDateTime("created", "Created")->setDefaultValue(new \Nette\DateTime);
+		//$form->addDateTime("updated", "Updated")->setDefaultValue(new \Nette\DateTime);
+		//$form->addDateTime("expired", "Expired");
 
 
-			// URL can be empty only on main page
-			if (!$form->data->translationFor) {
-				$form['mainRoute']["localUrl"]->addConditionOn($form["parent"], ~$form::EQUAL, false)->addRule($form::FILLED, "URL can be empty only on main page");
-			} else if ($form->data->translationFor && $form->data->translationFor->parent) {
-				$form['mainRoute']["localUrl"]->addRule($form::FILLED, "URL can be empty only on main page");
-			}
+		// URL can be empty only on main page
+		if (!$form->data->translationFor) {
+			$form['mainRoute']["localUrl"]->addConditionOn($form["parent"], ~$form::EQUAL, false)->addRule($form::FILLED, "URL can be empty only on main page");
+		} else if ($form->data->translationFor && $form->data->translationFor->parent) {
+			$form['mainRoute']["localUrl"]->addRule($form::FILLED, "URL can be empty only on main page");
+		}
 
-			// languages
-			/** @var $repository \DoctrineModule\ORM\BaseRepository */
-			$repository = $form->mapper->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
-			if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 1) {
-				$form->addGroup("Languages");
-				$form->addManyToMany("languages", "Content is in");
-			}
+		// languages
+		/** @var $repository \DoctrineModule\ORM\BaseRepository */
+		$repository = $form->mapper->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
+		if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 1) {
+			$form->addGroup("Languages");
+			$form->addManyToMany("languages", "Content is in");
+		}
 
-			$form->setCurrentGroup();
+		$form->setCurrentGroup();
 
-			$form->addSubmit('_submit', 'Save');
-		};
+		$form->addSubmit('_submit', 'Save');
 	}
 
 
-	public function handleValidate(Form $form)
+	public function handleSave(Form $form)
 	{
 		try {
 			$this->repository->save($form->data);
