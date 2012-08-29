@@ -21,14 +21,17 @@ use DoctrineModule\ORM\BaseRepository;
 class NavigationControl extends Control
 {
 
+	/** @var string */
+	protected $routePrefix;
 
 	/** @var BaseRepository */
 	protected $pageRepository;
 
 
-	function __construct($pageRepository)
+	function __construct($pageRepository, $routePrefix)
 	{
 		$this->pageRepository = $pageRepository;
+		$this->routePrefix = $routePrefix;
 	}
 
 
@@ -43,12 +46,15 @@ class NavigationControl extends Control
 
 	public function render($startDepth = NULL, $maxDepth = NULL, $followActive = NULL)
 	{
+		$cacheKey = array(
+			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $this->getPresenter()->lang
+		);
+
 		$this->template->startDepth = $startDepth ? : 0;
 		$this->template->maxDepth = $maxDepth ? : 1;
 		$this->template->followActive = $followActive ? : false;
-		$this->template->cacheKey = $this->presenter->page->id;
+		$this->template->cacheKey = implode('|', $cacheKey);
 
 		parent::render();
 	}
-
 }

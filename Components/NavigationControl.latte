@@ -1,5 +1,4 @@
-{cache $cacheKey, $startDepth, $maxDepth, $followActive, tags => [\CmsModule\Content\Entities\PageEntity::CACHE]}
-{dump generate-navigation}
+{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE]}
 
 {var items=>$control->getItems()}
 {var sub=>0}
@@ -9,7 +8,9 @@
 <ul {if $sub}class="dropdown-menu"{else}class="nav"{/if}>
 	{foreach $items as $item}
 
-		{var url=>$item->url}
+		{var entity=>$item->getPageWithLanguageAlias($presenter->lang)}
+		{continueIf $entity===NULL}
+		{var url=>$entity->url}
 		{var active=>
 			(
 				(!$url && !$currentUrl) ||
@@ -17,14 +18,14 @@
 			)
 		}
 
-		{if $item instanceof \PagesModule\Entities\RedirectEntity}
-			{if $item->page}
-				{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$item->page->mainRoute))}
+		{if $entity instanceof \PagesModule\Entities\RedirectEntity}
+			{if $entity->page}
+				{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$entity->page->mainRoute))}
 			{else}
-				{var link=>$basePath . '/' . $item->redirectUrl}
+				{var link=>$basePath . '/' . $entity->redirectUrl}
 			{/if}
 		{else}
-			{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$item->mainRoute))}
+			{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$entity->mainRoute))}
 		{/if}
 
 		{var childrens=>($sub < ($startDepth + $maxDepth - 1)) && ($active || !$followActive) && count($item->childrens) > 0}
@@ -35,7 +36,7 @@
 			{/if}
 		{else}
 			<li class="{if $active} active{/if}{if $childrens} dropdown{/if}">
-				<a href="{$link}" class="{if $active} active{/if}{if $childrens} dropdown-toogle" data-toggle="dropdown{/if}">{$item->name}</a>
+				<a href="{$link}" class="{if $active} active{/if}{if $childrens} dropdown-toogle" data-toggle="dropdown{/if}">{$entity->name}</a>
 
 				{if $childrens}
 				{include #menu, "items"=>$item->childrens, "sub"=>($sub+1)}

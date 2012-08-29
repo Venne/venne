@@ -98,7 +98,7 @@ factories:
 		tags: [widget: head]
 
 	cms.navigationControl:
-		class: CmsModule\Components\NavigationControl(@cms.pageRepository)
+		class: CmsModule\Components\NavigationControl(@cms.pageRepository, %website.routePrefix%)
 		tags: [widget: navigation]
 
 	cms.languageswitchControl:
