@@ -26,6 +26,16 @@ class PageListener implements EventSubscriber
 	/** @var Cache */
 	protected $cache;
 
+	/** @var array */
+	protected $entities = array(
+		'CmsModule\Content\Entities\PageEntity' => true,
+		'CmsModule\Content\Entities\RouteEntity' => true,
+	);
+
+
+	/**
+	 * @param FileStorage $storage
+	 */
 	function __construct(FileStorage $storage)
 	{
 		$this->cache = new Cache($storage);
@@ -43,40 +53,54 @@ class PageListener implements EventSubscriber
 	}
 
 
+	/**
+	 * @param OnFlushEventArgs $eventArgs
+	 */
 	public function onFlush(OnFlushEventArgs $eventArgs)
 	{
 		$em = $eventArgs->getEntityManager();
 		$uow = $em->getUnitOfWork();
 
+		$entities = $this->entities;
 		foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-			if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
-				$this->invalidateCache();
-				return;
+			foreach ($entities as $class => $i) {
+				if (is_a($entity, $class)) {
+					$this->invalidateByClass($class);
+					unset($entities[$class]);
+					break;
+				}
 			}
 		}
 
 		foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-			if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
-				$this->invalidateCache();
-				return;
+			foreach ($entities as $class => $i) {
+				if (is_a($entity, $class)) {
+					$this->invalidateByClass($class);
+					unset($entities[$class]);
+					break;
+				}
 			}
 		}
 
 		foreach ($uow->getScheduledEntityDeletions() AS $entity) {
-			if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
-				$this->invalidateCache();
-				return;
+			foreach ($entities as $class => $i) {
+				if (is_a($entity, $class)) {
+					$this->invalidateByClass($class);
+					unset($entities[$class]);
+					break;
+				}
 			}
 		}
 	}
 
 
-	protected function invalidateCache()
+	/**
+	 * @param $class
+	 */
+	protected function invalidateByClass($class)
 	{
 		$this->cache->clean(array(
-			Cache::TAGS => \CmsModule\Content\Entities\PageEntity::CACHE,
+			Cache::TAGS => $class::CACHE,
 		));
 	}
-
-
 }

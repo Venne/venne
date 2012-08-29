@@ -22,6 +22,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 class RouteEntity extends \DoctrineModule\ORM\BaseEntity
 {
 
+	const CACHE = 'Cms.RouteEntity';
+
 	const DEFAULT_LAYOUT = 'default';
 
 	public static $robotsValues = array(
