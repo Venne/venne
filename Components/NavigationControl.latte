@@ -20,12 +20,12 @@
 
 		{if $entity instanceof \PagesModule\Entities\RedirectEntity}
 			{if $entity->page}
-				{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$entity->page->mainRoute))}
+				{var link=>$presenter->link('this', array('route'=>$entity->page->mainRoute))}
 			{else}
 				{var link=>$basePath . '/' . $entity->redirectUrl}
 			{/if}
 		{else}
-			{var link=>$presenter->link('this', array('lang'=>$presenter->lang, 'route'=>$entity->mainRoute))}
+			{var link=>$presenter->link('this', array('route'=>$entity->mainRoute))}
 		{/if}
 
 		{var childrens=>($sub < ($startDepth + $maxDepth - 1)) && ($active || !$followActive) && count($item->childrens) > 0}
