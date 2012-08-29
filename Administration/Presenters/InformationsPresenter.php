@@ -13,6 +13,7 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use Nette\Callback;
+use CmsModule\Forms\WebsiteFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,19 +24,41 @@ class InformationsPresenter extends BasePresenter
 {
 
 
-	/** @var Callback */
+	/** @var WebsiteFormFactory */
 	protected $form;
 
 
-	public function __construct(Callback $form)
+	public function injectForm(WebsiteFormFactory $form)
 	{
 		$this->form = $form;
 	}
 
 
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleEdit()
+	{
+	}
+
+
 	public function createComponentWebsiteForm()
 	{
-		$form = $this->form->invoke();
+		$presenter = $this;
+
+		$form = $this->form->createForm();
+		$form->onValidate[] = function() use ($presenter)
+		{
+			$presenter->tryCall('handleEdit', array());
+		};
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}

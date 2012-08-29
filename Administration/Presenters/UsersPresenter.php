@@ -12,6 +12,8 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use DoctrineModule\ORM\BaseRepository;
+use CmsModule\Forms\UserFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -32,14 +34,57 @@ class UsersPresenter extends BasePresenter
 	/** @var \DoctrineModule\ORM\BaseRepository */
 	protected $userRepository;
 
+	/** @var UserFormFactory */
+	protected $form;
 
-	public function startup()
+
+	/**
+	 * @param BaseRepository $userRepository
+	 */
+	public function __construct(BaseRepository $userRepository)
 	{
-		parent::startup();
-		$this->userRepository = $this->context->cms->userRepository;
+		parent::__construct();
+
+		$this->userRepository = $userRepository;
 	}
 
 
+	/**
+	 * @param UserFormFactory $form
+	 */
+	public function injectForm(UserFormFactory $form)
+	{
+		$this->form = $form;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="create")
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
 	public function handleDelete($id)
 	{
 		$this->userRepository->delete($this->userRepository->find($id));
@@ -55,7 +100,7 @@ class UsersPresenter extends BasePresenter
 	public function createComponentTable()
 	{
 		$table = new \CmsModule\Components\TableControl;
-		$table->setRepository($this->context->cms->userRepository);
+		$table->setRepository($this->userRepository);
 		$table->setPaginator(2);
 
 		$table->addColumn('email', 'E-mail', '60%');
@@ -87,12 +132,7 @@ class UsersPresenter extends BasePresenter
 
 	public function createComponentForm()
 	{
-		$repository = $this->userRepository;
-		$entity = $repository->createNew();
-
-		$form = $this->context->cms->createUserForm();
-		$form->setEntity($entity);
-		$form->addSubmit("_submit", "Save");
+		$form = $this->form->createForm($this->userRepository->createNew());
 		$form->onSuccess[] = $this->formProcess;
 		return $form;
 	}
@@ -100,20 +140,7 @@ class UsersPresenter extends BasePresenter
 
 	public function formProcess($form)
 	{
-		$repository = $this->userRepository;
-
-		$form->entity->enable = 1;
-		try {
-			$repository->save($form->entity);
-			$this->flashMessage("User has been created", "success");
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$this->flashMessage("User {$form->entity->name} already exists", "warning");
-				return;
-			} else {
-				throw $e;
-			}
-		}
+		$this->flashMessage("User has been created", "success");
 
 		if (!$this->isAjax()) {
 			$this->redirect("default");
@@ -125,12 +152,7 @@ class UsersPresenter extends BasePresenter
 
 	public function createComponentFormEdit()
 	{
-		$repository = $this->userRepository;
-		$entity = $repository->find($this->getParameter("id"));
-
-		$form = $this->context->cms->createUserForm();
-		$form->setEntity($entity);
-		$form->addSubmit("_submit", "Save");
+		$form = $this->form->createForm($this->userRepository->find($this->id));
 		$form->onSuccess[] = $this->processFormEdit;
 		return $form;
 	}
@@ -138,38 +160,10 @@ class UsersPresenter extends BasePresenter
 
 	public function processFormEdit($form)
 	{
-		$repository = $this->userRepository;
-
-		try {
-			$repository->save($form->entity);
-			$this->flashMessage("User has been updated", "success");
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$this->flashMessage("User {$form->entity->name} already exists", "warning");
-				return;
-			} else {
-				throw $e;
-			}
-		}
+		$this->flashMessage("User has been updated", "success");
 
 		if (!$this->isAjax()) {
 			$this->redirect("this");
 		}
-	}
-
-
-	public function createComponentVp()
-	{
-		$vp = new \CmsModule\Components\VisualPaginator;
-		$pg = $vp->getPaginator();
-		$pg->setItemsPerPage(20);
-		$pg->setItemCount($this->userRepository->createQueryBuilder("a")->select("COUNT(a.id)")->getQuery()->getSingleScalarResult());
-		return $vp;
-	}
-
-
-	public function renderDefault()
-	{
-		$this->template->userRepository = $this->userRepository;
 	}
 }

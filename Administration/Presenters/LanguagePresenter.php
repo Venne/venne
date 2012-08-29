@@ -14,8 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use Nette\Application\UI\Form;
 use DoctrineModule\ORM\BaseRepository;
-use CmsModule\Services\ConfigBuilder;
-use Nette\Callback;
+use CmsModule\Forms\LanguageFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -32,18 +31,49 @@ class LanguagePresenter extends BasePresenter
 	/** @var BaseRepository */
 	protected $languageRepository;
 
-	/** @var ConfigBuilder */
-	protected $configService;
-
-	/** @var Callback */
+	/** @var \CmsModule\Forms\LanguageFormFactory */
 	protected $form;
 
 
-	function __construct(BaseRepository $languageRepository, ConfigBuilder $configService, $form)
+	public function __construct(BaseRepository $languageRepository)
 	{
 		$this->languageRepository = $languageRepository;
-		$this->configService = $configService;
+	}
+
+
+	/**
+	 * @param \CmsModule\Forms\LanguageFormFactory $form
+	 */
+	public function injectForm(LanguageFormFactory $form)
+	{
 		$this->form = $form;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function actionEdit()
+	{
+
+	}
+
+
+	/**
+	 * @secured(privilege="create")
+	 */
+	public function actionCreate()
+	{
+
 	}
 
 
@@ -74,9 +104,9 @@ class LanguagePresenter extends BasePresenter
 			$presenter->delete($entity);
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('default', array('id' => NULL));
-			} else {
-				$presenter->payload->url = $presenter->link('default', array('id' => NULL));
 			}
+			$presenter->invalidateControl('content');
+			$presenter->payload->url = $presenter->link('default', array('id' => NULL));
 		});
 
 		$table->addGlobalAction('delete', 'Delete', function($entity) use ($presenter)
@@ -88,42 +118,17 @@ class LanguagePresenter extends BasePresenter
 	}
 
 
-	public function createComponentForm($name)
+	public function createComponentForm()
 	{
-		$repository = $this->languageRepository;
-		$entity = $repository->createNew();
-
-		$form = $this->form->invoke();
-		$form->setEntity($entity);
-		$form['_submit']->onClick[] = $this->processForm;
+		$form = $this->form->invoke($this->languageRepository->createNew());
+		$form->onSuccess[] = $this->processForm;
 		return $form;
 	}
 
 
 	public function processForm($button)
 	{
-		$form = $button->getForm();
-		$repository = $this->languageRepository;
-		$config = $this->configService;
-
-		try {
-			$repository->save($form->entity);
-			$form->getPresenter()->flashMessage("Language has been created", "success");
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->presenter->flashMessage("Language is not unique", "warning");
-				return;
-			} else {
-				throw $e;
-			}
-		}
-
-		$languages = array();
-		foreach ($repository->findAll() as $entity) {
-			$languages[] = $entity->alias;
-		}
-		$config["parameters"]["website"]["languages"] = $languages;
-		$config->save();
+		$this->flashMessage("Language has been created", "success");
 
 		if (!$this->isAjax() || count($this->context->parameters['website']['languages']) == 0) {
 			$this->redirect("default");
@@ -135,44 +140,15 @@ class LanguagePresenter extends BasePresenter
 
 	public function createComponentFormEdit($name)
 	{
-		$repository = $this->languageRepository;
-		$entity = $repository->find($this->id);
-		$config = $this->configService;
-
-		$form = $this->form->invoke();
-		$form->setEntity($entity);
-		$form['_submit']->onClick[] = $this->processFormEdit;
+		$form = $this->form->invoke($this->languageRepository->find($this->id));
+		$form->onSuccess[] = $this->processFormEdit;
 		return $form;
 	}
 
 
 	public function processFormEdit($button)
 	{
-		$form = $button->getForm();
-		$repository = $this->languageRepository;
-		$config = $this->configService;
-
-		try {
-			$repository->save($form->entity);
-			$form->getPresenter()->flashMessage("Language has been updated", "success");
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->presenter->flashMessage("Language is not unique", "warning");
-				return;
-			} else {
-				throw $e;
-			}
-		}
-
-		$languages = array();
-		foreach ($repository->findAll() as $entity) {
-			$languages[] = $entity->alias;
-		}
-		$config["parameters"]["website"]["languages"] = $languages;
-		if ($form->entity->id == 1) {
-			$config["parameters"]["website"]["defaultLanguage"] = $form->entity->alias;
-		}
-		$config->save();
+		$this->flashMessage("Language has been updated", "success");
 
 		if (!$this->isAjax()) {
 			$this->redirect("default");

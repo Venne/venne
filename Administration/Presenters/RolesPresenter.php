@@ -14,6 +14,8 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use DoctrineModule\ORM\BaseRepository;
 use Nette\Callback;
+use CmsModule\Forms\RoleFormFactory;
+use CmsModule\Forms\PermissionsFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -29,22 +31,51 @@ class RolesPresenter extends BasePresenter
 	/** @var BaseRepository */
 	protected $roleRepository;
 
-	/** @var Callback */
-	protected $form;
+	/** @var RoleFormFactory */
+	protected $roleForm;
 
 	/** @var Callback */
 	protected $permissionsForm;
 
+
 	/**
 	 * @param BaseRepository $roleRepository
-	 * @param Callback $form
-	 * @param Callback $permissionsForm
+	 * @param PermissionsFormFactory $permissionsForm
 	 */
-	function __construct(BaseRepository $roleRepository, Callback $form, Callback $permissionsForm)
+	function __construct(BaseRepository $roleRepository , PermissionsFormFactory $permissionsForm)
 	{
 		$this->roleRepository = $roleRepository;
-		$this->form = $form;
 		$this->permissionsForm = $permissionsForm;
+	}
+
+
+	public function injectRoleForm(RoleFormFactory $roleForm)
+	{
+		$this->roleForm = $roleForm;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="create")
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function actionEdit()
+	{
 	}
 
 
@@ -56,10 +87,11 @@ class RolesPresenter extends BasePresenter
 		$table->enableSorter();
 
 		$table->addColumn('name', 'Name', '40%');
-		$table->addColumn('parent', 'Parents', '60%', function(\CmsModule\Security\Entities\RoleEntity $entity){
+		$table->addColumn('parent', 'Parents', '60%', function(\CmsModule\Security\Entities\RoleEntity $entity)
+		{
 			$entities = array();
 			$en = $entity;
-			while(($en = $en->getParent())){
+			while (($en = $en->getParent())) {
 				$entities[] = $en->getName();
 			}
 
@@ -108,43 +140,15 @@ class RolesPresenter extends BasePresenter
 
 	public function createComponentForm()
 	{
-		$repository = $this->roleRepository;
-		$entity = $repository->createNew();
-
-		$form = $this->form->invoke();
-		$form->setEntity($entity);
-		$form['_submit']->onClick[] = $this->processForm;
+		$form = $this->roleForm->invoke($this->roleRepository->createNew());
+		$form->onSuccess[] = $this->processForm;
 		return $form;
 	}
 
 
 	public function processForm($button)
 	{
-		$form = $button->getForm();
-		$repository = $this->roleRepository;
-
-		try {
-			$repository->save($form->entity);
-			$form->getPresenter()->flashMessage("Role has been created", "success");
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->presenter->flashMessage("Role is not unique", "warning");
-				if (!$this->isAjax()) {
-					$this->redirect('this');
-				}
-				$this->invalidateControl('content');
-				return;
-			} else {
-				throw $e;
-			}
-		} catch (\Nette\InvalidArgumentException $e) {
-			$form->presenter->flashMessage($e->getMessage(), "warning");
-			if (!$this->isAjax()) {
-				$this->redirect('this');
-			}
-			$this->invalidateControl('content');
-			return;
-		}
+		$this->flashMessage("Role has been created", "success");
 
 		if (!$this->isAjax()) {
 			$this->redirect("default");
@@ -156,43 +160,15 @@ class RolesPresenter extends BasePresenter
 
 	public function createComponentFormEdit()
 	{
-		$repository = $this->roleRepository;
-		$entity = $repository->find($this->id);
-
-		$form = $this->form->invoke();
-		$form->setEntity($entity);
-		$form['_submit']->onClick[] = $this->processFormEdit;
+		$form = $this->roleForm->invoke($this->roleRepository->find($this->id));
+		$form->onSuccess[] = $this->processFormEdit;
 		return $form;
 	}
 
 
 	public function processFormEdit($button)
 	{
-		$form = $button->getForm();
-		$repository = $this->roleRepository;
-
-		//try {
-			$repository->save($form->entity);
-			$form->getPresenter()->flashMessage("Role has been saved", "success");
-//		} catch (\DoctrineModule\ORM\SqlException $e) {
-//			if ($e->getCode() == 23000) {
-//				$form->presenter->flashMessage("Role is not unique", "warning");
-//				if (!$this->isAjax()) {
-//					$this->redirect('this');
-//				}
-//				$this->invalidateControl('content');
-//				return;
-//			} else {
-//				throw $e;
-//			}
-//		} catch (\Nette\InvalidArgumentException $e) {
-//			$form->presenter->flashMessage($e->getMessage(), "warning");
-//			if (!$this->isAjax()) {
-//				$this->redirect('this');
-//			}
-//			$this->invalidateControl('content');
-//			return;
-//		}
+		$this->flashMessage("Role has been saved", "success");
 
 		if (!$this->isAjax()) {
 			$this->redirect("default");
@@ -204,11 +180,7 @@ class RolesPresenter extends BasePresenter
 
 	public function createComponentPermissionsForm()
 	{
-		$repository = $this->roleRepository;
-		$entity = $repository->find($this->id);
-
-		$form = $this->permissionsForm->invoke();
-		$form->setEntity($entity);
+		$form = $this->permissionsForm->invoke($this->roleRepository->find($this->id));
 		$form->onSuccess[] = $this->processFormEdit;
 		return $form;
 	}
@@ -216,8 +188,7 @@ class RolesPresenter extends BasePresenter
 
 	public function delete($entity)
 	{
-		$repository = $this->roleRepository;
-		$repository->delete($entity);
+		$this->roleRepository->delete($entity);
 
 		$this->flashMessage("Role has been deleted", "success");
 

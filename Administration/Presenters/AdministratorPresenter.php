@@ -12,6 +12,8 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use Nette\Caching\IStorage;
+use CmsModule\Forms\SystemAccountFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,14 +21,66 @@ use Venne;
 class AdministratorPresenter extends BasePresenter
 {
 
+	/** @var string */
+	protected $appDir;
+
+	/** @var string */
+	protected $wwwDir;
+
+	/** @var string */
+	protected $tempDir;
+
+	/** @var string */
+	protected $dataDir;
+
+	/** @var string */
+	protected $resourcesDir;
+
+	/** @var string */
+	protected $configDir;
+
+	/** @var array */
+	protected $administration;
+
+	/** @var SystemAccountFormFactory */
+	protected $accountForm;
+
+	/** @var IStorage */
+	protected $cacheStorage;
+
+
+	/**
+	 * @param IStorage $cacheStorage
+	 * @param $parameters
+	 */
+	public function __construct(IStorage $cacheStorage, $administration, $appDir, $wwwDir, $tempDir, $dataDir, $resourcesDir, $configDir)
+	{
+		parent::__construct();
+
+		$this->appDir = $appDir;
+		$this->wwwDir = $wwwDir;
+		$this->tempDir = $tempDir;
+		$this->dataDir = $dataDir;
+		$this->resourcesDir = $resourcesDir;
+		$this->configDir = $configDir;
+		$this->cacheStorage = $cacheStorage;
+		$this->administration = $administration;
+	}
+
+
+	public function injectAccountForm(SystemAccountFormFactory $accountForm)
+	{
+		$this->accountForm = $accountForm;
+	}
+
 
 	public function startup()
 	{
 		parent::startup();
 
 		// Resources dir
-		if (!file_exists($this->context->parameters['resourcesDir'] . "/cmsModule")) {
-			@symlink("../../vendor/venne/core-module/Resources/public", $this->context->parameters['resourcesDir'] . "/cmsModule");
+		if (!file_exists($this->resourcesDir . "/cmsModule")) {
+			@symlink("../../vendor/venne/core-module/Resources/public", $this->resourcesDir . "/cmsModule");
 		}
 
 		// Extensions
@@ -38,7 +92,7 @@ class AdministratorPresenter extends BasePresenter
 		}
 
 		// Writable
-		$paths = array($this->getContext()->parameters["wwwDir"] . "/public/", $this->getContext()->parameters["dataDir"] . "/", $this->getContext()->parameters["configDir"] . "/", $this->getContext()->parameters["tempDir"] . "/", $this->getContext()->parameters["appDir"] . "/proxies/", $this->getContext()->parameters["tempDir"]);
+		$paths = array($this->wwwDir . "/public/", $this->dataDir, $this->configDir, $this->appDir . "/proxies", $this->tempDir);
 		foreach ($paths as $item) {
 			if (!is_writable($item)) {
 				$this->flashMessage("Path " . $item . " is not writable.", "warning");
@@ -49,7 +103,7 @@ class AdministratorPresenter extends BasePresenter
 
 	public function createComponentSystemAccountForm($name)
 	{
-		$form = $this->context->cms->createAccountForm();
+		$form = $this->accountForm->invoke();
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
@@ -65,9 +119,9 @@ class AdministratorPresenter extends BasePresenter
 		$user->login($values['name'], $values['password']);
 
 		/** @var $cache \Nette\Caching\Cache */
-		$cache = new \Nette\Caching\Cache($this->context->nette->templateCacheStorage, 'Nette.Configurator');
+		$cache = new \Nette\Caching\Cache($this->cacheStorage, 'Nette.Configurator');
 		$cache->clean();
 
-		$this->redirect(":Cms:Admin:{$this->getContext()->parameters['administration']['defaultPresenter']}:");
+		$this->redirect(":Cms:Admin:{$this->administration['defaultPresenter']}:");
 	}
 }

@@ -15,7 +15,7 @@ use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\ORM\BaseRepository")
+ * @Entity(repositoryClass="\CmsModule\Content\Repositories\LanguageRepository")
  * @Table(name="language")
  */ 
 class LanguageEntity extends \DoctrineModule\ORM\BaseEntity {

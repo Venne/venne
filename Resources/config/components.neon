@@ -1,92 +1,101 @@
+services:
+	cms.websiteFormFactory:
+		class: CmsModule\Forms\WebsiteFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.languageFormFactory:
+		class: CmsModule\Forms\LanguageFormFactory(..., @cms.languageRepository, ...)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.userFormFactory:
+		class: CmsModule\Forms\UserFormFactory(..., @cms.userRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.roleFormFactory:
+		class: CmsModule\Forms\RoleFormFactory(..., @cms.roleRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.loginFormFactory:
+		class: CmsModule\Forms\LoginFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+			- setRedirect(:Cms:Admin:%administration.defaultPresenter%)
+
+	cms.applicationFormFactory:
+		class: CmsModule\Forms\SystemApplicationFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.databaseFormFactory:
+		class: CmsModule\Forms\SystemDatabaseFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.accountFormFactory:
+		class: CmsModule\Forms\SystemAccountFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.systemFormFactory:
+		class: CmsModule\Forms\SystemAdministrationFormFactory(..., ..., %administration.routePrefix%)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.dirFormFactory:
+		class: CmsModule\Content\Forms\DirFormFactory(..., @cms.dirRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.fileFormFactory:
+		class: CmsModule\Content\Forms\FileFormFactory(..., @cms.fileRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.layoutFormFactory:
+		class: CmsModule\Content\Forms\LayoutFormFactory(..., %appDir%, %modules%)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.layouteditFormFactory:
+		class: CmsModule\Content\Forms\LayouteditFormFactory(%appDir%, %modules%)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.contentFormFactory:
+		class: CmsModule\Content\Forms\BasicFormFactory(..., @cms.pageRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.contentRoutesFormFactory:
+		class: CmsModule\Content\Forms\RoutesFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.permissionsFormFactory:
+		class: CmsModule\Forms\PermissionsFormFactory(..., @cms.roleRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+			- injectAuthorizatorFactory
+			- injectAdministrationManager
+			- injectPresenterFactory
+			- injectControlVerifier
+
 factories:
 
-	cms.ajaxForm:
-		class: CmsModule\Forms\BaseConfigForm
+	cms.admin.basicForm:
+		class: Venne\Forms\Form
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
-			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		tags: [component]
-
-	cms.form:
-		class: CmsModule\Forms\BaseConfigForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-			- setTranslator(@translator.translator)
-		tags: [component]
+			#- "$service->getElementPrototype()->class[] = ?"("ajax")
 
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
 		tags: [widget: head]
-
-	cms.websiteForm < cms.ajaxForm:
-		class: CmsModule\Forms\WebsiteForm
-		setup:
-			- setRoot(parameters.website)
-
-	cms.languageForm < cms.ajaxForm:
-		class: CmsModule\Forms\LanguageForm
-
-	cms.modulesDefaultForm < cms.form:
-		class: CmsModule\Forms\ModulesDefaultForm
-
-	cms.userForm < cms.ajaxForm:
-		class: CmsModule\Forms\UserForm
-
-	cms.roleForm < cms.ajaxForm:
-		class: CmsModule\Forms\RoleForm
-
-	cms.permissionsForm < cms.form:
-		class: CmsModule\Forms\PermissionsForm
-		setup:
-			- setAuthorizatorFactory
-			- setAdministrationManager
-			- setPresenterFactory
-
-	cms.systemForm < cms.ajaxForm:
-		class: CmsModule\Forms\SystemForm
-		setup:
-			- setRoot(parameters)
-
-	cms.applicationForm < cms.ajaxForm:
-		class: CmsModule\Forms\SystemApplicationForm
-		setup:
-			- setRoot('')
-
-	cms.databaseForm < cms.ajaxForm:
-		class: CmsModule\Forms\SystemDatabaseForm
-		setup:
-			- setRoot(parameters.database)
-
-	cms.accountForm < cms.ajaxForm:
-		class: CmsModule\Forms\SystemAccountForm
-		setup:
-			- setRoot(parameters.administration.login)
-
-	cms.loginForm < cms.form:
-		class: CmsModule\Forms\LoginForm
-		setup:
-			- setRedirect(:Cms:Admin:%administration.defaultPresenter%)
-
-	cms.contentForm < cms.ajaxForm:
-		class: CmsModule\Content\Forms\BasicForm
-
-	cms.layoutForm < cms.ajaxForm:
-		class: CmsModule\Content\Forms\LayoutForm
-		setup:
-			- setRenderer(@cms.formRenderer)
-
-	cms.layouteditForm < cms.ajaxForm:
-		class: CmsModule\Content\Forms\LayouteditForm
-
-	cms.contentRoutesForm < cms.ajaxForm:
-		class: CmsModule\Content\RoutesForm
-
-	cms.dirForm < cms.ajaxForm:
-		class: CmsModule\Content\Forms\DirForm
-
-	cms.fileForm < cms.form:
-		class: CmsModule\Content\Forms\FileForm
 
 	cms.navigationControl:
 		class: CmsModule\Components\NavigationControl(@cms.pageRepository)

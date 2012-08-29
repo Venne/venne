@@ -13,6 +13,10 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use Nette\Callback;
+use CmsModule\Forms\SystemApplicationFormFactory;
+use CmsModule\Forms\SystemDatabaseFormFactory;
+use CmsModule\Forms\SystemAccountFormFactory;
+use CmsModule\Forms\SystemAdministrationFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,99 +26,90 @@ use Nette\Callback;
 class ApplicationPresenter extends BasePresenter
 {
 
-
-	/** @persistent */
-	public $key;
-
-	/** @var Callback */
+	/** @var SystemAdministrationFormFactory */
 	protected $systemForm;
 
-	/** @var Callback */
+	/** @var SystemApplicationFormFactory */
 	protected $applicationForm;
 
-	/** @var Callback */
+	/** @var SystemDatabaseFormFactory */
 	protected $databaseForm;
 
-	/** @var Callback */
+	/** @var SystemAccountFormFactory */
 	protected $accountForm;
 
 
-
-	function __construct($systemForm, $applicationForm, $databaseForm, $accountForm)
+	public function injectApplicationForm(SystemApplicationFormFactory $applicationForm)
 	{
-		$this->systemForm = $systemForm;
 		$this->applicationForm = $applicationForm;
+	}
+
+
+	public function injectDatabaseForm(SystemDatabaseFormFactory $databaseForm)
+	{
 		$this->databaseForm = $databaseForm;
+	}
+
+
+	public function injectAccountForm(SystemAccountFormFactory $accountForm)
+	{
 		$this->accountForm = $accountForm;
 	}
 
+
+	public function injectAdministrationForm(SystemAdministrationFormFactory $systemForm)
+	{
+		$this->systemForm = $systemForm;
+	}
+
+
+	/**
+	 * @secured(privilege="system")
+	 */
+	public function actionDefault()
+	{
+	}
 
 
 	public function createComponentSystemForm()
 	{
 		$form = $this->systemForm->invoke();
-		$form->onSuccess[] = $this->systemFormSuccess;
 		return $form;
 	}
-
-
-
-	public function systemFormSuccess(\CmsModule\Forms\SystemForm $form)
-	{
-		$this->absoluteUrls = true;
-		$url = $this->getHttpRequest()->getUrl();
-
-		$path = "{$url->scheme}://{$url->host}{$url->scriptPath}";
-
-		$oldPath = $path . $this->context->parameters['administration']['routePrefix'];
-		$newPath = $path . $form['administration']['routePrefix']->getValue();
-
-		if($form['administration']['routePrefix']->getValue() == ''){
-			$oldPath .= '/';
-		}
-
-		if($this->context->parameters['administration']['routePrefix'] == ''){
-			$newPath .= '/';
-		}
-
-		$form->getPresenter()->flashMessage("Administration settings has been updated", "success");
-		$form->getPresenter()->redirectUrl(str_replace($oldPath, $newPath, $this->link('this')));
-	}
-
 
 
 	public function createComponentApplicationForm()
 	{
 		$form = $this->applicationForm->invoke();
-		$form->onSuccess[] = function($form) {
-					$form->getPresenter()->flashMessage("Application settings has been updated", "success");
-					$form->getPresenter()->redirect("this");
-				};
+		$form->onSuccess[] = function($form)
+		{
+			$form->getPresenter()->flashMessage("Application settings has been updated", "success");
+			$form->getPresenter()->redirect("this");
+		};
 		return $form;
 	}
-
 
 
 	public function createComponentDatabaseForm()
 	{
 		$form = $this->databaseForm->invoke();
-		$form->onSuccess[] = function($form) {
-					$form->getPresenter()->flashMessage("Database settings has been updated", "success");
-					$form->getPresenter()->redirect("this");
-				};
+		$form->onSuccess[] = function($form)
+		{
+			$form->getPresenter()->flashMessage("Database settings has been updated", "success");
+			$form->getPresenter()->redirect("this");
+		};
 		return $form;
 	}
-
 
 
 	public function createComponentAccountForm()
 	{
 		$form = $this->accountForm->invoke();
-		$form->onSuccess[] = function($form) {
-					$form->getPresenter()->flashMessage("Account settings has been updated", "success");
-					$form->getPresenter()->redirect("this");
-				};
+		$form->onSuccess[] = function($form)
+		{
+			$form->getPresenter()->flashMessage("Account settings has been updated", "success");
+			$form->getPresenter()->redirect("this");
+		};
 		return $form;
 	}
-
 }

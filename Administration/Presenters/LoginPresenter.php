@@ -12,9 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use Nette\Application\UI;
-use Nette\Security;
-use Nette\Callback;
+use CmsModule\Forms\LoginFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -26,18 +24,17 @@ class LoginPresenter extends BasePresenter
 	/** @persistent */
 	public $backlink;
 
-	/** @var Callback */
+	/** @var LoginFormFactory */
 	protected $form;
 
 
-
-	public function __construct($form)
+	/**
+	 * @param LoginFormFactory $form
+	 */
+	public function injectForm(LoginFormFactory $form)
 	{
-		parent::__construct();
-
 		$this->form = $form;
 	}
-
 
 
 	public function startup()
@@ -50,16 +47,14 @@ class LoginPresenter extends BasePresenter
 	}
 
 
-
 	/**
 	 * Sign in form component factory.
 	 *
-	 * @return Nette\Application\UI\Form
+	 * @return \Venne\Application\UI\Form
 	 */
 	protected function createComponentSignInForm($name)
 	{
 		$form = $this->form->invoke();
 		return $form;
 	}
-
 }

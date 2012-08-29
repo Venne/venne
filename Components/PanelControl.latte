@@ -11,20 +11,21 @@
 		<div class="btn-toolbar">
 			<div class="btn-group">
 			{if $control->tab == 0}
-				<a class="ajax btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Content:')" class="ajax btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 2}
-				<a class="ajax btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Files:')" class="ajax btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 3}
-				<a class="ajax btn" href="{plink :Cms:Admin:Layouts: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:')" class="ajax btn" href="{plink :Cms:Admin:Layouts: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			</div>
 			<div class="btn-group pull-right">
 			{if $control->tab == 3}
-				<a class="ajax btn" href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn" href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
 			{else}
 
+				{if $presenter->isAuthorized(':Cms:Admin:Content:create')}
 				<button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
 				<button class="btn dropdown-toggle" data-toggle="dropdown">
 					<span class="caret"></span>
@@ -37,6 +38,8 @@
 						{/foreach}
 				    {/if}
 				</ul>
+				{/if}
+
 			{/if}
 			</div>
 		</div>

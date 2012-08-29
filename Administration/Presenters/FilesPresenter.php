@@ -13,7 +13,8 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use DoctrineModule\ORM\BaseRepository;
-use Nette\Callback;
+use CmsModule\Content\Forms\FileFormFactory;
+use CmsModule\Content\Forms\DirFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,19 +38,29 @@ class FilesPresenter extends BasePresenter
 	/** @var BaseRepository */
 	protected $fileRepository;
 
-	/** @var Callback */
+	/** @var DirFormFactory */
 	protected $dirFormFactory;
 
-	/** @var Callback */
+	/** @var FileFormFactory */
 	protected $fileFormFactory;
 
 
-	function __construct(BaseRepository $fileRepository, BaseRepository $dirRepository, Callback $fileFormFactory, Callback $dirFormFactory)
+	function __construct(BaseRepository $fileRepository, BaseRepository $dirRepository)
 	{
 		$this->fileRepository = $fileRepository;
 		$this->dirRepository = $dirRepository;
-		$this->fileFormFactory = $fileFormFactory;
-		$this->dirFormFactory = $dirFormFactory;
+	}
+
+
+	public function injectFileForm(FileFormFactory $fileForm)
+	{
+		$this->fileFormFactory = $fileForm;
+	}
+
+
+	public function injectDirForm(DirFormFactory $dirForm)
+	{
+		$this->dirFormFactory = $dirForm;
 	}
 
 
@@ -60,6 +71,14 @@ class FilesPresenter extends BasePresenter
 		if (substr($this->key, 1, 1) == ':') {
 			$this->key = substr($this->key, 2);
 		}
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
 	}
 
 
@@ -125,7 +144,11 @@ class FilesPresenter extends BasePresenter
 			$entity->setParent($target);
 		}
 
-		$this->presenter->context->entityManager->flush();
+		if ($fromType == 'd') {
+			$dirRepository->save($entity);
+		} else {
+			$fileRepository->save($entity);
+		}
 
 		$this->flashMessage('File has been moved', 'success');
 
@@ -168,23 +191,10 @@ class FilesPresenter extends BasePresenter
 
 	protected function createComponentDir($name, $key = NULL)
 	{
-		$repository = $this->presenter->context->cms->dirRepository;
-
-		if ($key) {
-			$entity = $this->dirRepository->find($key);
-		} else {
-			$entity = new \CmsModule\Content\Entities\DirEntity();
-		}
-
-		$form = $this->presenter->context->cms->createDirForm();
-		$form->setEntity($entity);
-		if ($this->key) {
-			$form['parent']->setDefaultValue($this->dirRepository->find($this->key));
-		}
-		$form->onSuccess[] = function($form) use ($repository)
+		$repository = $this->dirRepository;
+		$form = $this->dirFormFactory->invoke($key ? $repository->find($key) : $repository->createNew());
+		$form->onSuccess[] = function($form)
 		{
-			$repository->save($form->entity);
-
 			if (!$form->presenter->isAjax()) {
 				$form->presenter->redirect('this');
 			}
@@ -196,27 +206,10 @@ class FilesPresenter extends BasePresenter
 
 	protected function createComponentFile($name, $key = NULL)
 	{
-		$repository = $this->presenter->context->cms->fileRepository;
-
-		if ($key) {
-			$entity = $this->fileRepository->find($key);
-		} else {
-			$entity = new \CmsModule\Content\Entities\FileEntity();
-		}
-
-		$form = $this->presenter->context->cms->createFileForm();
-		$form->setEntity($entity);
-		if ($this->key) {
-			$form['parent']->setDefaultValue($this->dirRepository->find($this->key));
-		}
-		$form->onSuccess[] = function($form) use ($repository)
+		$repository = $this->fileRepository;
+		$form = $this->dirFormFactory->invoke($key ? $repository->find($key) : $repository->createNew());
+		$form->onSuccess[] = function($form)
 		{
-			$file = $form['file']->value;
-			if ($file->isOk()) {
-				$form->entity->setFile($file);
-				$form->entity->setName($file->name);
-				$repository->save($form->entity);
-			}
 			$form->presenter->redirect('this');
 		};
 		return $form;

@@ -19,10 +19,8 @@ use Venne;
 class AdminPresenter extends BasePresenter
 {
 
-	/**
-	 * @param \Nette\Application\UI\PresenterComponentReflection $element
-	 */
-	public function checkRequirements($element)
+
+	public function startup()
 	{
 		// check admin account
 		if (!$this->context->parameters['administration']['login']['name']) {
@@ -61,7 +59,7 @@ class AdminPresenter extends BasePresenter
 			$this->flashMessage("Please enter at least one language.", "warning");
 		}
 
-		parent::checkRequirements($element);
+		parent::startup();
 	}
 
 

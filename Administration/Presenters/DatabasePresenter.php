@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use CmsModule\Forms\SystemDatabaseFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,11 +22,11 @@ use Venne;
 class DatabasePresenter extends BasePresenter
 {
 
-	/** @var Callback */
+	/** @var SystemDatabaseFormFactory */
 	protected $databaseForm;
 
 
-	function __construct($databaseForm)
+	function injectDatabaseForm(SystemDatabaseFormFactory $databaseForm)
 	{
 		$this->databaseForm = $databaseForm;
 	}

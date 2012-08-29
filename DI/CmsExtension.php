@@ -54,7 +54,8 @@ class CmsExtension extends CompilerExtension
 		$application->addSetup('$service->errorPresenter = ?', $container->parameters['website']['errorPresenter']);
 
 		$container->addDefinition("authorizatorFactory")
-			->setFactory("CmsModule\Security\AuthorizatorFactory", array('@nette.presenterFactory', '@cms.roleRepository', '@session', '@doctrine.checkConnectionFactory'));
+			->setFactory("CmsModule\Security\AuthorizatorFactory", array('@nette.presenterFactory', '@cms.roleRepository', '@session', '@doctrine.checkConnectionFactory'))
+			->addSetup('setReader');
 
 		$container->addDefinition("authorizator")
 			->setClass("Nette\Security\Permission")
@@ -100,7 +101,7 @@ class CmsExtension extends CompilerExtension
 			->addTag("route", array("priority" => 99999999));
 
 		// config manager
-		$container->addDefinition("configService")
+		$container->addDefinition($this->prefix("configService"))
 			->setClass("CmsModule\Services\ConfigBuilder", array("%configDir%/config.neon"))
 			->addTag("service");
 

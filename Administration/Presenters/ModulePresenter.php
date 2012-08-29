@@ -31,10 +31,22 @@ class ModulePresenter extends BasePresenter
 	/** @var ModuleManager */
 	protected $moduleManager;
 
+	/** @var string */
+	protected $appDir;
 
-	function __construct(ModuleManager $moduleManager)
+	/** @var string */
+	protected $libsDir;
+
+	/** @var array */
+	protected $modules;
+
+
+	public function __construct(ModuleManager $moduleManager, $appDir, $libsDir, $modules)
 	{
 		$this->moduleManager = $moduleManager;
+		$this->appDir = $appDir;
+		$this->libsDir = $libsDir;
+		$this->modules = $modules;
 	}
 
 
@@ -51,22 +63,36 @@ class ModulePresenter extends BasePresenter
 			$this->hash = \Nette\Utils\Strings::random();
 		}
 
-		if(!is_writable($this->context->parameters['libsDir'])) {
+		if (!is_writable($this->libsDir)) {
 			$this->flashMessage('libsDir is not writable!', 'warning');
 		}
 
-		if(!is_writable($this->getOrigComposer()) || !is_writable($this->getOrigLock())) {
+		if (!is_writable($this->getOrigComposer()) || !is_writable($this->getOrigLock())) {
 			$this->flashMessage('composer.json and composer.lock are not writable!');
 		}
 	}
 
 
+	/**
+	 * @secured(privilege="show")
+	 */
 	public function actionDefault()
 	{
 		$this->template->modules = $this->moduleManager->findRepositoryModules();
 	}
 
 
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleEdit()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
 	public function handleSync()
 	{
 		$this->moduleManager->scanRepositoryModules();
@@ -77,11 +103,15 @@ class ModulePresenter extends BasePresenter
 
 	protected function createComponentDownloadForm()
 	{
-		$require = $this->context->parameters['modules'];
+		$require = $this->modules;
 
-		$form = new \Venne\Application\UI\Form();
+		$form = new \Venne\Forms\Form();
 		$form->getElementPrototype()->attrs['class'] = 'noAjax';
 		$form->addSubmit('_submit', 'Sync');
+		$form->onValidate[] = function($form)
+		{
+			$form->getPresenter()->tryCall('handleEdit', array());
+		};
 		$form->onSuccess[] = $this->save;
 
 		foreach ($this->moduleManager->findRepositoryModules() as $name => $items) {
@@ -139,24 +169,24 @@ class ModulePresenter extends BasePresenter
 
 	protected function getOrigComposer()
 	{
-		return $this->context->parameters['appDir'] . '/../composer.json';
+		return $this->appDir . '/../composer.json';
 	}
 
 
 	protected function getOrigLock()
 	{
-		return $this->context->parameters['appDir'] . '/../composer.lock';
+		return $this->appDir . '/../composer.lock';
 	}
 
 
 	protected function getComposer()
 	{
-		return $this->context->parameters['tempDir'] . "/composer-{$this->hash}.json";
+		return $this->appDir . "/composer-{$this->hash}.json";
 	}
 
 
 	protected function getLock()
 	{
-		return $this->context->parameters['tempDir'] . "/composer-{$this->hash}.lock";
+		return $this->appDir . "/composer-{$this->hash}.lock";
 	}
 }

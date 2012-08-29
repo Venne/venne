@@ -21,6 +21,7 @@ use Venne\Application\PresenterFactory;
 use Nette\Http\SessionSection;
 use Nette\Http\Session;
 use DoctrineModule\ORM\BaseRepository;
+use Venne\Security\IControlVerifierReader;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -46,6 +47,9 @@ class AuthorizatorFactory extends Object
 	/** @var Callback */
 	protected $checkConnection;
 
+	/** @var IControlVerifierReader */
+	protected $reader;
+
 
 	/**
 	 * @param PresenterFactory $presenterFactory
@@ -58,6 +62,15 @@ class AuthorizatorFactory extends Object
 		$this->roleRepository = $roleRepository;
 		$this->session = $session->getSection(self::SESSION_SECTION);
 		$this->checkConnection = $checkConnection;
+	}
+
+
+	/**
+	 * @param IControlVerifierReader $reader
+	 */
+	public function setReader(IControlVerifierReader $reader)
+	{
+		$this->reader = $reader;
 	}
 
 
@@ -108,8 +121,8 @@ class AuthorizatorFactory extends Object
 	{
 		$permission = new Permission;
 
-		foreach ($this->scanResources() as $resource => $item) {
-			$this->addResourceRecursively($permission, $resource);
+		foreach ($this->scanResources() as $resource => $privileges) {
+			$permission->addResource($resource);
 		}
 
 		foreach ($this->defaultRoles as $role) {
@@ -168,50 +181,26 @@ class AuthorizatorFactory extends Object
 
 
 	/**
-	 * Add resource recursively.
-	 *
-	 * @param string $resource
-	 */
-	protected function addResourceRecursively($permission, $resource)
-	{
-		$parent = $this->getNameOfParentResource($resource);
-		if ($parent && !$permission->hasResource($parent)) {
-			$this->addResourceRecursively($permission, $parent);
-		}
-
-		$permission->addResource($resource, $parent);
-	}
-
-
-	/**
 	 * Array of all resources.
 	 *
 	 * @return array
 	 */
-	public function scanResources()
+	protected function scanResources()
 	{
 		$ret = array();
 
 		foreach ($this->presenterFactory->getPresenters() as $class => $name) {
-			$refl = ClassType::from($class);
+			$schema = $this->reader->getSchema($class);
 
-			if ($refl->hasAnnotation('secured')) {
-				$ret[$class] = array();
+			foreach ($schema as $item) {
+				if (!array_key_exists($item['resource'], $ret)) {
+					$ret[$item['resource']] = array();
+				}
+
+				$ret[$item['resource']] = array_unique(array_merge($ret[$item['resource']], $item['privilege'] ? (array)$item['privilege'] : array()));
 			}
 		}
 
 		return $ret;
-	}
-
-
-	/**
-	 * Name of parent resource.
-	 *
-	 * @param string $resource
-	 * @return string
-	 */
-	protected function getNameOfParentResource($resource)
-	{
-		return substr($resource, 0, strrpos($resource, '\\')) ? : NULL;
 	}
 }

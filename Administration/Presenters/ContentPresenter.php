@@ -15,7 +15,8 @@ use Venne;
 use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\ORM\BaseRepository;
 use CmsModule\Content\ContentManager;
-use Nette\Callback;
+use CmsModule\Content\Forms\BasicFormFactory;
+use CmsModule\Content\Forms\RoutesFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,10 +45,10 @@ class ContentPresenter extends BasePresenter
 	/** @var ContentManager */
 	protected $contentManager;
 
-	/** @var Callback */
+	/** @var BasicFormFactory */
 	protected $contentFormFactory;
 
-	/** @var Callback */
+	/** @var RoutesFormFactory */
 	protected $contentRoutesFormFactory;
 
 
@@ -55,16 +56,48 @@ class ContentPresenter extends BasePresenter
 	 * @param \CmsModule\Content\Repositories\PageRepository $pageRepository
 	 * @param \DoctrineModule\ORM\BaseRepository $languageRepository
 	 * @param \CmsModule\Content\ContentManager $contentManager
-	 * @param \Nette\Callback $contentFormFactory
-	 * @param \Nette\Callback $contentRoutesFormFactory
 	 */
-	function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, ContentManager $contentManager, Callback $contentFormFactory, Callback $contentRoutesFormFactory)
+	function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, ContentManager $contentManager)
 	{
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
 		$this->contentManager = $contentManager;
-		$this->contentFormFactory = $contentFormFactory;
-		$this->contentRoutesFormFactory = $contentRoutesFormFactory;
+	}
+
+
+	public function injectContentForm(BasicFormFactory $contentForm)
+	{
+		$this->contentFormFactory = $contentForm;
+	}
+
+
+	public function injectRoutesForm(RoutesFormFactory $routesForm)
+	{
+		$this->contentRoutesFormFactory = $routesForm;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="create")
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function actionEdit()
+	{
 	}
 
 
@@ -111,6 +144,7 @@ class ContentPresenter extends BasePresenter
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('default', array('key' => NULL));
 			}
+			$presenter->invalidateControl('content');
 			$presenter->payload->url = $presenter->link('default', array('id' => NULL));
 		});
 
@@ -125,12 +159,10 @@ class ContentPresenter extends BasePresenter
 
 	public function createComponentForm()
 	{
-		$repository = $this->pageRepository;
 		$contentType = $this->contentManager->getContentType($this->getParameter("type"));
-		$entity = $repository->createNewByEntityName($contentType->getEntityName());
+		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
 
-		$form = $this->contentFormFactory->invoke();
-		$form->setEntity($entity);
+		$form = $this->contentFormFactory->invoke($entity);
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
@@ -138,47 +170,31 @@ class ContentPresenter extends BasePresenter
 
 	public function formSuccess($form)
 	{
-		$repository = $this->pageRepository;
+		$this->flashMessage("Page has been created");
 
-		if ($repository->isUnique($form->entity)) {
-			$repository->save($form->entity);
-
-			$this->flashMessage("Page has been created");
-
-			if (!$this->isAjax()) {
-				$this->redirect('edit', array('type' => null, 'key' => $form->entity->id));
-			}
-			$this['panel']->invalidateControl('content');
-			$this->payload->url = $this->link('edit', array('type' => null, 'key' => $form->entity->id));
-			$this->setView('edit');
-			$this->changeAction('edit');
-			$this->key = $form->entity->id;
-		} else {
-			$this->flashMessage("URL is not unique", "warning");
+		if (!$this->isAjax()) {
+			$this->redirect('edit', array('type' => null, 'key' => $form->data->id));
 		}
+		$this['panel']->invalidateControl('content');
+		$this->payload->url = $this->link('edit', array('type' => null, 'key' => $form->data->id));
+		$this->setView('edit');
+		$this->changeAction('edit');
+		$this->key = $form->data->id;
 	}
 
 
 	public function createComponentFormTranslate()
 	{
-		$repository = $this->pageRepository;
-		$pageEntity = $repository->find($this->getParameter("key"));
+		$pageEntity = $this->pageRepository->find($this->getParameter("key"));
 		$contentType = $this->contentManager->getContentType($pageEntity::getType());
 
 		/** @var $entity \CmsModule\Entities\PageEntity */
 		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
 		$entity->setTranslationFor($pageEntity);
 
-		$form = $this->contentFormFactory->invoke();
-		$form->setEntity($entity);
-		$form->onSuccess[] = $this->formTranslateSuccess;
+		$form = $this->contentFormFactory->invoke($entity);
+		$form->onSuccess[] = $this->formSuccess;
 		return $form;
-	}
-
-
-	public function formTranslateSuccess($form)
-	{
-		$this->formSuccess($form);
 	}
 
 
@@ -189,9 +205,9 @@ class ContentPresenter extends BasePresenter
 		$contentType = $this->contentManager->getContentType($entity->type);
 
 		if ((!$this->section && count($contentType->sections) == 0) || $this->section == 'basic') {
-			$form = $this->contentFormFactory->invoke();
+			$form = $this->contentFormFactory->invoke($entity);
 		} elseif ($this->section == 'routes') {
-			$form = $this->contentRoutesFormFactory->invoke();
+			$form = $this->contentRoutesFormFactory->invoke($entity);
 		} else {
 			if ($this->section) {
 				if (!$contentType->hasSection($this->section)) {
@@ -202,10 +218,8 @@ class ContentPresenter extends BasePresenter
 				$sections = $contentType->sections;
 				$formFactory = reset($sections)->getFormFactory();
 			}
-			$form = $formFactory->invoke();
+			$form = $formFactory->invoke($entity);
 		}
-
-		$form->setEntity($entity);
 
 		if ($form instanceof \Nette\Forms\Form) {
 			$form->onSuccess[] = $this->formEditSuccess;
@@ -216,18 +230,10 @@ class ContentPresenter extends BasePresenter
 
 	public function formEditSuccess($form)
 	{
-		$repository = $this->pageRepository;
+		$this->flashMessage("Page has been updated");
 
-		if ($repository->isUnique($form->entity)) {
-			$repository->save($form->entity);
-
-			$this->flashMessage("Page has been updated");
-
-			if (!$this->isAjax()) {
-				$this->redirect("this");
-			}
-		} else {
-			$this->flashMessage("URL is not unique", "warning");
+		if (!$this->isAjax()) {
+			$this->redirect("this");
 		}
 	}
 
@@ -246,7 +252,7 @@ class ContentPresenter extends BasePresenter
 
 	public function renderEdit()
 	{
-		$this->template->entity = $this->pageRepository->find($this->getParameter("key"));
+		$this->template->entity = $this->pageRepository->find($this->key);
 		$this->template->contentType = $this->contentManager->getContentType($this->template->entity->type);
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;

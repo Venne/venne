@@ -9,26 +9,55 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Content;
+namespace CmsModule\Content\Forms;
 
-use DoctrineModule\Forms\Mapping\EntityFormMapper;
-use Doctrine\ORM\EntityManager;
-use AssetsModule\Managers\AssetManager;
+use Venne;
+use Venne\Forms\FormFactory;
+use Venne\Forms\Form;
+use DoctrineModule\Forms\Mappers\EntityMapper;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RoutesForm extends Form
+class RoutesFormFactory extends FormFactory
 {
 
+	/** @var EntityMapper */
+	protected $mapper;
+
+
 	/**
-	 * Application form constructor.
+	 * @param EntityMapper $mapper
 	 */
-	public function create()
+	public function __construct(EntityMapper $mapper)
 	{
-		$this->addMany('routes', function(\Nette\Forms\Container $container)
+		$this->mapper = $mapper;
+	}
+
+
+	protected function getMapper()
+	{
+		return $this->mapper;
+	}
+
+
+	protected function getControlExtensions()
+	{
+		return array(
+			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension(),
+		);
+	}
+
+
+	/**
+	 * @param Form $form
+	 */
+	public function configure(Form $form)
+	{
+
+		$form->addMany('routes', function(\Nette\Forms\Container $container)
 		{
-			$container->setCurrentGroup($container->getForm()->addGroup('Route' . $container->entity->url));
+			$container->setCurrentGroup($container->getForm()->addGroup('Route' . $container->data->url));
 			$container->addText('title', 'Title');
 			$container->addText('keywords', 'Keywords');
 			$container->addText('description', 'Description');
@@ -38,9 +67,8 @@ class RoutesForm extends Form
 			$container->addSelect('layout', 'Layout', $container->form->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');
 		});
 
-		$this->setCurrentGroup();
+		$form->setCurrentGroup();
+
+		$form->addSubmit('_submit', 'Save');
 	}
-
-
-
 }

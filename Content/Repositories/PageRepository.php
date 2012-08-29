@@ -44,6 +44,16 @@ class PageRepository extends BaseRepository
 	}
 
 
+	public function save($entity, $withoutFlush = self::FLUSH)
+	{
+		if(!$this->isUnique($entity)) {
+			throw new \Nette\InvalidArgumentException('Entity is not unique!');
+		}
+
+		return parent::save($entity, $withoutFlush);
+	}
+
+
 	/**
 	 * Check if page URL is unique.
 	 *

@@ -42,6 +42,8 @@ services:
 
 	cms.languageRepository:
 		class: CmsModule\Content\Entities\LanguageEntity
+		setup:
+			- injectConfigBuilder
 		tags: [repository]
 
 	cms.loginRepository:

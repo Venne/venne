@@ -12,23 +12,48 @@
 namespace CmsModule\Forms;
 
 use Venne;
+use Venne\Forms\FormFactory;
+use Venne\Forms\Form;
+use FormsModule\Mappers\ConfigMapper;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemApplicationForm extends BaseConfigForm {
+class SystemApplicationFormFactory extends FormFactory
+{
 
 
-	public function startup()
+	/** @var ConfigMapper */
+	protected $mapper;
+
+
+	/**
+	 * @param ConfigMapper $mapper
+	 */
+	public function __construct(ConfigMapper $mapper)
 	{
-		parent::startup();
+		$this->mapper = $mapper;
+	}
 
 
+	protected function getMapper()
+	{
+		$mapper = clone $this->mapper;
+		$mapper->setRoot('');
+		return $mapper;
+	}
+
+
+	/**
+	 * @param Form $form
+	 */
+	protected function configure(Form $form)
+	{
 		/* containers */
-		$nette = $this->addContainer("nette");
-		$venne = $this->addContainer("venne");
+		$nette = $form->addContainer("nette");
+		$venne = $form->addContainer("venne");
 		$stopwatch = $venne->addContainer("stopwatch");
-		$doctrine = $this->addContainer("doctrine");
+		$doctrine = $form->addContainer("doctrine");
 		/** @var $debugger \Nette\Forms\Container */
 		$debugger = $nette->addContainer("debugger");
 		$application = $nette->addContainer("application");
@@ -37,16 +62,16 @@ class SystemApplicationForm extends BaseConfigForm {
 		$security = $nette->addContainer("security");
 
 		/* application */
-		$application->setCurrentGroup($this->addGroup('Application'));
+		$application->setCurrentGroup($form->addGroup('Application'));
 		$application->addSelect("catchExceptions", "Catch exceptions", array(true => "yes", false => "no"))->setDefaultValue(true);
 
 		/* debugger */
-		$debugger->setCurrentGroup($group = $this->addGroup("Debugger"));
+		$debugger->setCurrentGroup($group = $form->addGroup("Debugger"));
 		$debugger->addSelect("strictMode", "Strict mode")->setItems(array("yes", "no"), false);
 		$debugger->addText("edit", "Editor");
 		$debugger->addText("browser", "Browser");
 		$debugger->addText("email", "E-mail for logs")
-			->addCondition(self::FILLED)->addRule(self::EMAIL);
+			->addCondition($form::FILLED)->addRule($form::EMAIL);
 
 		$stopwatch->setCurrentGroup($group);
 		$stopwatch->addCheckbox("debugger", "Stopwatch panel")->setDefaultValue(true);
@@ -69,13 +94,14 @@ class SystemApplicationForm extends BaseConfigForm {
 
 		/* session */
 		$container = $nette->addContainer("session");
-		$container->setCurrentGroup($this->addGroup("Sessions"));
+		$container->setCurrentGroup($form->addGroup("Sessions"));
 		$container->addCheckbox("autoStart", "Autostart")->setDefaultValue(false);
-		$container->addTextWithSelect("expiration", "Expiration")->setItems(array("+ 1 day", "+ 10 days", "+ 30 days", "+ 1 year"), false);
+		$container->addText/*WithSelect*/("expiration", "Expiration");//->setItems(array("+ 1 day", "+ 10 days", "+ 30 days", "+ 1 year"), false);
 
 		/* templating */
-		$nette->setCurrentGroup($this->addGroup("Templating"));
+		$nette->setCurrentGroup($form->addGroup("Templating"));
 		$nette->addSelect("xhtml", "XHTML", array(true => "yes", false => "no"))->setDefaultValue(true);
-	}
 
+		$form->addSubmit('_submit', 'Save');
+	}
 }

@@ -13,9 +13,8 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use CmsModule\Services\ScannerService;
-use CmsModule\Content\Forms\LayoutForm;
-use CmsModule\Content\Forms\LayouteditForm;
-use Nette\Callback;
+use CmsModule\Content\Forms\LayoutFormFactory;
+use CmsModule\Content\Forms\LayouteditFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -34,23 +33,55 @@ class LayoutsPresenter extends BasePresenter
 	/** @var array */
 	protected $_layouts;
 
-	/** @var Callback */
+	/** @var LayoutFormFactory */
 	protected $layoutFormFactory;
 
-	/** @var Callback */
+	/** @var LayouteditFormFactory */
 	protected $layouteditFormFactory;
 
 
 	/**
 	 * @param ScannerService $scannerService
 	 */
-	public function __construct(ScannerService $scannerService, Callback $layoutFormFactory, Callback $layouteditFormFactory)
+	public function injectScannerService(ScannerService $scannerService)
 	{
-		parent::__construct();
-
 		$this->scannerService = $scannerService;
-		$this->layoutFormFactory = $layoutFormFactory;
-		$this->layouteditFormFactory = $layouteditFormFactory;
+	}
+
+
+	public function injectLayoutForm(LayoutFormFactory $layoutForm)
+	{
+		$this->layoutFormFactory = $layoutForm;
+	}
+
+
+	public function injectLayouteditForm(LayouteditFormFactory $layouteditForm)
+	{
+		$this->layouteditFormFactory = $layouteditForm;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="create")
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function actionEdit()
+	{
 	}
 
 
@@ -66,23 +97,14 @@ class LayoutsPresenter extends BasePresenter
 
 	protected function createComponentForm()
 	{
-		/** @var $form LayoutForm */
 		$form = $this->layoutFormFactory->invoke();
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
 
 
-	public function formSuccess(LayoutForm $form)
+	public function formSuccess($form)
 	{
-		$values = $form->getValues();
-		$path = $this->getLayoutPathBy($values['parent'], $values['name']);
-
-		umask(0000);
-		@mkdir($path, 0777, true);
-
-		file_put_contents($path . '/@layout.latte', '');
-
 		$this->flashMessage('Layout has been added.', 'success');
 
 		if (!$this->isAjax()) {
@@ -98,39 +120,20 @@ class LayoutsPresenter extends BasePresenter
 
 	protected function createComponentFormedit()
 	{
-		/** @var $form LayoutForm */
 		$form = $this->layouteditFormFactory->invoke();
+		$form->setData($this->key);
 		$form->onSuccess[] = $this->formeditSuccess;
 		return $form;
 	}
 
 
-	public function formeditSuccess(LayouteditForm $form)
+	public function formeditSuccess()
 	{
-		$values = $form->getValues();
-		$path = $this->getLayoutPathByKey($this->key);
-
-		file_put_contents($path . '/@layout.latte', $values['text']);
-
 		$this->flashMessage('Layout has been saved.', 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');
 		}
-	}
-
-
-	protected function getLayoutPathBy($module, $name)
-	{
-		return ($module === 'app' ? $this->context->parameters['appDir'] : $this->context->parameters['modules'][$module]['path']) . '/layouts/' . $name;
-	}
-
-
-	protected function getLayoutPathByKey($key)
-	{
-		$module = substr($key, 1, strpos($key, '/') - 1);
-		$name = substr($key, strrpos($key, '/') + 1);
-		return $this->getLayoutPathBy($module, $name);
 	}
 
 
@@ -152,11 +155,5 @@ class LayoutsPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$this->template->layouts = $this->getScannedLayouts();
-	}
-
-
-	public function renderEdit()
-	{
-		$this['formedit']['text']->setDefaultValue(file_get_contents($this->getLayoutPathByKey($this->key) . '/@layout.latte'));
 	}
 }
