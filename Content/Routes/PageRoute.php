@@ -178,7 +178,7 @@ class PageRoute extends Route
 		while (true) {
 
 			if (isset($parameters['route']) && $parameters['route'] instanceof RouteEntity) {
-				$url = $parameters['route']->url;
+				$route = $parameters['route'];
 				break;
 			}
 
@@ -195,7 +195,8 @@ class PageRoute extends Route
 		unset($parameters['page']);
 
 		// Search PageEntity
-		if (count($this->languages) > 1) {
+		if (isset($route)) {
+		} elseif (count($this->languages) > 1) {
 			if (!isset($parameters["lang"])) {
 				$parameters["lang"] = $this->defaultLanguage;
 			}
