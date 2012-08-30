@@ -17,7 +17,7 @@ use CmsModule\Panels\Stopwatch;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class BasePresenter extends \Venne\Application\UI\Presenter
+abstract class BasePresenter extends \Venne\Application\UI\Presenter
 {
 
 	/** @persistent */

@@ -16,7 +16,7 @@ use Venne;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FrontPresenter extends BasePresenter
+abstract class FrontPresenter extends BasePresenter
 {
 
 	protected function checkLanguage()

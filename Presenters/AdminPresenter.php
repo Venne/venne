@@ -16,7 +16,7 @@ use Venne;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdminPresenter extends BasePresenter
+abstract class AdminPresenter extends BasePresenter
 {
 
 
