@@ -71,7 +71,7 @@ services:
 			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.contentRoutesFormFactory:
-		class: CmsModule\Content\Forms\RoutesFormFactory
+		class: CmsModule\Content\Forms\RoutesFormFactory(..., @cms.pageRepository)
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
