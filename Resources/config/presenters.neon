@@ -1,5 +1,9 @@
 services:
 
+	cms.sitemapPresenter:
+		class: CmsModule\Presenters\SitemapPresenter(@cms.languageRepository, @cms.pageRepository, %administration.routePrefix%)
+		tags: [presenter]
+
 	cms.admin.administratorPresenter:
 		class: CmsModule\Administration\Presenters\AdministratorPresenter(..., %administration%, %appDir%, %wwwDir%, %tempDir%, %dataDir%, %resourcesDir%, %configDir%)
 		tags: [presenter]
