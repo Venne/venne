@@ -17,9 +17,7 @@ use Venne\Tools\Objects;
 use CmsModule\Content\Entities\FileEntity;
 
 /**
- * Select box control that allows multiple item selection.
- *
- * @author     David Grudl
+ * @author Josef Kříž <pepakriz@gmail.com>
  */
 class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 {
