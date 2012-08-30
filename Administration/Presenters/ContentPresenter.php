@@ -221,6 +221,10 @@ class ContentPresenter extends BasePresenter
 			$form = $formFactory->invoke($entity);
 		}
 
+		if ($form instanceof \CmsModule\Content\SectionControl) {
+			$form->setEntity($entity);
+		}
+
 		if ($form instanceof \Nette\Forms\Form) {
 			$form->onSuccess[] = $this->formEditSuccess;
 		}
