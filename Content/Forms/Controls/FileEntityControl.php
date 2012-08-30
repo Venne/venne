@@ -9,7 +9,7 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Forms\Controls;
+namespace CmsModule\Content\Forms\Controls;
 
 use Nette;
 use Nette\Utils\Html;
@@ -33,7 +33,7 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 	{
 		parent::attached($form);
 
-		$this->fileEntity = Objects::hasProperty($this->parent->entity, $this->name) ? Objects::getProperty($this->parent->entity, $this->name) : NULL;
+		$this->fileEntity = Objects::hasProperty($this->parent->data, $this->name) ? Objects::getProperty($this->parent->data, $this->name) : NULL;
 
 		if ($this->fileEntity instanceof \Doctrine\Common\Collections\Collection) {
 			$this->multi = true;
