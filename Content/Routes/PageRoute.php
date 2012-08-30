@@ -16,6 +16,7 @@ use Nette\Callback;
 use DoctrineModule\ORM\BaseRepository;
 use Nette\Application\Routers\Route;
 use CmsModule\Content\Entities\RouteEntity;
+use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\ContentManager;
 
 /**
@@ -69,7 +70,7 @@ class PageRoute extends Route
 		$this->routeRepository = $routeRepository;
 		$this->contentManager = $contentManager;
 
-		parent::__construct($prefix . '<url .+>[/<module Cms>/<presenter Default>]' . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
+		parent::__construct($prefix . '<url .+>[/<module .+>/<presenter .+>]' . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
 			"presenter" => self::DEFAULT_PRESENTER,
 			"module" => self::DEFAULT_MODULE,
 			"action" => self::DEFAULT_ACTION,
@@ -182,8 +183,8 @@ class PageRoute extends Route
 				break;
 			}
 
-			if (isset($parameters['cmsPage'])) {
-				$url = $parameters['url'];
+			if (isset($parameters['page']) && $parameters['page'] instanceof PageEntity) {
+				$route = $parameters['page']->mainRoute;
 				break;
 			}
 
@@ -238,19 +239,12 @@ class PageRoute extends Route
 	 */
 	protected function modifyConstructRequest(\Nette\Application\Request $request, RouteEntity $route, $parameters)
 	{
-		$filters = array('route');
-
-		foreach ($filters as $filter) {
-			if (isset($parameters[$filter])) {
-				unset($parameters[$filter]);
-			}
-		}
-
 		$request->setPresenterName(self::DEFAULT_MODULE . ":" . self::DEFAULT_PRESENTER);
 		$request->setParameters(array(
 			'module' => self::DEFAULT_MODULE,
 			'presenter' => self::DEFAULT_PRESENTER,
 			'action' => self::DEFAULT_ACTION,
+			'lang' => $route->page->languages[0]->alias,
 			'url' => $route->url,
 		) + $parameters);
 		return $request;
