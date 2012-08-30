@@ -1,12 +1,12 @@
-	<li n:if="$presenter->isAllowed('Application:default')"{if $presenter->isLinkCurrent("Application:default")} class="active"{/if}>
+	<li n:if="$presenter->isAuthorized('Application:default')"{if $presenter->isLinkCurrent("Application:default")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:default}">{_'Application'}</a>
 	</li>
-	<li n:if="$presenter->isAllowed('Application:database')"{if $presenter->isLinkCurrent("Application:database")} class="active"{/if}>
+	<li n:if="$presenter->isAuthorized('Application:database')"{if $presenter->isLinkCurrent("Application:database")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:database}">{_'Database'}</a>
 	</li>
-	<li n:if="$presenter->isAllowed('Application:account')"{if $presenter->isLinkCurrent("Application:account")} class="active"{/if}>
+	<li n:if="$presenter->isAuthorized('Application:account')"{if $presenter->isLinkCurrent("Application:account")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:account}">{_'Admin account'}</a>
 	</li>
-	<li n:if="$presenter->isAllowed('Application:admin')"{if $presenter->isLinkCurrent("Application:admin")} class="active"{/if}>
+	<li n:if="$presenter->isAuthorized('Application:admin')"{if $presenter->isLinkCurrent("Application:admin")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:admin}">{_'Administration'}</a>
 	</li>
