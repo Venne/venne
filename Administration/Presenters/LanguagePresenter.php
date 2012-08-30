@@ -13,7 +13,7 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use Nette\Application\UI\Form;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\LanguageFormFactory;
 
 /**

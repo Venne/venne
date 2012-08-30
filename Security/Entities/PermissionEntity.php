@@ -15,10 +15,10 @@ use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\ORM\BaseRepository")
+ * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
  * @Table(name="permission")
  */
-class PermissionEntity extends \DoctrineModule\ORM\BaseEntity
+class PermissionEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 

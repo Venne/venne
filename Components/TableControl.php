@@ -23,7 +23,7 @@ class TableControl extends Control
 	/** @var string */
 	protected $templateFile;
 
-	/** @var \DoctrineModule\ORM\BaseRepository */
+	/** @var \DoctrineModule\Repositories\BaseRepository */
 	protected $repository;
 
 	/** @var string */
@@ -82,7 +82,7 @@ class TableControl extends Control
 	}
 
 
-	public function setRepository(\DoctrineModule\ORM\BaseRepository $repository)
+	public function setRepository(\DoctrineModule\Repositories\BaseRepository $repository)
 	{
 		$this->repository = $repository;
 	}

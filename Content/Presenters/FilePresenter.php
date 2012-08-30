@@ -14,7 +14,7 @@ namespace CmsModule\Content\Presenters;
 use Venne;
 use Nette\Image;
 use Venne\Application\UI\Presenter;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

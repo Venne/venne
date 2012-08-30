@@ -16,10 +16,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\ORM\BaseRepository")
+ * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
  * @Table(name="route")
  */
-class RouteEntity extends \DoctrineModule\ORM\BaseEntity
+class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 	const CACHE = 'Cms.RouteEntity';

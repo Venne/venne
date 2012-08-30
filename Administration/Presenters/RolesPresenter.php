@@ -12,7 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use Nette\Callback;
 use CmsModule\Forms\RoleFormFactory;
 use CmsModule\Forms\PermissionsFormFactory;

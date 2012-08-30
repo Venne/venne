@@ -18,7 +18,7 @@ use Nette\Utils\Strings;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class BaseFileEntity extends \DoctrineModule\ORM\BaseEntity
+class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 	/**

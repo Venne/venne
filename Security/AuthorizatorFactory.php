@@ -20,7 +20,7 @@ use Nette\Callback;
 use Venne\Application\PresenterFactory;
 use Nette\Http\SessionSection;
 use Nette\Http\Session;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use Venne\Security\IControlVerifierReader;
 
 /**

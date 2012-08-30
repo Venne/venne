@@ -24,7 +24,7 @@ use Venne;
  * @property-read array $roles
  * @property string $key
  */
-class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\ORM\IEntity
+class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Entities\IEntity
 {
 
 	/**

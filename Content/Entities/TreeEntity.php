@@ -16,7 +16,7 @@ use Venne;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class TreeEntity extends \DoctrineModule\ORM\BaseEntity
+class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 

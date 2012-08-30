@@ -13,7 +13,7 @@ namespace CmsModule\Components;
 
 use Venne;
 use Venne\Application\UI\Control;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

@@ -15,7 +15,7 @@ use Venne;
 use Nette\Latte\MacroNode;
 use Nette\Latte\Compiler;
 use Nette\Latte\CompileException;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

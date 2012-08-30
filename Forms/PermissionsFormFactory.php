@@ -15,7 +15,7 @@ use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\Mappers\EntityMapper;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Administration\AdministrationManager;
 use Nette\Application\PresenterFactory;

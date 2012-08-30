@@ -13,7 +13,7 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use CmsModule\Content\Repositories\PageRepository;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Forms\BasicFormFactory;
 use CmsModule\Content\Forms\RoutesFormFactory;
@@ -54,7 +54,7 @@ class ContentPresenter extends BasePresenter
 
 	/**
 	 * @param \CmsModule\Content\Repositories\PageRepository $pageRepository
-	 * @param \DoctrineModule\ORM\BaseRepository $languageRepository
+	 * @param \DoctrineModule\Repositories\BaseRepository $languageRepository
 	 * @param \CmsModule\Content\ContentManager $contentManager
 	 */
 	function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, ContentManager $contentManager)

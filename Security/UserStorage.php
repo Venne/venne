@@ -17,7 +17,7 @@ use Nette\Http\Session;
 use CmsModule\Entities\LoginEntity;
 use CmsModule\Entities\UserEntity;
 use Nette\Security\IIdentity;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 
 
 /**

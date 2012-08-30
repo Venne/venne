@@ -15,7 +15,7 @@ use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\Mappers\EntityMapper;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -87,7 +87,7 @@ class BasicFormFactory extends FormFactory
 		}
 
 		// languages
-		/** @var $repository \DoctrineModule\ORM\BaseRepository */
+		/** @var $repository \DoctrineModule\Repositories\BaseRepository */
 		$repository = $form->mapper->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
 		if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 1) {
 			$form->addGroup("Languages");

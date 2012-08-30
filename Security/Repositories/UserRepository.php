@@ -12,7 +12,7 @@
 namespace CmsModule\Security\Repositories;
 
 use Venne;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Entities\UserEntity;
 
 /**

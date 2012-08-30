@@ -13,7 +13,7 @@ namespace CmsModule\Content\Routes;
 
 use Nette\Object;
 use Nette\Callback;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\Routers\Route;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;

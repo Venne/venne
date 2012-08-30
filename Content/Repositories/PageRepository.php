@@ -12,7 +12,7 @@
 namespace CmsModule\Content\Repositories;
 
 use Venne;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\PageEntity;
 
 /**

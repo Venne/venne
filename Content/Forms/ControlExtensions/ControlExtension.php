@@ -34,7 +34,7 @@ class ControlExtension extends Object implements IControlExtension
 			throw new \Nette\InvalidArgumentException("Form mapper must be instanceof 'EntityMapper'. '" . get_class($form->getMapper()) . "' is given.");
 		}
 
-		if (!$form->getData() instanceof \DoctrineModule\ORM\IEntity) {
+		if (!$form->getData() instanceof \DoctrineModule\Entities\IEntity) {
 			throw new \Nette\InvalidArgumentException("Form data must be instanceof 'IEntity'. '" . get_class($form->getData()) . "' is given.");
 		}
 	}

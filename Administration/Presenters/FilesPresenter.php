@@ -12,7 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Forms\DirFormFactory;
 

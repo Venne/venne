@@ -18,7 +18,7 @@ use Venne;
  * @Entity(repositoryClass="\CmsModule\Content\Repositories\LanguageRepository")
  * @Table(name="language")
  */ 
-class LanguageEntity extends \DoctrineModule\ORM\BaseEntity {
+class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 
 
 	/** @Column(type="string", unique=true, length=32) */

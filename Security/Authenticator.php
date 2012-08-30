@@ -12,7 +12,7 @@
 namespace CmsModule\Security;
 
 use Venne;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use Nette\Security\AuthenticationException;
 
 /**

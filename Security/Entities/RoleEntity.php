@@ -18,7 +18,7 @@ use Venne;
  * @Entity(repositoryClass="\CmsModule\Security\Repositories\RoleRepository")
  * @Table(name="role")
  */
-class RoleEntity extends \DoctrineModule\ORM\BaseEntity {
+class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 
 
 	/**

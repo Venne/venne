@@ -16,7 +16,7 @@ use Nette\Utils\Finder;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\ORM\BaseRepository")
+ * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
  * @Table(name="file")
  * @HasLifecycleCallbacks
  */

@@ -15,10 +15,10 @@ use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\ORM\BaseRepository")
+ * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
  * @Table(name="login",indexes={@index(name="search_idx", columns={"sessionId"})})
  */
-class LoginEntity extends \DoctrineModule\ORM\BaseEntity
+class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 

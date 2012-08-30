@@ -12,7 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use DoctrineModule\ORM\BaseRepository;
+use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\UserFormFactory;
 
 /**
@@ -31,7 +31,7 @@ class UsersPresenter extends BasePresenter
 	/** @persistent */
 	public $page;
 
-	/** @var \DoctrineModule\ORM\BaseRepository */
+	/** @var \DoctrineModule\Repositories\BaseRepository */
 	protected $userRepository;
 
 	/** @var UserFormFactory */
