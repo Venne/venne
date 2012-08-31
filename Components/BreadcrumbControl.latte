@@ -1,0 +1,30 @@
+{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE]}
+
+{var item=>$presenter->route}
+{var currentUrl=>$presenter->page->url}
+
+{define #item}
+
+	{if $item->parent}
+		{include #item item=>$item->parent}
+	{/if}
+
+	{var entity=>$item->page->getPageWithLanguageAlias($presenter->lang)}
+	{var url=>$entity->url}
+	{var active=>
+	(
+	(!$url && !$currentUrl) ||
+	($url && strpos($url . '/', $currentUrl .'/') !== false)
+	)
+	}
+
+	{var link=>$presenter->link('this', array('route'=>$item))}
+
+	<li>{if! $active}<a href="{$link}">{/if}{$item->title}{if! $active}</a> <span class="divider">/</span>{/if}</li>
+
+{/define}
+
+<ul class="breadcrumb">
+	{include #item item=>$item}
+</ul>
+{/cache}

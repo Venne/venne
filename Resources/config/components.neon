@@ -101,6 +101,10 @@ factories:
 		class: CmsModule\Components\NavigationControl(@cms.pageRepository, %website.routePrefix%)
 		tags: [widget: navigation]
 
+	cms.breadcrumbControl:
+		class: CmsModule\Components\BreadcrumbControl(@cms.pageRepository, %website.routePrefix%)
+		tags: [widget: breadcrumb]
+
 	cms.languageswitchControl:
 		class: CmsModule\Components\LanguageswitchControl(@cms.languageRepository)
 		tags: [widget: languageswitch]
