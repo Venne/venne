@@ -8,6 +8,16 @@ services:
 		class: CmsModule\Administration\Presenters\AdministratorPresenter(..., %administration%, %appDir%, %wwwDir%, %tempDir%, %dataDir%, %resourcesDir%, %configDir%)
 		tags: [presenter]
 
+	cms.admin.cachePresenter:
+		class: CmsModule\Administration\Presenters\CachePresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Cache:'
+			category: 'System'
+			name: 'Cache'
+			description: 'Clear cache'
+			priority: 0
+		]]
+
 	cms.admin.logsPresenter:
 		class: CmsModule\Administration\Presenters\LogsPresenter(%logDir%)
 		tags: [presenter, administration: [
@@ -15,7 +25,7 @@ services:
 			category: 'System'
 			name: 'Log browser'
 			description: 'Show logs, errors, warnings,...'
-			priority: 0
+			priority: 5
 		]]
 
 	cms.admin.usersPresenter:
