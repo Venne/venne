@@ -14,7 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use Venne\Caching\CacheManager;
 use Venne\Forms\Form;
-use CmsModule\Forms\Rendering\BootstrapFormRenderer;
+use CmsModule\Forms\Rendering\BootstrapRenderer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,7 +37,7 @@ class CachePresenter extends BasePresenter
 	}
 
 
-	public function injectRenderer(BootstrapFormRenderer $renderer)
+	public function injectRenderer(BootstrapRenderer $renderer)
 	{
 		$this->renderer = $renderer;
 	}
@@ -71,7 +71,6 @@ class CachePresenter extends BasePresenter
 
 		$form->addGroup('Namespace')->setOption('container', 'fieldset id=namespace');
 		$form->addText('namespace');
-		$form->setCurrentGroup();
 		$form->addSubmit('_submit', 'Clear');
 
 		$form->onSuccess[] = $this->processForm;

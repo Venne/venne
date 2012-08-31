@@ -51,6 +51,7 @@ class BasicFormFactory extends FormFactory
 	{
 		return array(
 			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension(),
+			new \FormsModule\ControlExtensions\ControlExtension(),
 		);
 	}
 
@@ -68,15 +69,15 @@ class BasicFormFactory extends FormFactory
 		if (!$form->data->translationFor) {
 			$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL));
 		}
-		//$form->addText("localUrl", "URL")->setOption("description", "(example: 'contact')")->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
+
 		$mainRoute = $form->addOne('mainRoute');
 		$mainRoute->setCurrentGroup($infoGroup);
-		$mainRoute->addText('localUrl', 'URL');
+		$mainRoute->addText('localUrl', 'URL')->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
 
-		$form->addGroup("Dates");
+		//$form->addGroup("Dates");
 		//$form->addDateTime("created", "Created")->setDefaultValue(new \Nette\DateTime);
 		//$form->addDateTime("updated", "Updated")->setDefaultValue(new \Nette\DateTime);
-		//$form->addDateTime("expired", "Expired");
+		$form->addDateTime("expired", "Expired");
 
 
 		// URL can be empty only on main page
@@ -93,8 +94,6 @@ class BasicFormFactory extends FormFactory
 			$form->addGroup("Languages");
 			$form->addManyToMany("languages", "Content is in");
 		}
-
-		$form->setCurrentGroup();
 
 		$form->addSubmit('_submit', 'Save');
 	}
