@@ -12,7 +12,7 @@
 namespace CmsModule\Components;
 
 use Venne;
-use Venne\Application\UI\Control;
+use CmsModule\Content\Control;
 use DoctrineModule\Repositories\BaseRepository;
 
 /**
@@ -26,8 +26,10 @@ class LanguageswitchControl extends Control
 	protected $languageRepository;
 
 
-	function __construct($languageRepository)
+	public function __construct($languageRepository)
 	{
+		parent::__construct();
+
 		$this->languageRepository = $languageRepository;
 	}
 
