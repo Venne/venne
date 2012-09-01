@@ -138,32 +138,6 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
-	 * @param string $url
-	 */
-	public function setLocalUrl($url)
-	{
-		$this->mainRoute->setLocalUrl($url);
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getLocalUrl()
-	{
-		return $this->mainRoute->getLocalUrl();
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getUrl()
-	{
-		return $this->mainRoute->getUrl();
-	}
-
-	/**
 	 * @param $parent
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
@@ -263,7 +237,7 @@ abstract class PageEntity extends TreeEntity
 	 * Return the same page in other language alias.
 	 *
 	 * @param string $alias
-	 * @return \CmsModule\Entities\PageEntity
+	 * @return \CmsModule\Content\Entities\PageEntity
 	 */
 	public function getPageWithLanguageAlias($alias)
 	{
@@ -360,29 +334,11 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
-	 * @param $created
-	 */
-	public function setCreated($created)
-	{
-		$this->created = $created;
-	}
-
-
-	/**
 	 * @return DateTime|\Nette\DateTime
 	 */
 	public function getUpdated()
 	{
 		return $this->updated;
-	}
-
-
-	/**
-	 * @param $updated
-	 */
-	public function setUpdated($updated)
-	{
-		$this->updated = $updated;
 	}
 
 

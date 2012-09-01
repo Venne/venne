@@ -2,7 +2,7 @@
 
 {var items=>$control->getItems()}
 {var sub=>0}
-{var currentUrl=>$presenter->page->url}
+{var currentUrl=>$presenter->route->url}
 
 {block #menu}
 <ul {if $sub}class="dropdown-menu"{else}class="nav"{/if}>
@@ -10,7 +10,7 @@
 
 		{var entity=>$item->getPageWithLanguageAlias($presenter->lang)}
 		{continueIf $entity===NULL}
-		{var url=>$entity->url}
+		{var url=>$entity->mainRoute->url}
 		{var active=>
 			(
 				(!$url && !$currentUrl) ||

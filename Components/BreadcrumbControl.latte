@@ -1,7 +1,7 @@
 {cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE]}
 
 {var item=>$presenter->route}
-{var currentUrl=>$presenter->page->url}
+{var currentUrl=>$presenter->route->url}
 
 {define #item}
 
@@ -10,7 +10,7 @@
 	{/if}
 
 	{var entity=>$item->page->getPageWithLanguageAlias($presenter->lang)}
-	{var url=>$entity->url}
+	{var url=>$entity->mainRoute->url}
 	{var active=>
 	(
 	(!$url && !$currentUrl) ||

@@ -14,7 +14,7 @@
 <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
 	<li class="dropdown">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{=implode(", ", $entity->languages->toArray())} <b class="caret"></b></a>
-		<ul class="dropdown-menu">
+		<ul class="dropdown-menu pull-right">
 			{var mainEntity=>($entity->translationFor ?$entity->translationFor: $entity)}
 			<li><a class="ajax" href="{link this key=>$mainEntity->id}">{=implode(", ", $mainEntity->languages->toArray())}</a></li>
 			{foreach $mainEntity->translations as $translation}
