@@ -88,7 +88,7 @@ class PageRoute extends Route
 	 * Maps HTTP request to a Request object.
 	 *
 	 * @param  Nette\Http\IRequest
-	 * @return Nette\Application\Request|NULL
+	 * @return \Nette\Application\Request|NULL
 	 */
 	public function match(\Nette\Http\IRequest $httpRequest)
 	{
@@ -96,15 +96,12 @@ class PageRoute extends Route
 			return NULL;
 		}
 
-		$request = parent::match($httpRequest);
-
-		if ($request === NULL || !array_key_exists("url", $request->parameters)) {
+		if (($request = parent::match($httpRequest)) === NULL || !array_key_exists("url", $request->parameters)) {
 			return NULL;
 		}
 
 		$parameters = $request->parameters;
 
-		// Search PageEntity
 		if (count($this->languages) > 1) {
 			if (!isset($parameters["lang"])) {
 				$parameters["lang"] = $this->defaultLanguage;
@@ -133,7 +130,6 @@ class PageRoute extends Route
 			}
 		}
 
-		// make request
 		return $this->modifyMatchRequest($request, $route, $parameters);
 	}
 
@@ -175,53 +171,41 @@ class PageRoute extends Route
 
 		$parameters = $appRequest->getParameters();
 
-		while (true) {
-
-			if (isset($parameters['route']) && $parameters['route'] instanceof RouteEntity) {
-				$route = $parameters['route'];
-				break;
+		if (isset($parameters['route'])) {
+			$route = $parameters['route'];
+			unset($parameters['route']);
+		} else if (array_key_exists('url', $parameters)) {
+			$url = $parameters['url'];
+			if (count($this->languages) > 1) {
+				if (!isset($parameters["lang"])) {
+					$parameters["lang"] = $this->defaultLanguage;
+				}
+				try {
+					$route = $this->routeRepository->createQueryBuilder("a")
+						->leftJoin("a.page", "m")
+						->leftJoin("m.languages", "p")
+						->where("a.url = :url")
+						->andWhere("p.alias = :lang")
+						->setParameter("url", $url)
+						->setParameter("lang", $parameters["lang"])
+						->getQuery()->getSingleResult();
+				} catch (\Doctrine\ORM\NoResultException $e) {
+					return NULL;
+				}
+			} else {
+				try {
+					$route = $this->routeRepository->createQueryBuilder("a")
+						->andWhere("a.url = :url")
+						->setParameter("url", $url)
+						->getQuery()->getSingleResult();
+				} catch (\Doctrine\ORM\NoResultException $e) {
+					return NULL;
+				}
 			}
-
-			if (isset($parameters['page']) && $parameters['page'] instanceof PageEntity) {
-				$route = $parameters['page']->mainRoute;
-				break;
-			}
-
+		} else {
 			return NULL;
 		}
 
-		unset($parameters['route']);
-
-		// Search PageEntity
-		if (isset($route)) {
-		} elseif (count($this->languages) > 1) {
-			if (!isset($parameters["lang"])) {
-				$parameters["lang"] = $this->defaultLanguage;
-			}
-			try {
-				$route = $this->routeRepository->createQueryBuilder("a")
-					->leftJoin("a.page", "m")
-					->leftJoin("m.languages", "p")
-					->where("a.url = :url")
-					->andWhere("p.alias = :lang")
-					->setParameter("url", $url)
-					->setParameter("lang", $parameters["lang"])
-					->getQuery()->getSingleResult();
-			} catch (\Doctrine\ORM\NoResultException $e) {
-				return NULL;
-			}
-		} else {
-			try {
-				$route = $this->routeRepository->createQueryBuilder("a")
-					->andWhere("a.url = :url")
-					->setParameter("url", $url)
-					->getQuery()->getSingleResult();
-			} catch (\Doctrine\ORM\NoResultException $e) {
-				return NULL;
-			}
-		}
-
-		// make request
 		$this->modifyConstructRequest($appRequest, $route, $parameters);
 		return parent::constructUrl($appRequest, $refUrl);
 	}
