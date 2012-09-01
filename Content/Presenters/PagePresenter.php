@@ -12,7 +12,8 @@
 namespace CmsModule\Content\Presenters;
 
 use Venne;
-use CmsModule\Content\Routes\PageRoute;
+use CmsModule\Content\Entities\RouteEntity;
+use CmsModule\Content\Entities\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,12 +22,12 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 {
 
 
-	/** @var \CmsModule\Content\Entities\PageEntity */
+	/** @var PageEntity */
 	public $page;
 
 	/**
 	 * @persistent
-	 * @var \CmsModule\Content\Entities\RouteEntity
+	 * @var RouteEntity
 	 */
 	public $route;
 
@@ -41,14 +42,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	{
 		parent::startup();
 
-		$this->invalidLinkMode = self::INVALID_LINK_WARNING;
-
-		$this->route = $this->getParameter("route");
-		$this->page = $this->route->getPage();
-
-		if (!$this->page || !$this->route) {
+		if (!$this->route) {
 			throw new \Nette\Application\BadRequestException;
 		}
+		$this->page = $this->route->getPage();
 	}
 
 
@@ -64,7 +61,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		try {
 			$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
 		} catch (\Nette\Application\UI\InvalidLinkException $e) {
-			$this->redirectUrl($this->template->basePath);
+			$this->redirect('this', array('route' => NULL, 'url' => '', 'lang' => $alias));
 		}
 	}
 
@@ -151,4 +148,3 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$this["head"]->setRobots($this->route->robots);
 	}
 }
-
