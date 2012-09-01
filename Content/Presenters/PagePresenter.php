@@ -12,7 +12,7 @@
 namespace CmsModule\Content\Presenters;
 
 use Venne;
-use CmsModule\Routes\PageRoute;
+use CmsModule\Content\Routes\PageRoute;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,16 +21,13 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 {
 
 
-	/** @persistent */
-	public $url = "";
-
-	/** @persistent */
-	public $cmsPage;
-
-	/** @var \CmsModule\Entities\PageEntity */
+	/** @var \CmsModule\Content\Entities\PageEntity */
 	public $page;
 
-	/** @var \CmsModule\Entities\RouteEntity */
+	/**
+	 * @persistent
+	 * @var \CmsModule\Content\Entities\RouteEntity
+	 */
 	public $route;
 
 	/** @var string */
@@ -49,12 +46,9 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$this->route = $this->getParameter("route");
 		$this->page = $this->route->getPage();
 
-		// load page module entity
 		if (!$this->page || !$this->route) {
 			throw new \Nette\Application\BadRequestException;
 		}
-
-		$this->url = $this->route->url;
 	}
 
 
@@ -66,10 +60,12 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function handleChangeLanguage($alias)
 	{
 		$page = $this->page->getPageWithLanguageAlias($alias);
-		$this->redirect("this", array(
-			"lang" => $alias,
-			"url" => ($page ? $page->url : "")
-		));
+
+		try {
+			$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
+		} catch (\Nette\Application\UI\InvalidLinkException $e) {
+			$this->redirectUrl($this->template->basePath);
+		}
 	}
 
 
@@ -138,22 +134,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			), $ret);
 		}
 		return $ret;
-	}
-
-
-	/**
-	 * Component factory. Delegates the creation of components to a createComponent<Name> method.
-	 *
-	 * @param  string      component name
-	 * @return IComponent  the created component (optionally)
-	 */
-	public function createComponent($name)
-	{
-		if (substr($name, 0, 17) == "contentExtension_") {
-			$this->context->eventManager->dispatchEvent(\Venne\ContentExtension\Events::onContentExtensionRender);
-		} else {
-			return parent::createComponent($name);
-		}
 	}
 
 

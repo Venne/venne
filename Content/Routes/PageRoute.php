@@ -52,14 +52,14 @@ class PageRoute extends Route
 
 
 	/**
-	 * Constructor
-	 *
+	 * @param Callback $checkConnectionFactory
 	 * @param ContentManager $contentManager
-	 * @param BaseRepository $pageRepository
+	 * @param BaseRepository $routeRepository
 	 * @param BaseRepository $langRepository
-	 * @param string $prefix
-	 * @param bool $multilang
-	 * @param string $defaultLangAlias
+	 * @param $prefix
+	 * @param $parameters
+	 * @param $languages
+	 * @param $defaultLanguage
 	 */
 	public function __construct(Callback $checkConnectionFactory, ContentManager $contentManager, BaseRepository $routeRepository, BaseRepository $langRepository, $prefix, $parameters, $languages, $defaultLanguage)
 	{
@@ -149,7 +149,6 @@ class PageRoute extends Route
 	{
 		$parameters = $route->params + $parameters;
 		$parameters["route"] = $route;
-		$parameters['cmsPage'] = 1;
 		$type = explode(":", $route->type);
 		$parameters["action"] = $type[count($type) - 1];
 		$parameters["lang"] = $appRequest->parameters["lang"] ? : $this->defaultLanguage;
@@ -191,9 +190,7 @@ class PageRoute extends Route
 			return NULL;
 		}
 
-		unset($parameters['cmsPage']);
 		unset($parameters['route']);
-		unset($parameters['page']);
 
 		// Search PageEntity
 		if (isset($route)) {
@@ -244,7 +241,7 @@ class PageRoute extends Route
 			'module' => self::DEFAULT_MODULE,
 			'presenter' => self::DEFAULT_PRESENTER,
 			'action' => self::DEFAULT_ACTION,
-			'lang' => $route->page->languages[0]->alias,
+			'lang' => isset($parameters['lang']) ? $parameters['lang'] : $route->page->languages[0]->alias,
 			'url' => $route->url,
 		) + $parameters);
 		return $request;
