@@ -46,7 +46,8 @@ h5 {
 }
 
 #ajax-spinner {
-    position:fixed;
+    position: fixed;
+    z-index: 999999999;
     left: 50%;
     top: 50%;
     margin: -42px 0 0 -42px;
