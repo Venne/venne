@@ -91,9 +91,11 @@ class FileEntity extends BaseFileEntity
 		@unlink($this->getFilePath());
 
 		// remove cache
-		foreach(Finder::findFiles('*/*/*/' . $this->getName())->from($this->publicDir . '/_cache') as $file) {
-			@unlink($file->getPathname());
-
+		$dir = $this->publicDir . '/_cache';
+		if (file_exists($dir)) {
+			foreach (Finder::findFiles('*/*/*/' . $this->getName())->from($dir) as $file) {
+				@unlink($file->getPathname());
+			}
 		}
 	}
 
@@ -141,7 +143,7 @@ class FileEntity extends BaseFileEntity
 			return;
 		}
 
-		if(!$this->_oldPath && $this->path){
+		if (!$this->_oldPath && $this->path) {
 			$this->_oldPath = $this->path;
 			$this->_oldProtected = $this->protected;
 		}
