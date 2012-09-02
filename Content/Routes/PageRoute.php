@@ -70,7 +70,7 @@ class PageRoute extends Route
 		$this->routeRepository = $routeRepository;
 		$this->contentManager = $contentManager;
 
-		parent::__construct($prefix . '<url .+>[/<module .+>/<presenter .+>]' . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
+		parent::__construct($prefix . '<url .+>[/<module qwertzuiop>/<presenter qwertzuiop>]' . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
 			"presenter" => self::DEFAULT_PRESENTER,
 			"module" => self::DEFAULT_MODULE,
 			"action" => self::DEFAULT_ACTION,
