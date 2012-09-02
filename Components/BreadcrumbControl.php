@@ -39,7 +39,7 @@ class BreadcrumbControl extends Control
 	public function render()
 	{
 		$cacheKey = array(
-			$this->presenter->page->id, $this->routePrefix, $this->getPresenter()->lang
+			$this->presenter->route->id, $this->routePrefix, $this->getPresenter()->lang
 		);
 
 		$this->template->cacheKey = implode('|', $cacheKey);
