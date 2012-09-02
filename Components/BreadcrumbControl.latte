@@ -10,7 +10,8 @@
 	{/if}
 
 	{var entity=>$item->page->getPageWithLanguageAlias($presenter->lang)}
-	{var url=>$entity->mainRoute->url}
+	{var url=>$item->url}
+
 	{var active=>
 	(
 	(!$url && !$currentUrl) ||
