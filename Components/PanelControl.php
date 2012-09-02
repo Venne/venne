@@ -49,8 +49,6 @@ class PanelControl extends Control
 		if ($this->tab == 0) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
 			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => 'this')));
-		} else if ($this->tab == 1) {
-			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
 		} else if ($this->tab == 2) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getFiles"), callback($this, "setFileParent"));
 			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => 'this')));
@@ -130,6 +128,7 @@ class PanelControl extends Control
 		} else {
 			$dql = $dql->andWhere('a.parent IS NULL');
 		}
+		$dql = $dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
 
 		foreach ($dql->getQuery()->getResult() as $page) {
 			$item = array("title" => $page->name, 'key' => 'd:' . $page->id);
