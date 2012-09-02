@@ -29,7 +29,13 @@ class Authenticator extends Venne\Security\Authenticator
 	protected $checkConnection;
 
 
-	function __construct($adminLogin, $adminPassword, $checkConnection, $userRepository)
+	/**
+	 * @param $adminLogin
+	 * @param $adminPassword
+	 * @param $checkConnection
+	 * @param $userRepository
+	 */
+	public function __construct($adminLogin, $adminPassword, $checkConnection, $userRepository)
 	{
 		parent::__construct($adminLogin, $adminPassword);
 
@@ -42,8 +48,8 @@ class Authenticator extends Venne\Security\Authenticator
 	 * Performs an authentication
 	 *
 	 * @param  array
-	 * @return Nette\Security\Identity
-	 * @throws Nette\Security\AuthenticationException
+	 * @return \Nette\Security\Identity
+	 * @throws \Nette\Security\AuthenticationException
 	 */
 	public function authenticate(array $credentials)
 	{
@@ -62,5 +68,4 @@ class Authenticator extends Venne\Security\Authenticator
 			throw new AuthenticationException("User '$username' not found.", self::IDENTITY_NOT_FOUND);
 		}
 	}
-
 }
