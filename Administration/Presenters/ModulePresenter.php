@@ -134,7 +134,7 @@ class ModulePresenter extends BasePresenter
 	}
 
 
-	public function save(\Venne\Application\UI\Form $form)
+	public function save(\Venne\Forms\Form $form)
 	{
 		$values = $form->getValues();
 		$data = json_decode(file_get_contents($this->getOrigComposer()), true);
