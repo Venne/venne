@@ -39,7 +39,7 @@
 				<a href="{$link}" class="{if $active} active{/if}{if $childrens} dropdown-toogle" data-toggle="dropdown{/if}">{$entity->name}</a>
 
 				{if $childrens}
-				{include #menu, "items"=>$item->childrens, "sub"=>($sub+1)}
+				{include #menu "items"=>$item->childrens, "sub"=>($sub+1)}
 				{/if}
 			</li>
 		{/if}

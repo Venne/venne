@@ -12,8 +12,6 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use CmsModule\Managers\DependencyNotExistsException;
-use CmsModule\Managers\DependencyException;
 use Venne\Module\ModuleManager;
 
 /**

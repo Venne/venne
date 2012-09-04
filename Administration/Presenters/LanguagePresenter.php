@@ -55,7 +55,6 @@ class LanguagePresenter extends BasePresenter
 	 */
 	public function actionDefault()
 	{
-
 	}
 
 
@@ -64,7 +63,6 @@ class LanguagePresenter extends BasePresenter
 	 */
 	public function actionEdit()
 	{
-
 	}
 
 
@@ -73,7 +71,6 @@ class LanguagePresenter extends BasePresenter
 	 */
 	public function actionCreate()
 	{
-
 	}
 
 
@@ -161,7 +158,13 @@ class LanguagePresenter extends BasePresenter
 	public function delete($entity)
 	{
 		$repository = $this->languageRepository;
-		$repository->delete($entity);
+
+		try {
+			$repository->delete($entity);
+		} catch (\Nette\InvalidArgumentException $e) {
+			$this->flashMessage($e->getMessage(), "warning");
+			return;
+		}
 
 		$config = $this->configService;
 		$languages = array();

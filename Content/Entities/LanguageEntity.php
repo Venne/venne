@@ -12,13 +12,15 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @Entity(repositoryClass="\CmsModule\Content\Repositories\LanguageRepository")
  * @Table(name="language")
- */ 
-class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
+ */
+class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity
+{
 
 
 	/** @Column(type="string", unique=true, length=32) */
@@ -30,6 +32,11 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	/** @Column(type="string", unique=true, length=32) */
 	protected $alias;
 
+	/**
+	 * @var PageEntity[]|ArrayCollection|array
+	 * @ManyToMany(targetEntity="PageEntity", mappedBy="languages")
+	 */
+	protected $pages;
 
 
 	public function __construct()
@@ -37,8 +44,8 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 		$this->name = "";
 		$this->short = "";
 		$this->alias = "";
+		$this->pages = new ArrayCollection;
 	}
-
 
 
 	public function __toString()
@@ -47,12 +54,10 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	public function getName()
 	{
 		return $this->name;
 	}
-
 
 
 	public function setName($name)
@@ -61,12 +66,10 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	public function getShort()
 	{
 		return $this->short;
 	}
-
 
 
 	public function setShort($short)
@@ -75,12 +78,10 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	public function getAlias()
 	{
 		return $this->alias;
 	}
-
 
 
 	public function setAlias($alias)
@@ -88,4 +89,18 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 		$this->alias = $alias;
 	}
 
+
+	public function setPages($pages)
+	{
+		$this->pages = $pages;
+	}
+
+
+	/**
+	 * @return array|PageEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 */
+	public function getPages()
+	{
+		return $this->pages;
+	}
 }

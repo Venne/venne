@@ -50,7 +50,7 @@ abstract class PageEntity extends TreeEntity
 
 	/**
 	 * @var ArrayCollection|LanguageEntity[]
-	 * @ManyToMany(targetEntity="\CmsModule\Content\Entities\LanguageEntity")
+	 * @ManyToMany(targetEntity="\CmsModule\Content\Entities\LanguageEntity", inversedBy="pages")
 	 * @JoinTable(name="pageLanguageLink",
 	 *       joinColumns={@JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")},
 	 *       inverseJoinColumns={@JoinColumn(name="language_id", referencedColumnName="id", onDelete="CASCADE")}

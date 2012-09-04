@@ -31,9 +31,8 @@ class BrowserControl extends Control
 	protected $onActivateLink;
 
 
-
 	/**
-	 * @param callable $loadItems 
+	 * @param callable $loadItems
 	 */
 	function __construct($loadItems, $setParent)
 	{
@@ -42,7 +41,6 @@ class BrowserControl extends Control
 		$this->loadItems = $loadItems;
 		$this->parentCallback = $setParent;
 	}
-
 
 
 	public function render()
@@ -55,12 +53,10 @@ class BrowserControl extends Control
 	}
 
 
-
 	public function getPages($parent = NULL)
 	{
 		return $this->loadItems->invoke($parent);
 	}
-
 
 
 	public function handleGetPages($parent = NULL)
@@ -70,11 +66,11 @@ class BrowserControl extends Control
 	}
 
 
-
 	public function handleSetParent($from = NULL, $to = NULL, $dropmode = NULL)
 	{
 		$this->parentCallback->invoke($from, $to, $dropmode);
 	}
+
 
 	/**
 	 * @param string $onActivateLink
@@ -84,6 +80,7 @@ class BrowserControl extends Control
 		$this->onActivateLink = $onActivateLink;
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -91,6 +88,4 @@ class BrowserControl extends Control
 	{
 		return $this->onActivateLink;
 	}
-
-
 }
