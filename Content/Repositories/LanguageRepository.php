@@ -45,8 +45,19 @@ class LanguageRepository extends BaseRepository
 	}
 
 
+	/**
+	 * @param LanguageEntity $entity
+	 * @param bool $withoutFlush
+	 * @return mixed
+	 */
 	public function delete($entity, $withoutFlush = self::FLUSH)
 	{
+		foreach ($entity->getPages() as $page) {
+			if (count($page->getLanguages()) == 1) {
+				throw new \Nette\InvalidArgumentException("Language '{$entity->name}' require some pages which have content only in this language.");
+			}
+		}
+
 		$ret = parent::delete($entity, $withoutFlush);
 		$this->generateConfig();
 		return $ret;
@@ -59,7 +70,7 @@ class LanguageRepository extends BaseRepository
 		$languages = array();
 		$i = 0;
 		foreach ($this->findAll() as $entity) {
-			if($i++ == 0) {
+			if ($i++ == 0) {
 				$config["parameters"]["website"]["defaultLanguage"] = $entity->alias;
 			}
 			$languages[] = $entity->alias;
