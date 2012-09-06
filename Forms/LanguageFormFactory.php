@@ -47,18 +47,23 @@ class LanguageFormFactory extends FormFactory
 	}
 
 
+	protected function getControlExtensions()
+	{
+		return array(
+			new \FormsModule\ControlExtensions\ControlExtension(),
+		);
+	}
+
+
 	/**
 	 * @param Form $form
 	 */
 	public function configure(Form $form)
 	{
 		$form->addGroup("Language");
-		$form->addText /*WithSelect*/
-		("name", "Name"); //->setItems(array("English", "Deutsch", "Čeština"), false)->setOption("description", "(enhlish, deutsch,...)")->addRule(self::FILLED, "Please set name");
-		$form->addText /*WithSelect*/
-		("short", "Short"); //->setItems(array("en", "de", "cs"), false)->setOption("description", "(en, de,...)")->addRule(self::FILLED, "Please set short");
-		$form->addText /*WithSelect*/
-		("alias", "Alias"); //->setItems(array("en", "de", "cs", "www"), false)->setOption("description", "(www, en, de,...)")->addRule(self::FILLED, "Please set alias");
+		$form->addTextWithSelect("name", "Name")->setItems(array("English", "Deutsch", "Čeština"), false)->setOption("description", "(enhlish, deutsch,...)")->addRule($form::FILLED, "Please set name");
+		$form->addTextWithSelect("short", "Short")->setItems(array("en", "de", "cs"), false)->setOption("description", "(en, de,...)")->addRule($form::FILLED, "Please set short");
+		$form->addTextWithSelect("alias", "Alias")->setItems(array("en", "de", "cs", "www"), false)->setOption("description", "(www, en, de,...)")->addRule($form::FILLED, "Please set alias");
 
 		$form->addSubmit('_submit', 'Save');
 	}

@@ -52,6 +52,14 @@ class WebsiteFormFactory extends FormFactory
 	}
 
 
+	protected function getControlExtensions()
+	{
+		return array(
+			new \FormsModule\ControlExtensions\ControlExtension(),
+		);
+	}
+
+
 	/**
 	 * @param Form $form
 	 */
@@ -66,15 +74,18 @@ class WebsiteFormFactory extends FormFactory
 		$form->addSelect('layout', 'Layout', $this->scannerService->getLayoutFiles())->setPrompt('-------');
 
 		$form->addGroup("System");
-		$form->addText /*WithSelect*/
-		("routePrefix", "Route prefix");
-
-//		$url = $this->presenter->context->httpRequest->url;
-//		$domain = trim($url->host . $url->scriptPath, "/") . "/";
-//		$params = array("<lang>/", "//$domain<lang>/", "//<lang>.$domain");
-//
-//		$this['routePrefix']->setItems($params, false);
+		$form->addTextWithSelect("routePrefix", "Route prefix");
 
 		$form->addSubmit('_submit', 'Save');
+	}
+
+
+	public function handleAttached($form)
+	{
+		$url = $form->presenter->context->httpRequest->url;
+		$domain = trim($url->host . $url->scriptPath, "/") . "/";
+		$params = array("<lang>/", "//$domain<lang>/", "//<lang>.$domain");
+
+		$form['routePrefix']->setItems($params, false);
 	}
 }
