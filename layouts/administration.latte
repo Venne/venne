@@ -126,12 +126,13 @@
 			<div class="row-fluid">
 
 				{if $presenter->user->isLoggedIn() && $presenter->context->doctrine->createCheckConnection() && !isset($hideMenuItems)}
+				{var _panel=>true}
 				<div class="span4" style="width: 320px; margin-top: 7px; {*position: fixed;*}">
 					{control panel}
 				</div>
 				{/if}
 
-				<div class="content" style="margin-left: 330px;">
+				<div class="content"{if isset($_panel)} style="margin-left: 330px;"{/if}>
 					<div class="row-fluid">
 						<div class="span12">
 

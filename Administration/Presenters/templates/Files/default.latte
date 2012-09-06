@@ -174,18 +174,7 @@
 </script>
 
 <ul class="thumbnails" id="sortable">
-	{if $presenter->key}
-		<li class="d" style="text-align: center;" id="d_{($entity->parent? $entity->parent->id : NULL)}">
-			<div href="#" class="thumbnail">
-				<a class="noAjax" href="{=$control->presenter->link('this', array('key'=>($entity->parent? $entity->parent->id : NULL)))}">
-					<img src="{=$presenter->template->basePath}/resources/cmsModule/admin/icons/places/64/folder.png" alt="">
-				</a>
-				<h5>..</h5>
-			</div>
-		</li>
-	{/if}
 {control table}
-
 {control fileTable}
 </ul>
 
