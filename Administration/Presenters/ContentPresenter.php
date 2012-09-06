@@ -221,12 +221,12 @@ class ContentPresenter extends BasePresenter
 			$form = $formFactory->invoke($entity);
 		}
 
-		if ($form instanceof \CmsModule\Content\SectionControl) {
+		if ($form instanceof \CmsModule\Content\ISectionControl) {
 			$form->setEntity($entity);
-		}
-
-		if ($form instanceof \Nette\Forms\Form) {
+		} else if ($form instanceof \Venne\Forms\Form) {
 			$form->onSuccess[] = $this->formEditSuccess;
+		} else {
+			throw new \Nette\InvalidArgumentException("Control must be instance of '\Venne\Forms\Form' OR 'CmsModule\Content\ISectionControl'. " . get_class($form) . " is given");
 		}
 		return $form;
 	}
