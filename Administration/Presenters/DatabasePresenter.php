@@ -36,7 +36,6 @@ class DatabasePresenter extends BasePresenter
 	{
 		/** @var $form \CmsModule\Forms\SystemDatabaseForm */
 		$form = $this->databaseForm->invoke();
-		$form->getElementPrototype()->attrs['class'][] = 'noAjax';
 		$form->onSuccess[] = $this->save;
 		return $form;
 	}

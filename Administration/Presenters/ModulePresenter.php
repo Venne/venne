@@ -41,6 +41,8 @@ class ModulePresenter extends BasePresenter
 
 	public function __construct(ModuleManager $moduleManager, $appDir, $libsDir, $modules)
 	{
+		parent::__construct();
+
 		$this->moduleManager = $moduleManager;
 		$this->appDir = $appDir;
 		$this->libsDir = $libsDir;
