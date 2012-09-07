@@ -6,18 +6,11 @@
 {define #item}
 
 	{if $item->parent}
-		{include #item item=>$item->parent}
+		{include #item item=>$item->parent, active=>false}
 	{/if}
 
 	{var entity=>$item->page->getPageWithLanguageAlias($presenter->lang)}
 	{var url=>$item->url}
-
-	{var active=>
-	(
-	(!$url && !$currentUrl) ||
-	($url && strpos($url . '/', $currentUrl .'/') !== false)
-	)
-	}
 
 	{var link=>$presenter->link('this', array('route'=>$item))}
 
@@ -26,6 +19,6 @@
 {/define}
 
 <ul class="breadcrumb">
-	{include #item item=>$item}
+	{include #item item=>$item, active=>true}
 </ul>
 {/cache}
