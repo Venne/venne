@@ -23,17 +23,8 @@ use CmsModule\Content\ContentManager;
 class FileRoute extends Route
 {
 
-	/** @var BaseRepository */
-	protected $fileRepository;
-
-
-	/**
-	 * @param BaseRepository $fileRepository
-	 */
-	public function __construct(BaseRepository $fileRepository)
+	public function __construct()
 	{
-		$this->fileRepository = $fileRepository;
-
 		parent::__construct("public/media/_cache/<size>/<format>/<type>/<url .+>", array(
 			"presenter" => 'Cms:File',
 			'action' => 'default',
