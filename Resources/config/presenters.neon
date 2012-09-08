@@ -137,3 +137,8 @@ services:
 	cms.admin.aboutPresenter:
 		class: CmsModule\Administration\Presenters\AboutPresenter
 		tags: [presenter]
+
+	cms.admin.panelPresenter:
+		class: CmsModule\Administration\Presenters\PanelPresenter
+		tags: [presenter]
+

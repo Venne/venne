@@ -4,10 +4,8 @@
 }
 
 body {
-	padding-top: 50px;
-	padding-bottom: 40px;
-	background: #000000 url('./../images/bg-noise.gif') repeat;
 	font: 13px/1.5 'ubuntu', helvetica, arial, sans-serif;
+    background-color: transparent;
 }
 
 input, button, select, textarea {
@@ -157,7 +155,7 @@ footer {
     color: #bbbbbb;
 }
 #navigation ul.nav li.dropdown:hover ul.dropdown-menu{
-    display: block;    
+    display: block;
 }
 #navigation ul.nav li.dropdown ul.dropdown-menu{
 	margin-top: -1px;
@@ -299,4 +297,14 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 }
 #sortable .ui-selecting .thumbnail {
     background: #eeeeee;
+}
+
+
+
+.venne-panel-block {
+    position: absolute;
+    text-align: center;
+    border: 1px solid #000000;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
 }

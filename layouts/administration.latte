@@ -31,6 +31,7 @@
 		{js @CmsModule/admin/js/netteForms.js}
 		{js @CmsModule/admin/js/application.js}
 		{css @CmsModule/admin/css/style.css}
+		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
 
 
 		{* forms *}
@@ -43,25 +44,25 @@
 		{js @FormsModule/date/date.js}
 
 		{js @FormsModule/dependentSelectBox/dependentSelectBox.js}
-
 		{js @FormsModule/textWithSelect/textWithSelect.js}
 
 	{/head}
 
 	{body}
 
-
 		{* Top navigation *}
+		{snippet panel}
 		<div class="navbar navbar-fixed-top" id="navigation">
 			<div class="navbar-inner">
 				<div class="container-fluid" n:snippet="navigation">
 
-					<a class="ajax brand" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" style="margin: -10px 0px;" /></a>
+					<a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax {/if}brand" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" /></a>
 
 					<div class="nav-collapse">
 
-						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
+					{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 						<ul class="nav">
+						{if $presenter->mode == $presenter::MODE_NORMAL}
 							{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationNavigation()}
 							{foreach $pages as $category=>$items}
 								{var ok=>false}
@@ -83,20 +84,29 @@
 								{/capture}
 								{if $ok}{!$nav}{/if}
 							{/foreach}
+						{/if}
 						</ul>
+
+						{if $presenter->mode == $presenter::MODE_PANEL}
+							<ul class="nav pull-right">
+								<li>
+									<a id="close-panel" href="#">{_'close'} <b class="caret"></b></a>
+								</li>
+							</ul>
+						{/if}
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class="nav-header">{_'Actions'}</li>
-								<li n:if="$presenter->isAllowed(':Cms:Admin:Users:edit')"><a class="ajax" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
+								<li n:if="$presenter->isAuthorized(':Cms:Admin:Users:edit')"><a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax{/if}" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
 								<li><a href="{link logout!}">{_'Log out'}</a></li>
 							</ul>
 							</li>
 						</ul>
-						{/if}
 
+						{if $presenter->mode == $presenter::MODE_NORMAL}
 						<ul class="nav pull-right">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$presenter->lang} <b class="caret"></b></a>
@@ -107,21 +117,29 @@
 								</ul>
 							</li>
 						</ul>
+						{/if}
 
 						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 						<ul class="nav pull-right">
 							<li>
+							{if $presenter->mode == $presenter::MODE_NORMAL}
 								<a href="{$basePath}/">{_'Show website'}</a>
+								{elseif $presenter->mode == $presenter::MODE_PANEL}
+								<a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}">{_'Show administration'}</a>
+							{/if}
 							</li>
 						</ul>
 						{/if}
+					{/if}
 
 					</div>
 				</div>
 			</div>
 		</div>
+		{/snippet}
 
 		{* Center *}
+		{if $presenter->mode == $presenter::MODE_NORMAL}
 		<div class="container-fluid" style="min-width: 990px;">
 			<div class="row-fluid">
 
@@ -169,6 +187,7 @@
 				</div>
 			</div>
 		</div>
+		{/if}
 
 	{/body}
 </html>

@@ -12,15 +12,17 @@
 <!DOCTYPE html>
 <html>
 {head}
-	{js @CmsModule/js/jquery/jquery-1.7.2.min.js}
-	{js @CmsModule/js/jquery/jquery-ui-1.8.16.custom.min.js}
-	{*js @CmsModule/js/jquery.ajax.js*}
-	{js @CmsModule/js/netteForms.js}
-	{css @CmsModule/css/jquery-ui-1.8.16.custom.css, media=>'screen, projection, tv'}
-	
-	{css /css/bootstrap.css}
-	{js /js/bootstrap.js}
-	
+	{* jquery *}
+	{js @CmsModule/jquery/js/jquery-1.7.2.min.js}
+	{js @CmsModule/jquery/js/jquery-ui-1.8.23.custom.min.js}
+	{css @CmsModule/jquery/css/ui-lightness/jquery-ui-1.8.23.custom.css, media=>'screen, projection, tv'}
+
+	{* bootstrap *}
+	{js @CmsModule/bootstrap/js/bootstrap.min.js}
+	{css @CmsModule/bootstrap/css/bootstrap.min.css}
+
+	{js @CmsModule/js/application.js}
+
 	{block head}{/block}
 {/head}
 
@@ -54,6 +56,9 @@
 
 	<div class="row">
 		<div class="span12">
+			{path @cmsModule/yeah}
+			{control breadcrumb}
+
 			{include #content}
 		</div>
 	</div>
