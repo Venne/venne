@@ -26,13 +26,24 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	const DEFAULT_LAYOUT = 'default';
 
-	public static $robotsValues = array(
-		"index, follow",
-		"noindex, follow",
-		"index, nofollow",
-		"noindex, nofollow",
+	protected static $robotsValues = array(
+		'index, follow',
+		'noindex, follow',
+		'index, nofollow',
+		'noindex, nofollow',
 	);
 
+	protected static $changefreqValues = array(
+		'always',
+		'hourly',
+		'daily',
+		'weekly',
+		'monthly',
+		'yearly',
+		'never',
+	);
+
+	protected static $priorityValues = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 	/**
 	 * @Index
@@ -94,6 +105,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $robots;
 
 	/** @Column(type="string", nullable=true) */
+	protected $changefreq;
+
+	/** @Column(type="integer", nullable=true) */
+	protected $priority;
+
+	/** @Column(type="string", nullable=true) */
 	protected $layout;
 
 	/** @Column(type="boolean") */
@@ -103,7 +120,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/**
 	 * @return string
 	 */
-	function __toString()
+	public function __toString()
 	{
 		return $this->url;
 	}
@@ -324,7 +341,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function setRobots($robots)
 	{
-		if (!isset(self::$robotsValues[$robots])) {
+		if (array_search($robots, self::$robotsValues) === false) {
 			throw new \Nette\InvalidArgumentException;
 		}
 
@@ -393,5 +410,57 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getCopyLayoutFromParent()
 	{
 		return $this->copyLayoutFromParent;
+	}
+
+
+	public function setChangefreq($changefreq)
+	{
+		if (array_search($changefreq, self::$changefreqValues) === false) {
+			throw new \Nette\InvalidArgumentException;
+		}
+
+		$this->changefreq = $changefreq;
+	}
+
+
+	public function getChangefreq()
+	{
+		return $this->changefreq;
+	}
+
+
+	public function setPriority($priority)
+	{
+		$priority = (int)$priority;
+
+		if (!is_integer($priority) || $priority < 0 || $priority > 10) {
+			throw new \Nette\InvalidArgumentException;
+		}
+
+		$this->priority = $priority;
+	}
+
+
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+
+
+	public static function getChangefreqValues()
+	{
+		return self::$changefreqValues;
+	}
+
+
+	public static function getPriorityValues()
+	{
+		return self::$priorityValues;
+	}
+
+
+	public static function getRobotsValues()
+	{
+		return self::$robotsValues;
 	}
 }
