@@ -63,6 +63,6 @@ class ControlExtension extends Object implements IControlExtension
 	 */
 	public function addFileEntityInput($form, $name, $label = NULL)
 	{
-		return $form[$name] = new \CmsModule\Content\Forms\Controls\FileEntityControl($name, $label);
+		return $form[$name] = new \CmsModule\Content\Forms\Controls\FileEntityControl($label);
 	}
 }
