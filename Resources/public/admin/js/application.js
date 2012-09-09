@@ -25,6 +25,8 @@ $(function () {
 		$(this).next().click();
 	});
 
+	$('select[multiple]').multiSelect();
+
 	// Ajax
 	$.nette.ext('formsValidationBind', {
 		success: function (payload) {
@@ -35,6 +37,19 @@ $(function () {
 			for (var i in payload.snippets) {
 				$('#' + i + ' form').each(function () {
 					Nette.initForm(this);
+				});
+			}
+		}
+	});
+	$.nette.ext('formsMultiSelectBind', {
+		success: function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			for (var i in payload.snippets) {
+				$('#' + i + ' select[multiple]').each(function () {
+					$('select[multiple]').multiSelect();
 				});
 			}
 		}
