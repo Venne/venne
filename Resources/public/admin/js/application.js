@@ -26,6 +26,19 @@ $(function () {
 	});
 
 	// Ajax
+	$.nette.ext('formsValidationBind', {
+		success: function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			for (var i in payload.snippets) {
+				$('#' + i + ' form').each(function () {
+					Nette.initForm(this);
+				});
+			}
+		}
+	});
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
