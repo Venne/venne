@@ -61,11 +61,15 @@ class UserFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addGroup("User");
+		$group = $form->addGroup("User");
 		$form->addCheckbox("enable", "Enable")->setDefaultValue(true);
 		$form->addText("email", "E-mail")
 			->addRule(Form::EMAIL, "Enter email");
-		$form->addCheckbox("password_new", "Set password");
+
+		$form->addText("key", "Authentization key")->setOption("description", "If is set user cannot log in.");
+
+		$form->addCheckbox("password_new", "Set password")->addCondition($form::EQUAL, true)->toggle('setPasswd');
+		$form->addGroup()->setOption('id', 'setPasswd');
 		$form->addPassword("_password", "Password")
 			->setOption("description", "minimal length is 5 char")
 			->addConditionOn($form['password_new'], Form::FILLED)
@@ -73,7 +77,6 @@ class UserFormFactory extends FormFactory
 			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
 		$form->addPassword("password_confirm", "Confirm password")
 			->addRule(Form::EQUAL, 'Invalid re password', $form['_password']);
-		$form->addText("key", "Authentization key")->setOption("description", "If is set user cannot log in.");
 
 		$form->addGroup("Next informations");
 		$form->addManyToMany("roleEntities");
