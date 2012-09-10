@@ -22,6 +22,9 @@
 		{js @CmsModule/multi-select/js/jquery.multi-select.js}
 		{css @CmsModule/multi-select/css/multi-select.css}
 
+		{* nette *}
+		{js @CmsModule/admin/js/netteForms.js}
+
 		{* bootstrap *}
 		{js @CmsModule/bootstrap/js/bootstrap.min.js}
 		{css @CmsModule/bootstrap/css/bootstrap.min.css}
@@ -30,10 +33,6 @@
 		{js @CmsModule/ajax/nette.ajax.js}
 		{js @CmsModule/ajax/spinner.ajax.js}
 
-		{* application *}
-		{js @CmsModule/admin/js/netteForms.js}
-		{js @CmsModule/admin/js/application.js}
-		{css @CmsModule/admin/css/style.css}
 		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
 
 
@@ -44,11 +43,13 @@
 		{css @FormsModule/date/dateInput.css}
 		{js @FormsModule/date/jquery-ui-timepicker-addon.js}
 		{js @FormsModule/date/dateInput.js}
-		{js @FormsModule/date/date.js}
 
 		{js @FormsModule/dependentSelectBox/dependentSelectBox.js}
 		{js @FormsModule/textWithSelect/textWithSelect.js}
 
+		{* application *}
+		{js @CmsModule/admin/js/application.js}
+		{css @CmsModule/admin/css/style.css}
 	{/head}
 
 	{body}
