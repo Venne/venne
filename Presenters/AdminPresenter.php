@@ -19,13 +19,6 @@ use Venne;
 abstract class AdminPresenter extends BasePresenter
 {
 
-	const MODE_NORMAL = NULL;
-
-	const MODE_PANEL = 1;
-
-	public $mode;
-
-
 	public function startup()
 	{
 		// check admin account
@@ -67,8 +60,7 @@ abstract class AdminPresenter extends BasePresenter
 
 		parent::startup();
 
-		if ($this->getParameter('mode') == self::MODE_PANEL) {
-			$this->mode = $this->getParameter('mode');
+		if ($this->getParameter('mode') == self::MODE_EDIT) {
 			\Nette\Diagnostics\Debugger::$bar = false;
 			$this->invalidateControl('panel');
 		}

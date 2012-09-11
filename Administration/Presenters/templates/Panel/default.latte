@@ -1,1 +1,29 @@
 {block content}
+
+{snippet elementView}
+	{if isset($showElementView)}
+	<div class="modal hide" id="optionEdit">
+		<div class="modal-header">
+			<a href="{link this}" class="ajax close">×</a>
+
+			<h3>Edit option</h3>
+		</div>
+		<div class="modal-body">
+			{element $presenter->elementName:$presenter->elementView $presenter->elementId}
+		</div>
+	</div>
+	<script>
+		$(function () {
+			$('#optionEdit').modal({
+				backdrop:false
+			});
+		});
+	</script>
+	{/if}
+{/snippet}
+
+{snippet element}
+	{if isset($showElement) && isset($elementId)}
+		{element $presenter->elementName $presenter->elementId}
+	{/if}
+{/snippet}

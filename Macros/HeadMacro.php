@@ -60,7 +60,7 @@ class HeadMacro extends \Nette\Latte\Macros\MacroSet
 </head>
 
 <body<?php if($basePath){?> data-venne-basepath="<?php echo $basePath;?>"<?php } ?>><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyBegin); ?>
-<?php if ($presenter instanceof \CmsModule\Presenters\FrontPresenter && $presenter->getUser()->isLoggedIn() && $presenter->isAuthorized(":Cms:Admin:Panel:") ) { echo \'<div id="venne-panel-container" style="position: fixed; top: 0; left: 0; z-index: 9999999; width: 100%; height: 42px; overflow: hidden;"><iframe src="\'.$basePath.\'/admin/en/panel?mode=1" scrolling="no" allowtransparency="true" style="width: 100%; height: 100%; overflow: hidden;" frameborder="0" id="venne-panel"></iframe></div>\'; } ?>
+<?php if ($presenter instanceof \CmsModule\Presenters\FrontPresenter && $presenter->getUser()->isLoggedIn() && $presenter->isAuthorized(":Cms:Admin:Panel:") ) { echo \'<div id="venne-panel-container" style="position: fixed; top: 0; left: 0; z-index: 9999999; width: 100%; height: 43px; overflow: hidden;"><iframe src="\'.$basePath.\'/admin/en/panel?mode=1" scrolling="no" allowtransparency="true" style="width: 100%; height: 100%; overflow: hidden;" frameborder="0" id="venne-panel"></iframe></div>\'; } ?>
 <?php echo $_bodyMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyEnd); ?>
 </body>
 <?php

@@ -33,9 +33,6 @@
 		{js @CmsModule/ajax/nette.ajax.js}
 		{js @CmsModule/ajax/spinner.ajax.js}
 
-		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
-
-
 		{* forms *}
 		{js @FormsModule/jquery-tags-input/jquery.tagsinput.min.js}
 		{css @FormsModule/jquery-tags-input/jquery.tagsinput.css}
@@ -49,7 +46,10 @@
 
 		{* application *}
 		{js @CmsModule/admin/js/application.js}
+		{if $presenter->mode == $presenter::MODE_EDIT}{js @CmsModule/admin/js/panel.js}{/if}
 		{css @CmsModule/admin/css/style.css}
+		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
+
 	{/head}
 
 	{body}
@@ -91,21 +91,37 @@
 						{/if}
 						</ul>
 
-						{if $presenter->mode == $presenter::MODE_PANEL}
+						{if $presenter->mode == $presenter::MODE_EDIT}
+							<ul class="nav">
+								<li>
+									<a id="venne-panel-edit" href="javascript:;"><span class="icon-edit icon-white"></span> {_'Edit mode'}</a>
+								</li>
+								<li>
+									<a id="venne-panel-close" href="javascript:;"><span class="icon-off icon-white"></span> {_'Close edit mode'}</a>
+								</li>
+								<li class="divider-vertical"></li>
+								<li>
+									<a id="venne-panel-button-edit" href="javascript:;"><span class="icon-edit icon-white"></span> {_'Edit layout'}</a>
+								</li>
+								<li>
+									<a id="venne-panel-button-save" href="javascript:;"><span class="icon-ok icon-white"></span> {_'Save layout'}</a>
+								</li>
+							</ul>
+
 							<ul class="nav pull-right">
 								<li>
-									<a id="close-panel" href="#">{_'close'} <b class="caret"></b></a>
+									<a id="venne-panel-button-close" href="#"><i class="icon-remove icon-white"></i> {_'close'} <b class="caret"></b></a>
 								</li>
 							</ul>
 						{/if}
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">{if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-user icon-white"></span> {if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class="nav-header">{_'Actions'}</li>
-								<li n:if="$presenter->isAuthorized(':Cms:Admin:Users:edit')"><a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax{/if}" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id}{else}{link :Cms:Admin:Application:account}{/if}">{_'Account settings'}</a></li>
-								<li><a href="{link logout!}">{_'Log out'}</a></li>
+								<li n:if="$presenter->isAuthorized(':Cms:Admin:Users:edit')"><a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax{/if}" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id, mode=>NULL}{else}{link :Cms:Admin:Application:account mode=>NULL}{/if}"><i class="icon-user icon-white"></i> {_'Account settings'}</a></li>
+								<li><a href="{link logout! mode=>NULL}"><i class="icon-off icon-white"></i> {_'Log out'}</a></li>
 							</ul>
 							</li>
 						</ul>
@@ -113,7 +129,7 @@
 						{if $presenter->mode == $presenter::MODE_NORMAL}
 						<ul class="nav pull-right">
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">{$presenter->lang} <b class="caret"></b></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-flag icon-white"></i> {$presenter->lang} <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="nav-header"></li>
 									<li><a n:href="this lang=>cs">cs</a></li>
@@ -127,9 +143,9 @@
 						<ul class="nav pull-right">
 							<li>
 							{if $presenter->mode == $presenter::MODE_NORMAL}
-								<a href="{$basePath}/">{_'Show website'}</a>
-								{elseif $presenter->mode == $presenter::MODE_PANEL}
-								<a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}">{_'Show administration'}</a>
+								<a href="{$basePath}/"><i class="icon-refresh icon-white"></i> {_'Show website'}</a>
+								{elseif $presenter->mode == $presenter::MODE_EDIT}
+								<a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':', array('mode'=>NULL))}"><i class="icon-refresh icon-white"></i> {_'Show administration'}</a>
 							{/if}
 							</li>
 						</ul>
@@ -191,6 +207,8 @@
 				</div>
 			</div>
 		</div>
+		{else}
+			{content}
 		{/if}
 
 	{/body}

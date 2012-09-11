@@ -13,6 +13,7 @@ $(function () {
 	var rectangles = new Array();
 	var rectangleObjects = new Array();
 	var edit = false;
+	var _venne_panel_load = false;
 
 
 	// Iframe manipulation
@@ -23,10 +24,49 @@ $(function () {
 	});
 	$('div').bind('mouseout', function () {
 		if (!edit) {
-			$('#venne-panel-container', topDocument).height('42px');
+			$('#venne-panel-container', topDocument).height('43px');
 		}
 	});
 	$('a').attr("target", "_parent");
+	$('form').attr("target", "_parent");
+	if (window.parent.location.href.indexOf("?mode=1") == -1 && window.parent.location.href.indexOf("&mode=1") == -1) {
+		$('#venne-panel-close').hide();
+		$('#venne-panel-button-edit').hide();
+		$('#venne-panel-edit').live('click', function () {
+			if (window.parent.location.href.indexOf("?") != -1) {
+				window.parent.location.href = window.parent.location.href + '&mode=1';
+			} else {
+				window.parent.location.href = window.parent.location.href + '?mode=1';
+			}
+		});
+	} else {
+		$('#venne-panel-edit').hide();
+		$('#venne-panel-close').live('click', function () {
+			var url = window.parent.location.href;
+			url = url.replace('?mode=1', '').replace('&mode=1', '');
+			window.parent.location.href = url;
+		});
+	}
+
+
+	// Refresh element
+	if (window.parent._venne_panel == undefined) {
+		$('#venne-panel', topDocument).bind('load', function () {
+			if (_venne_panel_load) {
+				$.get($(this).contents().get(0).location.href + '&do=refreshElement', function (data) {
+					parameters = data['state'];
+					html = $(data['snippets']['snippet--element']);
+					id = html.attr('id');
+
+					$('#' + id, topDocument).html(html.html());
+					$("#venne-panel", topDocument)[0].contentWindow.redrawRectangles();
+				});
+			} else {
+				_venne_panel_load = true;
+			}
+		});
+		window.parent._venne_panel = true;
+	}
 
 
 	// Edit & Save buttons
@@ -35,10 +75,12 @@ $(function () {
 		$("#venne-panel-container", topDocument).height('100%');
 		$('body').css('background-color', 'rgba(255, 255, 255, 0.5)');
 
-		//drawRectangleOnObject('.breadcrumb');
+		drawRectangleOnObject('.venne-element-container');
 		$('#venne-panel-button-save').show();
 		$(this).hide();
 		edit = true;
+
+		window.parent._venne_panel_button = 'edit';
 	});
 	$('#venne-panel-button-save').live('click', function () {
 		$("#venne-panel-container", topDocument).height('42px');
@@ -48,7 +90,12 @@ $(function () {
 		$('#venne-panel-button-edit').show();
 		$(this).hide();
 		edit = false;
+
+		window.parent._venne_panel_button = 'save';
 	});
+	if (window.parent._venne_panel_button !== undefined) {
+		$('#venne-panel-button-' + window.parent._venne_panel_button).click();
+	}
 
 
 	// Close button
@@ -66,6 +113,7 @@ $(function () {
 	});
 
 
+	// Functions
 	function redrawRectangles() {
 		var objects = rectangleObjects.slice(0);
 
@@ -79,22 +127,34 @@ $(function () {
 	function drawRectangleOnObject(element) {
 		rectangleObjects[rectangleObjects.length] = element;
 
-		var position = $(element, topDocument).offset();
-		var height = $(element, topDocument).height();
-		var width = $(element, topDocument).width();
-		var top = position.top + $('html', topDocument).offset().top;
-		var left = position.left + $('html', topDocument).offset().left;
+		$(element, topDocument).each(function () {
 
-		drawRectangle(width, height, left, top);
+			var obj = $(this);
+			var buttons = jQuery.parseJSON($(this).data('venne-element-buttons').replace(/'/g, '"'));
+
+			var position = $(this).offset();
+			var height = $(this).height();
+			var width = $(this).width();
+			var top = position.top + $('html', topDocument).offset().top;
+			var left = position.left + $('html', topDocument).offset().left;
+			var html = '<div class="btn-group"><a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Edit <span class="caret"></span></a><ul class="dropdown-menu">';
+			$.each(buttons, function (index, value) {
+				html += '<li><a href="?mode=1&do=element&elementName=' + obj.data('venne-element-name') + '&elementView=' + index + '&elementId=' + obj.data('venne-element-id') + '&elementRouteId=' + obj.data('venne-element-route') + '" target="_self" class="ajax" type="button">' + value + '</a></li>';
+			});
+			html += '</ul></div>';
+			drawRectangle(width, height, left, top, html);
+		});
+
+		$.nette.load();
 	}
 
-	function drawRectangle(width, height, x, y) {
+	function drawRectangle(width, height, x, y, html) {
 
 		var element = $('<div>', {
 			id:'rectangle_' + rectangles.length,
 			class:'venne-panel-block',
 			style:'top: ' + y + 'px; left: ' + x + 'px; width: ' + width + 'px; height: ' + height + 'px;',
-			text:'edit'
+			html:html
 		});
 
 		element.appendTo('body');

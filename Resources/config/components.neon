@@ -84,6 +84,21 @@ services:
 			- injectPresenterFactory
 			- injectControlVerifier
 
+	cms.clearFormFactory:
+		class: CmsModule\Content\Elements\Forms\ClearFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.basicFormFactory:
+		class: CmsModule\Content\Elements\Forms\BasicFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.textFormFactory:
+		class: CmsModule\Content\Elements\Forms\TextFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 factories:
 
 	cms.admin.basicForm:
@@ -108,3 +123,9 @@ factories:
 	cms.languageswitchControl:
 		class: CmsModule\Components\LanguageswitchControl(@cms.languageRepository)
 		tags: [widget: languageswitch]
+
+	cms.textElement:
+		class: CmsModule\Content\Elements\TextElement
+		setup:
+			- injectSetupForm(@cms.textFormFactory)
+		tags: [element: text]

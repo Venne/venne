@@ -75,10 +75,6 @@ class RoutesFormFactory extends FormFactory
 			$container['copyLayoutFromParent']->addCondition($form::EQUAL, false)->toggle('group-layout_' . $container->data->id);
 			$container['copyLayoutFromParent']->addCondition($form::EQUAL, true)->toggle('group-layoutSetup_' . $container->data->id);
 
-			// layout setup
-			$container->setCurrentGroup($container->getForm()->addGroup()->setOption('id', 'group-layoutSetup_' . $container->data->id));
-			$container->addCheckbox('layoutSetup', 'Layout setup from parent');
-
 			// layout
 			$container->setCurrentGroup($container->getForm()->addGroup()->setOption('id', 'group-layout_' . $container->data->id));
 			$container->addSelect('layout', 'Layout', $container->form->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');

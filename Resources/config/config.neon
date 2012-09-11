@@ -25,6 +25,9 @@ services:
 	cms.contentManager:
 		class: CmsModule\Content\ContentManager
 
+	cms.elementManager:
+		class: CmsModule\Content\ElementManager
+
 	cms.administrationManager:
 		class: CmsModule\Administration\AdministrationManager
 
@@ -84,6 +87,11 @@ services:
 		tags: [helper: content]
 
 factories:
+
+	areaMacro:
+		factory: CmsModule\Content\Macros\ElementMacro::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
 
 	confirmMacro:
 		factory: CmsModule\Macros\ConfirmMacro::install(%compiler%)

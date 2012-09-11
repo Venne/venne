@@ -23,6 +23,13 @@ abstract class BasePresenter extends \Venne\Application\UI\Presenter
 	/** @persistent */
 	public $lang;
 
+	const MODE_NORMAL = NULL;
+
+	const MODE_EDIT = 1;
+
+	/** @persistent */
+	public $mode;
+
 
 	public function __construct()
 	{
@@ -49,6 +56,9 @@ abstract class BasePresenter extends \Venne\Application\UI\Presenter
 		// Stopwatch
 		Stopwatch::stop("base startup");
 		Stopwatch::start();
+
+		// Mode
+		$this->mode = $this->getParameter('mode');
 	}
 
 

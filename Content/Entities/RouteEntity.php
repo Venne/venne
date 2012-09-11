@@ -86,6 +86,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $childrens;
 
+	/**
+	 * @var LayoutconfigEntity
+	 * @ManyToOne(targetEntity="LayoutconfigEntity", cascade={"persist", "remove", "merge"})
+	 */
+	protected $layoutconfig;
+
 
 	/***************** Meta *******************/
 
@@ -139,6 +145,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->childrens = new ArrayCollection;
 		$this->layout = 'default';
 		$this->copyLayoutFromParent = true;
+		$this->layoutconfig = new LayoutconfigEntity($this);
 
 		$this->title = '';
 		$this->keywords = '';
@@ -196,6 +203,9 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 		if ($this->copyLayoutFromParent) {
 			$this->layout = $this->parent ? $this->parent->layout : self::DEFAULT_LAYOUT;
+			$this->layoutconfig = $this->parent ? $this->parent->layoutconfig : new LayoutconfigEntity($this);
+		} else {
+			$this->layoutconfig = new LayoutconfigEntity($this);
 		}
 
 		if ($recursively) {
@@ -444,6 +454,24 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getPriority()
 	{
 		return $this->priority;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\LayoutconfigEntity $layoutconfig
+	 */
+	public function setLayoutconfig($layoutconfig)
+	{
+		$this->layoutconfig = $layoutconfig;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\LayoutconfigEntity
+	 */
+	public function getLayoutconfig()
+	{
+		return $this->layoutconfig;
 	}
 
 

@@ -131,6 +131,7 @@ class CmsExtension extends CompilerExtension
 	{
 		$this->registerContentTypes();
 		$this->registerAdministrationPages();
+		$this->registerElements();
 	}
 
 
@@ -164,6 +165,23 @@ class CmsExtension extends CompilerExtension
 		foreach ($this->getSortedServices('administration') as $item) {
 			$tags = $container->getDefinition($item)->tags['administration'];
 			$manager->addSetup('addAdministrationPage', array($tags['name'], $tags['description'], $tags['category'], $tags['link']));
+		}
+	}
+
+
+	protected function registerElements()
+	{
+		$container = $this->getContainerBuilder();
+		$config = $container->getDefinition('venne.widgetManager');
+
+		foreach ($container->findByTag('element') as $factory => $meta) {
+			$definition = $container->getDefinition($factory);
+
+			if (!is_string($meta)) {
+				throw new \Nette\InvalidArgumentException("Tag element require name. Provide it in configuration. (tags: [element: name])");
+			}
+
+			$config->addSetup('addWidget', array(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . $meta, "@{$factory}"));
 		}
 	}
 }

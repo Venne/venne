@@ -307,8 +307,13 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 
 .venne-panel-block {
     position: absolute;
-    text-align: center;
-    border: 1px solid #000000;
-    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00bb00;
+    background-color: rgba(0, 200, 0, 0.5);
     color: #ffffff;
+    min-height: 20px;
+
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    border-radius: 4px;
 }

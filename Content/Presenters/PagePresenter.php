@@ -134,6 +134,22 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	}
 
 
+	public function createComponent($name)
+	{
+		if (strpos($name, \CmsModule\Content\ElementManager::ELEMENT_PREFIX) === 0) {
+			$name = substr($name, strlen(\CmsModule\Content\ElementManager::ELEMENT_PREFIX));
+			$name = explode('_', $name, 2);
+			/** @var $component \CmsModule\Content\IElement */
+			$component = $this->context->cms->elementManager->createInstance($name[1]);
+			$component->setRoute($this->route);
+			$component->setKey($name[0]);
+			return $component;
+		}
+
+		return parent::createComponent($name);
+	}
+
+
 	/**
 	 * Common render method.
 	 *
