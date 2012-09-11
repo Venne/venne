@@ -17,12 +17,9 @@ use Venne;
  * @author Josef Kříž <pepakriz@gmail.com>
  * @Entity(repositoryClass="\CmsModule\Security\Repositories\UserRepository")
  * @Table(name="user")
- *
- * @property-read integer $id
- * @property string $email
- * @property-write string $password
- * @property-read array $roles
- * @property string $key
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="type", type="string")
+ * @DiscriminatorMap({"base" = "UserEntity"})
  */
 class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Entities\IEntity
 {
