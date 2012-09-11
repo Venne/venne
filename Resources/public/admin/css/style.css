@@ -263,6 +263,10 @@ footer {
 	background-color: #222;
 	border-color: #444;
 }
+#navigation.navbar .divider-vertical {
+    border-right: 0;
+    border-left: 1px solid #333333;
+}
 
 
 /* dynatree */

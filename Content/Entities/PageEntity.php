@@ -18,7 +18,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @HasLifecycleCallbacks
  * @Table(name="page")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="type", type="string")
