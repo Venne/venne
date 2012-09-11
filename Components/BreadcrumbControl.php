@@ -44,6 +44,6 @@ class BreadcrumbControl extends Control
 
 		$this->template->cacheKey = implode('|', $cacheKey);
 
-		parent::render();
+		$this->template->render();
 	}
 }

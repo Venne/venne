@@ -55,6 +55,6 @@ class NavigationControl extends Control
 		$this->template->followActive = $followActive ? : false;
 		$this->template->cacheKey = implode('|', $cacheKey);
 
-		parent::render();
+		$this->template->render();
 	}
 }

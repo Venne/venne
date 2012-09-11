@@ -49,7 +49,7 @@ class BrowserControl extends Control
 		$this->getPresenter()->getContext()->assets->assetManager->addJavaScript("@cmsModule/dynatree/jquery.dynatree.js");
 		$this->getPresenter()->getContext()->assets->assetManager->addStylesheet("@cmsModule/dynatree/skin-bootstrap/ui.dynatree.css");
 
-		parent::render();
+		$this->template->render();
 	}
 
 

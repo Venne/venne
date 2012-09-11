@@ -78,7 +78,7 @@ class VisualPaginator extends Control
 		$this->template->steps = $steps;
 		$this->template->paginator = $paginator;
 
-		parent::render();
+		$this->template->render();
 	}
 
 

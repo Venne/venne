@@ -142,7 +142,7 @@ class TableControl extends Control
 			$this->template->setFile($this->templateFile);
 		}
 
-		parent::render();
+		$this->template->render();
 	}
 
 

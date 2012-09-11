@@ -37,6 +37,12 @@ class PanelControl extends Control
 	}
 
 
+	public function render()
+	{
+		$this->template->render();
+	}
+
+
 	public function handleTab($tab)
 	{
 		$this->invalidateControl('content');

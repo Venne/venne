@@ -44,7 +44,7 @@ class LanguageswitchControl extends Control
 	{
 		$this->template->language = $this->getPresenter()->lang;
 
-		parent::render();
+		$this->template->render();
 	}
 
 }

@@ -69,7 +69,7 @@ class HeadControl extends Control
 		$this->template->js = $this->presenter->getContext()->getService('assets.assetManager')->getJavascripts();
 		$this->template->css = $this->presenter->getContext()->getService('assets.assetManager')->getStylesheets();
 
-		parent::render();
+		$this->template->render();
 	}
 
 
