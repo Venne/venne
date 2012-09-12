@@ -17,7 +17,7 @@ use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @Entity(repositoryClass="\CmsModule\Content\Repositories\DirRepository")
  * @Table(name="directory")
  * @HasLifecycleCallbacks
  */

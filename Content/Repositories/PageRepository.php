@@ -46,6 +46,13 @@ class PageRepository extends BaseRepository
 
 	public function save($entity, $withoutFlush = self::FLUSH)
 	{
+		$parent = $entity;
+		while (($parent = $parent->parent) !== NULL) {
+			if ($entity->id === $parent->id) {
+				throw new \Nette\InvalidArgumentException('Cyclic association detected!');
+			}
+		}
+
 		if (!$this->isUnique($entity)) {
 			throw new \Nette\InvalidArgumentException('Entity is not unique!');
 		}
@@ -66,9 +73,11 @@ class PageRepository extends BaseRepository
 
 		foreach ($page->getRoutes() as $pageRoute) {
 			foreach ($routeRepository->findBy(array('url' => $pageRoute->getUrl())) as $route) {
-				foreach ($page->getLanguages() as $lang) {
-					if ($route->getPage()->isInLanguageAlias($lang->alias)) {
-						return false;
+				if ($pageRoute->id !== $route->id) {
+					foreach ($page->getLanguages() as $lang) {
+						if ($route->getPage()->isInLanguageAlias($lang->alias)) {
+							return false;
+						}
 					}
 				}
 			}

@@ -107,7 +107,7 @@ class BasicFormFactory extends FormFactory
 		try {
 			$this->repository->save($form->data);
 		} catch (\Nette\InvalidArgumentException $e) {
-			$form->addError("URL is not unique");
+			$form->addError($e->getMessage());
 		}
 	}
 }
