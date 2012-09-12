@@ -63,22 +63,25 @@ class BasicFormFactory extends FormFactory
 	{
 		$infoGroup = $form->addGroup('Informations');
 
-		$form->addText('name', 'Name');
+		$form->addText('name', 'Name')
+			->getControlPrototype()->attrs['onClick'] = "$(this).stringToSlug({setEvents: 'keyup keydown blur', getPut: '.localUrl', space: '-' }); this.onclick=null;";
+		$form['name']->addRule($form::FILLED);
 
-		//$form->addCheckbox("mainPage", "Main page");
 		if (!$form->data->translationFor) {
 			$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL));
 		}
 
+		// route
 		$mainRoute = $form->addOne('mainRoute');
 		$mainRoute->setCurrentGroup($infoGroup);
-		$mainRoute->addText('localUrl', 'URL')->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
+		$mainRoute->addText('localUrl', 'URL')
+			->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/")
+			->addConditionOn($form['parent'], $form::FILLED)
+				->addRule($form::FILLED);
+		$mainRoute['localUrl']->getControlPrototype()->class[] = 'localUrl';
 
-		//$form->addGroup("Dates");
-		//$form->addDateTime("created", "Created")->setDefaultValue(new \Nette\DateTime);
-		//$form->addDateTime("updated", "Updated")->setDefaultValue(new \Nette\DateTime);
+		// date
 		$form->addDateTime("expired", "Expired");
-
 
 		// URL can be empty only on main page
 		if (!$form->data->translationFor) {
@@ -92,7 +95,7 @@ class BasicFormFactory extends FormFactory
 		$repository = $form->mapper->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
 		if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 1) {
 			$form->addGroup("Languages");
-			$form->addManyToMany("languages", "Content is in");
+			$form->addManyToMany("languages", "Content is in")->addRule($form::FILLED, 'Page must contain some language');
 		}
 
 		$form->addSubmit('_submit', 'Save');
