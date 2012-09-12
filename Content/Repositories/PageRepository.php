@@ -46,7 +46,7 @@ class PageRepository extends BaseRepository
 
 	public function save($entity, $withoutFlush = self::FLUSH)
 	{
-		if(!$this->isUnique($entity)) {
+		if (!$this->isUnique($entity)) {
 			throw new \Nette\InvalidArgumentException('Entity is not unique!');
 		}
 
@@ -62,23 +62,27 @@ class PageRepository extends BaseRepository
 	 */
 	public function isUnique(PageEntity $page)
 	{
-//		$pages = $this->findBy(array("url" => $page->url));
-//
-//		if (!$pages || (count($pages) == 1 && $pages[0] === $page )) {
-//			return true;
-//		}
-//
-//		foreach ($pages as $item) {
-//			if($item === $page){
-//				continue;
-//			}
-//
-//			foreach ($item->languages as $lang) {
-//				if ($page->isInLanguageAlias($lang->alias)) {
-//					return false;
-//				}
-//			}
-//		}
+		$routeRepository = $this->getRouteRepository();
+
+		foreach ($page->getRoutes() as $pageRoute) {
+			foreach ($routeRepository->findBy(array('url' => $pageRoute->getUrl())) as $route) {
+				foreach ($page->getLanguages() as $lang) {
+					if ($route->getPage()->isInLanguageAlias($lang->alias)) {
+						return false;
+					}
+				}
+			}
+		}
+
 		return true;
+	}
+
+
+	/**
+	 * @return BaseRepository
+	 */
+	protected function getRouteRepository()
+	{
+		return $this->getEntityManager()->getRepository('CmsModule\Content\Entities\RouteEntity');
 	}
 }
