@@ -402,7 +402,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function setLayout($layout)
 	{
-		if ($this->copyLayoutFromParent) {
+		if ($this->layout === $layout || $this->copyLayoutFromParent) {
 			return;
 		}
 
@@ -512,7 +512,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function setCacheMode($cacheMode)
 	{
+		if ($this->cacheMode == $cacheMode || $this->copyCacheModeFromParent) {
+			return;
+		}
+
 		$this->cacheMode = $cacheMode;
+		$this->generateLayouts();
 	}
 
 
