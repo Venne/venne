@@ -32,17 +32,11 @@ class PageRoute extends Route
 
 	const DEFAULT_ACTION = "default";
 
+	/** @var \Nette\DI\Container|\SystemContainer */
+	protected $container;
+
 	/** @var Callback */
 	protected $checkConnectionFactory;
-
-	/** @var BaseRepository */
-	protected $langRepository;
-
-	/** @var BaseRepository */
-	protected $routeRepository;
-
-	/** @var ContentManager */
-	protected $contentManager;
 
 	/** @var bool */
 	protected $languages;
@@ -50,10 +44,12 @@ class PageRoute extends Route
 	/** @var string */
 	protected $defaultLanguage;
 
+	/** @var \Nette\Caching\Cache */
+	protected $_templateCache;
+
 
 	/**
 	 * @param Callback $checkConnectionFactory
-	 * @param ContentManager $contentManager
 	 * @param BaseRepository $routeRepository
 	 * @param BaseRepository $langRepository
 	 * @param $prefix
@@ -61,14 +57,14 @@ class PageRoute extends Route
 	 * @param $languages
 	 * @param $defaultLanguage
 	 */
-	public function __construct(Callback $checkConnectionFactory, ContentManager $contentManager, BaseRepository $routeRepository, BaseRepository $langRepository, $prefix, $parameters, $languages, $defaultLanguage)
+	public function __construct(\Nette\DI\Container $container, \Nette\Caching\IStorage $cache, Callback $checkConnectionFactory, $prefix, $parameters, $languages, $defaultLanguage)
 	{
+		$this->container = $container;
+		$this->_templateCache = new \Nette\Caching\Cache($cache, \CmsModule\Content\Presenters\PagePresenter::CACHE_OUTPUT);
+
 		$this->checkConnectionFactory = $checkConnectionFactory;
 		$this->languages = $languages;
 		$this->defaultLanguage = $defaultLanguage;
-		$this->langRepository = $langRepository;
-		$this->routeRepository = $routeRepository;
-		$this->contentManager = $contentManager;
 
 		parent::__construct($prefix . '<url .+>[/<module qwertzuiop>/<presenter qwertzuiop>]' . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
 			"presenter" => self::DEFAULT_PRESENTER,
@@ -83,6 +79,16 @@ class PageRoute extends Route
 		));
 	}
 
+	protected function getLangRepository()
+	{
+		return $this->container->cms->languageRepository;
+	}
+
+	protected function getRouteRepository()
+	{
+		return $this->container->cms->routeRepository;
+	}
+
 
 	/**
 	 * Maps HTTP request to a Request object.
@@ -92,6 +98,18 @@ class PageRoute extends Route
 	 */
 	public function match(\Nette\Http\IRequest $httpRequest)
 	{
+		$output = $this->_templateCache->load($httpRequest->getUrl()->getAbsoluteUrl());
+		if($output) {
+			return new \Nette\Application\Request(
+				'Cms:Cached',
+				$httpRequest->getMethod(),
+				array(),
+				$httpRequest->getPost(),
+				$httpRequest->getFiles(),
+				array(\Nette\Application\Request::SECURED => $httpRequest->isSecured())
+			);
+		}
+
 		if (!$this->checkConnectionFactory->invoke()) {
 			return NULL;
 		}
@@ -108,7 +126,7 @@ class PageRoute extends Route
 			}
 
 			try {
-				$route = $this->routeRepository->createQueryBuilder("a")
+				$route = $this->getRouteRepository()->createQueryBuilder("a")
 					->leftJoin("a.page", "m")
 					->leftJoin("m.languages", "p")
 					->where("a.url = :url")
@@ -121,7 +139,7 @@ class PageRoute extends Route
 			}
 		} else {
 			try {
-				$route = $this->routeRepository->createQueryBuilder("a")
+				$route = $this->getRouteRepository()->createQueryBuilder("a")
 					->where("a.url = :url")
 					->setParameter("url", $parameters["url"])
 					->getQuery()->getSingleResult();
@@ -181,7 +199,7 @@ class PageRoute extends Route
 					$parameters["lang"] = $this->defaultLanguage;
 				}
 				try {
-					$route = $this->routeRepository->createQueryBuilder("a")
+					$route = $this->getRouteRepository()->createQueryBuilder("a")
 						->leftJoin("a.page", "m")
 						->leftJoin("m.languages", "p")
 						->where("a.url = :url")
@@ -194,7 +212,7 @@ class PageRoute extends Route
 				}
 			} else {
 				try {
-					$route = $this->routeRepository->createQueryBuilder("a")
+					$route = $this->getRouteRepository()->createQueryBuilder("a")
 						->andWhere("a.url = :url")
 						->setParameter("url", $url)
 						->getQuery()->getSingleResult();

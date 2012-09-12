@@ -45,7 +45,9 @@
 						"defaultLanguage": "cs",
 						"defaultPresenter": "Homepage",
 						"errorPresenter": "Error",
-						"layout": ""
+						"layout": "",
+						"cacheMode": "",
+						"cacheValue": "10"
 					}
 				},
 				"extensions": {

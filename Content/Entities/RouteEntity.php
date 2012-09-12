@@ -26,6 +26,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	const DEFAULT_LAYOUT = 'default';
 
+	const DEFAULT_CACHE_MODE = 'default';
+
+	const CACHE_MODE_TIME = 'time';
+
+	const CACHE_MODE_STATIC = 'static';
+
 	protected static $robotsValues = array(
 		'index, follow',
 		'noindex, follow',
@@ -41,6 +47,11 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		'monthly',
 		'yearly',
 		'never',
+	);
+
+	protected static $cacheModes = array(
+		self::CACHE_MODE_TIME,
+		self::CACHE_MODE_STATIC,
 	);
 
 	protected static $priorityValues = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -122,6 +133,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/** @Column(type="boolean") */
 	protected $copyLayoutFromParent;
 
+	/** @Column(type="string", nullable=true) */
+	protected $cacheMode;
+
+	/** @Column(type="boolean") */
+	protected $copyCacheModeFromParent;
+
 
 	/**
 	 * @return string
@@ -144,7 +161,9 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->paramCounter = 0;
 		$this->childrens = new ArrayCollection;
 		$this->layout = self::DEFAULT_LAYOUT;
+		$this->cacheMode = self::DEFAULT_CACHE_MODE;
 		$this->copyLayoutFromParent = true;
+		$this->copyCacheModeFromParent = true;
 		$this->layoutconfig = new LayoutconfigEntity($this);
 
 		$this->title = '';
@@ -206,6 +225,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 			$this->layoutconfig = $this->parent ? $this->parent->layoutconfig : new LayoutconfigEntity($this);
 		} else {
 			$this->layoutconfig = new LayoutconfigEntity($this);
+		}
+
+		if ($this->copyCacheModeFromParent) {
+			$this->cacheMode = $this->parent ? $this->parent->cacheMode : self::DEFAULT_CACHE_MODE;
 		}
 
 		if ($recursively) {
@@ -475,6 +498,30 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	public function setCopyCacheModeFromParent($copyCacheModeFromParent)
+	{
+		$this->copyCacheModeFromParent = $copyCacheModeFromParent;
+	}
+
+
+	public function getCopyCacheModeFromParent()
+	{
+		return $this->copyCacheModeFromParent;
+	}
+
+
+	public function setCacheMode($cacheMode)
+	{
+		$this->cacheMode = $cacheMode;
+	}
+
+
+	public function getCacheMode()
+	{
+		return $this->cacheMode;
+	}
+
+
 	public static function getChangefreqValues()
 	{
 		return self::$changefreqValues;
@@ -490,5 +537,11 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public static function getRobotsValues()
 	{
 		return self::$robotsValues;
+	}
+
+
+	public static function getCacheModes()
+	{
+		return self::$cacheModes;
 	}
 }

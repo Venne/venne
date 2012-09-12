@@ -62,7 +62,7 @@ class RoutesFormFactory extends FormFactory
 
 		$form->addMany('routes', function(\Nette\Forms\Container $container) use ($form)
 		{
-			$container->setCurrentGroup($container->getForm()->addGroup('Route' . $container->data->url));
+			$container->setCurrentGroup($group = $container->getForm()->addGroup('Route' . $container->data->url));
 			$container->addText('title', 'Title');
 			$container->addText('keywords', 'Keywords');
 			$container->addText('description', 'Description');
@@ -71,13 +71,20 @@ class RoutesFormFactory extends FormFactory
 			$container->addSelect('changefreq', 'Change freqency')->setItems(\CmsModule\Content\Entities\RouteEntity::getChangefreqValues(), FALSE)->setPrompt('-------');
 			$container->addSelect('priority', 'Priority')->setItems(\CmsModule\Content\Entities\RouteEntity::getPriorityValues(), FALSE)->setPrompt('-------');
 
+			// layout
 			$container->addCheckbox('copyLayoutFromParent', 'Layout from parent');
 			$container['copyLayoutFromParent']->addCondition($form::EQUAL, false)->toggle('group-layout_' . $container->data->id);
-			$container['copyLayoutFromParent']->addCondition($form::EQUAL, true)->toggle('group-layoutSetup_' . $container->data->id);
 
-			// layout
 			$container->setCurrentGroup($container->getForm()->addGroup()->setOption('id', 'group-layout_' . $container->data->id));
 			$container->addSelect('layout', 'Layout', $container->form->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');
+
+			// cache
+			$container->setCurrentGroup($group);
+			$container->addCheckbox('copyCacheModeFromParent', 'Cache mode from parent');
+			$container['copyCacheModeFromParent']->addCondition($form::EQUAL, false)->toggle('group-cache_' . $container->data->id);
+
+			$container->setCurrentGroup($container->getForm()->addGroup()->setOption('id', 'group-cache_' . $container->data->id));
+			$container->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');
 		});
 
 		$form->setCurrentGroup();

@@ -102,7 +102,7 @@ class CmsExtension extends CompilerExtension
 
 		// CMS route
 		$container->addDefinition($this->prefix("pageRoute"))
-			->setClass("CmsModule\Content\Routes\PageRoute", array('@doctrine.checkConnectionFactory', '@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
+			->setClass("CmsModule\Content\Routes\PageRoute", array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', /*'@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', */$prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
 		)
 			->addTag("route", array("priority" => 100));
 

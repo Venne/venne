@@ -72,6 +72,11 @@ class WebsiteFormFactory extends FormFactory
 		$form->addText("description", "Description");
 		$form->addText("author", "Author");
 		$form->addSelect('layout', 'Layout', $this->scannerService->getLayoutFiles())->setPrompt('-------');
+		$form->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');
+		$form['cacheMode']->addCondition($form::EQUAL, 'time')->toggle('cacheValue');
+
+		$form->addGroup()->setOption('id', 'cacheValue');
+		$form->addSelect('cacheValue', 'Minutes')->setItems(array(1, 2, 5, 10, 15, 20, 30, 40, 50, 60, 90, 120), FALSE);
 
 		$form->addGroup("System");
 		$form->addTextWithSelect("routePrefix", "Route prefix");

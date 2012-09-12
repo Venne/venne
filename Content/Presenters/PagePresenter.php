@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Presenters;
 
 use Venne;
+use Nette\Caching\Cache;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
 
@@ -21,6 +22,7 @@ use CmsModule\Content\Entities\PageEntity;
 class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 {
 
+	const CACHE_OUTPUT = 'Venne.Output';
 
 	/** @var PageEntity */
 	public $page;
@@ -33,6 +35,15 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 	/** @var string */
 	protected $_layoutPath;
+
+	/** @var \Nette\Caching\Cache */
+	protected $_templateCache;
+
+
+	public function injectTemplateCache(\Nette\Caching\IStorage $cache)
+	{
+		$this->_templateCache = new Cache($cache, self::CACHE_OUTPUT);
+	}
 
 
 	/**
@@ -157,6 +168,28 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function beforeRender()
 	{
+		// Cache all page
+		if (!$this->isAuthorized(':Cms:Admin:Panel:') && $this->route->getCacheMode()) {
+			$this->getApplication()->onResponse[] = function()
+			{
+				ob_start();
+			};
+			$this->getApplication()->onShutdown[] = function()
+			{
+				$output = ob_get_clean();
+
+				$parameters = array(
+					Cache::TAGS => array('url' => $this->getHttpRequest()->getUrl()->getAbsoluteUrl()),
+				);
+				if ($this->route->getCacheMode() === RouteEntity::CACHE_MODE_TIME || ($this->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE && $this->context->parameters['website']['cacheMode'] === RouteEntity::CACHE_MODE_TIME)) {
+					$parameters[Cache::EXPIRE] = '+ ' . $this->context->parameters['website']['cacheValue'] . ' minutes';
+				}
+
+				$this->_templateCache->save($this->getHttpRequest()->getUrl()->getAbsoluteUrl(), $output, $parameters);
+				echo $output;
+			};
+		}
+
 		parent::beforeRender();
 
 		$this->template->entity = $this->page;
