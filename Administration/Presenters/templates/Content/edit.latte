@@ -13,12 +13,12 @@
 
 <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
 	<li class="dropdown">
-		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{=implode(", ", $entity->languages->toArray())} <b class="caret"></b></a>
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{=implode(", ", (array)$entity->languages)} <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
 			{var mainEntity=>($entity->translationFor ?$entity->translationFor: $entity)}
-			<li><a class="ajax" href="{link this key=>$mainEntity->id}">{=implode(", ", $mainEntity->languages->toArray())}</a></li>
+			<li><a class="ajax" href="{link this key=>$mainEntity->id}">{=implode(", ", (array)$mainEntity->languages)}</a></li>
 			{foreach $mainEntity->translations as $translation}
-				<li><a class="ajax" href="{link this key=>$translation->id}">{=implode(", ", $translation->languages->toArray())}</a></li>
+				<li><a class="ajax" href="{link this key=>$translation->id}">{=implode(", ", (array)$translation->languages)}</a></li>
 			{/foreach}
 			<li class="divider"></li>
 			<li><a class="ajax" href="{link translate}">New language</a></li>
