@@ -52,6 +52,14 @@ class SystemDatabaseFormFactory extends FormFactory
 	}
 
 
+	protected function getControlExtensions()
+	{
+		return array(
+			new \FormsModule\ControlExtensions\ControlExtension(),
+		);
+	}
+
+
 	/**
 	 * @param Form $form
 	 */
@@ -62,19 +70,25 @@ class SystemDatabaseFormFactory extends FormFactory
 			->setItems($this->drivers, false)
 			->setDefaultValue("pdo_mysql");
 
+		$form['driver']->addCondition($form::IS_IN, array('pdo_mysql', 'oci8', 'pdo_oci'))->toggle('group-charset');
+		$form['driver']->addCondition($form::IS_IN, array('pdo_pgsql', 'pdo_mysql', 'oci8', 'pdo_oci', 'pdo_sqlsrv'))->toggle('group-connection');
+		$form['driver']->addCondition($form::EQUAL, 'pdo_sqlite')->toggle('group-sqlite');
+
 		$form->addGroup("Connection settings");
-		$form->addText("host", "Host");
-		$form->addText("port", "Port");
 		$form->addText("user", "User name");
 		$form->addPassword("password", "Password");
+
+		$form->addGroup()->setOption('id', 'group-connection');
+		$form->addText("host", "Host");
+		$form->addText("port", "Port");
 		$form->addText("dbname", "Database");
-		$form->addText /*WithSelect*/
-		("path", "Path"); //->setItems(array("%tempDir%/database.db"), false);
+
+		$form->addGroup()->setOption('id', 'group-sqlite');
+		$form->addTextWithSelect("path", "Path")->setItems(array("%tempDir%/database.db"), false);
 		$form->addCheckbox("memory", "Db in memory");
-		$form->addText /*WithSelect*/
-		("charset", "Charset"); //->setItems(array("utf8"), false);
-		$form->addText /*WithSelect*/
-		("collation", "Collation"); //->setItems(array("utf8_general_ci", "utf8_czech_ci"), false);
+
+		$form->addGroup()->setOption('id', 'group-charset');
+		$form->addTextWithSelect("charset", "Charset")->setItems(array("utf8"), false);
 
 		$form->addSubmit('_submit', 'Save');
 	}
