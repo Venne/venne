@@ -170,25 +170,29 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	{
 		// Cache all page
 		if (!$this->isAuthorized(':Cms:Admin:Panel:') && $this->route->getCacheMode()) {
+			$presenter = $this;
+			$templateCache = $this->_templateCache;
+			$httpRequest = $this->getHttpRequest();
 			$this->getApplication()->onResponse[] = function()
 			{
 				ob_start();
 			};
-			$this->getApplication()->onShutdown[] = function()
+			$this->getApplication()->onShutdown[] = function() use ($presenter, $templateCache, $httpRequest)
 			{
 				$output = ob_get_clean();
 
-				$parameters = array(
-					Cache::TAGS => array(
-						'route' => $this->route->id,
-						'page' => $this->page->id,
-					),
-				);
-				if ($this->route->getCacheMode() === RouteEntity::CACHE_MODE_TIME || ($this->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE && $this->context->parameters['website']['cacheMode'] === RouteEntity::CACHE_MODE_TIME)) {
-					$parameters[Cache::EXPIRE] = '+ ' . $this->context->parameters['website']['cacheValue'] . ' minutes';
+				if ($presenter instanceof PagePresenter) {
+					$parameters = array(
+						Cache::TAGS => array(
+							'route' => $presenter->route->id,
+							'page' => $presenter->page->id,
+						),
+					);
+					if ($presenter->route->getCacheMode() === RouteEntity::CACHE_MODE_TIME || ($presenter->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE && $presenter->context->parameters['website']['cacheMode'] === RouteEntity::CACHE_MODE_TIME)) {
+						$parameters[Cache::EXPIRE] = '+ ' . $presenter->context->parameters['website']['cacheValue'] . ' minutes';
+					}
+					$templateCache->save($httpRequest->getUrl()->getAbsoluteUrl(), $output, $parameters);
 				}
-
-				$this->_templateCache->save($this->getHttpRequest()->getUrl()->getAbsoluteUrl(), $output, $parameters);
 				echo $output;
 			};
 		}
