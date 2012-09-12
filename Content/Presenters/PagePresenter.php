@@ -179,7 +179,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 				$output = ob_get_clean();
 
 				$parameters = array(
-					Cache::TAGS => array('url' => $this->getHttpRequest()->getUrl()->getAbsoluteUrl()),
+					Cache::TAGS => array(
+						'route' => $this->route->id,
+						'page' => $this->page->id,
+					),
 				);
 				if ($this->route->getCacheMode() === RouteEntity::CACHE_MODE_TIME || ($this->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE && $this->context->parameters['website']['cacheMode'] === RouteEntity::CACHE_MODE_TIME)) {
 					$parameters[Cache::EXPIRE] = '+ ' . $this->context->parameters['website']['cacheValue'] . ' minutes';

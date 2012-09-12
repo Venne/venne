@@ -30,6 +30,7 @@ class PageListener implements EventSubscriber
 	protected $entities = array(
 		'CmsModule\Content\Entities\PageEntity' => true,
 		'CmsModule\Content\Entities\RouteEntity' => true,
+		'CmsModule\Content\Entities\ElementEntity' => true,
 	);
 
 
@@ -65,9 +66,7 @@ class PageListener implements EventSubscriber
 		foreach ($uow->getScheduledEntityInsertions() AS $entity) {
 			foreach ($entities as $class => $i) {
 				if (is_a($entity, $class)) {
-					$this->invalidateByClass($class);
-					unset($entities[$class]);
-					break;
+					$this->invalidate($class, $entity);
 				}
 			}
 		}
@@ -75,9 +74,7 @@ class PageListener implements EventSubscriber
 		foreach ($uow->getScheduledEntityUpdates() AS $entity) {
 			foreach ($entities as $class => $i) {
 				if (is_a($entity, $class)) {
-					$this->invalidateByClass($class);
-					unset($entities[$class]);
-					break;
+					$this->invalidate($class, $entity);
 				}
 			}
 		}
@@ -85,9 +82,7 @@ class PageListener implements EventSubscriber
 		foreach ($uow->getScheduledEntityDeletions() AS $entity) {
 			foreach ($entities as $class => $i) {
 				if (is_a($entity, $class)) {
-					$this->invalidateByClass($class);
-					unset($entities[$class]);
-					break;
+					$this->invalidate($class, $entity);
 				}
 			}
 		}
@@ -97,10 +92,26 @@ class PageListener implements EventSubscriber
 	/**
 	 * @param $class
 	 */
-	protected function invalidateByClass($class)
+	protected function invalidate($class, $entity)
 	{
 		$this->cache->clean(array(
 			Cache::TAGS => $class::CACHE,
 		));
+
+		if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
+			$this->cache->clean(array(
+				Cache::TAGS => array('page' => $entity->id),
+			));
+		} elseif ($entity instanceof \CmsModule\Content\Entities\RouteEntity) {
+			$this->cache->clean(array(
+				Cache::TAGS => array('route' => $entity->id),
+			));
+		} elseif ($entity instanceof \CmsModule\Content\Entities\ElementEntity) {
+			foreach ($entity->layoutconfig->routes as $route) {
+				$this->cache->clean(array(
+					Cache::TAGS => array('route' => $route->id),
+				));
+			}
+		}
 	}
 }

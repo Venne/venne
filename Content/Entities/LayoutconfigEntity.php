@@ -24,9 +24,25 @@ class LayoutconfigEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
+	 * @var RouteEntity[]
+	 * @OneToMany(targetEntity="RouteEntity", mappedBy="layoutconfig")
+	 */
+	protected $routes;
+
+
+	/**
 	 * @param $type
 	 */
 	public function __construct(RouteEntity $routeEntity)
 	{
+	}
+
+
+	/**
+	 * @return RouteEntity[]
+	 */
+	public function getRoutes()
+	{
+		return $this->routes;
 	}
 }
