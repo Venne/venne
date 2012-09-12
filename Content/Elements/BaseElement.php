@@ -40,7 +40,7 @@ abstract class BaseElement extends Control implements IElement
 	protected $entityManager;
 
 	/** @var int */
-	protected $key;
+	protected $name;
 
 	/** @var ClearFormFactory */
 	protected $_clearFormFactory;
@@ -75,11 +75,11 @@ abstract class BaseElement extends Control implements IElement
 
 
 	/**
-	 * @param $key
+	 * @param $name
 	 */
-	public function setKey($key)
+	public function setName($name)
 	{
-		$this->key = $key;
+		$this->name = $name;
 	}
 
 
@@ -120,7 +120,7 @@ abstract class BaseElement extends Control implements IElement
 	{
 		$class = '\\' . $this->getEntityName();
 		$ret = new $class;
-		$ret->setDefaults($this->key, $this->routeEntity);
+		$ret->setDefaults($this->name, $this->routeEntity);
 		return $ret;
 	}
 
@@ -130,20 +130,20 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	protected function getEntity()
 	{
-		if (($ret = $this->getRepository()->findOneBy(array('key' => $this->key, 'layoutconfig' => $this->layoutconfigEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_LAYOUT)))) {
+		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_LAYOUT)))) {
 			return $ret;
 		}
 
-		if (($ret = $this->getRepository()->findOneBy(array('key' => $this->key, 'layoutconfig' => $this->layoutconfigEntity->id, 'page' => $this->pageEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_PAGE)))) {
+		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id, 'page' => $this->pageEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_PAGE)))) {
 			return $ret;
 		}
 
-		if (($ret = $this->getRepository()->findOneBy(array('key' => $this->key, 'layoutconfig' => $this->layoutconfigEntity->id, 'page' => $this->pageEntity->id, 'route' => $this->routeEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE)))) {
+		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id, 'page' => $this->pageEntity->id, 'route' => $this->routeEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE)))) {
 			return $ret;
 		}
 
 		$ret = $this->createEntity();
-		if (($entity = $this->getRepository()->findOneBy(array('key' => $this->key, 'layoutconfig' => $this->layoutconfigEntity->id)))) {
+		if (($entity = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id)))) {
 			$ret->setMode($entity->mode);
 		}
 		return $ret;

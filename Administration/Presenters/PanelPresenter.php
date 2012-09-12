@@ -98,7 +98,7 @@ class PanelPresenter extends BasePresenter
 			/** @var $component \CmsModule\Content\IElement */
 			$component = $this->context->cms->elementManager->createInstance($name[1]);
 			$component->setRoute($route);
-			$component->setKey($name[0]);
+			$component->setName($name[0]);
 			return $component;
 		}
 

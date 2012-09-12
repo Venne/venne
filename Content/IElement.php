@@ -34,9 +34,9 @@ interface IElement extends IRenderable
 
 	/**
 	 * @abstract
-	 * @param $key
+	 * @param $name
 	 */
-	public function setKey($key);
+	public function setName($name);
 
 
 	/**

@@ -58,7 +58,7 @@ class BasicFormFactory extends FormFactory
 		$entity = clone $form->data;
 		$repository = $this->mapper->getEntityManager()->getRepository(get_class($entity));
 
-		foreach ($repository->findBy(array('key' => $entity->getKey(), 'layoutconfig' => $entity->getLayoutconfig()->id)) as $item) {
+		foreach ($repository->findBy(array('name' => $entity->getName(), 'layoutconfig' => $entity->getLayoutconfig()->id)) as $item) {
 			$repository->delete($item);
 		}
 

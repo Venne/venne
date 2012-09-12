@@ -17,7 +17,7 @@ use DoctrineModule\Entities\IdentifiedEntity;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="element", indexes={@index(name="key_idx", columns={"key"})})
+ * @Table(name="element", indexes={@index(name="name_idx", columns={"name"})})
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"base" = "ElementEntity"})
@@ -57,9 +57,9 @@ abstract class ElementEntity extends IdentifiedEntity
 
 	/**
 	 * @var int
-	 * @Column(type="string", name="`key`")
+	 * @Column(type="string")
 	 */
-	protected $key;
+	protected $name;
 
 	/**
 	 * @var int
@@ -72,9 +72,9 @@ abstract class ElementEntity extends IdentifiedEntity
 	 * @param LayoutconfigEntity $layoutconfigEntity
 	 * @param RouteEntity $route
 	 */
-	final public function setDefaults($key, RouteEntity $route)
+	final public function setDefaults($name, RouteEntity $route)
 	{
-		$this->key = $key;
+		$this->name = $name;
 		$this->route = $route;
 		$this->page = $route->getPage();
 		$this->layoutconfig = $route->getLayoutconfig();
@@ -117,9 +117,9 @@ abstract class ElementEntity extends IdentifiedEntity
 	/**
 	 * @return int
 	 */
-	public function getKey()
+	public function getName()
 	{
-		return $this->key;
+		return $this->name;
 	}
 
 
