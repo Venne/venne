@@ -143,7 +143,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->params = json_encode(array());
 		$this->paramCounter = 0;
 		$this->childrens = new ArrayCollection;
-		$this->layout = 'default';
+		$this->layout = self::DEFAULT_LAYOUT;
 		$this->copyLayoutFromParent = true;
 		$this->layoutconfig = new LayoutconfigEntity($this);
 
@@ -425,7 +425,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function setChangefreq($changefreq)
 	{
-		if (array_search($changefreq, self::$changefreqValues) === false) {
+		if ($changefreq !== NULL && array_search($changefreq, self::$changefreqValues) === false) {
 			throw new \Nette\InvalidArgumentException;
 		}
 

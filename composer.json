@@ -52,7 +52,7 @@
 					"cms": "CmsModule\\DI\\CmsExtension"
 				},
 				"includes": [
-					"%libsDir%/venne/cms-module/CmsModule/Resources/config/config.neon"
+					"%modules.cms.path%/Resources/config/config.neon"
 				],
 				"translator": {
 					"dictionaries": [

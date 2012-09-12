@@ -101,7 +101,7 @@ class UsersPresenter extends BasePresenter
 	{
 		$table = new \CmsModule\Components\TableControl;
 		$table->setRepository($this->userRepository);
-		$table->setPaginator(2);
+		$table->setPaginator(10);
 
 		$table->addColumn('email', 'E-mail', '60%');
 		$table->addColumn('roles', 'Roles', '40%', function($entity)

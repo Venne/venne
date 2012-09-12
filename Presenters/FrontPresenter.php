@@ -19,6 +19,7 @@ use Venne;
 abstract class FrontPresenter extends BasePresenter
 {
 
+
 	protected function checkLanguage()
 	{
 		if (count($this->context->parameters["website"]["languages"]) > 1) {
@@ -38,12 +39,9 @@ abstract class FrontPresenter extends BasePresenter
 	{
 		$httpRequest = $this->context->httpRequest;
 
-		$lang = false; //$httpRequest->getCookie('lang');
+		$lang = $httpRequest->detectLanguage($this->context->parameters['website']['languages']);
 		if (!$lang) {
-			$lang = $httpRequest->detectLanguage($this->context->parameters["website"]["languages"]);
-			if (!$lang) {
-				$lang = $this->context->parameters["website"]["defaultLanguage"];
-			}
+			$lang = $this->context->parameters['website']['defaultLanguage'];
 		}
 		return $lang;
 	}
