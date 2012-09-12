@@ -25,13 +25,14 @@ class ContentEditor extends \Nette\Forms\Controls\TextArea
 	protected $eventManager;
 
 
-	function __construct(EventManager $eventManager, $label = NULL, $cols = NULL, $rows = NULL)
+	public function __construct(EventManager $eventManager, $label = NULL, $cols = NULL, $rows = NULL)
 	{
 		parent::__construct($label, $cols, $rows);
 
 		$this->eventManager = $eventManager;
 		$this->setAttribute('venne-form-editor', true);
 	}
+
 
 	public function setValue($value)
 	{
@@ -43,6 +44,7 @@ class ContentEditor extends \Nette\Forms\Controls\TextArea
 		return parent::setValue($value);
 	}
 
+
 	public function getValue()
 	{
 		$args = new ContentEditorArgs;
@@ -52,6 +54,4 @@ class ContentEditor extends \Nette\Forms\Controls\TextArea
 
 		return $value;
 	}
-
-
 }
