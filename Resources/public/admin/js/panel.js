@@ -123,6 +123,7 @@ $(function () {
 			drawRectangleOnObject(objects[i]);
 		}
 	}
+	window.redrawRectangles = redrawRectangles;
 
 	function drawRectangleOnObject(element) {
 		rectangleObjects[rectangleObjects.length] = element;
