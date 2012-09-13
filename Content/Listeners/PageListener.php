@@ -94,9 +94,11 @@ class PageListener implements EventSubscriber
 	 */
 	protected function invalidate($class, $entity)
 	{
-		$this->cache->clean(array(
-			Cache::TAGS => $class::CACHE,
-		));
+		if (defined('$class::CACHE')) {
+			$this->cache->clean(array(
+				Cache::TAGS => $class::CACHE,
+			));
+		}
 
 		if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
 			$this->cache->clean(array(
