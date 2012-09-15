@@ -26,9 +26,6 @@ class UsersPresenter extends BasePresenter
 
 
 	/** @persistent */
-	public $id;
-
-	/** @persistent */
 	public $page;
 
 	/** @var \DoctrineModule\Repositories\BaseRepository */
@@ -58,112 +55,32 @@ class UsersPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function actionDefault()
-	{
-	}
-
-
-	/**
-	 * @secured(privilege="create")
-	 */
-	public function actionCreate()
-	{
-	}
-
-
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function actionEdit()
-	{
-	}
-
-
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function handleDelete($id)
-	{
-		$this->userRepository->delete($this->userRepository->find($id));
-		$this->flashMessage("User has been deleted", "success");
-
-		if (!$this->isAjax()) {
-			$this->redirect('default');
-		}
-		$this->invalidateControl('content');
-	}
-
-
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\TableControl;
+		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->userRepository);
 		$table->setPaginator(10);
 
+		// forms
+		$form = $table->addForm($this->form, 'User');
+
+		// navbar
+		$table->addButtonCreate('create', 'Create new', $form, 'file');
+
+		// columns
 		$table->addColumn('email', 'E-mail', '60%');
-		$table->addColumn('roles', 'Roles', '40%', function($entity)
-		{
+		$table->addColumn('roles', 'Roles', '40%', function ($entity) {
 			return implode(", ", $entity->roles);
 		});
 
-		$presenter = $this;
-		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
-		{
-			if (!$presenter->isAjax()) {
-				$presenter->redirect('edit', array('id' => $entity->id));
-			} else {
-				$presenter->invalidateControl('content');
-				$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
-				$presenter->setView('edit');
-				$presenter->id = $entity->id;
-			}
-		});
-		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->redirect('translate', array('id' => $entity->id));
-		});
+		// actions
+		$table->addActionEdit('edit', 'Edit', $form);
+		$table->addActionDelete('delete', 'Delete');
+
+		// global actions
+		$table->setGlobalAction($table['delete']);
 
 		return $table;
-	}
-
-
-	public function createComponentForm()
-	{
-		$form = $this->form->createForm($this->userRepository->createNew());
-		$form->onSuccess[] = $this->formProcess;
-		return $form;
-	}
-
-
-	public function formProcess($form)
-	{
-		$this->flashMessage("User has been created", "success");
-
-		if (!$this->isAjax()) {
-			$this->redirect("default");
-		}
-		$this->payload->url = $this->link('default', array('id' => NULL));
-		$this->forward('default', array('id' => NULL, 'do' => ''));
-	}
-
-
-	public function createComponentFormEdit()
-	{
-		$form = $this->form->createForm($this->userRepository->find($this->id));
-		$form->onSuccess[] = $this->processFormEdit;
-		return $form;
-	}
-
-
-	public function processFormEdit($form)
-	{
-		$this->flashMessage("User has been updated", "success");
-
-		if (!$this->isAjax()) {
-			$this->redirect("this");
-		}
 	}
 }

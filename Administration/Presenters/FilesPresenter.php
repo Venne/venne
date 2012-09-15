@@ -84,7 +84,7 @@ class FilesPresenter extends BasePresenter
 
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\TableControl;
+		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setRepository($this->dirRepository);
 		$parent = $this->key;
 		$table->setDql(function(\Doctrine\ORM\QueryBuilder $dql) use ($parent)
@@ -103,7 +103,7 @@ class FilesPresenter extends BasePresenter
 
 	public function createComponentFileTable()
 	{
-		$table = new \CmsModule\Components\TableControl;
+		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setRepository($this->fileRepository);
 		$parent = $this->key;
 		$table->setDql(function(\Doctrine\ORM\QueryBuilder $dql) use ($parent)

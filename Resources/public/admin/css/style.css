@@ -57,6 +57,14 @@ h5 {
 	border-radius: 20px;
 }
 
+.modal.modal-large {
+    width: 800px;
+    margin: -320px 0 0 -400px;
+}
+.modal.modal-large .modal-body {
+    max-height: 800px;
+}
+
 #toolbar {
 	margin: -35px 0 0 0;
 }
@@ -316,4 +324,10 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
     -webkit-border-radius: 4px;
     -khtml-border-radius: 4px;
     border-radius: 4px;
+}
+.venne-panel-block > div {
+    display: none;
+}
+.venne-panel-block:hover > div {
+    display: block;
 }

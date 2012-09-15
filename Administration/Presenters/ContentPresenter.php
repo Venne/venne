@@ -103,22 +103,22 @@ class ContentPresenter extends BasePresenter
 
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\TableControl;
+		$presenter = $this;
+
+		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setRepository($this->pageRepository);
 		$table->setPaginator(10);
 		$table->enableSorter();
-		$table->setDql(function(\Doctrine\ORM\QueryBuilder $builder)
-		{
+		$table->setDql(function (\Doctrine\ORM\QueryBuilder $builder) {
 			$builder->andWhere('a.translationFor IS NULL');
 		});
 
+		// columns
 		$table->addColumn('name', 'Name', '50%');
-		$table->addColumn('url', 'URL', '20%', function($entity)
-		{
+		$table->addColumn('url', 'URL', '20%', function ($entity) {
 			return $entity->mainRoute->url;
 		});
-		$table->addColumn('languages', 'Languages', '30%', function($entity)
-		{
+		$table->addColumn('languages', 'Languages', '30%', function ($entity) {
 			$ret = implode(", ", $entity->languages->toArray());
 			foreach ($entity->translations as $translation) {
 				$ret .= ', ' . implode(", ", $translation->languages->toArray());
@@ -126,9 +126,8 @@ class ContentPresenter extends BasePresenter
 			return $ret;
 		});
 
-		$presenter = $this;
-		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
-		{
+		// actions
+		$table->addAction('edit', 'Edit')->onClick[] = function ($entity) use ($presenter) {
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('edit', array('key' => $entity->id));
 			}
@@ -137,21 +136,11 @@ class ContentPresenter extends BasePresenter
 			$presenter->setView('edit');
 			$presenter->changeAction('edit');
 			$presenter->key = $entity->id;
-		});
-		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->delete($entity);
-			if (!$presenter->isAjax()) {
-				$presenter->redirect('default', array('key' => NULL));
-			}
-			$presenter->invalidateControl('content');
-			$presenter->payload->url = $presenter->link('default', array('id' => NULL));
-		});
+		};
+		$table->addActionDelete('delete', 'Delete');
 
-		$table->addGlobalAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->delete($entity);
-		});
+		// global actions
+		$table->setGlobalAction($table['delete']);
 
 		return $table;
 	}
@@ -239,18 +228,6 @@ class ContentPresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect("this");
 		}
-	}
-
-
-	public function delete($entity)
-	{
-		$this->pageRepository->delete($entity);
-		$this->flashMessage("Page has been deleted", "success");
-
-		if (!$this->isAjax()) {
-			$this->redirect("this", array("key" => NULL));
-		}
-		$this->invalidateControl('content');
 	}
 
 

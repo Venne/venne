@@ -25,9 +25,6 @@ class LanguagePresenter extends BasePresenter
 {
 
 
-	/** @persistent */
-	public $id;
-
 	/** @var BaseRepository */
 	protected $languageRepository;
 
@@ -50,141 +47,32 @@ class LanguagePresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function actionDefault()
-	{
-	}
-
-
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function actionEdit()
-	{
-	}
-
-
-	/**
-	 * @secured(privilege="create")
-	 */
-	public function actionCreate()
-	{
-	}
-
-
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\TableControl;
+		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->languageRepository);
 		$table->setPaginator(10);
 		$table->enableSorter();
 
+		// forms
+		$form = $table->addForm($this->form, 'Language');
+
+		// navbar
+		$table->addButtonCreate('create', 'Create new', $form, 'file');
+
+		// columns
 		$table->addColumn('name', 'Name', '50%');
 		$table->addColumn('alias', 'Alias', '20%');
 		$table->addColumn('short', 'Short', '30%');
 
-		$presenter = $this;
-		$table->addAction('edit', 'Edit', function($entity) use ($presenter)
-		{
-			if (!$presenter->isAjax()) {
-				$presenter->redirect('edit', array('id' => $entity->id));
-			}
-			$this->invalidateControl('content');
-			$presenter->payload->url = $presenter->link('edit', array('id' => $entity->id));
-			$presenter->setView('edit');
-			$presenter->id = $entity->id;
-		});
-		$table->addAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->delete($entity);
-			if (!$presenter->isAjax()) {
-				$presenter->redirect('default', array('id' => NULL));
-			}
-			$presenter->invalidateControl('content');
-			$presenter->payload->url = $presenter->link('default', array('id' => NULL));
-		});
+		// actions
+		$table->addActionEdit('edit', 'Edit', $form);
+		$table->addActionDelete('delete', 'Delete');
 
-		$table->addGlobalAction('delete', 'Delete', function($entity) use ($presenter)
-		{
-			$presenter->delete($entity);
-		});
+		// global actions
+		$table->setGlobalAction($table['delete']);
 
 		return $table;
-	}
-
-
-	public function createComponentForm()
-	{
-		$form = $this->form->invoke($this->languageRepository->createNew());
-		$form->onSuccess[] = $this->processForm;
-		return $form;
-	}
-
-
-	public function processForm($button)
-	{
-		$this->flashMessage("Language has been created", "success");
-
-		if (!$this->isAjax() || count($this->context->parameters['website']['languages']) == 0) {
-			$this->redirect("default");
-		}
-		$this->payload->url = $this->link('default', array('id' => NULL));
-		$this->forward('default', array('id' => NULL, 'do' => ''));
-	}
-
-
-	public function createComponentFormEdit($name)
-	{
-		$form = $this->form->invoke($this->languageRepository->find($this->id));
-		$form->onSuccess[] = $this->processFormEdit;
-		return $form;
-	}
-
-
-	public function processFormEdit($button)
-	{
-		$this->flashMessage("Language has been updated", "success");
-
-		if (!$this->isAjax()) {
-			$this->redirect("default");
-		}
-		$this->payload->url = $this->link('default', array('id' => NULL));
-		$this->forward('default', array('id' => NULL, 'do' => ''));
-	}
-
-
-	public function delete($entity)
-	{
-		$repository = $this->languageRepository;
-
-		try {
-			$repository->delete($entity);
-		} catch (\Nette\InvalidArgumentException $e) {
-			$this->flashMessage($e->getMessage(), "warning");
-			return;
-		}
-
-		$config = $this->configService;
-		$languages = array();
-		foreach ($repository->findAll() as $entity) {
-			$languages[] = $entity->alias;
-		}
-		$config["parameters"]["website"]["languages"] = $languages;
-		$config->save();
-
-		$this->flashMessage("Language has been deleted", "success");
-
-		if (!$this->isAjax() || count($languages) == 0) {
-			$this->redirect("this", array("id" => NULL));
-		}
-		$this->invalidateControl('content');
-	}
-
-
-	public function renderDefault()
-	{
-		$this->template->table = $this->languageRepository->findAll();
 	}
 }

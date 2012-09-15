@@ -61,7 +61,7 @@ class UserFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$group = $form->addGroup("User");
+		$group = $form->addGroup();
 		$form->addCheckbox("enable", "Enable")->setDefaultValue(true);
 		$form->addText("email", "E-mail")
 			->addRule(Form::EMAIL, "Enter email");

@@ -60,7 +60,6 @@ class RoleFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addGroup("Role");
 		$form->addText("name", "Name");
 		$form->addManyToOne("parent", "Parent")->setPrompt("root");
 

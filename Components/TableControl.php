@@ -60,7 +60,7 @@ class TableControl extends Control
 
 		$this->primaryColumn = $primaryColumn;
 
-		$this->invalidateControl("table");
+		$this->invalidateControl('table');
 	}
 
 
@@ -109,6 +109,19 @@ class TableControl extends Control
 		$this->actions[$name] = array(
 			'title' => $title,
 			'callback' => $callback,
+		);
+	}
+
+
+	public function addActionDelete($name, $title)
+	{
+		$_this = $this;
+
+		$this->actions[$name] = array(
+			'title' => $title,
+			'callback' => function ($entity) use ($_this) {
+				$_this->getRepository()->delete($entity);
+			},
 		);
 	}
 
@@ -233,5 +246,28 @@ class TableControl extends Control
 	public function getDql()
 	{
 		return $this->dqlCallback;
+	}
+
+
+	/***************************** Navbar **************************** */
+
+
+	/**
+	 * @return \CmsModule\Components\Navbar\NavbarControl
+	 */
+	public function addNavbar()
+	{
+		$this->template->showNavbar = true;
+
+		return $this['navbar'];
+	}
+
+
+	/**
+	 * @return \CmsModule\Components\Navbar\NavbarControl
+	 */
+	protected function createComponentNavbar()
+	{
+		return new \CmsModule\Components\Navbar\NavbarControl();
 	}
 }
