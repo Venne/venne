@@ -47,9 +47,9 @@ class ElementMacro extends MacroSet
 		$method = Strings::match($method, '#^\w*$#') ? "render$method" : "{\"render$method\"}";
 		$id = $node->tokenizer->fetchWord();
 
-		return (!$id ? 'if (!isset($_elementCounter)) { $_elementCounter = 0;} else { $_elementCounter++; }' : '')
-			. '$_ctrl = $_presenter->getComponent(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . ' . ($id ? $id : '$_elementCounter') . ' . \'_\' . ' . $name . '); '
-			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "<span id=\"' . \CmsModule\Content\ElementManager::ELEMENT_PREFIX . ($id ? ( is_numeric($id) ? $id : '{' . $id . '}') : '{$_elementCounter}') . '_' . $rawName[0] . '\" style=\"display: inline-block; min-width: 50px; min-height: 25px;\" class=\"venne-element-container\" data-venne-element-id=\"' . ($id ? : '{$_elementCounter}') . '\" data-venne-element-name=\"' . $rawName[0] . '\" data-venne-element-route=\"" . $presenter->route->id . "\" data-venne-element-buttons=\"" . (str_replace(\'"\', "\'", json_encode($_ctrl->getViews()))) . "\">"; }'
+		return (!$id ? 'if (!isset($presenter->template->_elementCounter)) { $presenter->template->_elementCounter = 0;} else { $presenter->template->_elementCounter++; }' : '')
+			. '$_ctrl = $_presenter->getComponent(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . ' . ($id ? $id : '$presenter->template->_elementCounter') . ' . \'_\' . ' . $name . '); '
+			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "<span id=\"' . \CmsModule\Content\ElementManager::ELEMENT_PREFIX . ($id ? (is_numeric($id) ? $id : '{' . $id . '}') : '{$presenter->template->_elementCounter}') . '_' . $rawName[0] . '\" style=\"display: inline-block; min-width: 50px; min-height: 25px;\" class=\"venne-element-container\" data-venne-element-id=\"' . ($id ? : '{$presenter->template->_elementCounter}') . '\" data-venne-element-name=\"' . $rawName[0] . '\" data-venne-element-route=\"" . $presenter->route->id . "\" data-venne-element-buttons=\"" . (str_replace(\'"\', "\'", json_encode($_ctrl->getViews()))) . "\">"; }'
 			. 'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '
 			. "\$_ctrl->$method();"
 			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "</span>"; }';
