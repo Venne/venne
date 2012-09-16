@@ -52,7 +52,7 @@ abstract class AdminPresenter extends BasePresenter
 		// check languages
 		elseif ($this->context->schemaManager->tablesExist('user') && count($this->context->parameters['website']['languages']) == 0) {
 			if ($this->getName() != 'Cms:Admin:Language') {
-				$this->redirect(':Cms:Admin:Language:create');
+				$this->redirect(':Cms:Admin:Language:');
 			}
 			$this->template->hideMenuItems = true;
 			$this->flashMessage("Please enter at least one language.", "warning");
