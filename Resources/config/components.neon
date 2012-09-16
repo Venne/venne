@@ -99,6 +99,17 @@ services:
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
+	cms.textareaFormFactory:
+		class: CmsModule\Content\Elements\Forms\TextareaFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.editorFormFactory:
+		class: CmsModule\Content\Elements\Forms\EditorFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+
 factories:
 
 	cms.admin.basicForm:
@@ -129,3 +140,15 @@ factories:
 		setup:
 			- injectSetupForm(@cms.textFormFactory)
 		tags: [element: text]
+
+	cms.textareaElement:
+		class: CmsModule\Content\Elements\TextElement
+		setup:
+			- injectSetupForm(@cms.textareaFormFactory)
+		tags: [element: textarea]
+
+	cms.editorElement:
+		class: CmsModule\Content\Elements\TextElement
+		setup:
+			- injectSetupForm(@cms.editorFormFactory)
+		tags: [element: editor]
