@@ -101,6 +101,17 @@ class ContentPresenter extends BasePresenter
 	}
 
 
+	public function handleDelete($id)
+	{
+		$entity = $this->pageRepository->find($id);
+		$link = $this->link('this', array('key' => $entity->translationFor->id));
+
+		$this->pageRepository->delete($entity);
+		$this->flashMessage('Translation has been removed', 'success');
+		$this->redirectUrl($link);
+	}
+
+
 	public function createComponentTable()
 	{
 		$presenter = $this;
