@@ -173,12 +173,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			$presenter = $this;
 			$templateCache = $this->_templateCache;
 			$httpRequest = $this->getHttpRequest();
-			$this->getApplication()->onResponse[] = function()
-			{
+			$this->getApplication()->onResponse[] = function () {
 				ob_start();
 			};
-			$this->getApplication()->onShutdown[] = function() use ($presenter, $templateCache, $httpRequest)
-			{
+			$this->getApplication()->onShutdown[] = function () use ($presenter, $templateCache, $httpRequest) {
 				$output = ob_get_clean();
 
 				if ($presenter instanceof PagePresenter) {
