@@ -4,7 +4,7 @@
 	{if isset($showElementView)}
 	<div class="modal hide" id="optionEdit">
 		<div class="modal-header">
-			<a href="{link this}" class="ajax close">×</a>
+			<a href="#" onClick="$('#optionEdit').modal('hide')" class="close">×</a>
 
 			<h3>Edit option</h3>
 		</div>
@@ -14,8 +14,8 @@
 	</div>
 	<script>
 		$(function () {
-			$('#optionEdit').modal({
-				backdrop:false
+			$('#optionEdit').modal().on('hidden', function(){
+				$.nette.ajax({ url: {link this}});
 			});
 		});
 	</script>
