@@ -75,9 +75,15 @@ class BasicFormFactory extends FormFactory
 		$mainRoute = $form->addOne('mainRoute');
 		$mainRoute->setCurrentGroup($infoGroup);
 		$mainRoute->addText('localUrl', 'URL')
-			->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/")
-			->addConditionOn($form['parent'], $form::FILLED)
+			->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
+
+		if (!$form->data->translationFor) {
+			$mainRoute['localUrl']->addConditionOn($form['parent'], $form::FILLED)
 				->addRule($form::FILLED);
+		} elseif ($form->data->translationFor && $form->data->translationFor->mainRoute->url) {
+			$mainRoute['localUrl']->addRule($form::FILLED);
+		}
+
 		$mainRoute['localUrl']->getControlPrototype()->class[] = 'localUrl';
 
 		// date
