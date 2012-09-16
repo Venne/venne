@@ -52,15 +52,17 @@ class PanelControl extends Control
 
 	protected function createComponentBrowser()
 	{
+		$nullLinkParams = \Venne\Application\UI\Helpers::nullLinkParams($this);
+
 		if ($this->tab == 0) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => 'this')));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => 'this') + $nullLinkParams));
 		} else if ($this->tab == 2) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getFiles"), callback($this, "setFileParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => 'this')));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => 'this') + $nullLinkParams));
 		} else if ($this->tab == 3) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getLayouts"), callback($this, "setLayoutParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => 'this')));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => 'this') + $nullLinkParams));
 		}
 		$browser->setTemplateConfigurator($this->templateConfigurator);
 		return $browser;
