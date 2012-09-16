@@ -57,6 +57,24 @@ class PageRepository extends BaseRepository
 			throw new \Nette\InvalidArgumentException('Entity is not unique!');
 		}
 
+		// check languages
+		if ($entity->translationFor) {
+			$translations = $entity->translationFor->getTranslations();
+			$translations[] = $entity->translationFor;
+
+			foreach ($translations as $translation) {
+				if ($translation->getId() === $entity->getId()) {
+					continue;
+				}
+
+				foreach ($entity->getLanguages() as $language) {
+					if ($translation->isInLanguageAlias($language->alias)) {
+						throw new \Nette\InvalidArgumentException("Language '{$language->name} is already used.'");
+					}
+				}
+			}
+		}
+
 		return parent::save($entity, $withoutFlush);
 	}
 
