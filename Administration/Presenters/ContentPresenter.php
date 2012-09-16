@@ -127,7 +127,7 @@ class ContentPresenter extends BasePresenter
 		});
 
 		// actions
-		$table->addAction('edit', 'Edit')->onClick[] = function ($entity) use ($presenter) {
+		$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('edit', array('key' => $entity->id));
 			}
