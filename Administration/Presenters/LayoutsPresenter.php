@@ -107,6 +107,7 @@ class LayoutsPresenter extends BasePresenter
 	{
 		$this->flashMessage('Layout has been added.', 'success');
 
+		$values = $form->getValues();
 		if (!$this->isAjax()) {
 			$this->redirect('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
 		}
