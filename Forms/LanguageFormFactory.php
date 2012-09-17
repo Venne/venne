@@ -26,18 +26,14 @@ class LanguageFormFactory extends FormFactory
 	/** @var EntityMapper */
 	protected $mapper;
 
-	/** @var BaseRepository */
-	protected $repository;
-
 
 	/**
 	 * @param EntityMapper $mapper
 	 * @param BaseRepository $repository
 	 */
-	public function __construct(EntityMapper $mapper, BaseRepository $repository)
+	public function __construct(EntityMapper $mapper)
 	{
 		$this->mapper = $mapper;
-		$this->repository = $repository;
 	}
 
 
@@ -60,26 +56,10 @@ class LanguageFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addGroup("Language");
 		$form->addTextWithSelect("name", "Name")->setItems(array("English", "Deutsch", "Čeština"), false)->setOption("description", "(enhlish, deutsch,...)")->addRule($form::FILLED, "Please set name");
 		$form->addTextWithSelect("short", "Short")->setItems(array("en", "de", "cs"), false)->setOption("description", "(en, de,...)")->addRule($form::FILLED, "Please set short");
 		$form->addTextWithSelect("alias", "Alias")->setItems(array("en", "de", "cs", "www"), false)->setOption("description", "(www, en, de,...)")->addRule($form::FILLED, "Please set alias");
 
 		$form->addSubmit('_submit', 'Save');
-	}
-
-
-	public function handleSave(Form $form)
-	{
-		try {
-			$this->repository->save($form->data);
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->addError("Language is not unique", "warning");
-				return;
-			} else {
-				throw $e;
-			}
-		}
 	}
 }
