@@ -172,11 +172,11 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		if (!$this->isAuthorized(':Cms:Admin:Panel:') && $this->route->getCacheMode()) {
 			$presenter = $this;
 			$templateCache = $this->_templateCache;
-			$httpRequest = $this->getHttpRequest();
+			$key = $this->getHttpRequest()->getUrl()->getAbsoluteUrl() . ($this->getUser()->isLoggedIn() ? '|logged' : '');
 			$this->getApplication()->onResponse[] = function () {
 				ob_start();
 			};
-			$this->getApplication()->onShutdown[] = function () use ($presenter, $templateCache, $httpRequest) {
+			$this->getApplication()->onShutdown[] = function () use ($presenter, $templateCache, $key) {
 				$output = ob_get_clean();
 
 				if ($presenter instanceof PagePresenter) {
@@ -189,7 +189,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 					if ($presenter->route->getCacheMode() === RouteEntity::CACHE_MODE_TIME || ($presenter->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE && $presenter->context->parameters['website']['cacheMode'] === RouteEntity::CACHE_MODE_TIME)) {
 						$parameters[Cache::EXPIRE] = '+ ' . $presenter->context->parameters['website']['cacheValue'] . ' minutes';
 					}
-					$templateCache->save($httpRequest->getUrl()->getAbsoluteUrl(), $output, $parameters);
+					$templateCache->save($key, $output, $parameters);
 				}
 				echo $output;
 			};

@@ -32,7 +32,8 @@ class CachedPresenter extends Presenter
 
 	public function startup()
 	{
-		$output = $this->_templateCache->load($this->getHttpRequest()->getUrl()->getAbsoluteUrl());
+		$key = $this->getHttpRequest()->getUrl()->getAbsoluteUrl() . ($this->getUser()->isLoggedIn() ? '|logged' : '');
+		$output = $this->_templateCache->load($key);
 		$this->sendResponse(new \Nette\Application\Responses\TextResponse($output));
 	}
 }

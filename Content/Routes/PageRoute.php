@@ -79,10 +79,12 @@ class PageRoute extends Route
 		));
 	}
 
+
 	protected function getLangRepository()
 	{
 		return $this->container->cms->languageRepository;
 	}
+
 
 	protected function getRouteRepository()
 	{
@@ -98,8 +100,9 @@ class PageRoute extends Route
 	 */
 	public function match(\Nette\Http\IRequest $httpRequest)
 	{
-		$output = $this->_templateCache->load($httpRequest->getUrl()->getAbsoluteUrl());
-		if($output) {
+		$key = $httpRequest->getUrl()->getAbsoluteUrl() . ($this->container->user->isLoggedIn() ? '|logged' : '');
+		$output = $this->_templateCache->load($key);
+		if ($output) {
 			return new \Nette\Application\Request(
 				'Cms:Cached',
 				$httpRequest->getMethod(),
