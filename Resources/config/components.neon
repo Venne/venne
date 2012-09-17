@@ -5,7 +5,7 @@ services:
 			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.languageFormFactory:
-		class: CmsModule\Forms\LanguageFormFactory(..., @cms.languageRepository, ...)
+		class: CmsModule\Forms\LanguageFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
@@ -61,7 +61,7 @@ services:
 			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.layouteditFormFactory:
-		class: CmsModule\Content\Forms\LayouteditFormFactory(%appDir%, %modules%)
+		class: CmsModule\Content\Forms\LayouteditFormFactory(..., %appDir%, %modules%)
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
