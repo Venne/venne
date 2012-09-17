@@ -167,7 +167,7 @@
 
 				{if $presenter->user->isLoggedIn() && $presenter->context->doctrine->createCheckConnection() && !isset($hideMenuItems)}
 				{var _panel=>true}
-				<div class="span4" style="width: 320px; margin-top: 7px; {*position: fixed;*}">
+				<div class="span4" style="width: 320px; margin-top: 7px; position: fixed;">
 					{control panel}
 				</div>
 				{/if}

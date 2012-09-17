@@ -331,3 +331,10 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 .venne-panel-block:hover > div {
     display: block;
 }
+
+
+ /*  */
+#dynatree-drop-marker
+{
+   margin-top: -56px !important;
+}
