@@ -79,7 +79,7 @@ class UserFormFactory extends FormFactory
 			->addRule(Form::EQUAL, 'Invalid re password', $form['_password']);
 
 		$form->addGroup("Next informations");
-		$form->addManyToMany("roleEntities");
+		$form->addManyToMany("roleEntities", 'Roles');
 
 		$form->addSubmit('_submit', 'Save');
 	}

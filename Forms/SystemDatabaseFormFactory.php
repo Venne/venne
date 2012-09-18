@@ -90,6 +90,7 @@ class SystemDatabaseFormFactory extends FormFactory
 		$form->addGroup()->setOption('id', 'group-charset');
 		$form->addTextWithSelect("charset", "Charset")->setItems(array("utf8"), false);
 
+		$form->addGroup();
 		$form->addSubmit('_submit', 'Save');
 	}
 }
