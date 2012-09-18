@@ -1,8 +1,12 @@
 services:
-#	cms.exampleCommand:
-#		class: CmsModule\Commands\InstallationCommand
-#		tags: [command]
-#
-#	cms.databaseCommand:
-#		class: CmsModule\Commands\DatabaseCommand
-#		tags: [command]
+	cms.exampleCommand:
+		class: CmsModule\Commands\AccountCommand
+		tags: [command]
+
+	cms.databaseCommand:
+		class: CmsModule\Commands\DatabaseCommand
+		tags: [command]
+
+	cms.languageCommand:
+		class: CmsModule\Commands\LanguageCommand(@cms.languageRepository)
+		tags: [command]

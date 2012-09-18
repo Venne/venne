@@ -22,17 +22,21 @@ use CmsModule\Services\ConfigBuilder;
 /**
  * Command to execute DQL queries in a given EntityManager.
  */
-class InstallationCommand extends Command
+class LanguageCommand extends Command
 {
 
-	/** @var ConfigBuilder */
-	protected $config;
+	/** @var \DoctrineModule\Repositories\BaseRepository */
+	protected $repository;
 
-	function __construct(ConfigBuilder $config)
+
+	/**
+	 * @param \DoctrineModule\Repositories\BaseRepository $repository
+	 */
+	public function __construct(\DoctrineModule\Repositories\BaseRepository $repository)
 	{
 		parent::__construct();
 
-		$this->config = $config;
+		$this->repository = $repository;
 	}
 
 
@@ -42,29 +46,26 @@ class InstallationCommand extends Command
 	protected function configure()
 	{
 		$this
-			->setName('venne:admin:account')
-			->setDescription('Setup administrator account.')
+			->setName('cms:language:add')
+			->setDescription('Add new language.')
 			->setDefinition(array(
-			new InputArgument('login', InputArgument::REQUIRED, 'Administrator name.'),
-			new InputArgument('password', InputArgument::REQUIRED, 'Password.')
+			new InputArgument('name', InputArgument::REQUIRED, 'Language name.'),
+			new InputArgument('short', InputArgument::REQUIRED, 'Short.'),
+			new InputArgument('alias', InputArgument::REQUIRED, 'Alias.')
 		));
 	}
+
 
 	/**
 	 * @see Console\Command\Command
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$this->config->load();
-		$this->config['parameters']['administration']['login']['name'] = $input->getArgument('login');
-		$this->config['parameters']['administration']['login']['password'] = $input->getArgument('password');
-		$this->config->save();
-	}
+		$entity = new \CmsModule\Content\Entities\LanguageEntity();
+		$entity->setName($input->getArgument('name'));
+		$entity->setShort($input->getArgument('short'));
+		$entity->setAlias($input->getArgument('alias'));
 
-
-	protected function getDialogHelper()
-	{
-		$dialog = $this->getHelperSet()->get('dialog');
-		return $dialog;
+		$this->repository->save($entity);
 	}
 }

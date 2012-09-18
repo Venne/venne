@@ -22,28 +22,13 @@ use CmsModule\Services\ConfigBuilder;
 /**
  * Command to execute DQL queries in a given EntityManager.
  */
-class DatabaseCommand extends Command
+class AccountCommand extends Command
 {
 
 	/** @var ConfigBuilder */
 	protected $config;
 
-	protected $options = array(
-		'driver',
-		'host',
-		'user',
-		'password',
-		'dbname',
-		'port',
-		'path',
-		'memory',
-	);
-
-
-	/**
-	 * @param \CmsModule\Services\ConfigBuilder $config
-	 */
-	public function __construct(ConfigBuilder $config)
+	function __construct(ConfigBuilder $config)
 	{
 		parent::__construct();
 
@@ -57,12 +42,12 @@ class DatabaseCommand extends Command
 	protected function configure()
 	{
 		$this
-			->setName('cms:database:set')
-			->setDescription('Setup database connection.');
-
-		foreach ($this->options as $option) {
-			$this->addOption($option, null, InputOption::VALUE_NONE, "Set {$option}.");
-		}
+			->setName('cms:account')
+			->setDescription('Setup administrator account.')
+			->setDefinition(array(
+			new InputArgument('login', InputArgument::REQUIRED, 'Administrator name.'),
+			new InputArgument('password', InputArgument::REQUIRED, 'Password.')
+		));
 	}
 
 	/**
@@ -71,14 +56,15 @@ class DatabaseCommand extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$this->config->load();
-
-		foreach ($this->options as $option) {
-			if ($input->getOption($option)) {
-				$this->config['parameters']['database'][$option] = $input->getOption($option);
-			}
-		}
-
+		$this->config['parameters']['administration']['login']['name'] = $input->getArgument('login');
+		$this->config['parameters']['administration']['login']['password'] = $input->getArgument('password');
 		$this->config->save();
 	}
 
+
+	protected function getDialogHelper()
+	{
+		$dialog = $this->getHelperSet()->get('dialog');
+		return $dialog;
+	}
 }
