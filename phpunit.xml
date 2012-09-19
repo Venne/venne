@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnIncomplete="false"
+	stopOnSkipped="false"
+
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	
+	backupGlobals="false"
+	backupStaticAttributes="false"
+
+	bootstrap="tests/bootstrap.php"
+	colors="true"
+	>
+	<testsuites>
+		<testsuite name="CmsModule Test Suite">
+			<directory suffix="Test.php">./tests/selenium</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
