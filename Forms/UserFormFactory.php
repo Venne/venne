@@ -90,16 +90,5 @@ class UserFormFactory extends FormFactory
 		if ($form["password_new"]->value) {
 			$form->data->password = $form["_password"]->value;
 		}
-
-		try {
-			$this->repository->save($form->data);
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->addError("User {$form->data->name} already exists");
-				return;
-			} else {
-				throw $e;
-			}
-		}
 	}
 }

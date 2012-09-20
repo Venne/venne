@@ -372,6 +372,7 @@ class TableControl extends Control
 
 	public function formEditValidate(\Venne\Forms\Form $form)
 	{
+		$this->invalidateControl('form');
 		try {
 			$this->getRepository()->save($form->data);
 		} catch (\DoctrineModule\SqlException $e) {
@@ -392,6 +393,7 @@ class TableControl extends Control
 		if (!$this->presenter->isAjax()) {
 			$this->redirect('edit!', array('editForm' => NULL, 'editId' => NULL));
 		}
+		$this->invalidateControl('table');
 		$this->presenter->payload->url = $table->link('edit!', array('editForm' => NULL, 'editId' => NULL));
 		$table->editForm = NULL;
 		$table->editId = NULL;
@@ -419,6 +421,7 @@ class TableControl extends Control
 		if (!$this->presenter->isAjax()) {
 			$this->redirect('create!', array('createForm' => NULL));
 		}
+		$this->invalidateControl('table');
 		$this->presenter->payload->url = $table->link('create!', array('createForm' => NULL));
 		$table->editForm = NULL;
 		$table->editId = NULL;
