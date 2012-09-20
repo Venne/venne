@@ -201,7 +201,11 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 			$this->parent->__load();
 		}
 
-		$this->url = trim(($this->parent !== NULL ? $this->parent->url . "/" : "") . $this->localUrl, "/");
+		if ($this->parent) {
+			$this->url = trim(($this->parent !== NULL ? $this->parent->url . "/" : "") . $this->localUrl, "/");
+		} else {
+			$this->url = '';
+		}
 
 		if ($recursively) {
 			foreach ($this->childrens as $children) {

@@ -112,13 +112,25 @@ class PanelControl extends Control
 			$item = array("title" => $page->name, 'key' => $page->id);
 
 			if (count($page->childrens) > 0) {
-				//$item["isFolder"] = true;
 				$item['isLazy'] = true;
+			}
+
+			if (!$page->parent) {
+				$item['expand'] = true;
+				$item['children'] = $this->getPages($page);
 			}
 
 			$data[] = $item;
 		}
 		return $data;
+	}
+
+
+	public function expandPage($page, $mode)
+	{
+		dump($page);
+		dump($mode);
+		die();
 	}
 
 

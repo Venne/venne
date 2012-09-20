@@ -67,34 +67,24 @@ class BasicFormFactory extends FormFactory
 			->getControlPrototype()->attrs['onClick'] = "$(this).stringToSlug({setEvents: 'keyup keydown blur', getPut: '.localUrl', space: '-' }); this.onclick=null;";
 		$form['name']->addRule($form::FILLED);
 
-		if (!$form->data->translationFor) {
-			$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL));
-		}
-
 		// route
 		$mainRoute = $form->addOne('mainRoute');
 		$mainRoute->setCurrentGroup($infoGroup);
 		$mainRoute->addText('localUrl', 'URL')
-			->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/");
-
-		if (!$form->data->translationFor) {
-			$mainRoute['localUrl']->addConditionOn($form['parent'], $form::FILLED)
-				->addRule($form::FILLED);
-		} elseif ($form->data->translationFor && $form->data->translationFor->mainRoute->url) {
-			$mainRoute['localUrl']->addRule($form::FILLED);
-		}
+			->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/")
+			->addRule($form::FILLED);
 
 		$mainRoute['localUrl']->getControlPrototype()->class[] = 'localUrl';
 
+		// parent
+		if (!$form->data->translationFor) {
+			if ($form->data->parent) {
+				$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL))->setPrompt(FALSE);
+			}
+		}
+
 		// date
 		$form->addDateTime("expired", "Expired");
-
-		// URL can be empty only on main page
-		if (!$form->data->translationFor) {
-			$form['mainRoute']["localUrl"]->addConditionOn($form["parent"], ~$form::EQUAL, false)->addRule($form::FILLED, "URL can be empty only on main page");
-		} else if ($form->data->translationFor && $form->data->translationFor->parent) {
-			$form['mainRoute']["localUrl"]->addRule($form::FILLED, "URL can be empty only on main page");
-		}
 
 		// languages
 		/** @var $repository \DoctrineModule\Repositories\BaseRepository */

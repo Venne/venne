@@ -35,9 +35,10 @@ class PageRepository extends BaseRepository
 		$entity->languages->add($this->getEntityManager()->getRepository('CmsModule\Content\Entities\LanguageEntity')->findOneBy(array(), array('id' => 'ASC'), 1));
 
 		// set to root as last entity
-		$last = $this->findBy(array('parent' => NULL), array('order' => 'DESC'), 1);
-		if (isset($last[0])) {
-			$entity->setParent(NULL, true, $last[0]);
+		$root = $this->findOneBy(array('parent' => NULL, 'previous' => NULL));
+		if ($root) {
+			$last = $this->findBy(array('parent' => $root->id), array('order' => 'DESC'), 1);
+			$entity->setParent($root, true, isset($last[0]) ? $last[0] : NULL);
 		}
 
 		return $entity;
