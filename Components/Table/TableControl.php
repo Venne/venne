@@ -374,7 +374,7 @@ class TableControl extends Control
 	{
 		try {
 			$this->getRepository()->save($form->data);
-		} catch (\DoctrineModule\ORM\SqlException $e) {
+		} catch (\DoctrineModule\SqlException $e) {
 			if ($e->getCode() == 23000) {
 				$form->addError($e->getMessage(), "warning");
 				return;
@@ -387,7 +387,7 @@ class TableControl extends Control
 
 	public function formEditSuccess(\Venne\Forms\Form $form)
 	{
-		$this->getPresenter()->flashMessage('Item has been saved', 'success');
+		$this->getPresenter()->flashMessage('Item has been updated', 'success');
 
 		if (!$this->presenter->isAjax()) {
 			$this->redirect('edit!', array('editForm' => NULL, 'editId' => NULL));
