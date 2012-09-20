@@ -207,10 +207,13 @@ class FilesPresenter extends BasePresenter
 	protected function createComponentFile($name, $key = NULL)
 	{
 		$repository = $this->fileRepository;
-		$form = $this->dirFormFactory->invoke($key ? $repository->find($key) : $repository->createNew());
+		$form = $this->fileFormFactory->invoke($key ? $repository->find($key) : $repository->createNew());
 		$form->onSuccess[] = function($form)
 		{
-			$form->presenter->redirect('this');
+			if (!$form->presenter->isAjax()) {
+				$form->presenter->redirect('this');
+			}
+			$form->presenter->invalidateControl('content');
 		};
 		return $form;
 	}

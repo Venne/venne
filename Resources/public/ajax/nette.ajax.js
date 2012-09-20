@@ -47,7 +47,7 @@ var nette = function () {
 		ext: function (callbacks, context, name) {
 			while (!name) {
 				name = 'ext_' + Math.random();
-				if (inner.context[name]) {
+				if (inner.contexts[name]) {
 					name = undefined;
 				}
 			}
@@ -80,7 +80,9 @@ var nette = function () {
 	 * @return {$.nette|object} Provides a fluent interface OR returns extensions with given name
 	 */
 	this.ext = function (name, callbacks, context) {
-		if (callbacks === undefined) {
+		if (typeof name == 'object') {
+			inner.ext(name, callbacks);
+		} else if (callbacks === undefined) {
 			return inner.contexts[name];
 		} else if (!callbacks) {
 			$.each(['init', 'load', 'before', 'start', 'success', 'complete', 'error'], function (index, event) {
@@ -89,8 +91,6 @@ var nette = function () {
 			inner.contexts[name] = undefined;
 		} else if (typeof name == 'string' && inner.contexts[name] !== undefined) {
 			throw 'Cannot override already registered nette-ajax extension.';
-		} else if (typeof name == 'object') {
-			inner.ext(name, callbacks);
 		} else {
 			inner.ext(callbacks, context, name);
 		}
@@ -149,8 +149,9 @@ var nette = function () {
 	 */
 	this.ajax = function (settings, ui, e) {
 		if (!settings.nette && ui && e) {
-			var $el = $(ui);
+			var $el = $(ui), xhr;
 			var analyze = settings.nette = {
+				e: e,
 				ui: ui,
 				el: $el,
 				isForm: $el.is('form'),
@@ -178,34 +179,38 @@ var nette = function () {
 			}
 		}
 
-		if (!inner.fire({
-			name: 'before',
-			off: settings.off || {}
-		}, settings, ui, e)) return;
-
-		return $.ajax($.extend({
+		xhr = $.ajax($.extend({
 			beforeSend: function (xhr) {
 				return inner.fire({
-					name: 'start',
+					name: 'before',
 					off: settings.off || {}
-				}, xhr);
+				}, xhr, settings);
 			}
-		}, settings)).done(function (payload) {
+		}, settings));
+
+		if (xhr) {
 			inner.fire({
-				name: 'success',
+				name: 'start',
 				off: settings.off || {}
-			}, payload);
-		}).fail(function (xhr, status, error) {
-			inner.fire({
-				name :'error',
-				off: settings.off || {}
-			}, xhr, status, error);
-		}).always(function () {
-			inner.fire({
-				name: 'complete',
-				off: settings.off || {}
+			}, xhr, settings);
+			xhr.done(function (payload) {
+				inner.fire({
+					name: 'success',
+					off: settings.off || {}
+				}, payload);
+			}).fail(function (xhr, status, error) {
+				inner.fire({
+					name :'error',
+					off: settings.off || {}
+				}, xhr, status, error);
+			}).always(function () {
+				inner.fire({
+					name: 'complete',
+					off: settings.off || {}
+				});
 			});
-		});
+		}
+		return xhr;
 	};
 };
 
@@ -216,9 +221,10 @@ $.fn.netteAjax = function (e, options) {
 };
 
 $.nette.ext('validation', {
-	before: function (settings, ui, e) {
-		if (!settings.nette || !e) return true;
+	before: function (xhr, settings) {
+		if (!settings.nette) return true;
 		else var analyze = settings.nette;
+		var e = analyze.e;
 
 		var validate = $.extend({
 			keys: true,
@@ -281,9 +287,10 @@ $.nette.ext('forms', {
 			});
 		}
 	},
-	before: function (settings, ui, e) {
+	start: function (xhr, settings) {
 		var analyze = settings.nette;
 		if (!analyze || !analyze.form) return;
+		var e = analyze.e;
 
 		settings.data = settings.data || {};
 
@@ -302,25 +309,7 @@ $.nette.ext('forms', {
 			}
 		}
 
-		settings.data = this.serializeValues(analyze.form, settings.data);
-	}
-}, {
-	serializeValues: function ($form, data) {
-		var values = $form.serializeArray();
-		for (var i = 0; i < values.length; i++) {
-			var name = values[i].name;
-			if (name in data) {
-				var val = data[name];
-				if (!(val instanceof Array)) {
-					val = [val];
-				}
-				val.push(values[i].value);
-				data[name] = val;
-			} else {
-				data[name] = values[i].value;
-			}
-		}
-		return data;
+		settings.data = analyze.form.serialize() + '&' + $.param(settings.data);
 	}
 });
 

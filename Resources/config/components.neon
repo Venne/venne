@@ -2,22 +2,22 @@ services:
 	cms.websiteFormFactory:
 		class: CmsModule\Forms\WebsiteFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.languageFormFactory:
 		class: CmsModule\Forms\LanguageFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.userFormFactory:
 		class: CmsModule\Forms\UserFormFactory(..., @cms.userRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.roleFormFactory:
 		class: CmsModule\Forms\RoleFormFactory(..., @cms.roleRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.loginFormFactory:
 		class: CmsModule\Forms\LoginFormFactory
@@ -28,57 +28,57 @@ services:
 	cms.applicationFormFactory:
 		class: CmsModule\Forms\SystemApplicationFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.databaseFormFactory:
 		class: CmsModule\Forms\SystemDatabaseFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.accountFormFactory:
 		class: CmsModule\Forms\SystemAccountFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.systemFormFactory:
 		class: CmsModule\Forms\SystemAdministrationFormFactory(..., ..., %administration.routePrefix%)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.dirFormFactory:
 		class: CmsModule\Content\Forms\DirFormFactory(..., @cms.dirRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.fileFormFactory:
 		class: CmsModule\Content\Forms\FileFormFactory(..., @cms.fileRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.layoutFormFactory:
 		class: CmsModule\Content\Forms\LayoutFormFactory(..., %appDir%, %modules%)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.layouteditFormFactory:
 		class: CmsModule\Content\Forms\LayouteditFormFactory(..., %appDir%, %modules%)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.contentFormFactory:
 		class: CmsModule\Content\Forms\BasicFormFactory(..., @cms.pageRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.contentRoutesFormFactory:
 		class: CmsModule\Content\Forms\RoutesFormFactory(..., @cms.pageRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.permissionsFormFactory:
 		class: CmsModule\Forms\PermissionsFormFactory(..., @cms.roleRepository)
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 			- injectAuthorizatorFactory
 			- injectAdministrationManager
 			- injectPresenterFactory
@@ -87,27 +87,27 @@ services:
 	cms.clearFormFactory:
 		class: CmsModule\Content\Elements\Forms\ClearFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.basicFormFactory:
 		class: CmsModule\Content\Elements\Forms\BasicFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.textFormFactory:
 		class: CmsModule\Content\Elements\Forms\TextFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.textareaFormFactory:
 		class: CmsModule\Content\Elements\Forms\TextareaFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.editorFormFactory:
 		class: CmsModule\Content\Elements\Forms\EditorFormFactory
 		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 
 factories:
@@ -117,7 +117,13 @@ factories:
 		setup:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
-			#- "$service->getElementPrototype()->class[] = ?"("ajax")
+
+	cms.admin.ajaxForm:
+		class: Venne\Forms\Form
+		setup:
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
 
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
