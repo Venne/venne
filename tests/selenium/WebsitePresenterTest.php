@@ -68,7 +68,6 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->select("css=#frmwebsiteForm-routePrefix-pair > div.controls > select", "label=<lang>/");
 		$this->click("//div[@id='frmwebsiteForm-routePrefix-pair']/div/select/option[2]");
 		$this->click("id=frmwebsiteForm-_submit");
-		$this->waitForPageToLoad("30000");
 		try {
 			$this->assertEquals("Blog %s %t1", $this->getValue("id=frmwebsiteForm-title"));
 		} catch (PHPUnit_Framework_AssertionFailedError $e) {
@@ -114,7 +113,6 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->click("id=frmwebsiteForm-routePrefix");
 		$this->type("id=frmwebsiteForm-routePrefix", "");
 		$this->click("id=frmwebsiteForm-_submit");
-		$this->waitForPageToLoad("30000");
 
 		$this->logout();
 	}

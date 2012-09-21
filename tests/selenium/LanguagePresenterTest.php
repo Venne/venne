@@ -28,8 +28,7 @@ class LanguagePresenterTest extends AdminPresenterTest
   		$this->type("id=frmcreateForm-name", "test1");
 		$this->type("id=frmcreateForm-short", "test2");
 		$this->type("id=frmcreateForm-alias", "test3");
-		$this->click("id=frmcreateForm-_submit");
-		$this->waitForPageToLoad("30000");
+		$this->clickAndWait("id=frmcreateForm-_submit");
 		try {
 			$this->assertEquals("test1", $this->getTable("id=snippet-table-table.2.0"));
 		} catch (PHPUnit_Framework_AssertionFailedError $e) {
@@ -49,8 +48,7 @@ class LanguagePresenterTest extends AdminPresenterTest
 		$this->type("id=frmeditForm-name", "test4");
 		$this->type("id=frmeditForm-short", "test5");
 		$this->type("id=frmeditForm-alias", "test6");
-		$this->click("id=frmeditForm-_submit");
-		$this->waitForPageToLoad("30000");
+		$this->clickAndWait("id=frmeditForm-_submit");
 		try {
 			$this->assertEquals("test4", $this->getTable("id=snippet-table-table.2.0"));
 		} catch (PHPUnit_Framework_AssertionFailedError $e) {
@@ -66,7 +64,7 @@ class LanguagePresenterTest extends AdminPresenterTest
 		} catch (PHPUnit_Framework_AssertionFailedError $e) {
 			array_push($this->verificationErrors, $e->toString());
 		}
-		$this->clickAndWait("xpath=(//a[contains(text(),'Delete')])[3]");
+		$this->click("xpath=(//a[contains(text(),'Delete')])[3]");
 
 		$this->logout();
 	}

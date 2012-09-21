@@ -29,19 +29,15 @@ abstract class AdminPresenterTest extends \Venne\Testing\SeleniumTestCase
 	{
 		$this->open($this->basePath . '/admin');
 
-		$this->click("id=frmsignInForm-username");
 		$this->type("id=frmsignInForm-username", "root");
-		$this->click("id=frmsignInForm-password");
 		$this->type("id=frmsignInForm-password", "tajne");
-		$this->click("id=frmsignInForm-_submit");
-		$this->waitForPageToLoad("30000");
+		$this->clickAndWait("id=frmsignInForm-_submit");
 	}
 
 
 	public function logout()
 	{
-		$this->click("link=Log out");
-		$this->waitForPageToLoad("30000");
+		$this->open($this->basePath . '/admin?do=logout');
 	}
 }
 
