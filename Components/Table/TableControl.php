@@ -365,6 +365,7 @@ class TableControl extends Control
 		$form = $this->forms[$this->editForm]->getFactory()->invoke($entity);
 		$form->onSave[] = $this->formEditValidate;
 		$form->onSuccess[] = $this->formEditSuccess;
+		$form->getElementPrototype()->onSubmit = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
 
 		return $form;
 	}
@@ -394,10 +395,10 @@ class TableControl extends Control
 			$this->redirect('edit!', array('editForm' => NULL, 'editId' => NULL));
 		}
 		$this->invalidateControl('table');
-		$this->presenter->payload->url = $table->link('edit!', array('editForm' => NULL, 'editId' => NULL));
-		$table->editForm = NULL;
-		$table->editId = NULL;
-		$table->handleEdit();
+		$this->presenter->payload->url = $this->link('edit!', array('editForm' => NULL, 'editId' => NULL));
+		$this->editForm = NULL;
+		$this->editId = NULL;
+		$this->handleEdit();
 	}
 
 
@@ -409,6 +410,7 @@ class TableControl extends Control
 		$form = $this->forms[$this->createForm]->getFactory()->invoke($entity);
 		$form->onSave[] = $this->formEditValidate;
 		$form->onSuccess[] = $this->formCreateSuccess;
+		$form->getElementPrototype()->onSubmit = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
 
 		return $form;
 	}
@@ -422,10 +424,9 @@ class TableControl extends Control
 			$this->redirect('create!', array('createForm' => NULL));
 		}
 		$this->invalidateControl('table');
-		$this->presenter->payload->url = $table->link('create!', array('createForm' => NULL));
-		$table->editForm = NULL;
-		$table->editId = NULL;
-		$table->handleEdit();
+		$this->presenter->payload->url = $this->link('create!', array('createForm' => NULL));
+		$this->createForm = NULL;
+		$this->handleCreate();
 	}
 
 
