@@ -142,7 +142,7 @@ class ContentPresenter extends BasePresenter
 			if (!$presenter->isAjax()) {
 				$presenter->redirect('edit', array('key' => $entity->id));
 			}
-			$this->invalidateControl('content');
+			$presenter->invalidateControl('content');
 			$presenter->payload->url = $presenter->link('edit', array('key' => $entity->id));
 			$presenter->setView('edit');
 			$presenter->changeAction('edit');
