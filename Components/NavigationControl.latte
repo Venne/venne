@@ -24,7 +24,7 @@
 {if $iterator->isFirst()}
 <ul {if !$first}class="dropdown-menu"{else}class="nav"{/if}>
 		{if $first && $showMain}
-            {include #item active=>$presenter->route->url === '', childrens=>array(), link=>$basePath, entity=>$root->getPageWithLanguageAlias($presenter->lang), item=>$root}
+            {include #item active=>$presenter->route->url === '', childrens=>array(), link=>$presenter->link('this', array('route'=>$root->mainRoute)), entity=>$root->getPageWithLanguageAlias($presenter->lang), item=>$root}
 		{/if}
 {/if}
 
