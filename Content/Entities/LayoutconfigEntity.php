@@ -25,7 +25,7 @@ class LayoutconfigEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var RouteEntity[]
-	 * @OneToMany(targetEntity="RouteEntity", mappedBy="layoutconfig")
+	 * @OneToMany(targetEntity="RouteEntity", mappedBy="layoutconfig", cascade={"persist", "remove", "merge"})
 	 */
 	protected $routes;
 

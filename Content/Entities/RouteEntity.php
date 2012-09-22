@@ -99,7 +99,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var LayoutconfigEntity
-	 * @ManyToOne(targetEntity="LayoutconfigEntity", inversedBy="routes", cascade={"persist", "remove", "merge"})
+	 * @ManyToOne(targetEntity="LayoutconfigEntity", inversedBy="routes", cascade={"persist"})
 	 */
 	protected $layoutconfig;
 
