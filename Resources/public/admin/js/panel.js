@@ -136,8 +136,8 @@ $(function () {
 			var position = $(this).offset();
 			var height = $(this).height();
 			var width = $(this).width();
-			var top = position.top + $('html', topDocument).offset().top;
-			var left = position.left + $('html', topDocument).offset().left;
+			var top = position.top - $(window.parent).scrollTop();
+			var left = position.left - $(window.parent).scrollLeft();
 			var html = '<div class="btn-group"><a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Edit <span class="caret"></span></a><ul class="dropdown-menu">';
 			$.each(buttons, function (index, value) {
 				html += '<li><a href="?mode=1&do=element&elementName=' + obj.data('venne-element-name') + '&elementView=' + index + '&elementId=' + obj.data('venne-element-id') + '&elementRouteId=' + obj.data('venne-element-route') + '" target="_self" class="ajax" type="button">' + value + '</a></li>';
