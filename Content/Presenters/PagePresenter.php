@@ -186,7 +186,18 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 							'page' => $presenter->page->id,
 						),
 					);
-					if ($presenter->route->getCacheMode() === RouteEntity::CACHE_MODE_TIME || ($presenter->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE && $presenter->context->parameters['website']['cacheMode'] === RouteEntity::CACHE_MODE_TIME)) {
+
+					if($presenter->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE) {
+						$cacheMode = $presenter->context->parameters['website']['cacheMode'];
+					} else {
+						$cacheMode = $presenter->route->getCacheMode();
+					}
+
+					if(!$cacheMode) {
+						return;
+					}
+
+					if ($cacheMode === RouteEntity::CACHE_MODE_TIME) {
 						$parameters[Cache::EXPIRE] = '+ ' . $presenter->context->parameters['website']['cacheValue'] . ' minutes';
 					}
 					$templateCache->save($key, $output, $parameters);
