@@ -110,6 +110,19 @@ services:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
 
+	cms.staticFormFactory:
+		class: CmsModule\Content\Forms\StaticFormFactory(..., @cms.pageRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+	cms.redirectFormFactory:
+		class: CmsModule\Content\Forms\RedirectFormFactory(..., @cms.pageRepository)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+
 factories:
 
 	cms.admin.basicForm:

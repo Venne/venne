@@ -22,7 +22,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="childrens")
-	 * @JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @JoinColumn(referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 

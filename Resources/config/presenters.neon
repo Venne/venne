@@ -145,3 +145,11 @@ services:
 	cms.cachedPresenter:
 		class: CmsModule\Content\Presenters\CachedPresenter
 		tags: [presenter]
+
+	cms.staticPresenter:
+		class: CmsModule\Content\Presenters\StaticPresenter
+		tags: [presenter]
+
+	cms.redirectPresenter:
+		class: CmsModule\Content\Presenters\RedirectPresenter
+		tags: [presenter]
