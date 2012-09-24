@@ -47,6 +47,14 @@ class LanguagePresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
 	public function createComponentTable()
 	{
 		$table = new \CmsModule\Components\Table\TableControl;

@@ -42,23 +42,11 @@ class InformationsPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function handleEdit()
-	{
-	}
-
-
 	public function createComponentWebsiteForm()
 	{
 		$presenter = $this;
 
 		$form = $this->form->createForm();
-		$form->onValidate[] = function() use ($presenter)
-		{
-			$presenter->tryCall('handleEdit', array());
-		};
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}

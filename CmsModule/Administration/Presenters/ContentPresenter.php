@@ -85,22 +85,6 @@ class ContentPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @secured(privilege="create")
-	 */
-	public function actionCreate()
-	{
-	}
-
-
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function actionEdit()
-	{
-	}
-
-
 	public function handleDelete($id)
 	{
 		$entity = $this->pageRepository->find($id);
