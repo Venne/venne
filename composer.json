@@ -18,7 +18,6 @@
 	"autoload": {
 		"psr-0": { "CmsModule": "" }
 	},
-	"target-dir": "CmsModule",
 	"extra": {
 		"branch-alias": {
 			"dev-master": "2.0.x-dev"
