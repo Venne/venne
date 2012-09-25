@@ -24,6 +24,9 @@ class Form extends \Nette\ComponentModel\Component
 	/** @var \Venne\Forms\FormFactory */
 	protected $factory;
 
+	/** @var callable */
+	protected $entityFactory;
+
 	/** @var string */
 	protected $title;
 
@@ -37,15 +40,17 @@ class Form extends \Nette\ComponentModel\Component
 	/**
 	 * @param \Venne\Forms\FormFactory $factory
 	 * @param string $title
+	 * @param callable $entityFactory
 	 * @param null $width
 	 * @param null $height
 	 */
-	public function __construct(\Venne\Forms\FormFactory $factory, $title, $width = NULL, $height = NULL)
+	public function __construct(\Venne\Forms\FormFactory $factory, $title, $entityFactory = NULL, $width = NULL, $height = NULL)
 	{
 		parent::__construct();
 
 		$this->factory = $factory;
 		$this->title = $title;
+		$this->entityFactory = $entityFactory;
 		$this->width = $width;
 		$this->height = $height;
 	}
@@ -131,5 +136,23 @@ class Form extends \Nette\ComponentModel\Component
 	public function getTitle()
 	{
 		return $this->title;
+	}
+
+
+	/**
+	 * @param callable $entityFactory
+	 */
+	public function setEntityFactory($entityFactory)
+	{
+		$this->entityFactory = $entityFactory;
+	}
+
+
+	/**
+	 * @return callable
+	 */
+	public function getEntityFactory()
+	{
+		return $this->entityFactory;
 	}
 }

@@ -36,6 +36,12 @@ class TableControl extends Control
 	/** @persistent */
 	public $createForm;
 
+	/** @persistent */
+	public $floor;
+
+	/** @persistent */
+	public $key;
+
 	/** @var string */
 	protected $templateFile;
 
@@ -53,6 +59,9 @@ class TableControl extends Control
 
 	/** @var Form[] */
 	protected $forms = array();
+
+	/** @var TableControl[] */
+	protected $floors = array();
 
 	/** @var int */
 	protected $_formCounter = 0;
@@ -117,9 +126,28 @@ class TableControl extends Control
 	 * @param null $height
 	 * @return Form
 	 */
-	public function addForm(\Venne\Forms\FormFactory $formFactory, $title, $width = NULL, $height = NULL)
+	public function addForm(\Venne\Forms\FormFactory $formFactory, $title, $entityFactory = NULL, $width = NULL, $height = NULL)
 	{
-		return $this['_form_' . $this->_formCounter] = $this->forms['_form_' . $this->_formCounter++] = new Form($formFactory, $title, $width, $height);
+		return $this['_form_' . $this->_formCounter] = $this->forms['_form_' . $this->_formCounter++] = new Form($formFactory, $title, $entityFactory, $width, $height);
+	}
+
+
+	/**
+	 * @param $name
+	 * @param $floorFactory
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public function addFloor($name, $floorFactory)
+	{
+		if (isset($this->floors[$name])) {
+			throw new \Nette\InvalidArgumentException("Floor '{$name}' already exists");
+		}
+
+		$this['_floor_' . $name] = $floorFactory();
+		$floor = explode('-', $this->floor, 2);
+		if (isset($floor[1])) {
+			$this['_floor_' . $name]->floor = $floor[1];
+		}
 	}
 
 
@@ -129,6 +157,28 @@ class TableControl extends Control
 			'title' => $title,
 			'width' => $width,
 			'callback' => $callback,
+		);
+	}
+
+
+	public function addColumnFloor($floor, $name, $title, $width = NULL, $callback = NULL)
+	{
+		if (!isset($this['_floor_' . $floor])) {
+			throw new \Nette\InvalidArgumentException("Floor '{$floor}' does not exist");
+		}
+
+		$_this = $this;
+
+		$this->columns[$name] = array(
+			'title' => $title,
+			'width' => $width,
+			'callback' => function ($entity) use ($_this, $floor) {
+				$html = \Nette\Utils\Html::el('a');
+				$html->class = 'ajax';
+				$html->attrs['href'] = $_this->link('this', array('floor' => $floor, "_floor_{$floor}-key" => $entity->{$this->primaryColumn}));
+				$html->setText($entity->text);
+				return $html;
+			},
 		);
 	}
 
@@ -186,11 +236,11 @@ class TableControl extends Control
 			$presenter = $table->getPresenter();
 
 			if (!$presenter->isAjax()) {
-				$table->redirect('edit!', array('editForm' => $form->getName(), 'editId' => $entity->id));
+				$table->redirect('edit!', array('editForm' => $form->getName(), 'editId' => $entity->{$this->primaryColumn}));
 			}
-			$presenter->payload->url = $table->link('edit!', array('editForm' => $form->getName(), 'editId' => $entity->id));
+			$presenter->payload->url = $table->link('edit!', array('editForm' => $form->getName(), 'editId' => $entity->{$this->primaryColumn}));
 			$table->editForm = $form->getName();
-			$table->editId = $entity->id;
+			$table->editId = $entity->{$this->primaryColumn};
 			$table->handleEdit();
 		};
 		return $control;
@@ -247,7 +297,7 @@ class TableControl extends Control
 	{
 		$this->invalidateControl('form');
 
-		if(!$this->presenter->isAjax()) {
+		if (!$this->presenter->isAjax()) {
 			$this->redirect('this');
 		}
 
@@ -259,7 +309,7 @@ class TableControl extends Control
 	{
 		$this->invalidateControl('form');
 
-		if(!$this->presenter->isAjax()) {
+		if (!$this->presenter->isAjax()) {
 			$this->redirect('this');
 		}
 
@@ -269,18 +319,23 @@ class TableControl extends Control
 
 	public function render()
 	{
-		$this->template->columns = $this->columns;
-		$this->template->actions = $this->actions;
-		$this->template->globalActions = $this->globalActions;
-		$this->template->primaryColumn = $this->primaryColumn;
-		$this->template->paginator = $this->paginator;
-		$this->template->sorter = $this->sorter;
-
 		if ($this->templateFile) {
 			$this->template->setFile($this->templateFile);
 		}
 
-		$this->template->render();
+		if ($this->floor) {
+			$floor = explode('-', $this->floor, 2);
+			$this['_floor_' . $floor[0]]->render();
+		} else {
+			$this->template->columns = $this->columns;
+			$this->template->actions = $this->actions;
+			$this->template->globalActions = $this->globalActions;
+			$this->template->primaryColumn = $this->primaryColumn;
+			$this->template->paginator = $this->paginator;
+			$this->template->sorter = $this->sorter;
+
+			$this->template->render();
+		}
 	}
 
 
@@ -359,7 +414,7 @@ class TableControl extends Control
 
 	protected function createComponentEditForm()
 	{
-		$entity = $this->getRepository()->find($this->editId);
+		$entity = $this->getRepository()->findOneBy(array($this->primaryColumn => $this->editId));
 
 		/** @var $form \Venne\Forms\Form */
 		$form = $this->forms[$this->editForm]->getFactory()->invoke($entity);
@@ -373,15 +428,17 @@ class TableControl extends Control
 
 	public function formEditValidate(\Venne\Forms\Form $form)
 	{
-		$this->invalidateControl('form');
-		try {
-			$this->getRepository()->save($form->data);
-		} catch (\DoctrineModule\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->addError($e->getMessage(), "warning");
-				return;
-			} else {
-				throw $e;
+		if ($form->isSubmitted() == $form['_submit']) {
+			$this->invalidateControl('form');
+			try {
+				$this->getRepository()->save($form->data);
+			} catch (\DoctrineModule\SqlException $e) {
+				if ($e->getCode() == 23000) {
+					$form->addError($e->getMessage(), "warning");
+					return;
+				} else {
+					throw $e;
+				}
 			}
 		}
 	}
@@ -404,10 +461,12 @@ class TableControl extends Control
 
 	protected function createComponentCreateForm()
 	{
-		$entity = $this->getRepository()->createNew();
+		$form = $this->forms[$this->createForm];
+		$entityFactory = $form->getEntityFactory();
+		$entity = $entityFactory ? $entityFactory() : $this->getRepository()->createNew();
 
 		/** @var $form \Venne\Forms\Form */
-		$form = $this->forms[$this->createForm]->getFactory()->invoke($entity);
+		$form = $form->getFactory()->invoke($entity);
 		$form->onSave[] = $this->formEditValidate;
 		$form->onSuccess[] = $this->formCreateSuccess;
 		$form->getElementPrototype()->onSubmit = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
