@@ -57,7 +57,7 @@ $(function () {
 	// Ajax
 	$.nette.ext('init', null);
 	$.nette.ext('init', {
-		load: function (rh) {
+		load:function (rh) {
 			$(this.linkSelector).off('click.nette', rh).on('click.nette', rh);
 			var $forms = $(this.formSelector);
 			$forms.off('submit.nette', rh).on('submit.nette', rh);
@@ -71,13 +71,13 @@ $(function () {
 					.on('click.nette', buttonSelector, rh);
 			});
 		},
-		complete: function () {
+		complete:function () {
 			$.nette.load();
 		}
 	}, {
-		linkSelector: 'a.ajax',
-		formSelector: 'form.ajax',
-		buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]'
+		linkSelector:'a.ajax',
+		formSelector:'form.ajax',
+		buttonSelector:'input.ajax[type="submit"], input.ajax[type="image"]'
 	});
 	$.nette.ext('formsValidationBind', {
 		success:function (payload) {
@@ -161,6 +161,20 @@ $(function () {
 		},
 		selector:'form.ajax input:file',
 		idPrefix:'iframe-post-form-'
+	});
+	$.nette.ext('bootstrapModalBind', {
+		init:function () {
+			this.resize();
+			$(window).bind('resize', this.resize);
+		},
+		success:function (payload) {
+			this.resize();
+		}
+	}, {
+		resize:function () {
+			$(".modal.modal-large .modal-body").css("max-height", $(window).height() - 100);
+			$(".modal.modal-large").css("margin-top", -($(window).height() / 2 - 10));
+		}
 	});
 	$.nette.init();
 
