@@ -26,6 +26,7 @@ class RedirectPageEntity extends PageEntity
 	/**
 	 * @var PageEntity
 	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
+	 * @joinColumn(onDelete="SET NULL")
 	 **/
 	protected $page;
 
