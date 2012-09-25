@@ -69,7 +69,9 @@
     			<h3>{_$form->title}</h3>
     		</div>
     		<div class="modal-body">
-    		{control editForm}
+				{snippet editForm}
+    			{control editForm}
+				{/snippet}
     		</div>
     	</div>
     	<script>
@@ -87,7 +89,9 @@
         			<h3>{_$form->title}</h3>
         		</div>
         		<div class="modal-body" {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
-        		{control createForm}
+					{snippet createForm}
+        			{control createForm}
+					{/snippet}
         		</div>
         	</div>
         	<script>
