@@ -61,19 +61,29 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 			}
 		}
 
-		$file = parent::getValue();
+		// get photos
+		$photos = array();
+		if ($this->multi) {
+			for ($i = 0; $i < 20; $i++) {
+				$photos[$this->name . '-' . $i] = $values[$this->name . '-' . $i];
+			}
+		} else {
+			$photos[$this->name . '-0'] = $values[$this->name];
+		}
 
 		// add photo
-		if ($file->isOk()) {
-			if ($this->multi) {
-				$this->fileEntity[] = $entity = new FileEntity();
-				$entity->setFile($file);
-			} else {
-				if (!$this->fileEntity) {
-					$this->fileEntity = new FileEntity();
-				}
+		foreach ($photos as $file) {
+			if ($file->isOk()) {
+				if ($this->multi) {
+					$this->fileEntity[] = $entity = new FileEntity();
+					$entity->setFile($file);
+				} else {
+					if (!$this->fileEntity) {
+						$this->fileEntity = new FileEntity();
+					}
 
-				$this->fileEntity->setFile($file);
+					$this->fileEntity->setFile($file);
+				}
 			}
 		}
 
@@ -84,7 +94,24 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 	public function getControl()
 	{
 		$control = Html::el();
-		$control->add(parent::getControl());
+
+		if ($this->multi) {
+			for ($i = 0; $i < 20; $i++) {
+				$parent = parent::getControl();
+				$parent->name .= '-' . $i;
+				$parent->onChange = 'if($(this).val()) { $("#' . $parent->id . '-' . ($i + 1) . '").parent().show(); }';
+				$parent->id .= '-' . $i;
+
+				$control->add($d = Html::el('div'));
+				$d->add($parent);
+
+				if ($i > 0) {
+					$d->style = 'display: none;';
+				}
+			}
+		} else {
+			$control->add(parent::getControl());
+		}
 
 		if ($this->fileEntity) {
 			if ($this->multi) {
