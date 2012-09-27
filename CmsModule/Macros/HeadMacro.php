@@ -55,13 +55,14 @@ class HeadMacro extends \Nette\Latte\Macros\MacroSet
 	public function bodyEnd(\Nette\Latte\MacroNode $node, $writer)
 	{
 		return $writer->write('$_bodyMacroData = ob_get_clean();?><head>
-<?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadBegin); ?>
-<?php echo $presenter["head"]->render(); echo $_headMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadEnd); ?>
+<?php $_renderEventsArgs = new \CmsModule\Events\RenderArgs; $_renderEventsArgs->setPresenter($presenter); ?>
+<?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadBegin, $_renderEventsArgs); ?>
+<?php echo $presenter["head"]->render(); echo $_headMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadEnd, $_renderEventsArgs); ?>
 </head>
 
-<body<?php if($basePath){?> data-venne-basepath="<?php echo $basePath;?>"<?php } ?>><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyBegin); ?>
+<body<?php if($basePath){?> data-venne-basepath="<?php echo $basePath;?>"<?php } ?>><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyBegin, $_renderEventsArgs); ?>
 <?php if ($presenter instanceof \CmsModule\Presenters\FrontPresenter && $presenter->getUser()->isLoggedIn() && $presenter->isAuthorized(":Cms:Admin:Panel:") ) { echo \'<div id="venne-panel-container" style="position: fixed; top: 0; left: 0; z-index: 9999999; width: 100%; height: 43px; overflow: hidden;"><iframe src="\'.$basePath.\'/admin/en/panel?mode=1" scrolling="no" allowtransparency="true" style="width: 100%; height: 100%; overflow: hidden;" frameborder="0" id="venne-panel"></iframe></div>\'; } ?>
-<?php echo $_bodyMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyEnd); ?>
+<?php echo $_bodyMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyEnd, $_renderEventsArgs); ?>
 </body>
 <?php
 ');
