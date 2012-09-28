@@ -57,7 +57,7 @@ class DatabasePresenter extends BasePresenter
 
 			$robotLoader = new \Nette\Loaders\RobotLoader();
 			$robotLoader->setCacheStorage(new \Nette\Caching\Storages\MemoryStorage());
-			$robotLoader->addDirectory($this->context->parameters['modules']['cms']['path']);
+			$robotLoader->addDirectory($this->context->parameters['modules']['cms']['path'] . '/CmsModule');
 			$robotLoader->register();
 
 			$classes = array();
