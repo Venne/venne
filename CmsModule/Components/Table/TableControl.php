@@ -443,13 +443,20 @@ class TableControl extends Control
 					throw $e;
 				}
 			}
+		} else {
+			if ($this->editForm) {
+				$this->invalidateControl('editForm');
+			}
+			if ($this->createForm) {
+				$this->invalidateControl('createForm');
+			}
 		}
 	}
 
 
 	public function formEditSuccess(\Venne\Forms\Form $form)
 	{
-		if ($form->isSubmitted() == $form['_submit']) {
+		if ($form->isSubmitted() === $form['_submit']) {
 			$this->getPresenter()->flashMessage('Item has been updated', 'success');
 
 			if (!$this->presenter->isAjax()) {
@@ -481,7 +488,10 @@ class TableControl extends Control
 		$form = $form->getFactory()->invoke($entity);
 		$form->onSave[] = $this->formEditValidate;
 		$form->onSuccess[] = $this->formCreateSuccess;
-		$form->getElementPrototype()->onSubmit = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
+
+		if (isset($form['_submit'])) {
+			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
+		}
 
 		return $form;
 	}
@@ -489,15 +499,24 @@ class TableControl extends Control
 
 	public function formCreateSuccess(\Venne\Forms\Form $form)
 	{
-		$this->getPresenter()->flashMessage('Item has been saved', 'success');
+		if ($form->isSubmitted() === $form['_submit']) {
+			$this->getPresenter()->flashMessage('Item has been saved', 'success');
 
-		if (!$this->presenter->isAjax()) {
-			$this->redirect('create!', array('createForm' => NULL));
+			if (!$this->presenter->isAjax()) {
+				$this->redirect('create!', array('createForm' => NULL));
+			}
+			$this->invalidateControl('table');
+			$this->presenter->payload->url = $this->link('create!', array('createForm' => NULL));
+			$this->createForm = NULL;
+			$this->handleCreate();
+		} else {
+			if ($this->editForm) {
+				$this->invalidateControl('editForm');
+			}
+			if ($this->createForm) {
+				$this->invalidateControl('createForm');
+			}
 		}
-		$this->invalidateControl('table');
-		$this->presenter->payload->url = $this->link('create!', array('createForm' => NULL));
-		$this->createForm = NULL;
-		$this->handleCreate();
 	}
 
 
