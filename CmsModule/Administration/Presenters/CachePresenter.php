@@ -69,7 +69,7 @@ class CachePresenter extends BasePresenter
 			->setDefaultValue('all')
 			->addCondition($form::EQUAL, 'namespace')->toggle('namespace');
 
-		$form->addGroup('Namespace')->setOption('container', 'fieldset id=namespace');
+		$form->addGroup('Namespace')->setOption('id', 'namespace');
 		$form->addText('namespace');
 		$form->addSubmit('_submit', 'Clear');
 
