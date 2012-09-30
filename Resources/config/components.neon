@@ -142,6 +142,12 @@ factories:
 		class: CmsModule\Components\HeadControl
 		tags: [widget: head]
 
+	cms.panelControl:
+		class: CmsModule\Components\PanelControl(..., @session::getSection('Venne.panel'))
+		setup:
+			- setTemplateConfigurator(@venne.templateConfigurator)
+		tags: [widget: panel]
+
 	cms.navigationControl:
 		class: CmsModule\Components\NavigationControl(@cms.pageRepository, %website.routePrefix%)
 		tags: [widget: navigation]

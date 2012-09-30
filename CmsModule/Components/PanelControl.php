@@ -21,19 +21,23 @@ use CmsModule\Services\ScannerService;
 class PanelControl extends Control
 {
 
-
-	/** @persistent */
-	public $tab = 0;
+	/** @var \Nette\Http\SessionSection */
+	protected $session;
 
 	/** @var ScannerService */
 	protected $scannerService;
 
 
-	public function __construct(ScannerService $scannerService)
+	/**
+	 * @param \CmsModule\Services\ScannerService $scannerService
+	 * @param \Nette\Http\SessionSection $session
+	 */
+	public function __construct(ScannerService $scannerService, \Nette\Http\SessionSection $session)
 	{
 		parent::__construct();
 
 		$this->scannerService = $scannerService;
+		$this->session = $session;
 	}
 
 
@@ -43,9 +47,22 @@ class PanelControl extends Control
 	}
 
 
+	public function getTab()
+	{
+		return $this->session->tab;
+	}
+
+
+	public function setTab($tab)
+	{
+		$this->session->tab = $tab;
+	}
+
+
 	public function handleTab($tab)
 	{
 		$this->invalidateControl('content');
+		$this->tab = $tab;
 		$this->getPresenter()->payload->url = $this->link('this');
 	}
 

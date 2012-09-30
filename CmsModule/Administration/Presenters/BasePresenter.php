@@ -47,12 +47,4 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 		$this->flashMessage('Logout success');
 		$this->redirect('this');
 	}
-
-
-	protected function createComponentPanel()
-	{
-		$panel = new \CmsModule\Components\PanelControl($this->context->cms->scannerService);
-		$panel->setTemplateConfigurator($this->templateConfigurator);
-		return $panel;
-	}
 }
