@@ -30,6 +30,9 @@ class BrowserControl extends Control
 	/** @var string */
 	protected $onActivateLink;
 
+	/** @var callable */
+	public $onExpand;
+
 
 	/**
 	 * @param callable $loadItems
@@ -68,6 +71,12 @@ class BrowserControl extends Control
 	public function handleSetParent($from = NULL, $to = NULL, $dropmode = NULL)
 	{
 		$this->parentCallback->invoke($from, $to, $dropmode);
+	}
+
+
+	public function handleExpand($key, $open)
+	{
+		$this->onExpand($key, $open === 'true');
 	}
 
 

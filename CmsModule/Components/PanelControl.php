@@ -49,13 +49,33 @@ class PanelControl extends Control
 
 	public function getTab()
 	{
-		return $this->session->tab;
+		return (int)$this->session->tab;
 	}
 
 
 	public function setTab($tab)
 	{
-		$this->session->tab = $tab;
+		$this->session->tab = (int)$tab;
+	}
+
+
+	public function setState($id, $state)
+	{
+		if (!isset($this->session->state)) {
+			$this->session->state = array();
+		}
+
+		if (!isset($this->session->state[$this->getTab()])) {
+			$this->session->state[$this->getTab()] = array();
+		}
+
+		$this->session->state[$this->getTab()][$id] = $state;
+	}
+
+
+	public function getState($id)
+	{
+		return isset($this->session->state[$this->getTab()][$id]) ? $this->session->state[$this->getTab()][$id] : false;
 	}
 
 
@@ -74,30 +94,43 @@ class PanelControl extends Control
 		if ($this->tab == 0) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
 			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => 'this') + $nullLinkParams));
+			$browser->onExpand[] = $this->pageExpand;
 		} else if ($this->tab == 2) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getFiles"), callback($this, "setFileParent"));
 			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => 'this') + $nullLinkParams));
+			$browser->onExpand[] = $this->fileExpand;
 		} else if ($this->tab == 3) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getLayouts"), callback($this, "setLayoutParent"));
 			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => 'this') + $nullLinkParams));
+			$browser->onExpand[] = $this->layoutExpand;
 		}
 		$browser->setTemplateConfigurator($this->templateConfigurator);
 		return $browser;
 	}
 
 
+	public function layoutExpand($key, $open)
+	{
+		$this->setState($key, $open);
+	}
+
+
 	public function getLayouts($parent = NULL)
 	{
+		$this->setState($parent, true);
+
 		$data = array();
 		$layouts = $this->scannerService->getLayoutFiles();
 
 		if (!$parent) {
 			foreach (array_keys($layouts) as $name) {
 				$item = array('title' => $name, 'key' => $name, 'isFolder' => true, 'isLazy' => true);
-				if ($name == 'app') {
+
+				if ($this->getState($name)) {
 					$item['expand'] = true;
 					$item['children'] = $this->getLayouts($name);
 				}
+
 				$data[] = $item;
 			}
 		} else {
@@ -110,8 +143,16 @@ class PanelControl extends Control
 	}
 
 
+	public function pageExpand($key, $open)
+	{
+		$this->setState((int)$key, $open);
+	}
+
+
 	public function getPages($parent = NULL)
 	{
+		$this->setState((int)$parent, true);
+
 		$repository = $this->getPresenter()->getContext()->cms->pageRepository;
 		$data = array();
 
@@ -132,9 +173,9 @@ class PanelControl extends Control
 				$item['isLazy'] = true;
 			}
 
-			if (!$page->parent) {
+			if (!$page->parent || $this->getState((int)$page->id)) {
 				$item['expand'] = true;
-				$item['children'] = $this->getPages($page);
+				$item['children'] = $this->getPages($page->id);
 			}
 
 			$data[] = $item;
@@ -143,17 +184,18 @@ class PanelControl extends Control
 	}
 
 
-	public function expandPage($page, $mode)
+	public function fileExpand($key, $open)
 	{
-		dump($page);
-		dump($mode);
-		die();
+		$key = $key ? substr($key, 2) : NULL;
+		$this->setState((int)$key, $open);
 	}
 
 
 	public function getFiles($parent = NULL)
 	{
 		$parent = $parent ? substr($parent, 2) : NULL;
+
+		$this->setState((int)$parent, true);
 
 		$dirRepository = $this->getPresenter()->getContext()->cms->dirRepository;
 		$fileRepository = $this->getPresenter()->getContext()->cms->fileRepository;
@@ -174,6 +216,11 @@ class PanelControl extends Control
 
 			if (count($page->childrens) > 0 || count($page->files) > 0) {
 				$item['isLazy'] = true;
+			}
+
+			if ($this->getState($page->id)) {
+				$item['expand'] = true;
+				$item['children'] = $this->getFiles('d:' . $page->id);
 			}
 
 			$data[] = $item;
