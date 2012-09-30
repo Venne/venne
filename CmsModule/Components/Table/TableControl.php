@@ -481,9 +481,18 @@ class TableControl extends Control
 	}
 
 
-	public function formError()
+	public function formError(\Venne\Forms\Form $form)
 	{
-		$this->invalidateControl('form');
+		if ($form->hasSaveButton() && $form->isSubmitted() === $form->getSaveButton()) {
+			$this->invalidateControl('form');
+		} else {
+			if ($this->editForm) {
+				$this->invalidateControl('editForm');
+			}
+			if ($this->createForm) {
+				$this->invalidateControl('createForm');
+			}
+		}
 	}
 
 
