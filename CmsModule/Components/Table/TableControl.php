@@ -418,11 +418,11 @@ class TableControl extends Control
 
 		/** @var $form \Venne\Forms\Form */
 		$form = $this->forms[$this->editForm]->getFactory()->invoke($entity);
-		$form->onSave[] = $this->formEditValidate;
+		$form->onError[] = $this->formError;
 		$form->onSuccess[] = $this->formEditSuccess;
 
 		if (isset($form['_submit'])) {
-			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
+			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
 		}
 
 		return $form;
@@ -457,23 +457,16 @@ class TableControl extends Control
 	public function formEditSuccess(\Venne\Forms\Form $form)
 	{
 		if ($form->isSubmitted() === $form['_submit']) {
-			$this->getPresenter()->flashMessage('Item has been updated', 'success');
-
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('edit!', array('editForm' => NULL, 'editId' => NULL));
 			}
-			$this->invalidateControl('table');
+			$this->getPresenter()->invalidateControl('content');
 			$this->presenter->payload->url = $this->link('edit!', array('editForm' => NULL, 'editId' => NULL));
 			$this->editForm = NULL;
 			$this->editId = NULL;
 			$this->handleEdit();
 		} else {
-			if ($this->editForm) {
-				$this->invalidateControl('editForm');
-			}
-			if ($this->createForm) {
-				$this->invalidateControl('createForm');
-			}
+			$this->invalidateControl('editForm');
 		}
 	}
 
@@ -486,11 +479,11 @@ class TableControl extends Control
 
 		/** @var $form \Venne\Forms\Form */
 		$form = $form->getFactory()->invoke($entity);
-		$form->onSave[] = $this->formEditValidate;
+		$form->onError[] = $this->formError;
 		$form->onSuccess[] = $this->formCreateSuccess;
 
 		if (isset($form['_submit'])) {
-			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){$(this).modal("hide");});';
+			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
 		}
 
 		return $form;
@@ -500,23 +493,22 @@ class TableControl extends Control
 	public function formCreateSuccess(\Venne\Forms\Form $form)
 	{
 		if ($form->isSubmitted() === $form['_submit']) {
-			$this->getPresenter()->flashMessage('Item has been saved', 'success');
-
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('create!', array('createForm' => NULL));
 			}
-			$this->invalidateControl('table');
+			$this->getPresenter()->invalidateControl('content');
 			$this->presenter->payload->url = $this->link('create!', array('createForm' => NULL));
 			$this->createForm = NULL;
 			$this->handleCreate();
 		} else {
-			if ($this->editForm) {
-				$this->invalidateControl('editForm');
-			}
-			if ($this->createForm) {
-				$this->invalidateControl('createForm');
-			}
+			$this->invalidateControl('createForm');
 		}
+	}
+
+
+	public function formError()
+	{
+		$this->invalidateControl('form');
 	}
 
 

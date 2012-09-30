@@ -10,12 +10,12 @@ services:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.userFormFactory:
-		class: CmsModule\Forms\UserFormFactory(..., @cms.userRepository)
+		class: CmsModule\Forms\UserFormFactory
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.roleFormFactory:
-		class: CmsModule\Forms\RoleFormFactory(..., @cms.roleRepository)
+		class: CmsModule\Forms\RoleFormFactory
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 

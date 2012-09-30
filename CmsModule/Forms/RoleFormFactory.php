@@ -12,47 +12,14 @@
 namespace CmsModule\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
-use DoctrineModule\Forms\Mappers\EntityMapper;
-use DoctrineModule\Repositories\BaseRepository;
+use DoctrineModule\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class RoleFormFactory extends FormFactory
 {
-
-	/** @var EntityMapper */
-	protected $mapper;
-
-	/** @var BaseRepository */
-	protected $repository;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 * @param BaseRepository $repository
-	 */
-	public function __construct(EntityMapper $mapper, BaseRepository $repository)
-	{
-		$this->mapper = $mapper;
-		$this->repository = $repository;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
-
-
-	protected function getControlExtensions()
-	{
-		return array(
-			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension(),
-		);
-	}
 
 
 	/**
@@ -63,22 +30,21 @@ class RoleFormFactory extends FormFactory
 		$form->addText("name", "Name");
 		$form->addManyToOne("parent", "Parent")->setPrompt("root");
 
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 
 
-	public function handleSave(Form $form)
+	public function handleCatchError(Form $form, \DoctrineModule\SqlException $e)
 	{
-		try {
-			$this->repository->save($form->data);
-		} catch (\DoctrineModule\ORM\SqlException $e) {
-			if ($e->getCode() == 23000) {
-				$form->addError("Role is not unique");
-			} else {
-				throw $e;
-			}
-		} catch (\Nette\InvalidArgumentException $e) {
-			$form->addError($e->getMessage());
+		if ($e->getCode() == '23000') {
+			$form->addError("Role is not unique");
+			return true;
 		}
+	}
+
+
+	public function handleSuccess(Form $form)
+	{
+		$form->getPresenter()->flashMessage('Role has been saved', 'success');
 	}
 }

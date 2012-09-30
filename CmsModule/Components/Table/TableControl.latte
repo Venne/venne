@@ -3,105 +3,111 @@
 {/if}
 
 <table class="table table-striped table-bordered table-condensed" n:snippet="table">
-	{form actionForm}
-	<thead>
-		<tr>
-			{foreach $columns as $key=>$column}
-				<th{if $column['width']} style="width: {!$column['width']};"{/if}>
-					{if $sorter}<a class="ajax" n:href="this sort=>$key">{/if}{$column['title']}{if $sorter}</a>{/if}
-				</th>
-			{/foreach}
-			<th>Actions</th>
-			{if count($globalActions) > 0}
-			<th></th>
-			{/if}
-		</tr>
-	</thead>
-	<tbody>
+{form actionForm}
+    <thead>
+    <tr>
+		{foreach $columns as $key=>$column}
+            <th{if $column['width']} style="width: {!$column['width']};"{/if}>
+				{if $sorter}<a class="ajax" n:href="this sort=>$key">{/if}{$column['title']}{if $sorter}</a>{/if}
+            </th>
+		{/foreach}
+        <th>Actions</th>
+		{if count($globalActions) > 0}
+            <th></th>
+		{/if}
+    </tr>
+    </thead>
+    <tbody>
 		{foreach $control->getItems() as $item}
-		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+        <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
 			{foreach $columns as $key=>$column}
-			<td>
-				{var callback=>$column['callback']}
+                <td>
+					{var callback=>$column['callback']}
 				{if $callback}
 					{=$callback($item)}
-				{else}
+					{else}
 					{$item->$key}
 				{/if}
-			</td>
+                </td>
 			{/foreach}
-			<td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
-				<div class="btn-group pull-right">
-				{foreach $actions as $name=>$action}
-					<a class="ajax btn" href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action->getLabel()}</a>
-				{/foreach}
-				</div>
-			</td>
+            <td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
+                <div class="btn-group pull-right">
+					{foreach $actions as $name=>$action}
+                        <a class="ajax btn"
+                           href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action->getLabel()}</a>
+					{/foreach}
+                </div>
+            </td>
 			{if count($globalActions) > 0}
-			<td>
-				{input 'items-item_'.$item->{$primaryColumn}}
-			</td>
+                <td>
+					{input 'items-item_'.$item->{$primaryColumn}}
+                </td>
 			{/if}
-		</tr>
+        </tr>
 		{/foreach}
-	</tbody>
-	
+    </tbody>
+
 	{if $paginator}
-	<tfoot>
-		<tr>
-			<td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
+        <tfoot>
+        <tr>
+            <td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
 				{control vp} {if count($globalActions) > 0} {input action} {input _submit} {/if}
-			</td>
-		</tr>
-	</tfoot>
+            </td>
+        </tr>
+        </tfoot>
 	{/if}
 
-	
+
 {/form}
 </table>
 
 {snippet form}
 	{if $control->editForm}
-	{var form=>$control[$control->editForm]}
-	<div class="modal modal-large hide" id="editForm" {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
-    		<div class="modal-header">
-    			<a class="close" onClick="$('#editForm').modal('hide')">×</a>
-    			<h3>{_$form->title}</h3>
-    		</div>
-    		<div class="modal-body">
-				{snippet editForm}
+		{var form=>$control[$control->editForm]}
+    <div class="modal modal-large hide" id="editForm"
+		 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+        <div class="modal-header">
+            <a class="close" onClick="$('#editForm').modal('hide')">×</a>
+
+            <h3>{_$form->title}</h3>
+        </div>
+        <div class="modal-body">
+			{snippet editForm}
     			{control editForm}
 				{/snippet}
-    		</div>
-    	</div>
-    	<script>
-    		$(function () {
-    			$('#editForm').modal().on('hidden', function(){
-    			   $.nette.ajax({ url: {link edit! editId=>NULL, editForm=>NULL}});
-    			});
-    		});
-    	</script>
-	{elseif $control->createForm}
-	{var form=>$control[$control->createForm]}
-	<div class="modal modal-large hide" id="createForm" {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
-        		<div class="modal-header">
-        			<a class="close" onClick="$('#createForm').modal('hide')">×</a>
-        			<h3>{_$form->title}</h3>
-        		</div>
-        		<div class="modal-body" {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
-					{snippet createForm}
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#editForm').modal().on('hidden', function () {
+                $.nette.ajax({ url: {link edit! editId=>NULL, editForm=>NULL}});
+            });
+        });
+    </script>
+		{elseif $control->createForm}
+		{var form=>$control[$control->createForm]}
+    <div class="modal modal-large hide" id="createForm"
+		 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+        <div class="modal-header">
+            <a class="close" onClick="$('#createForm').modal('hide')">×</a>
+
+            <h3>{_$form->title}</h3>
+        </div>
+        <div class="modal-body"
+			 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+			{snippet createForm}
         			{control createForm}
 					{/snippet}
-        		</div>
-        	</div>
-        	<script>
-        		$(function () {
-                	$('#createForm').modal().on('hidden', function(){
-                	   $.nette.ajax({ url: {link create! createForm=>NULL}});
-                	});
-                });
-        	</script>
-    	{/if}
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#createForm').modal().on('hidden', function () {
+                $.nette.ajax({ url: {link create! createForm=>NULL}});
+            });
+        });
+    </script>
+	{/if}
 
 {/snippet}
 
