@@ -77,8 +77,9 @@
 
 		{if count($control->onExpand) > 0}
             onExpand:function (flag, dtnode) {
-                var url = {link expand! '-a-', '-b-'}.replace('-a-', dtnode.data.key).replace('-b-', flag);
-                $.nette.ajax({ url: url })
+                var url = {link expand! '-a-', '-b-'}.
+                replace('-a-', dtnode.data.key).replace('-b-', flag);
+                $.nette.ajax({ url:url })
             },
 		{/if}
 

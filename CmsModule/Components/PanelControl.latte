@@ -1,50 +1,57 @@
 <div class="container-fluid" n:snippet="tabs">
-	<ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
-		<li{if $control->tab == 0} class="active"{/if}><a class="ajax" href="{link tab! tab=>0}">{_'Pages'}</a></li>
-		<li{if $control->tab == 2} class="active"{/if}><a class="ajax" href="{link tab! tab=>2}">{_'Files'}</a></li>
-		<li{if $control->tab == 3} class="active"{/if}><a class="ajax" href="{link tab! tab=>3}">{_'Layouts'}</a></li>
-	</ul>
+    <ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
+        <li{if $control->tab == 0} class="active"{/if}><a class="ajax" href="{link tab! tab=>0}">{_'Pages'}</a></li>
+        <li{if $control->tab == 2} class="active"{/if}><a class="ajax" href="{link tab! tab=>2}">{_'Files'}</a></li>
+        <li{if $control->tab == 3} class="active"{/if}><a class="ajax" href="{link tab! tab=>3}">{_'Layouts'}</a></li>
+    </ul>
 </div>
 
 <div class="well sidebar-nav" n:snippet="content">
-	<div class="container-fluid">
-		<div class="btn-toolbar">
-			<div class="btn-group">
+    <div class="container-fluid">
+        <div class="btn-toolbar">
+            <div class="btn-group">
 			{if $control->tab == 0}
-				<a n:if="$presenter->isAuthorized(':Cms:Admin:Content:')" class="ajax btn" href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Content:')" class="ajax btn"
+                   href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 2}
-				<a n:if="$presenter->isAuthorized(':Cms:Admin:Files:')" class="ajax btn" href="{plink :Cms:Admin:Files: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Files:')" class="ajax btn"
+                   href="{plink :Cms:Admin:Files: key=>NULL}"><span
+                        class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 3}
-				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:')" class="ajax btn" href="{plink :Cms:Admin:Layouts: key=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:')" class="ajax btn"
+                   href="{plink :Cms:Admin:Layouts: key=>NULL}"><span
+                        class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
-			</div>
-			<div class="btn-group pull-right">
+            </div>
+            <div class="btn-group pull-right">
 			{if $control->tab == 3}
-				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn" href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
-			{else}
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
+                   href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+				{else}
 
 				{if $presenter->isAuthorized(':Cms:Admin:Content:create')}
-				<button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
-				<button class="btn dropdown-toggle" data-toggle="dropdown">
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu">
+                    <button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
+                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
 
-					{if $control->tab == 0}
-						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
-							<li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a></li>
-						{/foreach}
-				    {/if}
-				</ul>
+						{if $control->tab == 0}
+							{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
+                                <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a>
+                                </li>
+							{/foreach}
+						{/if}
+                    </ul>
 				{/if}
 
 			{/if}
-			</div>
-		</div>
+            </div>
+        </div>
 
-		{control browser}
+	{control browser}
 
-	</div>
+    </div>
 </div>

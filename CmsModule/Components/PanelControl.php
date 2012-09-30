@@ -83,7 +83,6 @@ class PanelControl extends Control
 	{
 		$this->invalidateControl('content');
 		$this->tab = $tab;
-		$this->getPresenter()->payload->url = $this->link('this');
 	}
 
 
