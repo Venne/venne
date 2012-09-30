@@ -12,47 +12,14 @@
 namespace CmsModule\Content\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
-use DoctrineModule\Forms\Mappers\EntityMapper;
-use DoctrineModule\Repositories\BaseRepository;
+use DoctrineModule\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class FileFormFactory extends FormFactory
 {
-
-	/** @var EntityMapper */
-	protected $mapper;
-
-	/** @var BaseRepository */
-	protected $repository;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 * @param BaseRepository $repository
-	 */
-	public function __construct(EntityMapper $mapper, BaseRepository $repository)
-	{
-		$this->mapper = $mapper;
-		$this->repository = $repository;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
-
-
-	protected function getControlExtensions()
-	{
-		return array(
-			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension(),
-		);
-	}
 
 
 	/**
@@ -63,17 +30,18 @@ class FileFormFactory extends FormFactory
 		$form->addUpload('file', 'File');
 		$form->addManyToOne('parent', 'Parent');
 
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 
 
-	public function handleValidate(Form $form)
+	public function handleSave(Form $form)
 	{
 		$file = $form['file']->value;
 		if ($file->isOk()) {
 			$form->data->setFile($file);
 			$form->data->setName($file->name);
-			$this->repository->save($form->data);
 		}
+
+		parent::handleSave($form);
 	}
 }

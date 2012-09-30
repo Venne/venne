@@ -12,10 +12,8 @@
 namespace CmsModule\Content\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
-use DoctrineModule\Forms\Mappers\EntityMapper;
-use CmsModule\Content\Repositories\PageRepository;
+use DoctrineModule\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,45 +21,13 @@ use CmsModule\Content\Repositories\PageRepository;
 class RoutesFormFactory extends FormFactory
 {
 
-	/** @var EntityMapper */
-	protected $mapper;
-
-	/** @var PageRepository */
-	protected $repository;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 */
-	public function __construct(EntityMapper $mapper, PageRepository $repository)
-	{
-		$this->mapper = $mapper;
-		$this->repository = $repository;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
-
-
-	protected function getControlExtensions()
-	{
-		return array(
-			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension(),
-		);
-	}
-
-
 	/**
 	 * @param Form $form
 	 */
 	public function configure(Form $form)
 	{
 
-		$form->addMany('routes', function(\Nette\Forms\Container $container) use ($form)
-		{
+		$form->addMany('routes', function (\Nette\Forms\Container $container) use ($form) {
 			$container->setCurrentGroup($group = $container->getForm()->addGroup('Route: ' . $container->data->url));
 			$container->addText('title', 'Title');
 			$container->addText('keywords', 'Keywords');
@@ -89,12 +55,6 @@ class RoutesFormFactory extends FormFactory
 
 		$form->setCurrentGroup();
 
-		$form->addSubmit('_submit', 'Save');
-	}
-
-
-	public function handleSave($form)
-	{
-		$this->repository->save($form->data);
+		$form->addSaveButton('Save');
 	}
 }
