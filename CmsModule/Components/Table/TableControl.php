@@ -429,34 +429,9 @@ class TableControl extends Control
 	}
 
 
-	public function formEditValidate(\Venne\Forms\Form $form)
-	{
-		if ($form->isSubmitted() == $form['_submit']) {
-			$this->invalidateControl('form');
-			try {
-				$this->getRepository()->save($form->data);
-			} catch (\DoctrineModule\SqlException $e) {
-				if ($e->getCode() == 23000) {
-					$form->addError($e->getMessage(), "warning");
-					return;
-				} else {
-					throw $e;
-				}
-			}
-		} else {
-			if ($this->editForm) {
-				$this->invalidateControl('editForm');
-			}
-			if ($this->createForm) {
-				$this->invalidateControl('createForm');
-			}
-		}
-	}
-
-
 	public function formEditSuccess(\Venne\Forms\Form $form)
 	{
-		if ($form->isSubmitted() === $form['_submit']) {
+		if ($form->hasSaveButton() && $form->isSubmitted() === $form->getSaveButton()) {
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('edit!', array('editForm' => NULL, 'editId' => NULL));
 			}
@@ -492,7 +467,7 @@ class TableControl extends Control
 
 	public function formCreateSuccess(\Venne\Forms\Form $form)
 	{
-		if ($form->isSubmitted() === $form['_submit']) {
+		if ($form->hasSaveButton() && $form->isSubmitted() === $form->getSaveButton()) {
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('create!', array('createForm' => NULL));
 			}
