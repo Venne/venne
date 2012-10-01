@@ -90,6 +90,12 @@ class TableControl extends Control
 	}
 
 
+	public function getPrimaryColumn()
+	{
+		return $this->primaryColumn;
+	}
+
+
 	public function setTemplateFile($file)
 	{
 		$this->templateFile = $file;
@@ -236,11 +242,11 @@ class TableControl extends Control
 			$presenter = $table->getPresenter();
 
 			if (!$presenter->isAjax()) {
-				$table->redirect('edit!', array('editForm' => $form->getName(), 'editId' => $entity->{$this->primaryColumn}));
+				$table->redirect('edit!', array('editForm' => $form->getName(), 'editId' => $entity->{$_this->primaryColumn}));
 			}
-			$presenter->payload->url = $table->link('edit!', array('editForm' => $form->getName(), 'editId' => $entity->{$this->primaryColumn}));
+			$presenter->payload->url = $table->link('edit!', array('editForm' => $form->getName(), 'editId' => $entity->{$_this->primaryColumn}));
 			$table->editForm = $form->getName();
-			$table->editId = $entity->{$this->primaryColumn};
+			$table->editId = $entity->{$_this->primaryColumn};
 			$table->handleEdit();
 		};
 		return $control;
