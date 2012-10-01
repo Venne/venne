@@ -79,6 +79,19 @@ $(function () {
 		formSelector:'form.ajax',
 		buttonSelector:'input.ajax[type="submit"], input.ajax[type="image"]'
 	});
+	$.nette.ext('formsValidationBind', {
+		success:function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			for (var i in payload.snippets) {
+				$('#' + i + ' form').each(function () {
+					Nette.initForm(this);
+				});
+			}
+		}
+	});
 	$.nette.ext('formsMultiSelectBind', {
 		success:function (payload) {
 			if (!payload.snippets) {
