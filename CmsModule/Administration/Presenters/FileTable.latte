@@ -1,3 +1,7 @@
+{if isset($showNavbar)}
+	{control navbar}
+{/if}
+
 		{foreach $control->getItems() as $item}
 
 		<li class="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
@@ -20,3 +24,54 @@
 		</li>
 
 		{/foreach}
+
+
+{snippet form}
+	{if $control->editForm}
+		{var form=>$control[$control->editForm]}
+    <div class="modal modal-large hide" id="editForm"
+		 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+        <div class="modal-header">
+            <a class="close" onClick="$('#editForm').modal('hide')">×</a>
+
+            <h3>{_$form->title}</h3>
+        </div>
+        <div class="modal-body">
+			{snippet editForm}
+    			{control editForm}
+				{/snippet}
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#editForm').modal().on('hidden', function () {
+                $.nette.ajax({ url: {link edit! editId=>NULL, editForm=>NULL}});
+            });
+        });
+    </script>
+		{elseif $control->createForm}
+		{var form=>$control[$control->createForm]}
+    <div class="modal modal-large hide" id="createForm"
+		 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+        <div class="modal-header">
+            <a class="close" onClick="$('#createForm').modal('hide')">×</a>
+
+            <h3>{_$form->title}</h3>
+        </div>
+        <div class="modal-body"
+			 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+			{snippet createForm}
+        			{control createForm}
+					{/snippet}
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#createForm').modal().on('hidden', function () {
+                $.nette.ajax({ url: {link create! createForm=>NULL}});
+            });
+        });
+    </script>
+	{/if}
+
+{/snippet}

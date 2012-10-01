@@ -84,17 +84,53 @@ class FilesPresenter extends BasePresenter
 
 	public function createComponentTable()
 	{
+		$_this = $this;
+		$dirRepository = $this->dirRepository;
+
 		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->dirRepository);
 		$parent = $this->key;
-		$table->setDql(function(\Doctrine\ORM\QueryBuilder $dql) use ($parent)
-		{
-			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
-			if ($parent === NULL) {
-				return $dql->andWhere('a.parent IS NULL');
-			}
-			return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
+
+		$dql = function ($parent) {
+			return function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
+				$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
+				if ($parent === NULL) {
+					return $dql->andWhere('a.parent IS NULL');
+				}
+				return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
+			};
+		};
+
+		// forms
+		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($dirRepository, $_this) {
+			$entity = new \CmsModule\Content\Entities\FileEntity();
+			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
+			return $entity;
 		});
+		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
+			$entity = new \CmsModule\Content\Entities\DirEntity();
+			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
+			return $entity;
+		});
+
+		// navbar
+		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function ($button) use ($_this, $dirRepository, $dql) {
+			$parent = $dirRepository->find($_this->key)->getParent();
+
+			if (!$_this->getPresenter()->isAjax()) {
+				$_this->redirect('this', array('key' => $parent ? $parent->id : NULL));
+			}
+
+			$_this->getPresenter()->invalidateControl('content');
+			$_this->getPresenter()->payload->url = $_this->link('this', array('key' => $parent ? $parent->id : NULL));
+			$_this->key = $parent ? $parent->id : NULL;
+			$_this['table']->setDql($dql($parent));
+		};
+		$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
+		$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
+
+		$table->setDql($dql($parent));
 		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
 
 		return $table;
@@ -106,8 +142,7 @@ class FilesPresenter extends BasePresenter
 		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setRepository($this->fileRepository);
 		$parent = $this->key;
-		$table->setDql(function(\Doctrine\ORM\QueryBuilder $dql) use ($parent)
-		{
+		$table->setDql(function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
 			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
 			if ($parent === NULL) {
 				return $dql->andWhere('a.parent IS NULL');
@@ -186,48 +221,6 @@ class FilesPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$this->template->dirRepository = $this->dirRepository;
-	}
-
-
-	protected function createComponentDir($name, $key = NULL)
-	{
-		$repository = $this->dirRepository;
-		$form = $this->dirFormFactory->invoke($key ? $repository->find($key) : $repository->createNew());
-		$form->onSuccess[] = function($form)
-		{
-			if (!$form->presenter->isAjax()) {
-				$form->presenter->redirect('this');
-			}
-			$form->presenter->invalidateControl('content');
-		};
-		return $form;
-	}
-
-
-	protected function createComponentFile($name, $key = NULL)
-	{
-		$repository = $this->fileRepository;
-		$form = $this->fileFormFactory->invoke($key ? $repository->find($key) : $repository->createNew());
-		$form->onSuccess[] = function($form)
-		{
-			if (!$form->presenter->isAjax()) {
-				$form->presenter->redirect('this');
-			}
-			$form->presenter->invalidateControl('content');
-		};
-		return $form;
-	}
-
-
-	protected function createComponentFileEdit($name)
-	{
-		return $this->createComponentFile($name, $this->edit);
-	}
-
-
-	protected function createComponentDirEdit($name)
-	{
-		return $this->createComponentDir($name, $this->edit);
 	}
 
 
