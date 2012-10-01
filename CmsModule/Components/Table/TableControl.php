@@ -421,8 +421,8 @@ class TableControl extends Control
 		$form->onError[] = $this->formError;
 		$form->onSuccess[] = $this->formEditSuccess;
 
-		if (isset($form['_submit'])) {
-			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
+		if ($form->hasSaveButton()) {
+			$form->getSaveButton()->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
 		}
 
 		return $form;
@@ -457,8 +457,8 @@ class TableControl extends Control
 		$form->onError[] = $this->formError;
 		$form->onSuccess[] = $this->formCreateSuccess;
 
-		if (isset($form['_submit'])) {
-			$form['_submit']->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
+		if ($form->hasSaveButton()) {
+			$form->getSaveButton()->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
 		}
 
 		return $form;
