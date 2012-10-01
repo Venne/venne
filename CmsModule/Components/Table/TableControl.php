@@ -422,7 +422,7 @@ class TableControl extends Control
 		$form->onSuccess[] = $this->formEditSuccess;
 
 		if ($form->hasSaveButton()) {
-			$form->getSaveButton()->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
+			$form->getSaveButton()->getControlPrototype()->onClick = '_a = window.alert; window.alert = function() {}; if(Nette.validateForm(this)) { $(this).parents(".modal").each(function(){ $(this).modal("hide"); }); } window.alert = _a';
 		}
 
 		return $form;
@@ -458,7 +458,7 @@ class TableControl extends Control
 		$form->onSuccess[] = $this->formCreateSuccess;
 
 		if ($form->hasSaveButton()) {
-			$form->getSaveButton()->getControlPrototype()->onClick = '$(this).parents(".modal").each(function(){ $(this).modal("hide"); });';
+			$form->getSaveButton()->getControlPrototype()->onClick = '_a = window.alert; window.alert = function() {}; if(Nette.validateForm(this)) { $(this).parents(".modal").each(function(){ $(this).modal("hide"); }); } window.alert = _a';
 		}
 
 		return $form;
