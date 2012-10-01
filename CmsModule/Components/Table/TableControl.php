@@ -261,7 +261,7 @@ class TableControl extends Control
 
 	public function addButton($name, $title, $icon = NULL)
 	{
-		$this->getNavbar()->addSection($name, $title, $icon);
+		return $this->getNavbar()->addSection($name, $title, $icon);
 	}
 
 
