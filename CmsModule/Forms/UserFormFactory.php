@@ -36,13 +36,13 @@ class UserFormFactory extends FormFactory
 
 		$form->addCheckbox("password_new", "Set password")->addCondition($form::EQUAL, true)->toggle('setPasswd');
 		$form->addGroup()->setOption('id', 'setPasswd');
-		$form->addPassword("_password", "Password")
+		$form->addPassword("password", "Password")
 			->setOption("description", "minimal length is 5 char")
 			->addConditionOn($form['password_new'], Form::FILLED)
 			->addRule(Form::FILLED, 'Enter password')
 			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
 		$form->addPassword("password_confirm", "Confirm password")
-			->addRule(Form::EQUAL, 'Invalid re password', $form['_password']);
+			->addRule(Form::EQUAL, 'Invalid re password', $form['password']);
 
 		$form->addGroup("Next informations");
 		$form->addManyToMany("roleEntities", 'Roles');
@@ -57,6 +57,16 @@ class UserFormFactory extends FormFactory
 			$form->addError("User is not unique");
 			return true;
 		}
+	}
+
+
+	public function handleSave(Form $form)
+	{
+		if ($form['password_new']->value) {
+			$form->data->setPassword($form['password']->value);
+		}
+
+		parent::handleSave($form);
 	}
 
 

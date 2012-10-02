@@ -129,18 +129,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 
 
 	/**
-	 * Get hash of password.
-	 *
-	 * @return string
-	 */
-	public function getPassword()
-	{
-		return $this->password;
-	}
-
-
-
-	/**
 	 * Verify the password.
 	 *
 	 * @param $password
