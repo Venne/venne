@@ -275,17 +275,14 @@ class TableControl extends Control
 	{
 		$_this = $this;
 
-		$control = $this->getNavbar()->addSection($name, $title, $icon);
+		$control = $this->addButton($name, $title, $icon);
 		$control->onClick[] = function (\CmsModule\Components\Navbar\Section $button) use ($_this, $form) {
-			$table = $_this;
-			$presenter = $table->getPresenter();
-
-			if (!$presenter->isAjax()) {
-				$table->redirect('create!', array('createForm' => $form->getName()));
+			if (!$_this->presenter->isAjax()) {
+				$_this->redirect('create!', array('createForm' => $form->getName()));
 			}
-			$presenter->payload->url = $table->link('create!', array('createForm' => $form->getName()));
-			$table->createForm = $form->getName();
-			$table->handleCreate();
+			$_this->presenter->payload->url = $_this->link('create!', array('createForm' => $form->getName()));
+			$_this->createForm = $form->getName();
+			$_this->handleCreate();
 		};
 		return $control;
 	}
