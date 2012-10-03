@@ -38,14 +38,22 @@ class RoutesFormFactory extends FormFactory
 			$container->addSelect('priority', 'Priority')->setItems(\CmsModule\Content\Entities\RouteEntity::getPriorityValues(), FALSE)->setPrompt('-------');
 
 			// layout
+			$container->setCurrentGroup($form->addGroup());
 			$container->addCheckbox('copyLayoutFromParent', 'Layout from parent');
 			$container['copyLayoutFromParent']->addCondition($form::EQUAL, false)->toggle('group-layout_' . $container->data->id);
 
 			$container->setCurrentGroup($container->getForm()->addGroup()->setOption('id', 'group-layout_' . $container->data->id));
 			$container->addSelect('layout', 'Layout', $container->form->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');
 
+			$container->setCurrentGroup($form->addGroup());
+			$container->addCheckbox('copyLayoutToChildren', 'Share layout with children');
+			$container['copyLayoutToChildren']->addCondition($form::EQUAL, false)->toggle('group-layout2_' . $container->data->id);
+
+			$container->setCurrentGroup($container->getForm()->addGroup()->setOption('id', 'group-layout2_' . $container->data->id));
+			$container->addSelect('childrenLayout', 'Share new layout', $container->form->presenter->context->cms->scannerService->getLayoutFiles())->setPrompt('-------');
+
 			// cache
-			$container->setCurrentGroup($group);
+			$container->setCurrentGroup($form->addGroup());
 			$container->addCheckbox('copyCacheModeFromParent', 'Cache mode from parent');
 			$container['copyCacheModeFromParent']->addCondition($form::EQUAL, false)->toggle('group-cache_' . $container->data->id);
 
