@@ -103,6 +103,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $layoutconfig;
 
+	/**
+	 * @var LayoutconfigEntity
+	 * @ManyToOne(targetEntity="LayoutconfigEntity", cascade={"persist"})
+	 */
+	protected $childrenLayoutconfig;
+
 
 	/***************** Meta *******************/
 
@@ -130,6 +136,9 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/** @Column(type="string", nullable=true) */
 	protected $layout;
 
+	/** @Column(type="string", nullable=true) */
+	protected $childrenLayout;
+
 	/** @Column(type="boolean") */
 	protected $copyLayoutFromParent;
 
@@ -138,6 +147,9 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/** @Column(type="boolean") */
 	protected $copyCacheModeFromParent;
+
+	/** @Column(type="boolean") */
+	protected $copyLayoutToChildren;
 
 
 	/**
@@ -164,6 +176,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
 		$this->copyLayoutFromParent = true;
 		$this->copyCacheModeFromParent = true;
+		$this->copyLayoutToChildren = true;
 		$this->layoutconfig = new LayoutconfigEntity($this);
 
 		$this->title = '';
@@ -225,10 +238,16 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		if ($this->copyLayoutFromParent) {
-			$this->layout = $this->parent ? $this->parent->layout : self::DEFAULT_LAYOUT;
-			$this->layoutconfig = $this->parent ? $this->parent->layoutconfig : new LayoutconfigEntity($this);
+			$this->layout = $this->parent ? ($this->parent->copyLayoutToChildren ? $this->parent->layout : $this->parent->childrenLayout) : self::DEFAULT_LAYOUT;
+			$this->layoutconfig = $this->parent ? ($this->parent->copyLayoutToChildren ? $this->parent->layoutconfig : $this->parent->childrenLayoutconfig) : new LayoutconfigEntity($this);
 		} else {
 			$this->layoutconfig = new LayoutconfigEntity($this);
+		}
+
+		if (!$this->copyLayoutToChildren) {
+			$this->childrenLayoutconfig = new LayoutconfigEntity($this);
+		} else {
+			$this->childrenLayoutconfig = NULL;
 		}
 
 		if ($this->copyCacheModeFromParent) {
@@ -421,6 +440,23 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	public function setChildrenLayout($childrenLayout)
+	{
+		if ($this->childrenLayout === $childrenLayout || $this->copyLayoutToChildren) {
+			return;
+		}
+
+		$this->childrenLayout = $childrenLayout;
+		$this->generateLayouts();
+	}
+
+
+	public function getChildrenLayout()
+	{
+		return $this->childrenLayout;
+	}
+
+
 	public function setDescription($description)
 	{
 		$this->description = $description;
@@ -447,6 +483,23 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getCopyLayoutFromParent()
 	{
 		return $this->copyLayoutFromParent;
+	}
+
+
+	public function setCopyLayoutToChildren($copyLayoutToChildren)
+	{
+		if ($this->copyLayoutToChildren == $copyLayoutToChildren) {
+			return;
+		}
+
+		$this->copyLayoutToChildren = $copyLayoutToChildren;
+		$this->generateLayouts();
+	}
+
+
+	public function getCopyLayoutToChildren()
+	{
+		return $this->copyLayoutToChildren;
 	}
 
 
@@ -499,6 +552,24 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getLayoutconfig()
 	{
 		return $this->layoutconfig;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\LayoutconfigEntity $childrenLayoutconfig
+	 */
+	public function setChildrenLayoutconfig($childrenLayoutconfig)
+	{
+		$this->childrenLayoutconfig = $childrenLayoutconfig;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\LayoutconfigEntity
+	 */
+	public function getChildrenLayoutconfig()
+	{
+		return $this->childrenLayoutconfig;
 	}
 
 
