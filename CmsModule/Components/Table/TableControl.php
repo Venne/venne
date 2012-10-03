@@ -81,12 +81,23 @@ class TableControl extends Control
 	/** @var \Nette\Callback */
 	protected $dqlCallback;
 
+	/** @var array */
+	public $onAttached;
+
 
 	public function __construct($primaryColumn = 'id')
 	{
 		parent::__construct();
 
 		$this->primaryColumn = $primaryColumn;
+	}
+
+
+	protected function attached($presenter)
+	{
+		parent::attached($presenter);
+
+		$this->onAttached();
 	}
 
 
