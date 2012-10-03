@@ -71,7 +71,9 @@ class CachePresenter extends BasePresenter
 
 		$form->addGroup('Namespace')->setOption('id', 'namespace');
 		$form->addText('namespace');
-		$form->addSubmit('_submit', 'Clear');
+
+		$form->addGroup();
+		$form->addSaveButton('Clear');
 
 		$form->onSuccess[] = $this->processForm;
 
