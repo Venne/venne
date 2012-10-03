@@ -69,6 +69,19 @@ class LanguagePresenter extends BasePresenter
 		// navbar
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
 
+		// redirect on first language
+		$_this = $this;
+		$repository = $this->languageRepository;
+		$table->onAttached[] = function () use ($table, $_this, $repository) {
+			if ($table->createForm) {
+				$table['createForm']->onSuccess[] = function () use ($_this, $repository) {
+					if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() <= 1) {
+						$_this->redirect('this');
+					}
+				};
+			}
+		};
+
 		// columns
 		$table->addColumn('name', 'Name', '50%');
 		$table->addColumn('alias', 'Alias', '20%');
@@ -76,7 +89,11 @@ class LanguagePresenter extends BasePresenter
 
 		// actions
 		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addActionDelete('delete', 'Delete');
+		$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($_this, $repository) {
+			if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() == 0) {
+				$_this->redirect('this');
+			}
+		};
 
 		// global actions
 		$table->setGlobalAction($table['delete']);
