@@ -27,6 +27,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->redirect(":Cms:Admin:Administrator:");
 			}
 			$this->template->hideMenuItems = true;
+			$this->flashMessage("Please set administrator account.", "warning", true);
 		} // end
 
 		// check login
@@ -46,7 +47,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->redirect(":Cms:Admin:Database:");
 			}
 			$this->template->hideMenuItems = true;
-			$this->flashMessage("Database connection not found. Please fix it.", "warning");
+			$this->flashMessage("Database connection not found. Please fix it.", "warning", true);
 		}
 
 		// check languages
@@ -55,7 +56,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->redirect(':Cms:Admin:Language:');
 			}
 			$this->template->hideMenuItems = true;
-			$this->flashMessage("Please enter at least one language.", "warning");
+			$this->flashMessage("Please enter at least one language.", "warning", true);
 		}
 
 		parent::startup();
