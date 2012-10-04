@@ -62,7 +62,6 @@ abstract class AdminPresenter extends BasePresenter
 		parent::startup();
 
 		if ($this->getParameter('mode') == self::MODE_EDIT) {
-			\Nette\Diagnostics\Debugger::$bar = false;
 			$this->invalidateControl('panel');
 		}
 	}
