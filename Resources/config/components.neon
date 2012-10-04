@@ -173,7 +173,7 @@ factories:
 		tags: [element: textarea]
 
 	cms.editorElement:
-		class: CmsModule\Content\Elements\TextElement
+		class: CmsModule\Content\Elements\EditorElement
 		setup:
 			- injectSetupForm(@cms.editorFormFactory)
 		tags: [element: editor]
