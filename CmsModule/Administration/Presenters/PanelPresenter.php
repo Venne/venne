@@ -37,9 +37,11 @@ class PanelPresenter extends BasePresenter
 	/** @persistent */
 	public $elementView;
 
-
 	/** @var RouteEntity */
 	public $route;
+
+	/** @var string */
+	protected $_layoutPath;
 
 
 	public function startup()
@@ -103,5 +105,39 @@ class PanelPresenter extends BasePresenter
 		}
 
 		return parent::createComponent($name);
+	}
+
+
+	/**
+	 * Get layout path.
+	 *
+	 * @return null|string
+	 */
+	public function getLayoutPath()
+	{
+		if ($this->_layoutPath === NULL) {
+			if (!$this->route->layout) {
+				$this->_layoutPath = false;
+			}
+
+			if ($this->route->layout == 'default') {
+				$layout = $this->context->parameters['website']['layout'];
+			} else {
+				$layout = $this->route->layout;
+			}
+
+			$pos = strpos($layout, "/");
+			$module = lcfirst(substr($layout, 1, $pos - 1));
+
+			if ($module === 'app') {
+				$this->_layoutPath = $this->context->parameters['appDir'] . '/layouts/' . substr($layout, $pos + 1);
+			} else if (!isset($this->context->parameters['modules'][$module]['path'])) {
+				$this->_layoutPath = false;
+			} else {
+				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
+			}
+		}
+
+		return $this->_layoutPath === false ? NULL : $this->_layoutPath;
 	}
 }
