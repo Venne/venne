@@ -14,7 +14,6 @@ namespace CmsModule\Content\Elements\Forms;
 use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
-use DoctrineModule\Forms\Mappers\EntityMapper;
 use CmsModule\Content\Repositories\PageRepository;
 
 /**
@@ -23,32 +22,13 @@ use CmsModule\Content\Repositories\PageRepository;
 class ClearFormFactory extends FormFactory
 {
 
-	/** @var EntityMapper */
-	protected $mapper;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 */
-	public function __construct(EntityMapper $mapper)
-	{
-		$this->mapper = $mapper;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
-
-
 	/**
 	 * @param Form $form
 	 */
 	public function configure(Form $form)
 	{
-		$form->addSelect('use', 'Clear data', array(false=>'No', true=>'Yes'));
-		$form->addSubmit('_submit', 'Clear');
+		$form->addSelect('use', 'Clear data', array(false => 'No', true => 'Yes'));
+		$form->addSaveButton('Clear');
 	}
 
 

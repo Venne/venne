@@ -14,7 +14,6 @@ namespace CmsModule\Content\Elements\Forms;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
-use DoctrineModule\Forms\Mappers\EntityMapper;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
