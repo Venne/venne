@@ -12,15 +12,14 @@
 namespace CmsModule\Content\Elements\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
+use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Forms\Mappers\EntityMapper;
-use CmsModule\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class TextareaFormFactory extends TextFormFactory
+class TextareaFormFactory extends FormFactory
 {
 
 
@@ -30,6 +29,6 @@ class TextareaFormFactory extends TextFormFactory
 	public function configure(Form $form)
 	{
 		$form->addTextArea('text', 'Text');
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 }

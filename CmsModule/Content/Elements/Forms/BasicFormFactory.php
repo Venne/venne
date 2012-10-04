@@ -48,7 +48,7 @@ class BasicFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addSelect('mode', 'Share data with', \CmsModule\Content\Entities\ElementEntity::getModes());
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 
 

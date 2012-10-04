@@ -12,34 +12,15 @@
 namespace CmsModule\Content\Elements\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
+use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Forms\Mappers\EntityMapper;
-use CmsModule\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class TextFormFactory extends FormFactory
 {
-
-	/** @var EntityMapper */
-	protected $mapper;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 */
-	public function __construct(EntityMapper $mapper)
-	{
-		$this->mapper = $mapper;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
 
 
 	/**
@@ -48,12 +29,6 @@ class TextFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addText('text', 'Text');
-		$form->addSubmit('_submit', 'Save');
-	}
-
-
-	public function handleSave($form)
-	{
-		$this->mapper->getEntityManager()->getRepository(get_class($form->data))->save($form->data);
+		$form->addSaveButton('Save');
 	}
 }

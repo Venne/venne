@@ -13,7 +13,7 @@ namespace CmsModule\Content\Elements;
 
 use Venne;
 use CmsModule\Content\Elements\Entities\TextEntity;
-use CmsModule\Content\Elements\Forms\TextFormFactory;
+use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -28,7 +28,7 @@ class TextElement extends BaseElement
 	/**
 	 * @param TextFormFactory $setupForm
 	 */
-	public function injectSetupForm(TextFormFactory $setupForm)
+	public function injectSetupForm(FormFactory $setupForm)
 	{
 		$this->setupFormFactory = $setupForm;
 	}

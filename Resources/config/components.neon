@@ -107,7 +107,7 @@ services:
 	cms.editorFormFactory:
 		class: CmsModule\Content\Elements\Forms\EditorFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 
 	cms.staticFormFactory:

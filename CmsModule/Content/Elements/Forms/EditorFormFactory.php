@@ -12,22 +12,21 @@
 namespace CmsModule\Content\Elements\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
+use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Forms\Mappers\EntityMapper;
-use CmsModule\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class EditorFormFactory extends TextFormFactory
+class EditorFormFactory extends FormFactory
 {
 
 	protected function getControlExtensions()
 	{
-		return array(
+		return array_merge(parent::getControlExtensions(), array(
 			new \CmsModule\Content\ControlExtension(),
-		);
+		));
 	}
 
 
@@ -37,6 +36,6 @@ class EditorFormFactory extends TextFormFactory
 	public function configure(Form $form)
 	{
 		$form->addContentEditor('text', 'Text');
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 }
