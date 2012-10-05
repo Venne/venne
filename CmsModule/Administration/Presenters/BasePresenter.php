@@ -29,9 +29,9 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 
 		if (!$this->getSignal()) {
 			$this->invalidateControl('content');
+			$this->invalidateControl('header');
+			$this->invalidateControl('toolbar');
 		}
-		$this->invalidateControl('header');
-		$this->invalidateControl('toolbar');
 	}
 
 
