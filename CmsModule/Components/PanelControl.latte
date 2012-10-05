@@ -26,30 +26,30 @@
 			{/if}
             </div>
             <div class="btn-group pull-right">
+
 			{if $control->tab == 3}
                 <a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
                    href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
-				{else}
-
-				{if $presenter->isAuthorized(':Cms:Admin:Content:create')}
-                    <button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-
-						{if $control->tab == 0}
-							{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
-                                <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a>
-                                </li>
-							{/foreach}
+				{elseif $presenter->isAuthorized(':Cms:Admin:Content:create')}
+                <button id="create-new" class="btn"><span class="icon icon-file"></span> {_'Create new'}</button>
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+					{if $control->tab == 0}
+						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
+                            <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a>
+                            </li>
+						{/foreach}
 						{elseif $control->tab == 2}
-                            <li><a class="ajax" href="{plink :Cms:Admin:Files:default do=>table-navbar-click, table-navbar-id=>navbar-directory}">New directory</a></li>
-                            <li><a class="ajax" href="{plink :Cms:Admin:Files:default do=>table-navbar-click, table-navbar-id=>navbar-upload}">Upload file</a></li>
-						{/if}
-                    </ul>
-				{/if}
-
+                        <li><a class="ajax"
+                               href="{plink :Cms:Admin:Files:default do=>dir, id=>navbar-directory}">New
+                            directory</a></li>
+                        <li><a class="ajax"
+                               href="{plink :Cms:Admin:Files:default do=>dir, id=>navbar-upload}">Upload
+                            file</a></li>
+					{/if}
+                </ul>
 			{/if}
             </div>
         </div>

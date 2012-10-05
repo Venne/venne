@@ -82,6 +82,19 @@ class FilesPresenter extends BasePresenter
 	}
 
 
+	public function handleDir($id)
+	{
+		if (!$this->isAjax()) {
+			$this['table-navbar']->redirect('click!', array('id' => $id));
+		}
+
+		$this->invalidateControl('content');
+		$this['table-navbar']->handleClick($id);
+
+		$this->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
+	}
+
+
 	public function createComponentTable()
 	{
 		$_this = $this;
