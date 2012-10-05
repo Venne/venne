@@ -119,7 +119,7 @@ class LayouteditFormFactory extends FormFactory
 	}
 
 
-	protected function getLayoutPathByKey($key)
+	public function getLayoutPathByKey($key)
 	{
 		$module = substr($key, 1, strpos($key, '/') - 1);
 		$name = substr($key, strrpos($key, '/') + 1);

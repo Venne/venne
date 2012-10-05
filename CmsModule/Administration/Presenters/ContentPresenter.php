@@ -132,7 +132,9 @@ class ContentPresenter extends BasePresenter
 			$presenter->changeAction('edit');
 			$presenter->key = $entity->id;
 		};
-		$table->addActionDelete('delete', 'Delete');
+		$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($presenter) {
+			$presenter['panel']->invalidateControl('content');
+		};
 
 		// global actions
 		$table->setGlobalAction($table['delete']);
@@ -165,6 +167,9 @@ class ContentPresenter extends BasePresenter
 		$this->setView('edit');
 		$this->changeAction('edit');
 		$this->key = $form->data->id;
+
+		// refresh left panel
+		$this['panel']->invalidateControl('content');
 	}
 
 

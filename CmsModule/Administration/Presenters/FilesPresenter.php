@@ -218,6 +218,7 @@ class FilesPresenter extends BasePresenter
 			$this->redirect("this");
 		}
 		$this->invalidateControl('content');
+		$this['panel']->invalidateControl('content');
 	}
 
 

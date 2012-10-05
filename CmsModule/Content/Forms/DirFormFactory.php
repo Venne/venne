@@ -32,4 +32,12 @@ class DirFormFactory extends FormFactory
 
 		$form->addSaveButton('Save');
 	}
+
+
+	public function handleSuccess(Form $form)
+	{
+		if (isset($form->presenter['panel'])) {
+			$form->presenter['panel']->invalidateControl('content');
+		}
+	}
 }

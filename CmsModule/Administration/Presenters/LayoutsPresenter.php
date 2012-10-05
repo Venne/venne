@@ -111,11 +111,14 @@ class LayoutsPresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
 		}
-		$this['panel']->invalidateControl('content');
+		$this->invalidateControl('content');
 		$this->payload->url = $this->link('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
 		$this->setView('edit');
 		$this->changeAction('edit');
 		$this->key = "@{$values['parent']}/{$values['name']}";
+
+		// refresh left panel
+		$this['panel']->invalidateControl('content');
 	}
 
 
@@ -140,16 +143,18 @@ class LayoutsPresenter extends BasePresenter
 
 	public function handleDelete($key)
 	{
-		$path = $this->getLayoutPathByKey($key);
+		$path = $this->layouteditFormFactory->getLayoutPathByKey($key);
 
 		\Venne\Utils\File::rmdir($path, true);
 
 		$this->flashMessage('Layout has been removed.', 'success');
 
 		if (!$this->isAjax()) {
-			$this->redirect('default');
+			$this->redirect('this', array('key' => NULL));
 		}
 		$this->invalidateControl('content');
+		$this['panel']->invalidateControl('content');
+		$this->payload->url = $this->link('this', array('key' => NULL));
 	}
 
 
