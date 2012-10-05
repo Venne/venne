@@ -43,6 +43,9 @@
                                 <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a>
                                 </li>
 							{/foreach}
+						{elseif $control->tab == 2}
+                            <li><a class="ajax" href="{plink :Cms:Admin:Files:default do=>table-navbar-click, table-navbar-id=>navbar-directory}">New directory</a></li>
+                            <li><a class="ajax" href="{plink :Cms:Admin:Files:default do=>table-navbar-click, table-navbar-id=>navbar-upload}">Upload file</a></li>
 						{/if}
                     </ul>
 				{/if}
