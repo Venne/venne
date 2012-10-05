@@ -82,6 +82,7 @@ class PanelControl extends Control
 	public function handleTab($tab)
 	{
 		$this->invalidateControl('content');
+		$this->invalidateControl('tabs');
 		$this->tab = $tab;
 	}
 

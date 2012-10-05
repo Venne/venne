@@ -32,12 +32,6 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 		}
 		$this->invalidateControl('header');
 		$this->invalidateControl('toolbar');
-		$this->invalidateControl('navigation');
-		$this['panel']->invalidateControl('tabs');
-
-		if ($this->isAjax()) {
-			$this->template->ajax = true;
-		}
 	}
 
 
