@@ -1,0 +1,24 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+
+before_script:
+  - pear channel-discover pear.phpunit.de
+  - pear channel-discover components.ez.no
+  - pear channel-discover pear.symfony-project.com
+  - pear channel-discover pear.symfony.com
+  - pear install --alldeps phpunit/PHPUnit
+  - pear install --alldeps phpunit/PHPUnit_Selenium
+  - wget http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar
+  - "sh -c 'git clone https://github.com/Venne/sandbox http'"
+  - "sh -c 'cd http && php prepare'"
+  - "sh -c 'cd http && php composer.phar require venne/cms-module:2.0.x-dev'"
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - java -jar selenium-server-standalone-2.25.0.jar > /dev/null 2>&1 &
+  - sleep 10
+  - php -S localhost:8000 -t http/www &
+
+script: phpunit --configuration http/vendor/venne/cms-module/phpunit.xml
