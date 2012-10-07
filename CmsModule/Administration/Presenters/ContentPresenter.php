@@ -234,6 +234,9 @@ class ContentPresenter extends BasePresenter
 
 	public function renderEdit()
 	{
+		$this->invalidateControl('content');
+		$this->invalidateControl('toolbar');
+
 		$this->template->entity = $this->pageRepository->find($this->key);
 		$this->template->contentType = $this->contentManager->getContentType($this->template->entity->type);
 		$sections = $this->template->contentType->getSections();
