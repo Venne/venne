@@ -61,7 +61,7 @@ class Authenticator extends Venne\Security\Authenticator
 			if ($this->checkConnection->invoke()) {
 				$user = $this->userRepository->findOneBy(array("email" => $username, "enable" => 1));
 				if ($user && $user->verifyByPassword($password)) {
-					return $user;
+					return new \Nette\Security\Identity($username, $user->getRoles());
 				}
 			}
 
