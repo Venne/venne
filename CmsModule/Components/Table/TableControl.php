@@ -222,17 +222,25 @@ class TableControl extends Control
 
 		$control = $this->addAction($name, $title);
 		$control->onClick[] = function (Button $button, $entity) use ($_this) {
-			$presenter = $button->getTable()->getPresenter();
 			$_this->getRepository()->delete($entity);
+		};
+		$control->onSuccess[] = function (TableControl $table) use ($_this) {
+			$presenter = $table->getPresenter();
+			$presenter->flashMessage('Items has been removed', 'success');
+
+			// list back
+			if ($_this->paginator && $_this->countItems() === 0 && $_this['vp']->page > 0) {
+				$_this['vp']->page--;
+				$args = array('vp' => array('page' => $_this['vp']->page));
+			} else {
+				$args = array();
+			}
 
 			if (!$presenter->isAjax()) {
-				$presenter->redirect('this');
+				$presenter->redirect('this', $args);
 			}
 			$_this->invalidateControl('table');
-			$presenter->payload->url = $presenter->link('this');
-		};
-		$control->onSuccess[] = function (TableControl $table) {
-			$table->getPresenter()->flashMessage('Items has been removed', 'success');
+			$presenter->payload->url = $presenter->link('this', $args);
 		};
 		return $control;
 	}
@@ -353,9 +361,21 @@ class TableControl extends Control
 	}
 
 
+	public function countItems()
+	{
+		return count($this->getItems());
+	}
+
+
 	public function getItems()
 	{
-		$dql = $this->repository->createQueryBuilder('a');
+		return $this->getQueryBuilder()->getQuery()->getResult();
+	}
+
+
+	public function getQueryBuilder($select = 'a')
+	{
+		$dql = $this->repository->createQueryBuilder($select);
 
 		if ($this->dqlCallback) {
 			$fn = $this->dqlCallback;
@@ -372,7 +392,7 @@ class TableControl extends Control
 				->setFirstResult(($this["vp"]->page - 1) * $this->paginator);
 		}
 
-		return $dql->getQuery()->getResult();
+		return $dql;
 	}
 
 
