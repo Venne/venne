@@ -57,14 +57,15 @@ abstract class BasePresenter extends \Venne\Application\UI\Presenter
 		Stopwatch::stop("base startup");
 		Stopwatch::start();
 
-		// Mode
-		$this->mode = $this->getParameter('mode');
+		// mode
+		if ($this->mode && !$this->getUser()->isLoggedIn()) {
+			$this->mode = self::MODE_NORMAL;
+		}
 	}
 
 
 	protected function checkLanguage()
 	{
-
 	}
 
 
