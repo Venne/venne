@@ -29,8 +29,8 @@ abstract class AdminPresenterTest extends \Venne\Testing\SeleniumTestCase
 	{
 		$this->open($this->basePath . '/admin');
 
-		$this->type("id=frmsignInForm-username", "root");
-		$this->type("id=frmsignInForm-password", "tajne");
+		$this->type("id=frmsignInForm-username", "admin");
+		$this->type("id=frmsignInForm-password", "admin");
 		$this->clickAndWait("id=frmsignInForm-_submit");
 	}
 

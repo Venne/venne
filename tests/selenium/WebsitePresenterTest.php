@@ -24,93 +24,43 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->login();
 
 		$this->clickAndWait("link=Basic meta informationsEdit base meta informations about this website");
-		try {
-			$this->assertEquals("Blog %s %t", $this->getValue("id=frmwebsiteForm-title"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("|", $this->getValue("id=frmwebsiteForm-titleSeparator"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("", $this->getValue("id=frmwebsiteForm-keywords"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("", $this->getValue("id=frmwebsiteForm-description"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("", $this->getValue("id=frmwebsiteForm-author"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
+		$this->assertEquals("Blog %s %t", $this->getValue("id=frmwebsiteForm-title"));
+		$this->assertEquals("|", $this->getValue("id=frmwebsiteForm-titleSeparator"));
+		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-keywords"));
+		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-description"));
+		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-author"));
 		$this->verifyTextPresent("-------bootstrap (cms)");
 		$this->verifyTextPresent("offtimestatic");
-		try {
-			$this->assertEquals("", $this->getValue("id=frmwebsiteForm-routePrefix"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
+		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-routePrefix"));
+
 		$this->type("id=frmwebsiteForm-title", "Blog %s %t1");
 		$this->type("id=frmwebsiteForm-titleSeparator", "|2");
 		$this->type("id=frmwebsiteForm-keywords", "3");
 		$this->type("id=frmwebsiteForm-description", "4");
 		$this->type("id=frmwebsiteForm-author", "5");
 		$this->select("id=frmwebsiteForm-layout", "label=bootstrap (cms)");
-		$this->click("css=option[value=\"@cms/bootstrap\"]");
 		$this->select("id=frmwebsiteForm-cacheMode", "label=static");
-		$this->click("css=option[value=\"static\"]");
-		$this->select("css=#frmwebsiteForm-routePrefix-pair > div.controls > select", "label=<lang>/");
-		$this->click("//div[@id='frmwebsiteForm-routePrefix-pair']/div/select/option[2]");
+		$this->type("id=frmwebsiteForm-routePrefix", "<lang>/");
 		$this->click("id=frmwebsiteForm-_submit");
-		try {
-			$this->assertEquals("Blog %s %t1", $this->getValue("id=frmwebsiteForm-title"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("|2", $this->getValue("id=frmwebsiteForm-titleSeparator"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("3", $this->getValue("id=frmwebsiteForm-keywords"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("4", $this->getValue("id=frmwebsiteForm-description"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		try {
-			$this->assertEquals("5", $this->getValue("id=frmwebsiteForm-author"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
+
+		$this->assertEquals("Blog %s %t1", $this->getValue("id=frmwebsiteForm-title"));
+		$this->assertEquals("|2", $this->getValue("id=frmwebsiteForm-titleSeparator"));
+		$this->assertEquals("3", $this->getValue("id=frmwebsiteForm-keywords"));
+		$this->assertEquals("4", $this->getValue("id=frmwebsiteForm-description"));
+		$this->assertEquals("5", $this->getValue("id=frmwebsiteForm-author"));
+
 		$this->verifyTextPresent("-------bootstrap (cms)");
 		$this->verifyTextPresent("offtimestatic");
-		try {
-			$this->assertEquals("<lang>/", $this->getValue("id=frmwebsiteForm-routePrefix"));
-		} catch (PHPUnit_Framework_AssertionFailedError $e) {
-			array_push($this->verificationErrors, $e->toString());
-		}
-		$this->verifyTextPresent("× Website has been saved");
+
+		$this->assertEquals("<lang>/", $this->getValue("id=frmwebsiteForm-routePrefix"));
+
 		$this->type("id=frmwebsiteForm-title", "Blog %s %t");
 		$this->type("id=frmwebsiteForm-titleSeparator", "|");
 		$this->type("id=frmwebsiteForm-keywords", "");
 		$this->type("id=frmwebsiteForm-description", "");
 		$this->type("id=frmwebsiteForm-author", "");
 		$this->select("id=frmwebsiteForm-layout", "label=-------");
-		$this->click("css=option");
 		$this->select("id=frmwebsiteForm-cacheMode", "label=off");
-		$this->click("css=#frmwebsiteForm-cacheMode > option");
-		$this->click("id=frmwebsiteForm-routePrefix");
 		$this->type("id=frmwebsiteForm-routePrefix", "");
 		$this->click("id=frmwebsiteForm-_submit");
 
