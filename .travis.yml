@@ -25,4 +25,4 @@ before_script:
   - sleep 10
   - php -S localhost:8000 -t http/www &
 
-script: phpunit --configuration http/vendor/venne/cms-module/phpunit.xml
+script: "sh -c 'cd http/vendor/venne/cms-module/ && phpunit'"
