@@ -31,6 +31,7 @@ class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 			$this->invalidateControl('content');
 			$this->invalidateControl('header');
 			$this->invalidateControl('toolbar');
+			$this['panel']->invalidateControl('tabs');
 		}
 	}
 

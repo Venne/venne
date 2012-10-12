@@ -81,9 +81,11 @@ class PanelControl extends Control
 
 	public function handleTab($tab)
 	{
+		$this->presenter->validateControl('content');
 		$this->invalidateControl('content');
 		$this->invalidateControl('tabs');
 		$this->tab = $tab;
+		$this->presenter->payload->url = $this->link('this');
 	}
 
 

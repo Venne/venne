@@ -1,8 +1,8 @@
 <div class="container-fluid" n:snippet="tabs">
     <ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
-        <li{if $control->tab == 0} class="active"{/if}><a class="ajax" href="?panel-tab=0&amp;do=panel-tab">{_'Pages'}</a></li>
-        <li{if $control->tab == 2} class="active"{/if}><a class="ajax" href="?panel-tab=2&amp;do=panel-tab">{_'Files'}</a></li>
-        <li{if $control->tab == 3} class="active"{/if}><a class="ajax" href="?panel-tab=3&amp;do=panel-tab">{_'Layouts'}</a></li>
+        <li{if $control->tab == 0} class="active"{/if}><a class="ajax" n:href="tab! tab=>0">{_'Pages'}</a></li>
+        <li{if $control->tab == 2} class="active"{/if}><a class="ajax" n:href="tab! tab=>2">{_'Files'}</a></li>
+        <li{if $control->tab == 3} class="active"{/if}><a class="ajax" n:href="tab! tab=>3">{_'Layouts'}</a></li>
     </ul>
 </div>
 
