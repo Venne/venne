@@ -132,6 +132,16 @@ abstract class PageEntity extends TreeEntity
 	 */
 	public function setName($name)
 	{
+		if ($this->name === $name) {
+			return;
+		}
+
+		if ($this->mainRoute->getTitle() === $this->name) {
+			$this->mainRoute->setTitle($name);
+		} else if (!$this->mainRoute->getTitle()) {
+			$this->mainRoute->setTitle($name);
+		}
+
 		$this->name = $name;
 	}
 
@@ -358,6 +368,7 @@ abstract class PageEntity extends TreeEntity
 		$this->expired = $expired;
 	}
 
+
 	/**
 	 * @param $order
 	 */
@@ -365,6 +376,7 @@ abstract class PageEntity extends TreeEntity
 	{
 		$this->order = $order;
 	}
+
 
 	/**
 	 * @return int
@@ -384,5 +396,4 @@ abstract class PageEntity extends TreeEntity
 		$annotation = $ref->getAnnotation('DiscriminatorEntry');
 		return $annotation['name'];
 	}
-
 }
