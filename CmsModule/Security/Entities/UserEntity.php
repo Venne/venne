@@ -58,7 +58,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection
-	 * @ManyToMany(targetEntity="RoleEntity", cascade={"persist"})
+	 * @ManyToMany(targetEntity="RoleEntity", cascade={"persist"}, inversedBy="users")
 	 * @JoinTable(name="users_roles",
 	 *	  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
 	 *	  inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")}

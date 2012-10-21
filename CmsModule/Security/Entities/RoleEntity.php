@@ -32,9 +32,8 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	protected $childrens;
 
 	/**
-	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="id")
+	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="childrens")
 	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
-	 * @OrderBy({"order" = "ASC"})
 	 */
 	protected $parent;
 
@@ -44,7 +43,7 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	protected $permissions;
 
 	/**
-	 * @ManyToMany(targetEntity="UserEntity", mappedBy="roles")
+	 * @ManyToMany(targetEntity="UserEntity", mappedBy="roleEntities")
 	 */
 	protected $users;
 

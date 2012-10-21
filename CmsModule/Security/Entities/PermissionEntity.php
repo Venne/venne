@@ -39,7 +39,7 @@ class PermissionEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var RoleEntity
-	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="id")
+	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="permissions")
 	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $role;

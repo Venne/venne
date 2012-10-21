@@ -42,7 +42,7 @@ abstract class PageEntity extends TreeEntity
 
 	/**
 	 * @var RouteEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", inversedBy="id", cascade={"persist", "remove", "detach"})
+	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", cascade={"persist", "remove", "detach"})
 	 * @JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $mainRoute;
