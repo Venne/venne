@@ -229,7 +229,7 @@ class TableControl extends Control
 			$presenter->flashMessage('Items has been removed', 'success');
 
 			// list back
-			if ($_this->paginator && $_this->countItems() === 0 && $_this['vp']->page > 0) {
+			if ($_this->paginator && $_this->countItems() === 0 && $_this['vp']->page > 1) {
 				$_this['vp']->page--;
 				$args = array('vp' => array('page' => $_this['vp']->page));
 			} else {
