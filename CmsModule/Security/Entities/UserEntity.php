@@ -60,9 +60,9 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	 * @var \Doctrine\Common\Collections\ArrayCollection
 	 * @ManyToMany(targetEntity="RoleEntity", cascade={"persist"}, inversedBy="users")
 	 * @JoinTable(name="users_roles",
-	 *	  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-	 *	  inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")}
-	 *	  )
+	 *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")}
+	 *      )
 	 */
 	protected $roleEntities;
 
@@ -85,7 +85,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	protected $socialData;
 
 
-
 	public function __construct()
 	{
 		$this->roleEntities = new \Doctrine\Common\Collections\ArrayCollection();
@@ -99,7 +98,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	/**
 	 * Invalidate all user logins.
 	 */
@@ -109,7 +107,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 			$login->reload = true;
 		}
 	}
-
 
 
 	/**
@@ -125,7 +122,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 
 		$this->password = $this->getHash($password);
 	}
-
 
 
 	/**
@@ -148,7 +144,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	/**
 	 * Disable user and verify by key.
 	 *
@@ -158,7 +153,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	{
 		$this->generateNewKey();
 	}
-
 
 
 	/**
@@ -176,7 +170,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	/**
 	 * Check if user is enable.
 	 *
@@ -191,7 +184,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -199,7 +191,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	{
 		return $this->email;
 	}
-
 
 
 	/******************************** Getters and setters **************************************/
@@ -211,12 +202,10 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function setId($id)
 	{
 		$this->id = $id;
 	}
-
 
 
 	/**
@@ -234,12 +223,10 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function getRoleEntities()
 	{
 		return $this->roleEntities;
 	}
-
 
 
 	/**
@@ -254,19 +241,16 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function setLogins($logins)
 	{
 		$this->logins = $logins;
 	}
 
 
-
 	public function getLogins()
 	{
 		return $this->logins;
 	}
-
 
 
 	public function setEnable($enable)
@@ -276,20 +260,16 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function getEnable()
 	{
 		return $this->enable;
 	}
 
 
-
 	public function setKey($key)
 	{
 		$this->key = $key;
-
 	}
-
 
 
 	public function getKey()
@@ -298,19 +278,20 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function setEmail($email)
 	{
+		if (!\Nette\Utils\Validators::isEmail($email)) {
+			throw new \Nette\InvalidArgumentException("E-mail must be in correct format. '{$email}' is given.");
+		}
+
 		$this->email = $email;
 	}
-
 
 
 	public function getEmail()
 	{
 		return $this->email;
 	}
-
 
 
 	/******************************** protected function ***************************************/
@@ -324,7 +305,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	/**
 	 * Generate random key.
 	 */
@@ -332,7 +312,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	{
 		$this->key = \Nette\Utils\Strings::random(30);
 	}
-
 
 
 	/**
@@ -347,12 +326,10 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function setSocialData($socialData)
 	{
 		$this->socialData = $socialData;
 	}
-
 
 
 	public function getSocialData()
@@ -361,17 +338,14 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	}
 
 
-
 	public function setSocialType($socialType)
 	{
 		$this->socialType = $socialType;
 	}
 
 
-
 	public function getSocialType()
 	{
 		return $this->socialType;
 	}
-
 }

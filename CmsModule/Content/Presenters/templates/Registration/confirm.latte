@@ -1,0 +1,9 @@
+{block content}
+
+<h1>User registration</h1>
+
+{if $entity->mode === CmsModule\Content\Entities\RegistrationPageEntity::MODE_MAIL}
+<h2>Hello {$user->name}. Your account has been activated.</h2>
+	{else}
+<h2>Hello {$user->name}. Your account has been confirmed, please wait for activation by administrator.</h2>
+{/if}

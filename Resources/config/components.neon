@@ -122,6 +122,23 @@ services:
 			- injectFactory(@cms.admin.basicFormFactory)
 		tags: [component]
 
+	cms.registrationFormFactory:
+		class: CmsModule\Content\Forms\RegistrationFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+	cms.registrationFrontFormFactory:
+		class: CmsModule\Content\Forms\RegistrationFrontFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+		tags: [component]
+
+
+	cms.securityManager:
+		setup:
+			- addUserType(basic user, \CmsModule\Security\Entities\UserEntity, cms.registrationFrontFormFactory)
+
 
 factories:
 

@@ -153,3 +153,7 @@ services:
 	cms.redirectPresenter:
 		class: CmsModule\Content\Presenters\RedirectPresenter
 		tags: [presenter]
+
+	cms.registrationPresenter:
+		class: CmsModule\Content\Presenters\RegistrationPresenter
+		tags: [presenter]

@@ -34,6 +34,9 @@ services:
 	cms.scannerService:
 		class: CmsModule\Services\ScannerService
 
+	cms.securityManager:
+		class: CmsModule\Security\SecurityManager
+
 
 	cms.pageRepository:
 		class: CmsModule\Content\Entities\PageEntity
@@ -97,6 +100,12 @@ services:
 		setup:
 			- addSection('Redirection', @cms.redirectFormFactory)
 		tags: [contentType: [name: 'redirect page']]
+
+	cms.registrationContent:
+		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\RegistrationPageEntity')
+		setup:
+			- addSection('Registration form', @cms.registrationFormFactory)
+		tags: [contentType: [name: 'registration']]
 
 factories:
 
