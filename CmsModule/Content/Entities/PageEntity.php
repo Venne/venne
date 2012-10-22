@@ -370,24 +370,6 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
-	 * @param $order
-	 */
-	public function setOrder($order)
-	{
-		$this->order = $order;
-	}
-
-
-	/**
-	 * @return int
-	 */
-	public function getOrder()
-	{
-		return $this->order;
-	}
-
-
-	/**
 	 * @return string
 	 */
 	public static function getType()

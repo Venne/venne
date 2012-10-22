@@ -37,7 +37,7 @@ class PageRepository extends BaseRepository
 		// set to root as last entity
 		$root = $this->findOneBy(array('parent' => NULL, 'previous' => NULL));
 		if ($root) {
-			$last = $this->findBy(array('parent' => $root->id), array('order' => 'DESC'), 1);
+			$last = $this->findBy(array('parent' => $root->id), array('position' => 'DESC'), 1);
 			$entity->setParent($root, true, isset($last[0]) ? $last[0] : NULL);
 		}
 

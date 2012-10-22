@@ -166,7 +166,7 @@ class PanelControl extends Control
 		}
 		$dql
 			->andWhere('a.translationFor IS NULL')
-			->orderBy('a.order');
+			->orderBy('a.position');
 
 		foreach ($dql->getQuery()->getResult() as $page) {
 			$item = array("title" => $page->name, 'key' => $page->id);

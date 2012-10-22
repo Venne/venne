@@ -38,12 +38,12 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $next;
 
 
-	/** @Column(type="integer", name="`order`") */
-	protected $order;
+	/** @Column(type="integer") */
+	protected $position;
 
 	/**
 	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="parent", cascade={"persist", "remove", "detach"})
-	 * @OrderBy({"order" = "ASC"})
+	 * @OrderBy({"position" = "ASC"})
 	 */
 	protected $childrens;
 
@@ -53,9 +53,10 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function __construct()
 	{
-		$this->order = 1;
+		$this->position = 1;
 		$this->childrens = new \Doctrine\Common\Collections\ArrayCollection;
 	}
+
 
 	/**
 	 * @PostRemove()
@@ -94,16 +95,15 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->previous = NULL;
 		$this->parent = NULL;
 		$this->next = NULL;
-		$this->order = 1;
+		$this->position = 1;
 	}
 
 
 	protected function moveUp(PageEntity $entity)
 	{
 		do {
-			$entity->order--;
+			$entity->position--;
 			$entity = $entity->next;
-
 		} while ($entity);
 	}
 
@@ -111,9 +111,8 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected function moveDown(PageEntity $entity)
 	{
 		do {
-			$entity->order++;
+			$entity->position++;
 			$entity = $entity->next;
-
 		} while ($entity);
 	}
 
@@ -165,23 +164,23 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 					$this->next = $previous->next;
 
 					$this->previous = $previous;
-					$this->order = $this->previous->order + 1;
+					$this->position = $this->previous->position + 1;
 					$previous->next = $this;
 				} else {
-					$this->next = $parent->getChildrens()->first() ?: NULL;
+					$this->next = $parent->getChildrens()->first() ? : NULL;
 					$this->previous = NULL;
 					if ($this->next) {
 						$this->next->previous = $this;
 						$this->moveDown($this->next);
 					}
-					$this->order = 1;
+					$this->position = 1;
 				}
 			} else {
-				$this->previous = $parent->getChildrens()->last() ?: NULL;
+				$this->previous = $parent->getChildrens()->last() ? : NULL;
 				$this->next = NULL;
 				if ($this->previous) {
 					$this->previous->next = $this;
-					$this->order = $this->previous->order + 1;
+					$this->position = $this->previous->position + 1;
 				}
 			}
 
@@ -196,7 +195,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 					$this->next = $previous->next;
 
 					$this->previous = $previous;
-					$this->order = $this->previous->order + 1;
+					$this->position = $this->previous->position + 1;
 					$previous->next = $this;
 				} else {
 					$this->next = $this->getRoot($oldNext ? : ($oldParent ? : ($oldPrevious)));
@@ -204,9 +203,8 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 						$this->next->previous = $this;
 						$this->moveDown($this->next);
 					}
-					$this->order = 1;
+					$this->position = 1;
 				}
-
 			}
 		}
 	}
@@ -229,10 +227,12 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		return $this->childrens;
 	}
 
+
 	public function getPrevious()
 	{
 		return $this->previous;
 	}
+
 
 	public function getNext()
 	{
@@ -240,4 +240,14 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	public function setPosition($position)
+	{
+		$this->position = $position;
+	}
+
+
+	public function getPosition()
+	{
+		return $this->position;
+	}
 }
