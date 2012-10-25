@@ -12,8 +12,8 @@
 namespace CmsModule\Content\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
+use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Forms\Mappers\EntityMapper;
 use DoctrineModule\Repositories\BaseRepository;
 
@@ -22,30 +22,6 @@ use DoctrineModule\Repositories\BaseRepository;
  */
 class BasicFormFactory extends FormFactory
 {
-
-	/** @var EntityMapper */
-	protected $mapper;
-
-	/** @var BaseRepository */
-	protected $repository;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 * @param BaseRepository $repository
-	 */
-	public function __construct(EntityMapper $mapper, BaseRepository $repository)
-	{
-		$this->mapper = $mapper;
-		$this->repository = $repository;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
-
 
 	protected function getControlExtensions()
 	{
@@ -86,6 +62,14 @@ class BasicFormFactory extends FormFactory
 		// date
 		$form->addDateTime("expired", "Expired");
 
+		// Navigation
+		$form->addGroup('Navigation');
+		$form->addCheckbox('navigationShow', 'Show navigation')->addCondition($form::EQUAL, true)->toggle('form-navigation-own');
+		$form->addGroup()->setOption('id', 'form-navigation-own');
+		$form->addCheckbox('navigationOwn', 'Use own title')->addCondition($form::EQUAL, true)->toggle('form-navigation-title');
+		$form->addGroup()->setOption('id', 'form-navigation-title');
+		$form->addText('navigationTitleRaw', 'Navigation title');
+
 		// languages
 		/** @var $repository \DoctrineModule\Repositories\BaseRepository */
 		$repository = $form->mapper->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
@@ -94,16 +78,36 @@ class BasicFormFactory extends FormFactory
 			$form->addManyToMany("languages", "Content is in")->addRule($form::FILLED, 'Page must contain some language');
 		}
 
-		$form->addSubmit('_submit', 'Save');
+		$form->addGroup();
+		$form->addSaveButton('Save');
 	}
 
 
 	public function handleSave(Form $form)
 	{
-		try {
-			$this->repository->save($form->data);
-		} catch (\Nette\InvalidArgumentException $e) {
+		if ($form['navigationOwn']->value) {
+			$form->data->navigationTitleRaw = $form['navigationTitleRaw']->value;
+		} else {
+			$form->data->navigationTitleRaw = NULL;
+		}
+
+		parent::handleSave($form);
+	}
+
+
+	public function handleLoad(Form $form)
+	{
+		if ($form->data->navigationTitleRaw !== null) {
+			$form['navigationOwn']->value = true;
+		}
+	}
+
+
+	public function handleCatchError(Form $form, $e)
+	{
+		if ($e instanceof \Nette\InvalidArgumentException) {
 			$form->addError($e->getMessage());
+			return true;
 		}
 	}
 }

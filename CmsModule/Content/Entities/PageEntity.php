@@ -90,6 +90,19 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
+	 * @var
+	 * @Column(type="string", nullable=true)
+	 */
+	protected $navigationTitleRaw;
+
+	/**
+	 * @var
+	 * @Column(type="boolean")
+	 */
+	protected $navigationShow;
+
+
+	/**
 	 * @param $type
 	 */
 	public function __construct()
@@ -106,6 +119,8 @@ abstract class PageEntity extends TreeEntity
 		$this->mainRoute = new RouteEntity;
 		$this->routes[] = $this->mainRoute;
 		$this->mainRoute->page = $this;
+
+		$this->navigationShow = true;
 	}
 
 
@@ -366,6 +381,51 @@ abstract class PageEntity extends TreeEntity
 	public function setExpired($expired)
 	{
 		$this->expired = $expired;
+	}
+
+
+	/**
+	 * @param  $navigationShow
+	 */
+	public function setNavigationShow($navigationShow)
+	{
+		$this->navigationShow = $navigationShow;
+	}
+
+
+	/**
+	 * @return
+	 */
+	public function getNavigationShow()
+	{
+		return $this->navigationShow;
+	}
+
+
+	/**
+	 * @param  $navigationTitleRaw
+	 */
+	public function setNavigationTitleRaw($navigationTitleRaw)
+	{
+		$this->navigationTitleRaw = $navigationTitleRaw;
+	}
+
+
+	/**
+	 * @return
+	 */
+	public function getNavigationTitleRaw()
+	{
+		return $this->navigationTitleRaw;
+	}
+
+
+	/**
+	 * @return
+	 */
+	public function getNavigationTitle()
+	{
+		return $this->navigationTitleRaw !== null ? $this->navigationTitleRaw : $this->name;
 	}
 
 
