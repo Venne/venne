@@ -109,6 +109,17 @@ class ContentPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionSpecial()
+	{
+		if (!$this->getApplication()->catchExceptions) {
+			$this->flashMessage('Capturing error pages will not work. Please enable catch exceptions in application settings.', 'info', true);
+		}
+	}
+
+
 	public function handleDelete($id)
 	{
 		$entity = $this->pageRepository->find($id);
