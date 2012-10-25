@@ -87,7 +87,7 @@ services:
 ##		tags: [presenter]
 #
 	cms.admin.contentPresenter:
-		class: CmsModule\Administration\Presenters\ContentPresenter(@cms.pageRepository, @cms.languageRepository, @cms.pageTagRepository, @cms.contentManager)
+		class: CmsModule\Administration\Presenters\ContentPresenter(@cms.pageRepository, @cms.languageRepository, @cms.pageTagRepository, @cms.contentManager, %%)
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Content:'
 			category: 'Content'
@@ -156,6 +156,10 @@ services:
 
 	cms.registrationPresenter:
 		class: CmsModule\Content\Presenters\RegistrationPresenter
+		tags: [presenter]
+
+	cms.loginPresenter:
+		class: CmsModule\Content\Presenters\LoginPresenter
 		tags: [presenter]
 
 	cms.errorPresenter:

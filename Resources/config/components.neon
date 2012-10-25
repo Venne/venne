@@ -111,13 +111,19 @@ services:
 
 
 	cms.staticFormFactory:
-		class: CmsModule\Content\Forms\StaticFormFactory(..., @cms.pageRepository)
+		class: CmsModule\Content\Forms\StaticFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 		tags: [component]
 
+	cms.loginPageFormFactory:
+		class: CmsModule\Content\Forms\LoginFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+		tags: [component]
+
 	cms.redirectFormFactory:
-		class: CmsModule\Content\Forms\RedirectFormFactory(..., @cms.pageRepository)
+		class: CmsModule\Content\Forms\RedirectFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 		tags: [component]
@@ -177,6 +183,10 @@ factories:
 	cms.breadcrumbControl:
 		class: CmsModule\Components\BreadcrumbControl(@cms.pageRepository, %website.routePrefix%)
 		tags: [widget: breadcrumb]
+
+	cms.loginControl:
+		class: CmsModule\Components\LoginControl
+		tags: [widget: login]
 
 	cms.languageswitchControl:
 		class: CmsModule\Components\LanguageswitchControl(@cms.languageRepository)

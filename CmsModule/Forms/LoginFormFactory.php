@@ -43,7 +43,7 @@ class LoginFormFactory extends FormFactory
 		$form->addText('username', 'Login')->setRequired('Please provide a username.');
 		$form->addPassword('password', 'Password')->setRequired('Please provide a password.');
 		$form->addCheckbox('remember', 'Remember me on this computer');
-		$form->addSubmit("_submit", "Sign in")->getControlPrototype()->class[] = 'btn btn-primary';
+		$form->addSaveButton("Sign in")->getControlPrototype()->class[] = 'btn-primary';
 	}
 
 

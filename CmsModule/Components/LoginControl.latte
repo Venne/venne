@@ -1,0 +1,3 @@
+{if $presenter->user->isLoggedIn()}
+    Logged in as {if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} | <a n:href="logout">logout</a>
+{/if}

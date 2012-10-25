@@ -111,6 +111,12 @@ services:
 			- addSection('Registration form', @cms.registrationFormFactory)
 		tags: [contentType: [name: 'registration']]
 
+	cms.loginContent:
+		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\LoginPageEntity')
+		setup:
+			- addSection('Login page', @cms.loginPageFormFactory)
+		tags: [contentType: [name: 'login page']]
+
 factories:
 
 	areaMacro:
