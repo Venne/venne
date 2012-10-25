@@ -1,8 +1,13 @@
 Venne:CMS based on Venne:FRAMEWORK
 ==================================
 
-Installing
-----------
+[![Build Status](https://secure.travis-ci.org/Venne/cms-module.png)](http://travis-ci.org/Venne/cms-module)
+
+![Venne:CMS](http://sphotos-e.ak.fbcdn.net/hphotos-ak-ash4/383535_488937831131218_1478109251_n.jpg)
+
+
+Installation
+------------
 
 The best way to install Venne:CMS is create new project using
 [Composer](http://doc.nette.org/composer):
