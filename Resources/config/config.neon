@@ -76,6 +76,10 @@ services:
 		class: CmsModule\Content\Entities\DirEntity
 		tags: [repository]
 
+	cms.pageTagRepository:
+		class: CmsModule\Content\Entities\PageTagEntity
+		tags: [repository]
+
 
 	cms.pageListener:
 		class: CmsModule\Content\Listeners\PageListener

@@ -17,6 +17,7 @@ use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Forms\BasicFormFactory;
 use CmsModule\Content\Forms\RoutesFormFactory;
+use CmsModule\Content\Forms\SpecialFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -42,6 +43,9 @@ class ContentPresenter extends BasePresenter
 	/** @var BaseRepository */
 	protected $languageRepository;
 
+	/** @var BaseRepository */
+	protected $pageTagRepository;
+
 	/** @var ContentManager */
 	protected $contentManager;
 
@@ -51,29 +55,49 @@ class ContentPresenter extends BasePresenter
 	/** @var RoutesFormFactory */
 	protected $contentRoutesFormFactory;
 
+	/** @var SpecialFormFactory */
+	protected $specialFormFactory;
+
 
 	/**
-	 * @param \CmsModule\Content\Repositories\PageRepository $pageRepository
-	 * @param \DoctrineModule\Repositories\BaseRepository $languageRepository
-	 * @param \CmsModule\Content\ContentManager $contentManager
+	 * @param PageRepository $pageRepository
+	 * @param BaseRepository $languageRepository
+	 * @param BaseRepository $pageTagRepository
+	 * @param ContentManager $contentManager
 	 */
-	function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, ContentManager $contentManager)
+	function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, BaseRepository $pageTagRepository, ContentManager $contentManager)
 	{
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
+		$this->pageTagRepository = $pageTagRepository;
 		$this->contentManager = $contentManager;
 	}
 
 
+	/**
+	 * @param BasicFormFactory $contentForm
+	 */
 	public function injectContentForm(BasicFormFactory $contentForm)
 	{
 		$this->contentFormFactory = $contentForm;
 	}
 
 
+	/**
+	 * @param RoutesFormFactory $routesForm
+	 */
 	public function injectRoutesForm(RoutesFormFactory $routesForm)
 	{
 		$this->contentRoutesFormFactory = $routesForm;
+	}
+
+
+	/**
+	 * @param SpecialFormFactory $specialFormFactory
+	 */
+	public function injectSpecialFormFactory(SpecialFormFactory $specialFormFactory)
+	{
+		$this->specialFormFactory = $specialFormFactory;
 	}
 
 
@@ -135,6 +159,41 @@ class ContentPresenter extends BasePresenter
 		$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($presenter) {
 			$presenter['panel']->invalidateControl('content');
 		};
+
+		// global actions
+		$table->setGlobalAction($table['delete']);
+
+		return $table;
+	}
+
+
+	public function createComponentSpecialTable()
+	{
+		$presenter = $this;
+
+		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
+		$table->setRepository($this->pageTagRepository);
+		$table->setPaginator(10);
+
+		// forms
+		$form = $table->addForm($this->specialFormFactory, 'Special form');
+
+		// navbar
+		$table->addButtonCreate('create', 'Create new', $form, 'file');
+
+		// columns
+		$table->addColumn('tag', 'Tag', '40%', function ($entity) {
+			$tags = \CmsModule\Content\Entities\PageTagEntity::getTags();
+			return $tags[$entity->tag];
+		});
+		$table->addColumn('page', 'Page', '60%', function ($entity) {
+			return ($entity->page ? (string)$entity->page : '');
+		});
+
+		// actions
+		$table->addActionEdit('edit', 'Edit', $form);
+		$table->addActionDelete('delete', 'Delete');
 
 		// global actions
 		$table->setGlobalAction($table['delete']);

@@ -43,7 +43,7 @@
 						"languages": {},
 						"defaultLanguage": "cs",
 						"defaultPresenter": "Homepage",
-						"errorPresenter": "Error",
+						"errorPresenter": "Cms:Error",
 						"layout": "",
 						"cacheMode": "",
 						"cacheValue": "10"

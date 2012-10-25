@@ -134,6 +134,11 @@ services:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 		tags: [component]
 
+	cms.specialFormFactory:
+		class: CmsModule\Content\Forms\SpecialFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+
 
 	cms.securityManager:
 		setup:

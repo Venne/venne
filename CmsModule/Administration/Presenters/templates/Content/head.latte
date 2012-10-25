@@ -1,0 +1,6 @@
+<li n:if="$presenter->isAuthorized('Content:default')"{if $presenter->isLinkCurrent("Content:default")} class="active"{/if}>
+    <a class="ajax" href="{plink Content:default}">{_'Page list'}</a>
+</li>
+<li n:if="$presenter->isAuthorized('Content:special')"{if $presenter->isLinkCurrent("Content:special")} class="active"{/if}>
+    <a class="ajax" href="{plink Content:special}">{_'Special pages'}</a>
+</li>
