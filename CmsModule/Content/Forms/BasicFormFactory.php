@@ -40,12 +40,14 @@ class BasicFormFactory extends FormFactory
 		$infoGroup = $form->addGroup('Informations');
 
 		$form->addText('name', 'Name')
-			->getControlPrototype()->attrs['onClick'] = "$(this).stringToSlug({setEvents: 'keyup keydown blur', getPut: '.localUrl', space: '-' }); this.onclick=null;";
+			->getControlPrototype()->attrs['onClick'] = "$(this).stringToSlug({setEvents: 'keyup keydown blur', getPut: '.localUrl', space: '-' }); $(this).live('keyup keydown blur', function(){ $('.formTitle').val($(this).val()); }); this.onclick=null;";
 		$form['name']->addRule($form::FILLED);
 
 		// route
 		$mainRoute = $form->addOne('mainRoute');
 		$mainRoute->setCurrentGroup($infoGroup);
+		$mainRoute->addText('title', 'Title')
+			->getControlPrototype()->class[] = 'formTitle';
 		$mainRoute->addText('localUrl', 'URL')
 			->addRule($form::REGEXP, "URL can not contain '/'", "/^[a-zA-z0-9._-]*$/")
 			->addRule($form::FILLED);
@@ -59,8 +61,8 @@ class BasicFormFactory extends FormFactory
 			}
 		}
 
-		// date
 		$form->addDateTime("expired", "Expired");
+		$form->addText('version', 'Version')->addRule($form::FILLED);
 
 		// Navigation
 		$form->addGroup('Navigation');

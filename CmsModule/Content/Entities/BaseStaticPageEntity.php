@@ -32,7 +32,7 @@ abstract class BaseStaticPageEntity extends PageEntity
 
 		$this->mainRoute->type = 'Cms:Static:default';
 
-		$this->text = "";
+		$this->text = '';
 	}
 
 
@@ -52,7 +52,4 @@ abstract class BaseStaticPageEntity extends PageEntity
 	{
 		return $this->text;
 	}
-
-
-
 }

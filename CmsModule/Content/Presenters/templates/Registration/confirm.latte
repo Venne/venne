@@ -1,6 +1,6 @@
-{block content}
+{block head}{$entity->name}{/block}
 
-<h1>User registration</h1>
+{block content}
 
 {if $entity->mode === CmsModule\Content\Entities\RegistrationPageEntity::MODE_MAIL}
 <h2>Hello {$user->name}. Your account has been activated.</h2>

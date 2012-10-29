@@ -27,9 +27,6 @@ class RegistrationFrontFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addGroup("Registration");
-
-
 		$form->addText('email', 'E-mail')->addRule($form::EMAIL);
 		$form->addPassword('password', 'Password');
 		$form->addPassword("password_confirm", "Confirm password")

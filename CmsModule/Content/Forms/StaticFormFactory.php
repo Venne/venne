@@ -35,7 +35,7 @@ class StaticFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addGroup()->setOption('class', 'full');
+		$form->addGroup('Content')->setOption('class', 'full');
 		$form->addContentEditor("text", NULL, Null, 20);
 
 		$form->addSaveButton('Save');
