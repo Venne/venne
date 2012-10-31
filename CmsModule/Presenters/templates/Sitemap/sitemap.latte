@@ -6,7 +6,7 @@
 	{if $entity}
 		{foreach $entity->routes as $route}
 			<url>
-				<loc>{plink :Pages:Default: route=>$route}</loc>
+				<loc>{plink :Cms:Static:default route=>$route}</loc>
 				<lastmod>{$page->updated|date:'%Y-%m-%d'}</lastmod>
 				{if $route->changefreq}<changefreq>{$route->changefreq}</changefreq>{/if}
 				{if $route->priority}<priority>{if $route->priority === 10}1.0{else}0.{$route->priority}{/if}</priority>{/if}
