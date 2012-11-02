@@ -92,6 +92,7 @@ class PanelControl extends Control
 	protected function createComponentBrowser()
 	{
 		$nullLinkParams = \Venne\Application\UI\Helpers::nullLinkParams($this);
+		unset($nullLinkParams['lang']);
 
 		if ($this->tab == 0) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
