@@ -24,7 +24,8 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->login();
 
 		$this->clickAndWait("link=Basic meta informationsEdit base meta informations about this website");
-		$this->assertEquals("Blog %s %t", $this->getValue("id=frmwebsiteForm-title"));
+		$this->assertEquals("Blog", $this->getValue("id=frmwebsiteForm-name"));
+		$this->assertEquals("%n %s %t", $this->getValue("id=frmwebsiteForm-title"));
 		$this->assertEquals("|", $this->getValue("id=frmwebsiteForm-titleSeparator"));
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-keywords"));
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-description"));
@@ -33,7 +34,8 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->verifyTextPresent("offtimestatic");
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-routePrefix"));
 
-		$this->type("id=frmwebsiteForm-title", "Blog %s %t1");
+		$this->type("id=frmwebsiteForm-name", "Blog0");
+		$this->type("id=frmwebsiteForm-title", "%n %s %t1");
 		$this->type("id=frmwebsiteForm-titleSeparator", "|2");
 		$this->type("id=frmwebsiteForm-keywords", "3");
 		$this->type("id=frmwebsiteForm-description", "4");
@@ -43,7 +45,8 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->type("id=frmwebsiteForm-routePrefix", "<lang>/");
 		$this->click("id=frmwebsiteForm-_submit");
 
-		$this->assertEquals("Blog %s %t1", $this->getValue("id=frmwebsiteForm-title"));
+		$this->assertEquals("Blog0", $this->getValue("id=frmwebsiteForm-name"));
+		$this->assertEquals("%n %s %t1", $this->getValue("id=frmwebsiteForm-title"));
 		$this->assertEquals("|2", $this->getValue("id=frmwebsiteForm-titleSeparator"));
 		$this->assertEquals("3", $this->getValue("id=frmwebsiteForm-keywords"));
 		$this->assertEquals("4", $this->getValue("id=frmwebsiteForm-description"));
@@ -54,7 +57,8 @@ class WebsitePresenterTest extends AdminPresenterTest
 
 		$this->assertEquals("<lang>/", $this->getValue("id=frmwebsiteForm-routePrefix"));
 
-		$this->type("id=frmwebsiteForm-title", "Blog %s %t");
+		$this->type("id=frmwebsiteForm-name", "Blog");
+		$this->type("id=frmwebsiteForm-title", "%n %s %t");
 		$this->type("id=frmwebsiteForm-titleSeparator", "|");
 		$this->type("id=frmwebsiteForm-keywords", "");
 		$this->type("id=frmwebsiteForm-description", "");

@@ -10,4 +10,4 @@
 
 	<script n:foreach="$js as $js=>$params" type="text/javascript" src="{$js}"></script>
 
-	<title>{str_replace("%s", !$control->title ? "" : $control->titleSeparator, str_replace("%t", $control->title, $control->titleTemplate))}</title>
+    <title>{strtr($control->titleTemplate, array("%s" => (!$control->title ? "" : $control->titleSeparator), "%t" => $control->title, "%n" => $control->websiteName))}</title>

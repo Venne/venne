@@ -38,6 +38,9 @@ class HeadControl extends Control
 	protected $robots;
 
 	/** @var string */
+	protected $websiteName;
+
+	/** @var string */
 	protected $author;
 
 	/** @var string */
@@ -50,18 +53,17 @@ class HeadControl extends Control
 	protected $titleSeparator;
 
 
-
 	public function startup()
 	{
 		parent::startup();
 
+		$this->websiteName = $this->presenter->context->parameters["website"]["name"];
 		$this->titleTemplate = $this->presenter->context->parameters["website"]["title"];
 		$this->titleSeparator = $this->presenter->context->parameters["website"]["titleSeparator"];
 		$this->author = $this->presenter->context->parameters["website"]["author"];
 		$this->keywords = $this->presenter->context->parameters["website"]["keywords"];
 		$this->description = $this->presenter->context->parameters["website"]["description"];
 	}
-
 
 
 	public function render()
@@ -73,8 +75,24 @@ class HeadControl extends Control
 	}
 
 
-
 	/***************************** Setters/getters ************************************************/
+
+	/**
+	 * @param string $websiteName
+	 */
+	public function setWebsiteName($websiteName)
+	{
+		$this->websiteName = $websiteName;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getWebsiteName()
+	{
+		return $this->websiteName;
+	}
 
 
 	/**
@@ -86,7 +104,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -94,7 +111,6 @@ class HeadControl extends Control
 	{
 		return $this->author;
 	}
-
 
 
 	/**
@@ -106,7 +122,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -114,7 +129,6 @@ class HeadControl extends Control
 	{
 		return $this->description;
 	}
-
 
 
 	/**
@@ -126,7 +140,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -134,7 +147,6 @@ class HeadControl extends Control
 	{
 		return $this->keywords;
 	}
-
 
 
 	/**
@@ -146,7 +158,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -154,7 +165,6 @@ class HeadControl extends Control
 	{
 		return $this->robots;
 	}
-
 
 
 	/**
@@ -166,7 +176,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -174,7 +183,6 @@ class HeadControl extends Control
 	{
 		return $this->title;
 	}
-
 
 
 	/**
@@ -186,7 +194,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -194,7 +201,6 @@ class HeadControl extends Control
 	{
 		return $this->titleSeparator;
 	}
-
 
 
 	/**
@@ -206,7 +212,6 @@ class HeadControl extends Control
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -214,6 +219,4 @@ class HeadControl extends Control
 	{
 		return $this->titleTemplate;
 	}
-
-
 }

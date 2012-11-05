@@ -34,7 +34,8 @@
 						"defaultPresenter": "Content"
 					},
 					"website": {
-						"title": "Blog %s %t",
+						"name": "Blog",
+						"title": "%n %s %t",
 						"titleSeparator": "|",
 						"keywords": "",
 						"description": "",

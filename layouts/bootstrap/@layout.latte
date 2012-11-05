@@ -17,9 +17,15 @@
 	{js @CmsModule/jquery/js/jquery-ui-1.8.23.custom.min.js}
 	{css @CmsModule/jquery/css/ui-lightness/jquery-ui-1.8.23.custom.css, media=>'screen, projection, tv'}
 
+	{* ajax *}
+	{js @CmsModule/ajax/nette.ajax.js}
+
 	{* bootstrap *}
 	{js @CmsModule/bootstrap/js/bootstrap.min.js}
 	{css @CmsModule/bootstrap/css/bootstrap.min.css}
+
+	{* application *}
+	{js @CmsModule/js/application.js}
 
 	{block head}{/block}
 {/head}
@@ -30,13 +36,10 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 	<div class="container">
-		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		</a>
+        <a class="brand" href="{$basePath}/">{$presenter['head']->websiteName}</a>
 		<div class="nav-collapse">
 		{control navigation 0, 2, false, true}
+		{control login}
 		</div><!--/.nav-collapse -->
 	</div>
 	</div>

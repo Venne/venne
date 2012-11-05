@@ -66,7 +66,8 @@ class WebsiteFormFactory extends FormFactory
 	protected function configure(Form $form)
 	{
 		$form->addGroup("Global meta informations");
-		$form->addText("title", "Title")->setOption("description", "(%s - separator, %t - local title)");
+		$form->addText("name", "Website name")->addRule($form::FILLED);
+		$form->addText("title", "Title")->setOption("description", "(%n - name, %s - separator, %t - local title)");
 		$form->addText("titleSeparator", "Title separator");
 		$form->addText("keywords", "Keywords");
 		$form->addText("description", "Description");
