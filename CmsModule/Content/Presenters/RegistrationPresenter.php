@@ -65,6 +65,55 @@ class RegistrationPresenter extends PagePresenter
 	}
 
 
+	/**
+	 * @return \Doctrine\ORM\EntityRepository
+	 */
+	protected function getUserRepository()
+	{
+		return $this->entityManager->getRepository('\CmsModule\Security\Entities\UserEntity');
+	}
+
+
+	public function handleLoad($name)
+	{
+		/** @var $socialLogin \CmsModule\Security\ISocialLogin */
+		$socialLogin = $this->securityManager->getSocialLoginByName($name);
+
+		$identity = $socialLogin->authenticate(array());
+		if ($identity) {
+			$this->user->login($identity);
+			$this->flashMessage('User is already registered');
+			$this->redirect('this');
+		}
+
+		$formFactory = $this->securityManager->getFormFactoryByEntity($this->page->userType);
+
+		if (!$formFactory instanceof \CmsModule\Content\IRegistrationFormFactory) {
+			throw new \Nette\InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \CmsModule\Content\IRegistrationFormFactory");
+		}
+
+		$formFactory->setSocialData($this['form'], $socialLogin);
+
+		if ($this->page->getSocialMode() === RegistrationPageEntity::SOCIAL_MODE_LOAD_AND_SAVE) {
+			/** @var $form \Venne\Forms\Form */
+			$form = $this['form'];
+			$form->onSuccess = NULL;
+			$form->setSubmittedBy($form->getSaveButton());
+			$form->fireEvents();
+
+			if ($form->isValid()) {
+				$socialLogin->connectWithUser($form->getData());
+
+				$identity = $socialLogin->authenticate(array());
+				if ($identity) {
+					$this->user->login($identity);
+					$this->redirect('this');
+				}
+			}
+		}
+	}
+
+
 	protected function createComponentForm()
 	{
 		$repository = $this->entityManager->getRepository($this->page->userType);
@@ -125,6 +174,12 @@ class RegistrationPresenter extends PagePresenter
 			->setSubject($this->page->subject)
 			->setHTMLBody($text)
 			->send();
+	}
+
+
+	public function renderDefault()
+	{
+		$this->template->socialLogins = $this->securityManager->getSocialLogins();
 	}
 
 

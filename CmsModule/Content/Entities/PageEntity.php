@@ -28,6 +28,25 @@ abstract class PageEntity extends TreeEntity
 
 	const CACHE = 'Cms.PageEntity';
 
+	const TAG_ERROR_403 = 'error_403';
+
+	const TAG_ERROR_404 = 'error_404';
+
+	const TAG_ERROR_405 = 'error_405';
+
+	const TAG_ERROR_410 = 'error_410';
+
+	const TAG_ERROR_500 = 'error_500';
+
+	/** @var array */
+	protected static $tags = array(
+		self::TAG_ERROR_403 => 'Forbidden page',
+		self::TAG_ERROR_404 => 'Not Found page',
+		self::TAG_ERROR_405 => 'Method Not Allowed',
+		self::TAG_ERROR_410 => 'Gone',
+		self::TAG_ERROR_500 => 'Internal Server Error page',
+	);
+
 	/**
 	 * @var string
 	 * @Column(type="string")
@@ -437,5 +456,14 @@ abstract class PageEntity extends TreeEntity
 		$ref = new \Nette\Reflection\ClassType(get_called_class());
 		$annotation = $ref->getAnnotation('DiscriminatorEntry');
 		return $annotation['name'];
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public static function getTags()
+	{
+		return self::$tags;
 	}
 }

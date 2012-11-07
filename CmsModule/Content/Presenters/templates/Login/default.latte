@@ -2,4 +2,16 @@
 
 {block content}
 
-{control form}
+{if !$presenter->user->isLoggedIn()}
+	{control form}
+
+	<h2>Social networks</h2>
+
+	<ul>
+	{foreach $socialLogins as $name}
+		<li><a n:href="login! name=>$name">{$name}</a></li>
+	{/foreach}
+	</ul>
+{else}
+	<h2>You are already logged in.</h2>
+{/if}

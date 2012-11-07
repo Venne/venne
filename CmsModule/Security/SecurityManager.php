@@ -34,6 +34,9 @@ class SecurityManager extends Object
 	/** @var array */
 	protected $typesByName = array();
 
+	/** @var \Venne\Security\ISocialLogin[] */
+	protected $socialLogins = array();
+
 
 	/**
 	 * @param Container $content
@@ -65,6 +68,21 @@ class SecurityManager extends Object
 		$this->types[$entity] = $name;
 		$this->typesByName[$name] = $formFactoryName;
 		$this->typesByEntity[$entity] = $formFactoryName;
+	}
+
+
+	/**
+	 * @param $name
+	 * @param ISocialLogin $socialLogin
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public function addSocialLogin($name, $socialLoginFactoryName)
+	{
+		if (isset($this->socialLogins[$name])) {
+			throw new \Nette\InvalidArgumentException("Social login name '{$name}' is already installed.");
+		}
+
+		$this->socialLogins[$name] = $socialLoginFactoryName;
 	}
 
 
@@ -112,6 +130,32 @@ class SecurityManager extends Object
 		return $this->content->getService($name);
 	}
 
+
+	/**
+	 * @param $name
+	 * @return \Venne\Security\ISocialLogin
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public function getSocialLoginByName($name)
+	{
+		if (!isset($this->socialLogins[$name])) {
+			throw new \Nette\InvalidArgumentException("Social login name '{$name}' has not been registered.");
+		}
+
+		return $this->content->getService($this->socialLogins[$name]);
+	}
+
+
+	/**
+	 * @return array|\Venne\Security\ISocialLogin[]
+	 */
+	public function getSocialLogins()
+	{
+		return array_keys($this->socialLogins);
+	}
+
+
+	/**************************************** Protected ****************************************************/
 
 	protected function normalizeEntityName($entity)
 	{

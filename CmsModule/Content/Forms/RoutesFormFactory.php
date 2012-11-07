@@ -29,6 +29,7 @@ class RoutesFormFactory extends FormFactory
 
 		$form->addMany('routes', function (\Nette\Forms\Container $container) use ($form) {
 			$container->setCurrentGroup($group = $container->getForm()->addGroup('Route: ' . $container->data->url));
+			$container->addText('localUrl', 'URL');
 			$container->addText('title', 'Title');
 			$container->addText('keywords', 'Keywords');
 			$container->addText('description', 'Description');

@@ -9,28 +9,22 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Content\Forms;
+namespace CmsModule\Content;
 
 use Venne;
 use Venne\Forms\Form;
-use DoctrineModule\Forms\FormFactory;
+use CmsModule\Security\ISocialLogin;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginFormFactory extends FormFactory
+interface IRegistrationFormFactory
 {
 
 
 	/**
 	 * @param Form $form
+	 * @param ISocialLogin $socialLogin
 	 */
-	public function configure(Form $form)
-	{
-		$form->addGroup('Settings');
-		$form->addManyToOne('page', 'Redirect to');
-		$form->addManyToOne('registration', 'Register by');
-
-		$form->addSaveButton('Save');
-	}
+	public function setSocialData(Form $form, ISocialLogin $socialLogin);
 }

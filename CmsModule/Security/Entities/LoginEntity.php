@@ -25,7 +25,7 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	const USER_ADMIN = NULL;
 
 	/**
-	 * @ManyToOne(targetEntity="UserEntity", inversedBy="id")
+	 * @ManyToOne(targetEntity="UserEntity", inversedBy="logins")
 	 * @JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;

@@ -122,15 +122,15 @@ class FileEntity extends BaseFileEntity
 	}
 
 
-	public function getFilePath()
+	public function getFilePath($withoutBasePath = false)
 	{
-		return ($this->protected ? $this->protectedDir : $this->publicDir) . '/' . $this->path;
+		return ($withoutBasePath ? '' : ($this->protected ? $this->protectedDir : $this->publicDir) . '/') . $this->path;
 	}
 
 
-	public function getFileUrl()
+	public function getFileUrl($withoutBasePath = false)
 	{
-		return $this->publicUrl . '/' . $this->path;
+		return ($withoutBasePath ? '' : $this->publicUrl . '/') . $this->path;
 	}
 
 

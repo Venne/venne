@@ -1,3 +1,27 @@
 {if $presenter->user->isLoggedIn()}
-    Logged in as {if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} | <a n:href="logout">logout</a>
+<ul class="nav pull-right">
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+			<span class="icon-user"></span> {if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b>
+		</a>
+        <ul class="dropdown-menu">
+            <li class="nav-header">Actions</li>
+            <li><a n:href="logout"><i class="icon-off"></i> Log out</a></li>
+        </ul>
+    </li>
+</ul>
+{else}
+	{form form class=>'navbar-form pull-right'}
+		{input username class=>input-small,  placeholder=>"username", autocomplete=>off}
+		{input password class=>input-small,  placeholder=>"password"}
+    	<div class="btn-group">
+		{input _submit class=>'btn'}
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+			{foreach $socialLogins as $name}
+                <li><a n:href="login! name=>$name">{$name}</a></li>
+			{/foreach}
+            </ul>
+		</div>
+	{/form}
 {/if}

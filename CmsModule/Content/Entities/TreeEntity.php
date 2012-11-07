@@ -234,6 +234,18 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	public function setNext($next)
+	{
+		$this->next = $next;
+	}
+
+
+	public function setPrevious($previous)
+	{
+		$this->previous = $previous;
+	}
+
+
 	public function getNext()
 	{
 		return $this->next;
@@ -251,3 +263,4 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		return $this->position;
 	}
 }
+

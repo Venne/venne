@@ -14,7 +14,6 @@ namespace CmsModule\Content\Forms;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
-use DoctrineModule\Forms\Mappers\EntityMapper;
 use DoctrineModule\Repositories\BaseRepository;
 
 /**
@@ -62,7 +61,6 @@ class BasicFormFactory extends FormFactory
 		}
 
 		$form->addDateTime("expired", "Expired");
-		$form->addText('version', 'Version')->addRule($form::FILLED);
 
 		// Navigation
 		$form->addGroup('Navigation');

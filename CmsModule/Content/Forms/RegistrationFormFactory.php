@@ -52,6 +52,7 @@ class RegistrationFormFactory extends FormFactory
 
 		$form->addSelect('mode', 'Registration mode', \CmsModule\Content\Entities\RegistrationPageEntity::getModes())
 			->addCondition($form::IS_IN, array(RegistrationPageEntity::MODE_MAIL, RegistrationPageEntity::MODE_MAIL_CHECKUP))->toggle('form-group-email');
+		$form->addSelect('socialMode', 'Social login mode', \CmsModule\Content\Entities\RegistrationPageEntity::getSocialModes());
 		$form->addSelect('userType', 'User type', $this->securityManager->getTypes())->setPrompt('------');
 		$form->addManyToMany('roles', 'Roles for new user');
 

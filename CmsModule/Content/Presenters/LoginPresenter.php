@@ -14,6 +14,7 @@ namespace CmsModule\Content\Presenters;
 use Venne;
 use Nette\Forms\Form;
 use CmsModule\Forms\LoginFormFactory;
+use CmsModule\Security\SecurityManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,6 +25,9 @@ class LoginPresenter extends PagePresenter
 	/** @var LoginFormFactory */
 	protected $loginFormFactory;
 
+	/** @var SecurityManager */
+	protected $securityManager;
+
 
 	/**
 	 * @param LoginFormFactory $loginFormFactory
@@ -31,6 +35,15 @@ class LoginPresenter extends PagePresenter
 	public function injectLoginFormFactory(LoginFormFactory $loginFormFactory)
 	{
 		$this->loginFormFactory = $loginFormFactory;
+	}
+
+
+	/**
+	 * @param SecurityManager $securityManager
+	 */
+	public function injectSecurityManager(SecurityManager $securityManager)
+	{
+		$this->securityManager = $securityManager;
 	}
 
 
@@ -50,5 +63,32 @@ class LoginPresenter extends PagePresenter
 			$this->redirect('this', array('route' => $this->page->page->mainRoute));
 		}
 		$this->redirect('this');
+	}
+
+
+	public function handleLogin($name)
+	{
+		$socialLogin = $this->securityManager->getSocialLoginByName($name);
+		$data = $socialLogin->getData();
+
+		if (!$data) {
+			$this->redirectUrl($socialLogin->getLoginUrl());
+		}
+
+
+		$identity = $socialLogin->authenticate(array());
+		if ($identity) {
+			$this->user->login($identity);
+		} else if ($this->page->registration) {
+			$this->redirect('this', array('do' => 'load', 'name' => $name, 'route' => $this->page->registration->mainRoute));
+		}
+
+		$this->redirect('this');
+	}
+
+
+	public function  renderDefault()
+	{
+		$this->template->socialLogins = $this->securityManager->getSocialLogins();
 	}
 }

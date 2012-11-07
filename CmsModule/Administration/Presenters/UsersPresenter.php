@@ -14,6 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\UserFormFactory;
+use CmsModule\Forms\UserSocialFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -33,6 +34,9 @@ class UsersPresenter extends BasePresenter
 
 	/** @var UserFormFactory */
 	protected $form;
+
+	/** @var UserSocialFormFactory */
+	protected $socialForm;
 
 
 	/**
@@ -56,6 +60,15 @@ class UsersPresenter extends BasePresenter
 
 
 	/**
+	 * @param UserSocialFormFactory $socialForm
+	 */
+	public function injectSocialForm(UserSocialFormFactory $socialForm)
+	{
+		$this->socialForm = $socialForm;
+	}
+
+
+	/**
 	 * @secured(privilege="show")
 	 */
 	public function actionDefault()
@@ -72,6 +85,7 @@ class UsersPresenter extends BasePresenter
 
 		// forms
 		$form = $table->addForm($this->form, 'User');
+		$socialForm = $table->addForm($this->socialForm, 'Social logins');
 
 		// navbar
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
@@ -84,6 +98,7 @@ class UsersPresenter extends BasePresenter
 
 		// actions
 		$table->addActionEdit('edit', 'Edit', $form);
+		$table->addActionEdit('socialLogins', 'Social Logins', $socialForm);
 		$table->addActionDelete('delete', 'Delete');
 
 		// global actions

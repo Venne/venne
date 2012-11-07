@@ -14,12 +14,24 @@ namespace CmsModule\Content\Forms;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
+use CmsModule\Content\IRegistrationFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationFrontFormFactory extends FormFactory
+class RegistrationFrontFormFactory extends FormFactory implements IRegistrationFormFactory
 {
+
+
+	/**
+	 * @param Form $form
+	 * @param $data
+	 */
+	public function setSocialData(Form $form, \CmsModule\Security\ISocialLogin $socialLogin)
+	{
+		$form['email']->setValue($socialLogin->getEmail());
+		$form['password_confirm']->value = $form['password']->value = \Nette\Utils\Strings::random();
+	}
 
 
 	/**

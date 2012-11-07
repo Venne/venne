@@ -30,11 +30,20 @@ class RegistrationPageEntity extends PageEntity
 
 	const MODE_MAIL_CHECKUP = 'mail & checkup';
 
+	const SOCIAL_MODE_LOAD = 'load';
+
+	const SOCIAL_MODE_LOAD_AND_SAVE = 'load&save';
+
 	protected static $modes = array(
 		self::MODE_BASIC => 'basic registration',
 		self::MODE_CHECKUP => 'registration with admin confirmation',
 		self::MODE_MAIL => 'registration with e-mail confirmation',
 		self::MODE_MAIL_CHECKUP => 'registration with e-mail and admin confirmation'
+	);
+
+	protected static $socialModes = array(
+		self::SOCIAL_MODE_LOAD => 'only load user data',
+		self::SOCIAL_MODE_LOAD_AND_SAVE => 'load user data and save',
 	);
 
 	/**
@@ -48,6 +57,12 @@ class RegistrationPageEntity extends PageEntity
 	 * @Column(type="string")
 	 */
 	protected $mode;
+
+	/**
+	 * @var string
+	 * @Column(type="string")
+	 */
+	protected $socialMode;
 
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection|\CmsModule\Security\Entities\RoleEntity
@@ -90,6 +105,7 @@ class RegistrationPageEntity extends PageEntity
 
 		$this->mainRoute->type = 'Cms:Registration:default';
 		$this->mode = self::MODE_BASIC;
+		$this->socialMode = self::SOCIAL_MODE_LOAD_AND_SAVE;
 		$this->email = '<p>Thank your for your registration.</p>
 			<p>Your registration informations:</p>
 
@@ -153,6 +169,24 @@ class RegistrationPageEntity extends PageEntity
 	public function getMode()
 	{
 		return $this->mode;
+	}
+
+
+	/**
+	 * @param string $socialMode
+	 */
+	public function setSocialMode($socialMode)
+	{
+		$this->socialMode = $socialMode;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getSocialMode()
+	{
+		return $this->socialMode;
 	}
 
 
@@ -231,5 +265,11 @@ class RegistrationPageEntity extends PageEntity
 	public static function getModes()
 	{
 		return self::$modes;
+	}
+
+
+	public static function getSocialModes()
+	{
+		return self::$socialModes;
 	}
 }

@@ -72,6 +72,11 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	 */
 	protected $logins;
 
+	/**
+	 * @OneToMany(targetEntity="SocialLoginEntity", mappedBy="user", cascade={"persist"})
+	 */
+	protected $socialLogins;
+
 
 	/**
 	 * @Column(type="string", nullable=true)
@@ -89,6 +94,7 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	{
 		$this->roleEntities = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->logins = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->socialLogins = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->enable = false;
 		$this->login = "";
 		$this->password = "";
@@ -291,6 +297,25 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 	public function getEmail()
 	{
 		return $this->email;
+	}
+
+
+	public function addSocialLogin(SocialLoginEntity $socialLogin)
+	{
+		$this->socialLogins[] = $socialLogin;
+		$socialLogin->setUser($this);
+	}
+
+
+	public function setSocialLogins($socialLogins)
+	{
+		$this->socialLogins = $socialLogins;
+	}
+
+
+	public function getSocialLogins()
+	{
+		return $this->socialLogins;
 	}
 
 

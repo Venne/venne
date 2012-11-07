@@ -30,6 +30,13 @@ class LoginPageEntity extends PageEntity
 	 **/
 	protected $page;
 
+	/**
+	 * @var RegistrationPageEntity
+	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\RegistrationPageEntity")
+	 * @joinColumn(onDelete="SET NULL")
+	 **/
+	protected $registration;
+
 
 	public function __construct()
 	{
@@ -54,5 +61,23 @@ class LoginPageEntity extends PageEntity
 	public function getPage()
 	{
 		return $this->page;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\RegistrationPageEntity $registration
+	 */
+	public function setRegistration($registration)
+	{
+		$this->registration = $registration;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\RegistrationPageEntity
+	 */
+	public function getRegistration()
+	{
+		return $this->registration;
 	}
 }
