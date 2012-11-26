@@ -1,0 +1,17 @@
+{
+	"name":"venne/cms-module",
+	"description":"CMS module with administration",
+	"keywords":["cms", "nette", "venne", "module"],
+	"authors":[
+		{
+			"name":"Josef Kříž",
+			"homepage":"http://josef-kriz.cz"
+		}
+	],
+	"require":{
+		"kdyby/bootstrap-form-renderer": "1.0.*"
+	},
+	"replace":{
+		"nette/nette":"*"
+	}
+}

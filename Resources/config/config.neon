@@ -20,7 +20,7 @@ parameters:
 services:
 
 	cms.formRenderer:
-		class: CmsModule\Forms\Rendering\BootstrapRenderer
+		class: Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer
 
 	cms.contentManager:
 		class: CmsModule\Content\ContentManager
