@@ -24,6 +24,9 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 	const CACHE_OUTPUT = 'Venne.Output';
 
+	/** @persistent */
+	public $backlink;
+
 	/** @var PageEntity */
 	public $page;
 
