@@ -42,6 +42,7 @@ class UserFormFactory extends FormFactory
 			->addRule(Form::FILLED, 'Enter password')
 			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
 		$form->addPassword("password_confirm", "Confirm password")
+			->addConditionOn($form['password_new'], Form::FILLED)
 			->addRule(Form::EQUAL, 'Invalid re password', $form['password']);
 
 		$form->addGroup("Next informations");
