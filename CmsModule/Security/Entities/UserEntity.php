@@ -58,22 +58,22 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection
-	 * @ManyToMany(targetEntity="RoleEntity", cascade={"persist"}, inversedBy="users")
+	 * @ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity", cascade={"persist"}, inversedBy="users")
 	 * @JoinTable(name="users_roles",
-	 *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")}
+	 *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
+	 *      inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )
 	 */
 	protected $roleEntities;
 
 
 	/**
-	 * @OneToMany(targetEntity="LoginEntity", mappedBy="user")
+	 * @OneToMany(targetEntity="\CmsModule\Security\Entities\LoginEntity", mappedBy="user")
 	 */
 	protected $logins;
 
 	/**
-	 * @OneToMany(targetEntity="SocialLoginEntity", mappedBy="user", cascade={"persist"})
+	 * @OneToMany(targetEntity="\CmsModule\Security\Entities\SocialLoginEntity", mappedBy="user", cascade={"persist"})
 	 */
 	protected $socialLogins;
 
