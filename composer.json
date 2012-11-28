@@ -2,6 +2,7 @@
 	"name":"venne/cms-module",
 	"description":"CMS module with administration",
 	"keywords":["cms", "nette", "venne", "module"],
+	"version":"2.0.0",
 	"authors":[
 		{
 			"name":"Josef Kříž",
