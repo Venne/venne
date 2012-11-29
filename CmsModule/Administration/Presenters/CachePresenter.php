@@ -14,7 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use Venne\Caching\CacheManager;
 use Venne\Forms\Form;
-use CmsModule\Forms\Rendering\BootstrapRenderer;
+use Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,7 +27,7 @@ class CachePresenter extends BasePresenter
 	/** @var CacheManager */
 	protected $cacheManager;
 
-	/** @var BootstrapFormRenderer */
+	/** @var BootstrapRenderer */
 	protected $renderer;
 
 
