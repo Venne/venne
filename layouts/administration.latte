@@ -81,7 +81,7 @@
 										{foreach $items as $link=>$item}
 											{if $presenter->isAuthorized(':' . $link)}
 											{var ok=>true}
-											<li class="{if $presenter->isLinkCurrent($link)}active{/if}">
+											<li class="{if $presenter->isLinkCurrent(':' . $link)}active{/if}">
 												<a class="ajax" href="{plink :$link}">{_$item['name']}{if isset($item["description"]) && $item["description"]}<span>{_$item["description"]}</span>{/if}</a>
 											</li>
 											{/if}
