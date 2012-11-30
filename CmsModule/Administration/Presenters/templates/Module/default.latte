@@ -8,55 +8,71 @@
     <div class="navbar-inner">
         <div class="container">
             <ul class="nav">
-				<li><a n:href="sync!"><span class="icon icon-list-alt"></span> {_'Download current module list'}</a></li>
+                <li><a n:href="sync!"><span class="icon icon-list-alt"></span> {_'Update list'}</a></li>
             </ul>
         </div>
     </div>
 </div>
 
+{snippet confirm}
+	{if isset($solutions)}
+    <div class="modal">
+        <div class="modal-header">
+            <a n:href="this" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+            <h3>Dependencies</h3>
+        </div>
+        <div class="modal-body">
+			{foreach $solutions as $job}
+				{$job->module->name} : {$job->action}<br />
+			{/foreach}
+        </div>
+        <div class="modal-footer">
+            <a n:href="this" class="btn">Cancel</a>
+            {if $solutionAction === 'uninstall'}<a n:href="uninstall! $solutionModule, true" class="btn btn-primary">Continue</a>{/if}
+			{if $solutionAction === 'install'}<a n:href="install! $solutionModule, true" class="btn btn-primary">Continue</a>{/if}
+        </div>
+    </div>
+	{/if}
+{/snippet}
 
-{form downloadForm}
 <table class="table table-striped table-bordered table-condensed">
-	<thead>
-		<tr>
-			<th style="width: 30%;">{_'Name'}</th>
-			<th style="width: 50%;">{_'Description'}</th>
-			<th style="width: 20%;">{_'Version'}</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
+    <thead>
+    <tr>
+        <th style="width: 20%;">{_'Name'}</th>
+        <th style="width: 65%;">{_'Description'}</th>
+        <th style="width: 15%;">{_'Version'}</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
 		{foreach $modules as $name=>$module}
+        <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+            <td>
+				{$module->getName()}
+            </td>
+            <td>
+				{$module->getDescription()}
+            </td>
+            <td>
+				{$module->getVersion()}
+            </td>
+            <td style="white-space: nowrap;">
 
-		{var item=>isset($presenter->context->parameters["modules"][$name]) ? $presenter->context->parameters["modules"][$name] : NULL}
-
-				
-		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
-			<td>
-				{$name}
-			</td>
-			<td>
-				{=$module->{'descrip.'}}
-			</td>
-			<td>
-				{input version_$name}
-			</td>
-			<td style="white-space: nowrap;">
-				<div class="btn-group pull-right">
-					{input check_$name}
-				</div>
-			</td>
-		</tr>
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown"
+                       href="#">{$presenter->moduleManager->getStatus($module)} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+						{if $presenter->moduleManager->getStatus($module) === \Venne\Module\ModuleManager::STATUS_INSTALLED}
+                            <li><a n:href="uninstall! $name">Uninstall</a></li>
+						{/if}
+						{if $presenter->moduleManager->getStatus($module) === \Venne\Module\ModuleManager::STATUS_UNINSTALLED}
+                            <li><a n:href="install! $name">Install</a></li>
+						{/if}
+                    </ul>
+                </div>
+            </td>
+        </tr>
 		{/foreach}
-	</tbody>
-	<tfoot>
-		<tr>
-			<td colspan="4">
-				{input _submit}
-			</td>
-		</tr>
-	</tfoot>
+    </tbody>
 </table>
-{/form}
-
-

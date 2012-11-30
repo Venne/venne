@@ -121,7 +121,7 @@ services:
 		tags: [presenter]
 
 	cms.admin.modulePresenter:
-		class: CmsModule\Administration\Presenters\ModulePresenter(..., %appDir%, %libsDir%, %modules%)
+		class: CmsModule\Administration\Presenters\ModulePresenter
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Module:'
 			category: 'System'
