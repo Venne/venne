@@ -27,6 +27,11 @@ class ModulePresenter extends BasePresenter
 	/** @var ModuleManager */
 	protected $moduleManager;
 
+	/** @var array */
+	protected $hiddenModules = array(
+		'assets', 'forms', 'doctrine', 'cms', 'translator'
+	);
+
 
 	/**
 	 * @param \Venne\Module\ModuleManager $moduleManager
@@ -53,7 +58,8 @@ class ModulePresenter extends BasePresenter
 	 */
 	public function actionDefault()
 	{
-		$this->template->modules = $this->moduleManager->findModules();
+		$this->template->modules = $this->moduleManager->getModules();
+		$this->template->hiddenModules = $this->hiddenModules;
 	}
 
 
@@ -63,7 +69,7 @@ class ModulePresenter extends BasePresenter
 	public function handleSync()
 	{
 		$this->moduleManager->update();
-		$this->flashMessage('List has been synced.', 'success');
+		$this->flashMessage('Database has been refreshed.', 'success');
 		$this->redirect('this');
 	}
 
