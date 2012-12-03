@@ -14,7 +14,11 @@
 		"venne/doctrine-module":"2.0.x-dev",
 		"venne/assets-module":"2.0.x-dev",
 		"venne/translator-module":"2.0.x-dev",
-		"kdyby/bootstrap-form-renderer": "1.0.*"
+		"kdyby/bootstrap-form-renderer":"1.0.*"
+	},
+	"require-dev":{
+		"phpunit/phpunit":"3.7.*",
+		"phpunit/phpunit-selenium":">=1.2"
 	},
 	"autoload":{
 		"psr-0":{
