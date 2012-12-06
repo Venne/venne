@@ -91,7 +91,7 @@ class AdministratorPresenter extends BasePresenter
 		parent::startup();
 
 		// It is confirmed by the test?
-		if(!$this->confirmation) {
+		if (!$this->confirmation) {
 			throw new BadRequestException;
 		}
 
@@ -111,7 +111,7 @@ class AdministratorPresenter extends BasePresenter
 		}
 
 		// Writable
-		$paths = array($this->resourcesDir, $this->dataDir, $this->configDir, $this->tempDir, $this->wwwCacheDir, $this->publicDir);
+		$paths = array($this->resourcesDir, $this->dataDir, $this->configDir, $this->configDir . '/config.neon', $this->tempDir, $this->wwwCacheDir, $this->publicDir);
 		foreach ($paths as $item) {
 			if (!is_writable($item)) {
 				$this->flashMessage("Path " . $item . " is not writable.", "warning");
