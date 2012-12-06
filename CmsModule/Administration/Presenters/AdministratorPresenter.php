@@ -12,8 +12,8 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use Nette\Application\BadRequestException;
 use Nette\Caching\IStorage;
+use Nette\Application\BadRequestException;
 use CmsModule\Forms\SystemAccountFormFactory;
 
 /**
@@ -90,12 +90,10 @@ class AdministratorPresenter extends BasePresenter
 	{
 		parent::startup();
 
-		// It is confirmed by the test?
-		if (!$this->confirmation) {
+		// check admin account
+		if ($this->context->parameters['administration']['login']['name']) {
 			throw new BadRequestException;
 		}
-
-		$this->template->hideMenuItems = true;
 
 		// Resources dir
 		if (!file_exists($this->resourcesDir . "/cmsModule")) {
