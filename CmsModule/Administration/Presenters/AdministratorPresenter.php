@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use Nette\Application\BadRequestException;
 use Nette\Caching\IStorage;
 use CmsModule\Forms\SystemAccountFormFactory;
 
@@ -39,6 +40,12 @@ class AdministratorPresenter extends BasePresenter
 	/** @var string */
 	protected $configDir;
 
+	/** @var string */
+	protected $wwwCacheDir;
+
+	/** @var string */
+	protected $publicDir;
+
 	/** @var array */
 	protected $administration;
 
@@ -48,12 +55,15 @@ class AdministratorPresenter extends BasePresenter
 	/** @var IStorage */
 	protected $cacheStorage;
 
+	/** @var bool */
+	protected $confirmation = false;
+
 
 	/**
 	 * @param IStorage $cacheStorage
 	 * @param $parameters
 	 */
-	public function __construct(IStorage $cacheStorage, $administration, $appDir, $wwwDir, $tempDir, $dataDir, $resourcesDir, $configDir)
+	public function __construct(IStorage $cacheStorage, $administration, $appDir, $wwwDir, $tempDir, $dataDir, $resourcesDir, $configDir, $wwwCacheDir, $publicDir)
 	{
 		parent::__construct();
 
@@ -63,6 +73,8 @@ class AdministratorPresenter extends BasePresenter
 		$this->dataDir = $dataDir;
 		$this->resourcesDir = $resourcesDir;
 		$this->configDir = $configDir;
+		$this->wwwCacheDir = $wwwCacheDir;
+		$this->publicDir = $publicDir;
 		$this->cacheStorage = $cacheStorage;
 		$this->administration = $administration;
 	}
@@ -78,13 +90,20 @@ class AdministratorPresenter extends BasePresenter
 	{
 		parent::startup();
 
+		// It is confirmed by the test?
+		if(!$this->confirmation) {
+			throw new BadRequestException;
+		}
+
+		$this->template->hideMenuItems = true;
+
 		// Resources dir
 		if (!file_exists($this->resourcesDir . "/cmsModule")) {
 			@symlink("../../vendor/venne/core-module/Resources/public", $this->resourcesDir . "/cmsModule");
 		}
 
 		// Extensions
-		$modules = array("gd", "iconv", "json", "pdo");
+		$modules = array('iconv', 'json', "pdo");
 		foreach ($modules as $item) {
 			if (!extension_loaded($item)) {
 				$this->flashMessage("Module " . $item . " is not enabled.", "warning");
@@ -92,7 +111,7 @@ class AdministratorPresenter extends BasePresenter
 		}
 
 		// Writable
-		$paths = array($this->wwwDir . "/public/", $this->dataDir, $this->configDir, $this->appDir . "/proxies", $this->tempDir);
+		$paths = array($this->resourcesDir, $this->dataDir, $this->configDir, $this->tempDir, $this->wwwCacheDir, $this->publicDir);
 		foreach ($paths as $item) {
 			if (!is_writable($item)) {
 				$this->flashMessage("Path " . $item . " is not writable.", "warning");

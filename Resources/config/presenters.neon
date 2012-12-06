@@ -5,7 +5,7 @@ services:
 		tags: [presenter]
 
 	cms.admin.administratorPresenter:
-		class: CmsModule\Administration\Presenters\AdministratorPresenter(..., %administration%, %appDir%, %wwwDir%, %tempDir%, %dataDir%, %resourcesDir%, %configDir%)
+		class: CmsModule\Administration\Presenters\AdministratorPresenter(..., %administration%, %appDir%, %wwwDir%, %tempDir%, %dataDir%, %resourcesDir%, %configDir%, %wwwCacheDir%, %publicDir%)
 		tags: [presenter]
 
 	cms.admin.cachePresenter:

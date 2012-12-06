@@ -1,10 +1,10 @@
 {block #header}Administrator account{/block}
 
 {block content}
-
-
-	{if count($flashes) == 1}
-
-		{control systemAccountForm}
-
-	{/if}
+{if count($flashes) == 1}
+	{control systemAccountForm}
+{else}
+<p>
+	Please fix issues and <a n:href="this">refresh page</a>.
+</p>
+{/if}

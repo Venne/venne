@@ -26,7 +26,7 @@ abstract class AdminPresenter extends BasePresenter
 			if ($this->getName() != "Cms:Admin:Administrator") {
 				$this->redirect(":Cms:Admin:Administrator:");
 			}
-			$this->template->hideMenuItems = true;
+			$this->template->confirmation = true;
 			$this->flashMessage("Please set administrator account.", "warning", true);
 		} // end
 
@@ -38,7 +38,7 @@ abstract class AdminPresenter extends BasePresenter
 			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
 				$this->flashMessage("You have been logged out due to inactivity. Please login again.", 'info');
 			}
-			$this->template->hideMenuItems = true;
+			$this->template->confirmation = true;
 		}
 
 		// check database
@@ -46,7 +46,7 @@ abstract class AdminPresenter extends BasePresenter
 			if ($this->getName() != "Cms:Admin:Database") {
 				$this->redirect(":Cms:Admin:Database:");
 			}
-			$this->template->hideMenuItems = true;
+			$this->template->confirmation = true;
 			$this->flashMessage("Database connection not found. Please fix it.", "warning", true);
 		}
 
@@ -55,7 +55,7 @@ abstract class AdminPresenter extends BasePresenter
 			if ($this->getName() != 'Cms:Admin:Language') {
 				$this->redirect(':Cms:Admin:Language:');
 			}
-			$this->template->hideMenuItems = true;
+			$this->template->confirmation = true;
 			$this->flashMessage("Please enter at least one language.", "warning", true);
 		}
 
