@@ -237,9 +237,6 @@ class ContentPresenter extends BasePresenter
 		$this->setView('edit');
 		$this->changeAction('edit');
 		$this->key = $form->data->id;
-
-		// refresh left panel
-		$this['panel']->invalidateControl('content');
 	}
 
 
