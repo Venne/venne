@@ -94,6 +94,10 @@ class RegistrationPresenter extends PagePresenter
 
 		$formFactory->setSocialData($this['form'], $socialLogin);
 
+		if (!$socialLogin->getData()) {
+			$this->redirectUrl($socialLogin->getLoginUrl());
+		}
+
 		if ($this->page->getSocialMode() === RegistrationPageEntity::SOCIAL_MODE_LOAD_AND_SAVE) {
 			/** @var $form \Venne\Forms\Form */
 			$form = $this['form'];
