@@ -27,8 +27,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $parent;
 
 	/**
-	 * @OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next")
-	 * @JoinColumn(referencedColumnName="id", onDelete="SET NULL")
+	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next")  # ManyToOne is hack for prevent '1062 Duplicate entry update'
 	 */
 	protected $previous;
 
@@ -234,13 +233,13 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-	public function setNext($next)
+	public function setNext(TreeEntity $next = NULL)
 	{
 		$this->next = $next;
 	}
 
 
-	public function setPrevious($previous)
+	public function setPrevious(TreeEntity $previous = NULL)
 	{
 		$this->previous = $previous;
 	}
