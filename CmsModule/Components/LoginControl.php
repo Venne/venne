@@ -71,7 +71,7 @@ class LoginControl extends Control
 		$data = $socialLogin->getData();
 
 		if (!$data) {
-			$this->redirectUrl($socialLogin->getLoginUrl());
+			$this->presenter->redirectUrl($socialLogin->getLoginUrl());
 		}
 
 
