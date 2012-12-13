@@ -186,6 +186,18 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
+	 * @param $parent
+	 */
+	public function setVirtualParent(PageEntity $parent = NULL)
+	{
+		parent::setVirtualParent($parent);
+
+		$this->mainRoute->parent = $this->virtualParent && $this->virtualParent->mainRoute ? $this->virtualParent->mainRoute : NULL;
+		$this->generateUrl();
+	}
+
+
+	/**
 	 * Generate URL.
 	 */
 	protected function generateUrl()

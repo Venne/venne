@@ -22,7 +22,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="childrens")
-	 * @JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+	 * @JoinColumn(onDelete="CASCADE")
 	 */
 	protected $parent;
 
@@ -45,6 +45,17 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @OrderBy({"position" = "ASC"})
 	 */
 	protected $childrens;
+
+	/**
+	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="virtualParent", cascade={"persist"})
+	 */
+	protected $virtualChildren;
+
+	/**
+	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="virtualChildren")
+	 * @JoinColumn(onDelete="CASCADE")
+	 */
+	protected $virtualParent;
 
 
 	/**
@@ -260,6 +271,30 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getPosition()
 	{
 		return $this->position;
+	}
+
+
+	public function setVirtualChildren($virtualChildren)
+	{
+		$this->virtualChildren = $virtualChildren;
+	}
+
+
+	public function getVirtualChildren()
+	{
+		return $this->virtualChildren;
+	}
+
+
+	public function setVirtualParent(PageEntity $virtualParent = NULL)
+	{
+		$this->virtualParent = $virtualParent;
+	}
+
+
+	public function getVirtualParent()
+	{
+		return $this->virtualParent;
 	}
 }
 

@@ -140,7 +140,7 @@ class ContentPresenter extends BasePresenter
 		$table->setPaginator(10);
 		$table->enableSorter();
 		$table->setDql(function (\Doctrine\ORM\QueryBuilder $builder) {
-			$builder->andWhere('a.translationFor IS NULL');
+			$builder->andWhere('a.translationFor IS NULL AND a.virtualParent IS NULL');
 		});
 
 		// columns

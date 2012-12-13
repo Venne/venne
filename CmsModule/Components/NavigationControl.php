@@ -38,7 +38,7 @@ class NavigationControl extends Control
 	public function getRoot()
 	{
 		return $this->pageRepository->createQueryBuilder('a')
-			->andWhere('a.parent IS NULL AND a.previous IS NULL')
+			->andWhere('a.parent IS NULL AND a.previous IS NULL AND a.virtualParent IS NULL')
 			->andWhere('a.translationFor IS NULL')
 			->getQuery()->getSingleResult();
 	}

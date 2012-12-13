@@ -163,7 +163,7 @@ class PanelControl extends Control
 		if ($parent) {
 			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
 		} else {
-			$dql = $dql->andWhere('a.parent IS NULL');
+			$dql = $dql->andWhere('a.parent IS NULL AND a.virtualParent IS NULL');
 		}
 		$dql
 			->andWhere('a.translationFor IS NULL')
