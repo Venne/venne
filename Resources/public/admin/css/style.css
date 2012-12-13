@@ -59,7 +59,7 @@ h5 {
 
 .modal.modal-large {
     width: 800px;
-    margin: -320px 0 0 -400px;
+    margin-left: -400px;
 }
 .modal.modal-large .modal-body {
     max-height: 800px;

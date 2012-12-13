@@ -162,20 +162,6 @@ $(function () {
 		selector:'form.ajax input:file',
 		idPrefix:'iframe-post-form-'
 	});
-	$.nette.ext('bootstrapModalBind', {
-		init:function () {
-			this.resize();
-			$(window).bind('resize', this.resize);
-		},
-		success:function (payload) {
-			this.resize();
-		}
-	}, {
-		resize:function () {
-			$(".modal.modal-large .modal-body").css("max-height", $(window).height() - 100);
-			$(".modal.modal-large").css("margin-top", -($(window).height() / 2 - 10));
-		}
-	});
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
