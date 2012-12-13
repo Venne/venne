@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Repositories;
 
 use Venne;
+use Nette\InvalidArgumentException;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\PageEntity;
 
@@ -77,6 +78,18 @@ class PageRepository extends BaseRepository
 		}
 
 		return parent::save($entity, $withoutFlush);
+	}
+
+
+	public function delete($entity, $withoutFlush = self::FLUSH)
+	{
+		if (!$entity instanceof PageEntity) {
+			throw new InvalidArgumentException("Entity must be instance of 'CmsModule\Content\Entities\PageEntity'.");
+		}
+
+		$entity->removeFromPosition();
+
+		return parent::delete($entity, $withoutFlush);
 	}
 
 

@@ -75,7 +75,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-	protected function removeFromPosition()
+	public function removeFromPosition()
 	{
 		$next = $this->next;
 		$previous = $this->previous;
