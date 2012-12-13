@@ -102,13 +102,6 @@ abstract class PageEntity extends TreeEntity
 	protected $updated;
 
 	/**
-	 * @var \DateTime
-	 * @Column(type="datetime", nullable=true)
-	 */
-	protected $expired;
-
-
-	/**
 	 * @var
 	 * @Column(type="string", nullable=true)
 	 */

@@ -60,11 +60,9 @@ class BasicFormFactory extends FormFactory
 			}
 		}
 
-		$form->addDateTime("expired", "Expired");
-
 		// Navigation
 		$form->addGroup('Navigation');
-		$form->addCheckbox('navigationShow', 'Show navigation')->addCondition($form::EQUAL, true)->toggle('form-navigation-own');
+		$form->addCheckbox('navigationShow', 'Show in navigation')->addCondition($form::EQUAL, true)->toggle('form-navigation-own');
 		$form->addGroup()->setOption('id', 'form-navigation-own');
 		$form->addCheckbox('navigationOwn', 'Use own title')->addCondition($form::EQUAL, true)->toggle('form-navigation-title');
 		$form->addGroup()->setOption('id', 'form-navigation-title');
