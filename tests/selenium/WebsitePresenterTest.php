@@ -30,8 +30,8 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-keywords"));
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-description"));
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-author"));
-		$this->verifyTextPresent("-------bootstrap (cms)");
-		$this->verifyTextPresent("offtimestatic");
+		$this->assertEquals("@cms/bootstrap", $this->getValue("id=frmwebsiteForm-layout"));
+		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-cacheMode"));
 		$this->assertEquals("", $this->getValue("id=frmwebsiteForm-routePrefix"));
 
 		$this->type("id=frmwebsiteForm-name", "Blog0");
@@ -51,10 +51,8 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->assertEquals("3", $this->getValue("id=frmwebsiteForm-keywords"));
 		$this->assertEquals("4", $this->getValue("id=frmwebsiteForm-description"));
 		$this->assertEquals("5", $this->getValue("id=frmwebsiteForm-author"));
-
-		$this->verifyTextPresent("-------bootstrap (cms)");
-		$this->verifyTextPresent("offtimestatic");
-
+		$this->assertEquals("@cms/bootstrap", $this->getValue("id=frmwebsiteForm-layout"));
+		$this->assertEquals("static", $this->getValue("id=frmwebsiteForm-cacheMode"));
 		$this->assertEquals("<lang>/", $this->getValue("id=frmwebsiteForm-routePrefix"));
 
 		$this->type("id=frmwebsiteForm-name", "Blog");
@@ -63,7 +61,7 @@ class WebsitePresenterTest extends AdminPresenterTest
 		$this->type("id=frmwebsiteForm-keywords", "");
 		$this->type("id=frmwebsiteForm-description", "");
 		$this->type("id=frmwebsiteForm-author", "");
-		$this->select("id=frmwebsiteForm-layout", "label=-------");
+		$this->select("id=frmwebsiteForm-layout", "label=bootstrap (cms)");
 		$this->select("id=frmwebsiteForm-cacheMode", "label=off");
 		$this->type("id=frmwebsiteForm-routePrefix", "");
 		$this->click("id=frmwebsiteForm-_submit");

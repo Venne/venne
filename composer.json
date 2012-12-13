@@ -52,7 +52,7 @@
 						"defaultLanguage":"cs",
 						"defaultPresenter":"Homepage",
 						"errorPresenter":"Cms:Error",
-						"layout":"",
+						"layout":"@cms/bootstrap",
 						"cacheMode":"",
 						"cacheValue":"10"
 					}
