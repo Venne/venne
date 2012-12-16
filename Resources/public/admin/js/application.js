@@ -162,6 +162,52 @@ $(function () {
 		selector:'form.ajax input:file',
 		idPrefix:'iframe-post-form-'
 	});
+	$.nette.ext('formsFileUpload', {
+		init: function () {
+			this.init();
+		},
+		success: function (payload) {
+			this.init();
+		}
+	}, {
+		init: function (target) {
+			var changeFunc = function (object) {
+				object.change(function () {
+					var data = $(this).val();
+					if (data) {
+						var data = '<i class="icon-file"></i> ' + data;
+						$('#' + object.attr('id') + '_fake').html(data);
+						$('#' + object.attr('id') + '_fakeRemove').show();
+						$('#' + object.attr('id') + '_fakeButton').text('Change');
+					} else {
+						$('#' + object.attr('id') + '_fake').html(data);
+						$('#' + object.attr('id') + '_fakeRemove').hide();
+						$('#' + object.attr('id') + '_fakeButton').text('Select file');
+					}
+				});
+			}
+			$('input[type="file"]').each(function () {
+				var fileInput = $(this);
+				$(this).after('<div class="input-append">'
+					+ '<div class="uneditable-input input-xlarge text" id="' + $(this).attr('id') + '_fake" type="text"></div>'
+					+ '<button class="btn hide" id="' + $(this).attr('id') + '_fakeRemove" type="button">Remove</button>'
+					+ '<button class="btn" id="' + $(this).attr('id') + '_fakeButton" type="button">Select file</button>'
+					+ '</div>');
+				$('#' + $(this).attr('id') + '_fakeButton').live('click', function () {
+					fileInput.click();
+				});
+				$('#' + $(this).attr('id') + '_fakeRemove').live('click', function () {
+					fileInput.replaceWith(fileInput.clone());
+					$('#' + fileInput.attr('id') + '_fake').html('');
+					$('#' + fileInput.attr('id') + '_fakeRemove').hide();
+					$('#' + fileInput.attr('id') + '_fakeButton').text('Select file');
+					changeFunc(fileInput);
+				});
+				changeFunc($(this));
+				$(this).hide();
+			});
+		}
+	});
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
