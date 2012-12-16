@@ -53,7 +53,7 @@ class LayouteditFormFactory extends FormFactory
 	{
 		$form->addGroup();
 		$form->addSelect('layout', 'Parent layout', $this->scannerService->getLayoutFiles())->setPrompt('-------');
-		$form->addTextArea('text', NULL, 500, 20)->getControlPrototype()->attrs['class'] = 'input-xxlarge';
+		$form->addTextArea('text', NULL, NULL, 30)->getControlPrototype()->attrs['class'] = 'input-block-level';
 
 		$form->addSubmit('_submit', 'Save');
 	}

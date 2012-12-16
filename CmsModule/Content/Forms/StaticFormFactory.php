@@ -36,7 +36,7 @@ class StaticFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addGroup('Content')->setOption('class', 'full');
-		$form->addContentEditor("text", NULL, Null, 20);
+		$form->addContentEditor("text", NULL, NULL, 30)->getControlPrototype()->attrs['class'] = 'input-block-level';
 
 		$form->addSaveButton('Save');
 	}
