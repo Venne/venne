@@ -29,10 +29,10 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	/**
 	 * @OneToMany(targetEntity="RoleEntity", mappedBy="parent")
 	 */
-	protected $childrens;
+	protected $children;
 
 	/**
-	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="childrens")
+	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="children")
 	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
@@ -60,7 +60,7 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	{
 		$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->users = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->childrens = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 
 
@@ -108,19 +108,19 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */
-	public function getChildrens()
+	public function getChildren()
 	{
-		return $this->childrens;
+		return $this->children;
 	}
 
 
 
 	/**
-	 * @param RoleEntity $childrens
+	 * @param RoleEntity $children
 	 */
-	public function addChildren($childrens)
+	public function addChildren($children)
 	{
-		$this->childrens[] = $childrens;
+		$this->children[] = $children;
 	}
 
 

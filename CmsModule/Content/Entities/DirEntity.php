@@ -28,7 +28,7 @@ class DirEntity extends BaseFileEntity
 	 * @var ArrayCollection|DirEntity[]
 	 * @OneToMany(targetEntity="DirEntity", mappedBy="parent")
 	 */
-	protected $childrens;
+	protected $children;
 
 	/**
 	 * @var ArrayCollection|FileEntity[]
@@ -41,7 +41,7 @@ class DirEntity extends BaseFileEntity
 	{
 		parent::__construct();
 
-		$this->childrens = new ArrayCollection;
+		$this->children = new ArrayCollection;
 		$this->files = new ArrayCollection;
 	}
 
@@ -101,19 +101,19 @@ class DirEntity extends BaseFileEntity
 
 
 	/**
-	 * @param string $childrens
+	 * @param string $children
 	 */
-	public function setChildrens(ArrayCollection $childrens)
+	public function setChildren(ArrayCollection $children)
 	{
-		$this->childrens = $childrens;
+		$this->children = $children;
 	}
 
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */
-	public function getChildrens()
+	public function getChildren()
 	{
-		return $this->childrens;
+		return $this->children;
 	}
 
 
@@ -132,7 +132,7 @@ class DirEntity extends BaseFileEntity
 	{
 		parent::generatePath();
 
-		foreach ($this->childrens as $item) {
+		foreach ($this->children as $item) {
 			$item->generatePath();
 		}
 

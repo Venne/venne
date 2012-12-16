@@ -21,7 +21,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="childrens")
+	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="children")
 	 * @JoinColumn(onDelete="CASCADE")
 	 */
 	protected $parent;
@@ -44,7 +44,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="parent", cascade={"persist", "remove", "detach"})
 	 * @OrderBy({"position" = "ASC"})
 	 */
-	protected $childrens;
+	protected $children;
 
 	/**
 	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="virtualParent", cascade={"persist"})
@@ -64,7 +64,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function __construct()
 	{
 		$this->position = 1;
-		$this->childrens = new \Doctrine\Common\Collections\ArrayCollection;
+		$this->children = new \Doctrine\Common\Collections\ArrayCollection;
 	}
 
 
@@ -177,7 +177,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 					$this->position = $this->previous->position + 1;
 					$previous->next = $this;
 				} else {
-					$this->next = $parent->getChildrens()->first() ? : NULL;
+					$this->next = $parent->getChildren()->first() ? : NULL;
 					$this->previous = NULL;
 					if ($this->next) {
 						$this->next->previous = $this;
@@ -186,7 +186,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 					$this->position = 1;
 				}
 			} else {
-				$this->previous = $parent->getChildrens()->last() ? : NULL;
+				$this->previous = $parent->getChildren()->last() ? : NULL;
 				$this->next = NULL;
 				if ($this->previous) {
 					$this->previous->next = $this;
@@ -194,7 +194,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 				}
 			}
 
-			$parent->childrens[] = $this;
+			$parent->children[] = $this;
 		} else {
 			if ($setPrevious) {
 				if ($previous) {
@@ -221,20 +221,20 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param $childrens
+	 * @param $children
 	 */
-	public function setChildrens($childrens)
+	public function setChildren($children)
 	{
-		$this->childrens = $childrens;
+		$this->children = $children;
 	}
 
 
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */
-	public function getChildrens()
+	public function getChildren()
 	{
-		return $this->childrens;
+		return $this->children;
 	}
 
 

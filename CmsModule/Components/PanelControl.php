@@ -172,7 +172,7 @@ class PanelControl extends Control
 		foreach ($dql->getQuery()->getResult() as $page) {
 			$item = array("title" => $page->name, 'key' => $page->id);
 
-			if (count($page->childrens) > 0) {
+			if (count($page->children) > 0) {
 				$item['isLazy'] = true;
 			}
 
@@ -217,7 +217,7 @@ class PanelControl extends Control
 
 			$item["isFolder"] = true;
 
-			if (count($page->childrens) > 0 || count($page->files) > 0) {
+			if (count($page->children) > 0 || count($page->files) > 0) {
 				$item['isLazy'] = true;
 			}
 

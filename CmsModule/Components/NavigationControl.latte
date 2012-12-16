@@ -13,23 +13,23 @@
 		{var active=>$control->isActive($entity)}
 		{var link=>$control->getLink($entity)}
 
-		{var childrens=>($sub < ($startDepth + $maxDepth - 1)) && ($active || !$followActive) && count($item->childrens) > 0}
+		{var children=>($sub < ($startDepth + $maxDepth - 1)) && ($active || !$followActive) && count($item->children) > 0}
 
 		{if $sub < $startDepth}
-			{if $item->childrens->count() > 0 && ($active || !$followActive)}
-				{include #menu, "items"=>$item->childrens, "sub"=>($sub+1), "first"=>true}
+			{if $item->children->count() > 0 && ($active || !$followActive)}
+				{include #menu, "items"=>$item->children, "sub"=>($sub+1), "first"=>true}
 			{/if}
 		{else}
 
 {if $iterator->isFirst()}
 <ul {if !$first}class="dropdown-menu"{else}class="nav"{/if}>
 		{if $first && $showMain && $root->navigationShow}
-            {include #item active=>$presenter->route->url === '', childrens=>array(), link=>$presenter->link('this', array('route'=>$root->mainRoute)), entity=>$root->getPageWithLanguageAlias($presenter->lang), item=>$root}
+            {include #item active=>$presenter->route->url === '', children=>array(), link=>$presenter->link('this', array('route'=>$root->mainRoute)), entity=>$root->getPageWithLanguageAlias($presenter->lang), item=>$root}
 		{/if}
 {/if}
 
 			{if $entity->navigationShow}
-				{include #item active=>$active, childrens=>$childrens, link=>$link, entity=>$entity, item=>$item, sub=>$sub}
+				{include #item active=>$active, children=>$children, link=>$link, entity=>$entity, item=>$item, sub=>$sub}
 			{/if}
 		{/if}
 
@@ -38,16 +38,16 @@
 {/define}
 
 {define #item}
-	<li class="{if $active} active{/if}{if $childrens} dropdown{/if}">
-		<a href="{$link}" class="{if $active} active{/if}{if $childrens} dropdown-toogle" data-toggle="dropdown{/if}">{$entity->navigationTitle}</a>
+	<li class="{if $active} active{/if}{if $children} dropdown{/if}">
+		<a href="{$link}" class="{if $active} active{/if}{if $children} dropdown-toogle" data-toggle="dropdown{/if}">{$entity->navigationTitle}</a>
 
-		{if $childrens}
-		{include #menu "items"=>$item->childrens, "sub"=>($sub+1), first=>false}
+		{if $children}
+		{include #menu "items"=>$item->children, "sub"=>($sub+1), first=>false}
 		{/if}
 	</li>
 {/define}
 
-{include #menu "items"=>$root->childrens, "sub"=>0, "first"=>true, root=>$root}
+{include #menu "items"=>$root->children, "sub"=>0, "first"=>true, root=>$root}
 
 {/if}
 {/cache}

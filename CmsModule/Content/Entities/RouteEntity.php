@@ -86,7 +86,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var RouteEntity
-	 * @ManyToOne(targetEntity="RouteEntity", inversedBy="childrens")
+	 * @ManyToOne(targetEntity="RouteEntity", inversedBy="children")
 	 * @JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
@@ -95,7 +95,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @var RouteEntity[]
 	 * @OneToMany(targetEntity="RouteEntity", mappedBy="parent")
 	 */
-	protected $childrens;
+	protected $children;
 
 	/**
 	 * @var LayoutconfigEntity
@@ -171,7 +171,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->localUrl = '';
 		$this->params = json_encode(array());
 		$this->paramCounter = 0;
-		$this->childrens = new ArrayCollection;
+		$this->children = new ArrayCollection;
 		$this->layout = self::DEFAULT_LAYOUT;
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
 		$this->copyLayoutFromParent = true;
@@ -221,7 +221,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		if ($recursively) {
-			foreach ($this->childrens as $children) {
+			foreach ($this->children as $children) {
 				$children->generateUrl();
 			}
 		}
@@ -255,7 +255,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		if ($recursively) {
-			foreach ($this->childrens as $children) {
+			foreach ($this->children as $children) {
 				$children->generateLayouts();
 			}
 		}
@@ -342,20 +342,20 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param $childrens
+	 * @param $children
 	 */
-	public function setChildrens($childrens)
+	public function setChildren($children)
 	{
-		$this->childrens = $childrens;
+		$this->children = $children;
 	}
 
 
 	/**
 	 * @return ArrayCollection
 	 */
-	public function getChildrens()
+	public function getChildren()
 	{
-		return $this->childrens;
+		return $this->children;
 	}
 
 

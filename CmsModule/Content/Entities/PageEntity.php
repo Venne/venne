@@ -319,20 +319,20 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
-	 * @param $childrens
+	 * @param $children
 	 */
-	public function setChildrens($childrens)
+	public function setChildren($children)
 	{
-		$this->childrens = $childrens;
+		$this->children = $children;
 	}
 
 
 	/**
 	 * @return ArrayCollection|PageEntity[]
 	 */
-	public function getChildrens()
+	public function getChildren()
 	{
-		return $this->childrens;
+		return $this->children;
 	}
 
 

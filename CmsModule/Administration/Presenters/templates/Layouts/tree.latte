@@ -37,7 +37,7 @@
 					<span class="buttons">
 					</span>
 				</div>
-				{if $item->childrens}{include #menu, "items"=>$item->childrens, 'dep' => $item->id}{/if}
+				{if $item->children}{include #menu, "items"=>$item->children, 'dep' => $item->id}{/if}
 			</li>
 			{/foreach}
 		{/if}

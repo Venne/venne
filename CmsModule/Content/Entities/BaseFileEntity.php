@@ -35,7 +35,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var DirEntity
-	 * @ManyToOne(targetEntity="DirEntity", inversedBy="childrens")
+	 * @ManyToOne(targetEntity="DirEntity", inversedBy="children")
 	 * @JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
