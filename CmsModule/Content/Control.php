@@ -31,6 +31,7 @@ class Control extends \Venne\Application\UI\Control
 		$refl = $this->getReflection();
 
 		return array_merge(array(
+			dirname($this->getPresenter()->getLayoutPath()) . '/' . $refl->getShortName() . '.latte',
 			$this->getPresenter()->getLayoutPath() . '/' . $refl->getShortName() . '.latte',
 			dirname($this->getPresenter()->getLayoutPath()) . '/' . $refl->getShortName() . '.latte',
 		), $list);
