@@ -5,7 +5,7 @@
  *}
 
 {if $paginator->pageCount > 1}
-<div class="pagination">
+<div class="pagination pagination-centered">
 	<ul>
 
 	<li{if $paginator->isFirst()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isFirst()}#{else}{link this, 'page' => $paginator->page - 1}{/if}">« Previous</a></li>
