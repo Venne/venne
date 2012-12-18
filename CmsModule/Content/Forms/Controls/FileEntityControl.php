@@ -123,14 +123,17 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 				}
 			}
 
-			$div = $control->create('div');
+			$div = $control->create('div', array('style' => 'margin: 5px 0;'));
 			foreach ($files as $file) {
-				$div->create('img', array(
+				$div2 = $div->create('div', array('style' => 'align: center;', 'class' => 'caption'));
+				$div2->create('img', array(
 					'src' => $file->getFileUrl(),
-					'style' => 'height: 48px; width: 48px;',
+					'style' => 'height: 64px; width: 64px;',
+					'class' => 'img-polaroid img-rounded',
 				));
-				$div->create('input', array('type' => 'checkbox', 'name' => $this->name . '_delete_' . $file->id));
-				$div->create('span')->setText(' delete');
+				$div2->create('br');
+				$div2->create('input', array('type' => 'checkbox', 'name' => $this->name . '_delete_' . $file->id));
+				$div2->create('span')->setText(' delete');
 			}
 		}
 
