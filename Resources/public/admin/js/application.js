@@ -208,6 +208,19 @@ $(function () {
 			});
 		}
 	});
+	$.nette.ext('bootstrapModalBind', {
+		init:function () {
+			this.resize();
+			$(window).bind('resize', this.resize);
+		},
+		success:function (payload) {
+			this.resize();
+		}
+	}, {
+		resize:function () {
+			$(".modal.modal-full .modal-body").css("max-height", $(window).height() - 120);
+		}
+	});
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
