@@ -21,6 +21,16 @@ use Nette\ComponentModel\IContainer;
 class Form extends \Nette\ComponentModel\Component
 {
 
+	const TYPE_NORMAL = '';
+
+	const TYPE_LARGE = 'modal-large';
+
+	const TYPE_XLARGE = 'modal-xlarge';
+
+	const TYPE_XXLARGE = 'modal-xxlarge';
+
+	const TYPE_FULL = 'modal-full';
+
 	/** @var \Venne\Forms\FormFactory */
 	protected $factory;
 
@@ -31,28 +41,23 @@ class Form extends \Nette\ComponentModel\Component
 	protected $title;
 
 	/** @var string */
-	protected $width;
-
-	/** @var string */
-	protected $height;
+	protected $type;
 
 
 	/**
 	 * @param \Venne\Forms\FormFactory $factory
 	 * @param string $title
 	 * @param callable $entityFactory
-	 * @param null $width
-	 * @param null $height
+	 * @param null $type
 	 */
-	public function __construct(\Venne\Forms\FormFactory $factory, $title, $entityFactory = NULL, $width = NULL, $height = NULL)
+	public function __construct(\Venne\Forms\FormFactory $factory, $title, $entityFactory = NULL, $type = NULL)
 	{
 		parent::__construct();
 
 		$this->factory = $factory;
 		$this->title = $title;
 		$this->entityFactory = $entityFactory;
-		$this->width = $width;
-		$this->height = $height;
+		$this->type = $type;
 	}
 
 
@@ -86,38 +91,20 @@ class Form extends \Nette\ComponentModel\Component
 
 
 	/**
-	 * @param $height
+	 * @param string $type
 	 */
-	public function setHeight($height)
+	public function setType($type)
 	{
-		$this->height = $height;
+		$this->type = $type;
 	}
 
 
 	/**
-	 * @return null
+	 * @return string
 	 */
-	public function getHeight()
+	public function getType()
 	{
-		return $this->height;
-	}
-
-
-	/**
-	 * @param $width
-	 */
-	public function setWidth($width)
-	{
-		$this->width = $width;
-	}
-
-
-	/**
-	 * @return null
-	 */
-	public function getWidth()
-	{
-		return $this->width;
+		return $this->type;
 	}
 
 

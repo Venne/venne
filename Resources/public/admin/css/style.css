@@ -57,6 +57,8 @@ h5 {
 	border-radius: 20px;
 }
 
+
+/* Modals */
 .modal.modal-large {
     width: 800px;
     margin-left: -400px;
@@ -64,6 +66,33 @@ h5 {
 .modal.modal-large .modal-body {
     max-height: 800px;
 }
+
+.modal.modal-xlarge {
+    width: 1160px;
+    margin-left: -580px;
+}
+.modal.modal-xlarge .modal-body {
+    max-height: 1160px;
+}
+
+.modal.modal-xxlarge {
+    width: 1500px;
+    margin-left: -750px;
+}
+.modal.modal-xxlarge .modal-body {
+    max-height: 1500px;
+}
+
+.modal.modal-full {
+    width: 96%;
+    height: 96%;
+    margin-left: -48%;
+    top: 2%;
+}
+.modal.modal-full .modal-body {
+    max-height: 1500px;
+}
+
 
 #toolbar {
 	margin: -35px 0 0 0;

@@ -64,8 +64,7 @@
 {snippet form}
 	{if $control->editForm}
 		{var form=>$control[$control->editForm]}
-    <div class="modal modal-large hide" id="editForm"
-		 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+    <div class="modal{if $form->type} {$form->type}{/if} hide" id="editForm">
         <div class="modal-header">
             <a class="close" onClick="$('#editForm').modal('hide')">×</a>
 
