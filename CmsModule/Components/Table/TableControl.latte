@@ -8,10 +8,10 @@
     <tr>
 		{foreach $columns as $key=>$column}
             <th{if $column['width']} style="width: {!$column['width']};"{/if}>
-				{if $sorter}<a class="ajax" n:href="this sort=>$key">{/if}{$column['title']}{if $sorter}</a>{/if}
+				{if $sorter}<a class="ajax" n:href="this sort=>$key">{/if}{_$column['title']}{if $sorter}</a>{/if}
             </th>
 		{/foreach}
-        <th>Actions</th>
+        <th>{_Actions}</th>
 		{if count($globalActions) > 0}
             <th></th>
 		{/if}
@@ -34,7 +34,7 @@
                 <div class="btn-group pull-right">
 					{foreach $actions as $name=>$action}
                         <a class="ajax btn"
-                           href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{$action->getLabel()}</a>
+                           href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{_$action->getLabel()}</a>
 					{/foreach}
                 </div>
             </td>

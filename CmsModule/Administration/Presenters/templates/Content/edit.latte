@@ -8,11 +8,11 @@
 	<?php unset($nullLinkParams['key']); ?>
 
 	{foreach $contentType->sections as $name=>$item}
-		<li{if $section == $name} class="active"{/if}><a class="ajax" href="{first}{$presenter->link('this', array('section'=>NULL) + $nullLinkParams)}{else}{$presenter->link('this', array('section'=>$name) + $nullLinkParams)}{/first}">{$name}</a></li>
+		<li{if $section == $name} class="active"{/if}><a class="ajax" href="{first}{$presenter->link('this', array('section'=>NULL) + $nullLinkParams)}{else}{$presenter->link('this', array('section'=>$name) + $nullLinkParams)}{/first}">{_$name}</a></li>
 	{/foreach}
 
-	<li{if 'basic' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">Basic setup</a></li>
-	<li{if 'routes' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}">Routes</a></li>
+	<li{if 'basic' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">{_'Basic setup'}</a></li>
+	<li{if 'routes' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}">{_'Routes'}</a></li>
 
 
 {if count($presenter->context->parameters['website']['languages']) > 1}

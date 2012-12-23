@@ -35,7 +35,7 @@ class RoutesFormFactory extends FormFactory
 			$container->addText('description', 'Description');
 			$container->addText('author', 'Author');
 			$container->addSelect('robots', 'Robots')->setItems(\CmsModule\Content\Entities\RouteEntity::getRobotsValues(), FALSE);
-			$container->addSelect('changefreq', 'Change freqency')->setItems(\CmsModule\Content\Entities\RouteEntity::getChangefreqValues(), FALSE)->setPrompt('-------');
+			$container->addSelect('changefreq', 'Change frequency')->setItems(\CmsModule\Content\Entities\RouteEntity::getChangefreqValues(), FALSE)->setPrompt('-------');
 			$container->addSelect('priority', 'Priority')->setItems(\CmsModule\Content\Entities\RouteEntity::getPriorityValues(), FALSE)->setPrompt('-------');
 
 			// layout

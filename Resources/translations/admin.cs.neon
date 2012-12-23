@@ -3,6 +3,7 @@
 about: o
 account settings: nastavení účtu
 actions: akce
+'advanced options': pokročilé volby
 admin account: administrátorský účet
 administration: administrace
 administration settings: nastavení administrace
@@ -27,6 +28,7 @@ delete all: smazat vše
 description: popis
 download current module list: stáhnout aktuální seznam modulů
 edit: editovat
+e-mails: e-maily
 environments settings: nastavení prostředí
 files: soubory
 files and attachements: soubory a přílohy
@@ -47,11 +49,16 @@ meta info: meta informace
 mode settings: nastavení módu
 modules: moduly
 name: jméno
+navigation: navigace
 next informations: další informace
 pages: stránky
+parent: rodič
 role: role
 route: routa
+routes: routy
 routing: routování
+robots: roboti
+save: uložit
 security: zabezpečení
 sessions: relace
 show: zobrazit
@@ -71,9 +78,14 @@ widgets: widgety
 save changes: uložit změny
 cancel: zrušit
 short: zkratka
+settings: nastavení
 alias: alias
+template: šablona
 title: titulek
 title separator: oddělovač titulku
+type: typ
+types: typy
+image: obrázek
 keywords: klíčová slova
 author: autor
 route prefix: předpona routování
@@ -90,10 +102,12 @@ manage environments: správa prostředí
 mode: mód
 strict mode: striktní mód
 iPs for devel: iP adresy pro vývoj
+inputs: vstupní pole
 e-mail for logs: e-mail pro logování
 expiration: expirace
 security panel: panel pro zabezpečení
 routing panel: routovací panel
+required: vyžadovat
 debugger panel in bluescreen: debugovací panel v laděnce
 yes: ano
 database panel: panel pro databázi
@@ -110,3 +124,20 @@ enable: povolit
 set password: nastavit heslo
 authentization key: autentizační klíč
 system settings: nastavení systému
+'manage website languages, aliases,...': 'správa jazyků a aliasů webu'
+'add, edit users and their roles': 'editace uživatelů a jejich rolí'
+'manage access policies, roles,...': 'správa přístupových oprávnění pro role'
+'set up database, environment,...': 'nastavení databáze, prostředí,...'
+'manage CMS modules, donwload, install, setup,...': 'správa CMS modulů, installace, nastavení,...'
+'show logs, errors, warnings,...': 'zobrazení logů, chyb a varování'
+'change frequency': frekvence změn
+priority: priorita
+'layout from parent': layout z nadřazeného
+'share layout with children': sdílet layout s podstránkami
+'cache mode from parent': cache mód z nadřazeného
+'parent content': nadřazená stránka
+'show in navigation': zobrazit v navigaci
+'use own title': použít vlastní titulek
+'navigation title': titulek navigace
+'new directory': nový adresář
+'upload file': nahrát soubor
