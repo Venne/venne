@@ -5,6 +5,8 @@
  * @copyright Copyright (c) 2009, 2010 David Grudl
  * @copyright Copyright (c) 2012 Vojtěch Dobeš
  * @license MIT
+ *
+ * @version 1.2.1
  */
 
 (function($, undefined) {
@@ -21,6 +23,7 @@ var nette = function () {
 		on: {
 			init: {},
 			load: {},
+			prepare: {},
 			before: {},
 			start: {},
 			success: {},
@@ -47,7 +50,7 @@ var nette = function () {
 		ext: function (callbacks, context, name) {
 			while (!name) {
 				name = 'ext_' + Math.random();
-				if (inner.context[name]) {
+				if (inner.contexts[name]) {
 					name = undefined;
 				}
 			}
@@ -80,7 +83,9 @@ var nette = function () {
 	 * @return {$.nette|object} Provides a fluent interface OR returns extensions with given name
 	 */
 	this.ext = function (name, callbacks, context) {
-		if (callbacks === undefined) {
+		if (typeof name == 'object') {
+			inner.ext(name, callbacks);
+		} else if (callbacks === undefined) {
 			return inner.contexts[name];
 		} else if (!callbacks) {
 			$.each(['init', 'load', 'before', 'start', 'success', 'complete', 'error'], function (index, event) {
@@ -89,8 +94,6 @@ var nette = function () {
 			inner.contexts[name] = undefined;
 		} else if (typeof name == 'string' && inner.contexts[name] !== undefined) {
 			throw 'Cannot override already registered nette-ajax extension.';
-		} else if (typeof name == 'object') {
-			inner.ext(name, callbacks);
 		} else {
 			inner.ext(callbacks, context, name);
 		}
@@ -149,8 +152,9 @@ var nette = function () {
 	 */
 	this.ajax = function (settings, ui, e) {
 		if (!settings.nette && ui && e) {
-			var $el = $(ui);
+			var $el = $(ui), xhr, originalBeforeSend;
 			var analyze = settings.nette = {
+				e: e,
 				ui: ui,
 				el: $el,
 				isForm: $el.is('form'),
@@ -174,38 +178,58 @@ var nette = function () {
 
 			if ($el.is('[data-ajax-off]')) {
 				settings.off = $el.data('ajaxOff');
-				if (typeof settings.off == 'string') setting.off = [settings.off];
+				if (typeof settings.off == 'string') settings.off = [settings.off];
 			}
 		}
 
-		if (!inner.fire({
-			name: 'before',
+		inner.fire({
+			name: 'prepare',
 			off: settings.off || {}
-		}, settings, ui, e)) return;
+		}, settings);
+		if (settings.prepare) {
+			settings.prepare(settings);
+		}
 
-		return $.ajax($.extend({
-			beforeSend: function (xhr) {
-				return inner.fire({
-					name: 'start',
-					off: settings.off || {}
-				}, xhr);
+		originalBeforeSend = settings.beforeSend;
+		settings.beforeSend = function (xhr, settings) {
+			if (originalBeforeSend) {
+				var result = originalBeforeSend(xhr, settings);
+				if (result !== undefined && !result) return result;
 			}
-		}, settings)).done(function (payload) {
-			inner.fire({
-				name: 'success',
+			return inner.fire({
+				name: 'before',
 				off: settings.off || {}
-			}, payload);
-		}).fail(function (xhr, status, error) {
-			inner.fire({
-				name :'error',
-				off: settings.off || {}
-			}, xhr, status, error);
-		}).always(function () {
-			inner.fire({
-				name: 'complete',
-				off: settings.off || {}
+			}, xhr, settings);
+		};
+
+		xhr = $.ajax(settings);
+
+		if (xhr) {
+			xhr.done(function (payload, status, xhr) {
+				inner.fire({
+					name: 'success',
+					off: settings.off || {}
+				}, payload, status, xhr);
+			}).fail(function (xhr, status, error) {
+				inner.fire({
+					name: 'error',
+					off: settings.off || {}
+				}, xhr, status, error);
+			}).always(function (xhr, status) {
+				inner.fire({
+					name: 'complete',
+					off: settings.off || {}
+				}, xhr, status);
 			});
-		});
+			inner.fire({
+				name: 'start',
+				off: settings.off || {}
+			}, xhr, settings);
+			if (settings.start) {
+				settings.start(xhr, settings);
+			}
+		}
+		return xhr;
 	};
 };
 
@@ -216,9 +240,10 @@ $.fn.netteAjax = function (e, options) {
 };
 
 $.nette.ext('validation', {
-	before: function (settings, ui, e) {
-		if (!settings.nette || !e) return true;
+	before: function (xhr, settings) {
+		if (!settings.nette) return true;
 		else var analyze = settings.nette;
+		var e = analyze.e;
 
 		var validate = $.extend({
 			keys: true,
@@ -233,6 +258,12 @@ $.nette.ext('validation', {
 				form: false
 			}; else if (typeof attr == 'object') return attr;
  		})() || {});
+
+		var passEvent = false;
+		if (analyze.el.attr('data-ajax-pass') !== undefined) {
+			passEvent = analyze.el.data('ajaxPass');
+			passEvent = typeof passEvent == 'bool' ? passEvent : true;
+		}
 
 		if (validate.keys) {
 			// thx to @vrana
@@ -262,8 +293,10 @@ $.nette.ext('validation', {
 			if (/:|^#/.test(analyze.form ? settings.url : analyze.el.attr('href'))) return false;
 		}
 
-		e.stopPropagation();
-		e.preventDefault();
+		if (!passEvent) {
+			e.stopPropagation();
+			e.preventDefault();
+		}
 		return true;
 	}
 }, {
@@ -271,83 +304,97 @@ $.nette.ext('validation', {
 });
 
 $.nette.ext('forms', {
-	success: function (payload) {
+	init: function () {
 		var snippets;
-		if (!window.Nette || !payload.snippets || !(snippets = this.ext('snippets'))) return;
+		if (!window.Nette || !(snippets = this.ext('snippets'))) return;
 
-		for (var id in payload.snippets) {
-			snippets.getElement(id).find('form').each(function() {
+		snippets.after(function ($el) {
+			$el.find('form').each(function() {
 				window.Nette.initForm(this);
 			});
-		}
+		});
 	},
-	before: function (settings, ui, e) {
+	prepare: function (settings) {
 		var analyze = settings.nette;
 		if (!analyze || !analyze.form) return;
-
-		settings.data = settings.data || {};
+		var e = analyze.e;
+		var originalData = settings.data || {};
+		var formData = {};
 
 		if (analyze.isSubmit) {
-			settings.data[analyze.el.attr('name')] = analyze.el.val() || '';
+			formData[analyze.el.attr('name')] = analyze.el.val() || '';
 		} else if (analyze.isImage) {
 			var offset = analyze.el.offset();
 			var name = analyze.el.attr('name');
 			var dataOffset = [ Math.max(0, e.pageX - offset.left), Math.max(0, e.pageY - offset.top) ];
 
 			if (name.indexOf('[', 0) !== -1) { // inside a container
-				settings.data[name] = dataOffset;
+				formData[name] = dataOffset;
 			} else {
-				settings.data[name + '.x'] = dataOffset[0];
-				settings.data[name + '.y'] = dataOffset[1];
+				formData[name + '.x'] = dataOffset[0];
+				formData[name + '.y'] = dataOffset[1];
 			}
 		}
 
-		settings.data = this.serializeValues(analyze.form, settings.data);
-	}
-}, {
-	serializeValues: function ($form, data) {
-		var values = $form.serializeArray();
-		for (var i = 0; i < values.length; i++) {
-			var name = values[i].name;
-			if (name in data) {
-				var val = data[name];
-				if (!(val instanceof Array)) {
-					val = [val];
-				}
-				val.push(values[i].value);
-				data[name] = val;
-			} else {
-				data[name] = values[i].value;
-			}
+		if (typeof originalData != 'string') {
+			originalData = $.param(originalData);
 		}
-		return data;
+		formData = $.param(formData);
+		settings.data = analyze.form.serialize() + (formData ? '&' + formData : '') + '&' + originalData;
 	}
 });
 
 // default snippet handler
 $.nette.ext('snippets', {
 	success: function (payload) {
+		var snippets = [];
 		if (payload.snippets) {
 			for (var i in payload.snippets) {
-				this.updateSnippet(i, payload.snippets[i]);
+				var $el = this.getElement(i);
+				$.each(this.beforeQueue, function (index, callback) {
+					if (typeof callback == 'function') {
+						callback($el);
+					}
+				});
+				this.updateSnippet($el, payload.snippets[i]);
+				$.each(this.afterQueue, function (index, callback) {
+					if (typeof callback == 'function') {
+						callback($el);
+					}
+				});
 			}
 		}
+		this.before(snippets);
 	}
 }, {
-	updateSnippet: function (id, html) {
-		var $el = this.getElement(id);
+	beforeQueue: [],
+	afterQueue: [],
+	before: function (callback) {
+		this.beforeQueue.push(callback);
+	},
+	after: function (callback) {
+		this.afterQueue.push(callback);
+	},
+	updateSnippet: function ($el, html, back) {
+		if (typeof $el == 'string') {
+			$el = this.getElement($el);
+		}
 		// Fix for setting document title in IE
-		if ($el.eq(0).tagName == 'TITLE') {
+		if ($el.get(0).tagName == 'TITLE') {
 			document.title = html;
 		} else {
-			this.applySnippet($el, html);
+			this.applySnippet($el, html, back);
 		}
 	},
 	getElement: function (id) {
 		return $('#' + this.escapeSelector(id));
 	},
-	applySnippet: function ($el, html) {
-		$el.html(html);
+	applySnippet: function ($el, html, back) {
+		if (!back && $el.is('[data-ajax-append]')) {
+			$el.append(html);
+		} else {
+			$el.html(html);
+		}
 	},
 	escapeSelector: function (selector) {
 		// thx to @uestla (https://github.com/uestla)
@@ -368,10 +415,15 @@ $.nette.ext('redirect', {
 // change URL (requires HTML5)
 if (!!(window.history && history.pushState)) { // check borrowed from Modernizr
 	$.nette.ext('history', {
-		before: function (settings, ui) {
-			var $el = $(ui);
-			if ($el.is('a')) {
-				this.href = ui.href;
+		before: function (xhr, settings, ui) {
+			if (!settings.nette) {
+				this.href = null;
+			} else if (!settings.nette.form) {
+				this.href = settings.nette.ui.href;
+			} else if (settings.nette.form.method == 'get') {
+				this.href = settings.nette.ui.action || window.location.href;
+			} else {
+				this.href = null;
 			}
 		},
 		success: function (payload) {
