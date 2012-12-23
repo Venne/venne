@@ -143,9 +143,9 @@ class TableControl extends Control
 	 * @param null $height
 	 * @return Form
 	 */
-	public function addForm(\Venne\Forms\FormFactory $formFactory, $title, $entityFactory = NULL, $width = NULL, $height = NULL)
+	public function addForm(\Venne\Forms\FormFactory $formFactory, $title, $entityFactory = NULL, $type = NULL)
 	{
-		return $this['_form_' . $this->_formCounter] = $this->forms['_form_' . $this->_formCounter++] = new Form($formFactory, $title, $entityFactory, $width, $height);
+		return $this['_form_' . $this->_formCounter] = $this->forms['_form_' . $this->_formCounter++] = new Form($formFactory, $title, $entityFactory, $type);
 	}
 
 

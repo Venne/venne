@@ -73,7 +73,7 @@
         <div class="modal-body">
 			{snippet editForm}
     			{control editForm}
-				{/snippet}
+			{/snippet}
         </div>
     </div>
     <script>
@@ -85,18 +85,16 @@
     </script>
 		{elseif $control->createForm}
 		{var form=>$control[$control->createForm]}
-    <div class="modal modal-large hide" id="createForm"
-		 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
+    <div class="modal{if $form->type} {$form->type}{/if} hide" id="createForm"}>
         <div class="modal-header">
             <a class="close" onClick="$('#createForm').modal('hide')">×</a>
 
             <h3>{_$form->title}</h3>
         </div>
         <div class="modal-body"
-			 {if $form->getWidth() || $form->getHeight()}style="{if $form->getWidth()}width: {$form->getWidth()}px;{/if}{if $form->getHeight()}height: {$form->getHeight()}px;{/if}"{/if}>
 			{snippet createForm}
-        			{control createForm}
-					{/snippet}
+        		{control createForm}
+			{/snippet}
         </div>
     </div>
     <script>

@@ -120,12 +120,12 @@ class FilesPresenter extends BasePresenter
 			$entity = new \CmsModule\Content\Entities\FileEntity();
 			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
 			return $entity;
-		});
+		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
 		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
 			$entity = new \CmsModule\Content\Entities\DirEntity();
 			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
 			return $entity;
-		});
+		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
 		// navbar
 		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function ($button) use ($_this, $dirRepository, $dql) {
