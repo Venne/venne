@@ -141,3 +141,9 @@ priority: priorita
 'navigation title': titulek navigace
 'new directory': nový adresář
 'upload file': nahrát soubor
+'please complete mandatory field.': 'prosím, vyplňte požadované pole.'
+'refresh database': obnovit databázi
+installed: nainstalováno
+uninstalled: odinstalováno
+install: instalovat
+uninstall: odinstalovat

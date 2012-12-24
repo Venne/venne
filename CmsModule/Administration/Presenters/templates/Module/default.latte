@@ -96,14 +96,14 @@
 
                 <div class="btn-group">
                     <a class="btn dropdown-toggle" data-toggle="dropdown"
-                       href="#">{$presenter->moduleManager->getStatus($module)} <span class="caret"></span>
+                       href="#">{_$presenter->moduleManager->getStatus($module)} <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
 						{if $presenter->moduleManager->getStatus($module) === \Venne\Module\ModuleManager::STATUS_INSTALLED}
-                            <li><a n:href="uninstall! $name">Uninstall</a></li>
+                            <li><a n:href="uninstall! $name">{_Uninstall}</a></li>
 						{/if}
 						{if $presenter->moduleManager->getStatus($module) === \Venne\Module\ModuleManager::STATUS_UNINSTALLED}
-                            <li><a n:href="install! $name">Install</a></li>
+                            <li><a n:href="install! $name">{_Install}</a></li>
 						{/if}
                     </ul>
                 </div>
