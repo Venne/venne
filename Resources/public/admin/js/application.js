@@ -25,6 +25,27 @@ $(function () {
 		$(this).next().click();
 	});
 
+	$('#button-fullscreen').live('click', function (event){
+		if ($('#panel').data('state') != 'closed') {
+			event.preventDefault();
+			$('#panel').animate({
+				marginLeft: '-320px'
+			}, 300).data('state', 'closed');
+			$('#content').animate({
+				marginLeft: '10px'
+			}, 300);
+		} else {
+			event.preventDefault();
+			$('#panel').animate({
+				marginLeft: '0px'
+			}, 300).data('state', null);
+			$('#content').animate({
+				marginLeft: '330px'
+			}, 300);
+		}
+	});
+
+
 	var dateInputOptions = {
 		datetime:{
 			dateFormat:'d.m.yy',
