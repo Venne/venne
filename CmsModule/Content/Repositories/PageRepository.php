@@ -107,7 +107,7 @@ class PageRepository extends BaseRepository
 			foreach ($routeRepository->findBy(array('url' => $pageRoute->getUrl())) as $route) {
 				if ($pageRoute->id !== $route->id) {
 					foreach ($page->getLanguages() as $lang) {
-						if ($route->getPage()->isInLanguageAlias($lang->alias)) {
+						if ($route->getPage() && $route->getPage()->isInLanguageAlias($lang->alias)) {
 							return false;
 						}
 					}

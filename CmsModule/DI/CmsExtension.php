@@ -113,8 +113,7 @@ class CmsExtension extends CompilerExtension
 
 		// config manager
 		$container->addDefinition($this->prefix("configService"))
-			->setClass("CmsModule\Services\ConfigBuilder", array("%configDir%/config.neon"))
-			->addTag("service");
+			->setClass("CmsModule\Services\ConfigBuilder", array("%configDir%/config.neon"));
 
 		// Stopwatch
 		if ($config['stopwatch']['debugger']) {
