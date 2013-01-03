@@ -12,11 +12,12 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="pageTag")
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="pageTag")
  */
 class PageTagEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
@@ -45,14 +46,14 @@ class PageTagEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var PageEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
-	 * @JoinColumn(onDelete="SET NULL")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
+	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
 	protected $page;
 
 	/**
 	 * @var string
-	 * @Column(type="string", unique=true)
+	 * @ORM\Column(type="string", unique=true)
 	 */
 	protected $tag;
 

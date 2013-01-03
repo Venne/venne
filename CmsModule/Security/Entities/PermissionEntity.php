@@ -12,35 +12,36 @@
 namespace CmsModule\Security\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="permission")
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="permission")
  */
 class PermissionEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 
 	/**
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $resource;
 
 	/**
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $privilege;
 
 	/**
-	 * @Column(type="boolean")
+	 * @ORM\Column(type="boolean")
 	 */
 	protected $allow;
 
 	/**
 	 * @var RoleEntity
-	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="permissions")
-	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="RoleEntity", inversedBy="permissions")
+	 * @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $role;
 

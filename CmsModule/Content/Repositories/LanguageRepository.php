@@ -28,8 +28,7 @@ class LanguageRepository extends BaseRepository
 
 
 	/**
-	 * @param EntityMapper $mapper
-	 * @param BaseRepository $repository
+	 * @param \CmsModule\Services\ConfigBuilder $configBuilder
 	 */
 	public function injectConfigBuilder(ConfigBuilder $configBuilder)
 	{

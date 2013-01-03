@@ -12,20 +12,21 @@
 namespace CmsModule\Content\Elements\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Content\Entities\ElementEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="textElement")
- * @DiscriminatorEntry(name="textElement")
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="textElement")
+ * @ORM\DiscriminatorEntry(name="textElement")
  */
 class TextEntity extends ElementEntity
 {
 
 	/**
 	 * @var string
-	 * @Column(type="text")
+	 * @ORM\Column(type="text")
 	 */
 	protected $text;
 

@@ -12,16 +12,17 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @Table(name="page")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"base" = "PageEntity"})
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\Table(name="page")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"base" = "PageEntity"})
  */
 abstract class PageEntity extends TreeEntity
 {
@@ -49,67 +50,67 @@ abstract class PageEntity extends TreeEntity
 
 	/**
 	 * @var string
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $name;
 
 	/**
 	 * @var ArrayCollection|RouteEntity[]
-	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\RouteEntity", mappedBy="page", cascade={"persist", "remove", "detach"})
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\RouteEntity", mappedBy="page", cascade={"persist", "remove", "detach"})
 	 */
 	protected $routes;
 
 	/**
 	 * @var RouteEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", cascade={"persist", "remove", "detach"})
-	 * @JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", cascade={"persist", "remove", "detach"})
+	 * @ORM\JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $mainRoute;
 
 	/**
 	 * @var ArrayCollection|LanguageEntity[]
-	 * @ManyToMany(targetEntity="\CmsModule\Content\Entities\LanguageEntity", inversedBy="pages")
-	 * @JoinTable(name="pageLanguageLink",
-	 *       joinColumns={@JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")},
-	 *       inverseJoinColumns={@JoinColumn(name="language_id", referencedColumnName="id", onDelete="CASCADE")}
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Content\Entities\LanguageEntity", inversedBy="pages")
+	 * @ORM\JoinTable(name="pageLanguageLink",
+	 *       joinColumns={@ORM\JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")},
+	 *       inverseJoinColumns={@ORM\JoinColumn(name="language_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *       )
 	 */
 	protected $languages;
 
 	/**
 	 * @var PageEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="translations")
-	 * @JoinColumn(name="translationFor", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="translations")
+	 * @ORM\JoinColumn(name="translationFor", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $translationFor;
 
 	/**
 	 * @var ArrayCollection|PageEntity[]
-	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="translationFor")
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="translationFor")
 	 */
 	protected $translations;
 
 	/**
 	 * @var \DateTime
-	 * @Column(type="datetime")
+	 * @ORM\Column(type="datetime")
 	 */
 	protected $created;
 
 	/**
 	 * @var \DateTime
-	 * @Column(type="datetime")
+	 * @ORM\Column(type="datetime")
 	 */
 	protected $updated;
 
 	/**
 	 * @var
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $navigationTitleRaw;
 
 	/**
 	 * @var
-	 * @Column(type="boolean")
+	 * @ORM\Column(type="boolean")
 	 */
 	protected $navigationShow;
 
@@ -459,7 +460,7 @@ abstract class PageEntity extends TreeEntity
 	public static function getType()
 	{
 		$ref = new \Nette\Reflection\ClassType(get_called_class());
-		$annotation = $ref->getAnnotation('DiscriminatorEntry');
+		$annotation = $ref->getAnnotation('ORM\DiscriminatorEntry');
 		return $annotation['name'];
 	}
 

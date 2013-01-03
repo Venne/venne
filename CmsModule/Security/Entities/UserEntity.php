@@ -12,80 +12,76 @@
 namespace CmsModule\Security\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Entities\IdentifiedEntity;
+use Nette\Security\IIdentity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Security\Repositories\UserRepository")
- * @Table(name="user")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"base" = "UserEntity"})
+ * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\UserRepository")
+ * @ORM\Table(name="user")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"base" = "UserEntity"})
  */
-class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Entities\IEntity
+class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IEntity, IIdentity
 {
 
 	/**
-	 * @id
-	 * @generatedValue
-	 * @column(type="integer")
-	 */
-	protected $id;
-
-	/**
-	 * @Column(type="boolean")
+	 * @ORM\Column(type="boolean")
 	 */
 	protected $enable;
 
 	/**
-	 * @Column(type="string", unique=true, length=64)
+	 * @ORM\Column(type="string", unique=true, length=64)
 	 */
 	protected $email;
 
 	/**
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $password;
 
 	/**
-	 * @Column(type="string", name="`key`", nullable=true)
+	 * @ORM\Column(type="string", name="`key`", nullable=true)
 	 */
 	protected $key;
 
 	/**
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $salt;
 
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection
-	 * @ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity", cascade={"persist"}, inversedBy="users")
-	 * @JoinTable(name="users_roles",
-	 *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
-	 *      inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity", cascade={"persist"}, inversedBy="users")
+	 * @ORM\JoinTable(name="users_roles",
+	 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )
 	 */
 	protected $roleEntities;
 
 
 	/**
-	 * @OneToMany(targetEntity="\CmsModule\Security\Entities\LoginEntity", mappedBy="user")
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Security\Entities\LoginEntity", mappedBy="user")
 	 */
 	protected $logins;
 
 	/**
-	 * @OneToMany(targetEntity="\CmsModule\Security\Entities\SocialLoginEntity", mappedBy="user", cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Security\Entities\SocialLoginEntity", mappedBy="user", cascade={"persist"})
 	 */
 	protected $socialLogins;
 
 
 	/**
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $socialType;
 
 
 	/**
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $socialData;
 
@@ -200,12 +196,6 @@ class UserEntity extends \Nette\Security\Identity implements \DoctrineModule\Ent
 
 
 	/******************************** Getters and setters **************************************/
-
-
-	public function getId()
-	{
-		return $this->id;
-	}
 
 
 	public function setId($id)

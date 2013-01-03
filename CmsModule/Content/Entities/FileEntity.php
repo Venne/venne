@@ -12,30 +12,34 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Finder;
+use Nette\Http\FileUpload;
+use Nette\InvalidArgumentException;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="file")
- * @HasLifecycleCallbacks
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="file")
+ * @ORM\HasLifecycleCallbacks
  */
 class FileEntity extends BaseFileEntity
 {
 
 	/**
 	 * @var DirEntity
-	 * @ManyToOne(targetEntity="DirEntity", inversedBy="files")
-	 * @JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="DirEntity", inversedBy="files")
+	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
-	/** @Column(type="boolean") */
+	/** @ORM\Column(type="boolean") */
 	protected $protected;
 
 	/**
-	 * @var \Nette\Http\FileUpload
-	 * @Column(type="boolean", nullable=true)
+	 * @var \Nette\Http\FileUpload|\SplFileInfo
+	 * @ORM\Column(type="boolean", nullable=true)
 	 */
 	protected $file;
 
@@ -55,19 +59,28 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @PreFlush()
+	 * @ORM\PreFlush()
 	 */
 	public function preUpload()
 	{
 		if ($this->file) {
-			$this->setName($this->file->getSanitizedName());
+			if ($this->file instanceof FileUpload) {
+				$this->setName($this->file->getSanitizedName());
+			} else {
+				$this->setName(Strings::webalize($this->file->getBasename()));
+			}
+
 			$this->generatePath();
 
 			if ($this->_oldPath && $this->_oldPath !== $this->path) {
 				@unlink($this->getFilePathBy($this->_oldProtected, $this->_oldPath));
 			}
 
-			$this->file->move($this->getFilePath());
+			if ($this->file instanceof FileUpload) {
+				$this->file->move($this->getFilePath());
+			} else {
+				copy($this->file->getPathname(), $this->getFilePath());
+			}
 			return;
 		}
 
@@ -84,7 +97,7 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @PreRemove()
+	 * @ORM\PreRemove()
 	 */
 	public function preRemove()
 	{
@@ -135,11 +148,15 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @param \Nette\Http\FileUpload $file
+	 * @param \Nette\Http\FileUpload|\SplFileInfo $file
 	 */
-	public function setFile(\Nette\Http\FileUpload $file)
+	public function setFile($file)
 	{
-		if (!$file->isOk()) {
+		if (!$file instanceof FileUpload && !$file instanceof \SplFileInfo) {
+			throw new InvalidArgumentException("File must be instance of 'FileUpload' OR 'SplFileInfo'. '" . get_class($file) . "' is given.");
+		}
+
+		if ($file instanceof FileUpload && !$file->isOk()) {
 			return;
 		}
 
@@ -153,7 +170,7 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @return \Nette\Http\FileUpload
+	 * @return \Nette\Http\FileUpload|\SplFileInfo
 	 */
 	public function getFile()
 	{

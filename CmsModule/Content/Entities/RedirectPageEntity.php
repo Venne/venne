@@ -12,27 +12,28 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Content\Entities\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @Table(name="redirectPage")
- * @DiscriminatorEntry(name="redirectPage")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\Table(name="redirectPage")
+ * @ORM\DiscriminatorEntry(name="redirectPage")
  */
 class RedirectPageEntity extends PageEntity
 {
 
 	/**
 	 * @var PageEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
-	 * @joinColumn(onDelete="SET NULL")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
+	 * @ORM\joinColumn(onDelete="SET NULL")
 	 **/
 	protected $page;
 
 	/**
 	 * @var string
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $redirectUrl;
 

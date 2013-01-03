@@ -12,12 +12,12 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="layoutconfig")
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="layoutconfig")
  */
 class LayoutconfigEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
@@ -25,7 +25,7 @@ class LayoutconfigEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var RouteEntity[]
-	 * @OneToMany(targetEntity="RouteEntity", mappedBy="layoutconfig", cascade={"persist", "remove", "merge"})
+	 * @ORM\OneToMany(targetEntity="RouteEntity", mappedBy="layoutconfig", cascade={"persist", "remove", "merge"})
 	 */
 	protected $routes;
 

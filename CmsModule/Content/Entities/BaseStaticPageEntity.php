@@ -12,6 +12,8 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,7 +23,7 @@ abstract class BaseStaticPageEntity extends PageEntity
 
 	/**
 	 * @var string
-	 * @Column(type="text")
+	 * @ORM\Column(type="text")
 	 */
 	protected $text;
 

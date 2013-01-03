@@ -49,7 +49,7 @@ services:
 	cms.languageRepository:
 		class: CmsModule\Content\Entities\LanguageEntity
 		setup:
-			- injectConfigBuilder
+			- injectConfigBuilder(@cms.configService)
 		tags: [repository]
 
 	cms.loginRepository:

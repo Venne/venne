@@ -12,12 +12,13 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @Table(name="registrationPage")
- * @DiscriminatorEntry(name="registrationPage")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\Table(name="registrationPage")
+ * @ORM\DiscriminatorEntry(name="registrationPage")
  */
 class RegistrationPageEntity extends PageEntity
 {
@@ -48,53 +49,53 @@ class RegistrationPageEntity extends PageEntity
 
 	/**
 	 * @var string
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $userType;
 
 	/**
 	 * @var string
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $mode;
 
 	/**
 	 * @var string
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $socialMode;
 
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection|\CmsModule\Security\Entities\RoleEntity
-	 * @ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity")
-	 * @JoinTable(
-	 *      joinColumns={@JoinColumn(onDelete="CASCADE")},
-	 *      inverseJoinColumns={@JoinColumn(onDelete="CASCADE")}
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity")
+	 * @ORM\JoinTable(
+	 *      joinColumns={@ORM\JoinColumn(onDelete="CASCADE")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(onDelete="CASCADE")}
 	 *      )
 	 */
 	protected $roles;
 
 	/**
 	 * @var string
-	 * @Column(type="text")
+	 * @ORM\Column(type="text")
 	 */
 	protected $email;
 
 	/**
 	 * @var string
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $sender;
 
 	/**
 	 * @var string
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $mailFrom;
 
 	/**
 	 * @var string
-	 * @Column(type="string", nullable=true)
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $subject;
 

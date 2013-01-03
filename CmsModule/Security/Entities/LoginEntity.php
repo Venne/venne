@@ -12,11 +12,12 @@
 namespace CmsModule\Security\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="login",indexes={@index(name="search_idx", columns={"sessionId"})})
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="login",indexes={@ORM\index(name="search_idx", columns={"sessionId"})})
  */
 class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
@@ -25,18 +26,18 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	const USER_ADMIN = NULL;
 
 	/**
-	 * @ManyToOne(targetEntity="UserEntity", inversedBy="logins")
-	 * @JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="UserEntity", inversedBy="logins")
+	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;
 
-	/** @Column(type="string", nullable=true) */
+	/** @ORM\Column(type="string", nullable=true) */
 	protected $sessionId;
 
-	/** @Column(type="boolean") */
+	/** @ORM\Column(type="boolean") */
 	protected $reload;
 
-	/** @Column(type="datetime") */
+	/** @ORM\Column(type="datetime") */
 	protected $created;
 
 

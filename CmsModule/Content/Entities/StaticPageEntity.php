@@ -12,12 +12,13 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @Table(name="staticPage")
- * @DiscriminatorEntry(name="staticPage")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\Table(name="staticPage")
+ * @ORM\DiscriminatorEntry(name="staticPage")
  */
 class StaticPageEntity extends BaseStaticPageEntity
 {

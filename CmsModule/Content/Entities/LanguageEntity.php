@@ -12,29 +12,30 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\LanguageRepository")
- * @Table(name="language")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\LanguageRepository")
+ * @ORM\Table(name="language")
  */
 class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 
-	/** @Column(type="string", unique=true, length=32) */
+	/** @ORM\Column(type="string", unique=true, length=32) */
 	protected $name;
 
-	/** @Column(type="string", unique=true, length=32) */
+	/** @ORM\Column(type="string", unique=true, length=32) */
 	protected $short;
 
-	/** @Column(type="string", unique=true, length=32) */
+	/** @ORM\Column(type="string", unique=true, length=32) */
 	protected $alias;
 
 	/**
 	 * @var PageEntity[]|ArrayCollection|array
-	 * @ManyToMany(targetEntity="PageEntity", mappedBy="languages")
+	 * @ORM\ManyToMany(targetEntity="PageEntity", mappedBy="languages")
 	 */
 	protected $pages;
 

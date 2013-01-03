@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,39 +22,39 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="children")
-	 * @JoinColumn(onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="children")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next")  # ManyToOne is hack for prevent '1062 Duplicate entry update'
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next")  # ManyToOne is hack for prevent '1062 Duplicate entry update'
 	 */
 	protected $previous;
 
 	/**
-	 * @OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="previous")
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="previous")
 	 */
 	protected $next;
 
 
-	/** @Column(type="integer") */
+	/** @ORM\Column(type="integer") */
 	protected $position;
 
 	/**
-	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="parent", cascade={"persist", "remove", "detach"})
-	 * @OrderBy({"position" = "ASC"})
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="parent", cascade={"persist", "remove", "detach"}, fetch="EXTRA_LAZY")
+	 * @ORM\OrderBy({"position" = "ASC"})
 	 */
 	protected $children;
 
 	/**
-	 * @OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="virtualParent", cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="virtualParent", cascade={"persist"})
 	 */
 	protected $virtualChildren;
 
 	/**
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="virtualChildren")
-	 * @JoinColumn(onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="virtualChildren")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $virtualParent;
 

@@ -12,27 +12,28 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\DirRepository")
- * @Table(name="directory")
- * @HasLifecycleCallbacks
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\DirRepository")
+ * @ORM\Table(name="directory")
+ * @ORM\HasLifecycleCallbacks
  */
 class DirEntity extends BaseFileEntity
 {
 
 	/**
 	 * @var ArrayCollection|DirEntity[]
-	 * @OneToMany(targetEntity="DirEntity", mappedBy="parent")
+	 * @ORM\OneToMany(targetEntity="DirEntity", mappedBy="parent")
 	 */
 	protected $children;
 
 	/**
 	 * @var ArrayCollection|FileEntity[]
-	 * @OneToMany(targetEntity="FileEntity", mappedBy="parent")
+	 * @ORM\OneToMany(targetEntity="FileEntity", mappedBy="parent")
 	 */
 	protected $files;
 
@@ -61,7 +62,7 @@ class DirEntity extends BaseFileEntity
 
 
 	/**
-	 * @PreFlush()
+	 * @ORM\PreFlush()
 	 */
 	public function preUpdate()
 	{
@@ -88,7 +89,7 @@ class DirEntity extends BaseFileEntity
 	}
 
 	/**
-	 * @PreRemove()
+	 * @ORM\PreRemove()
 	 */
 	public function preRemove()
 	{

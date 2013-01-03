@@ -12,15 +12,16 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Entities\IdentifiedEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="element", indexes={@index(name="name_idx", columns={"name"})})
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"base" = "ElementEntity"})
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="element", indexes={@ORM\index(name="name_idx", columns={"name"})})
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"base" = "ElementEntity"})
  */
 abstract class ElementEntity extends IdentifiedEntity
 {
@@ -36,34 +37,34 @@ abstract class ElementEntity extends IdentifiedEntity
 
 	/**
 	 * @var \CmsModule\Content\Entities\LayoutconfigEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\LayoutconfigEntity")
-	 * @JoinColumn(onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LayoutconfigEntity")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $layoutconfig;
 
 	/**
 	 * @var \CmsModule\Content\Entities\PageEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
-	 * @JoinColumn(onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $page;
 
 	/**
 	 * @var \CmsModule\Content\Entities\RouteEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity")
-	 * @JoinColumn(onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $route;
 
 	/**
 	 * @var int
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $name;
 
 	/**
 	 * @var int
-	 * @Column(type="integer")
+	 * @ORM\Column(type="integer")
 	 */
 	protected $mode;
 

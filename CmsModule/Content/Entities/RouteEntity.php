@@ -12,12 +12,16 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="route")
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="route", indexes={
+ * @ORM\Index(name="type_idx", columns={"type"}),
+ * @ORM\Index(name="url_idx", columns={"url"}),
+ * })
  */
 class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
@@ -57,98 +61,96 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected static $priorityValues = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 	/**
-	 * @Index
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $type;
 
 	/**
-	 * @Index
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $url;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $localUrl;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $params;
 
-	/** @Column(type="integer") */
+	/** @ORM\Column(type="integer") */
 	protected $paramCounter;
 
 	/**
 	 * @var PageEntity
-	 * @ManyToOne(targetEntity="PageEntity", inversedBy="routes")
-	 * @JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="PageEntity", inversedBy="routes")
+	 * @ORM\JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $page;
 
 	/**
 	 * @var RouteEntity
-	 * @ManyToOne(targetEntity="RouteEntity", inversedBy="children")
-	 * @JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="RouteEntity", inversedBy="children")
+	 * @ORM\JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
 	 * @var RouteEntity[]
-	 * @OneToMany(targetEntity="RouteEntity", mappedBy="parent")
+	 * @ORM\OneToMany(targetEntity="RouteEntity", mappedBy="parent", fetch="EXTRA_LAZY")
 	 */
 	protected $children;
 
 	/**
 	 * @var LayoutconfigEntity
-	 * @ManyToOne(targetEntity="LayoutconfigEntity", inversedBy="routes", cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="LayoutconfigEntity", inversedBy="routes", cascade={"persist"})
 	 */
 	protected $layoutconfig;
 
 	/**
 	 * @var LayoutconfigEntity
-	 * @ManyToOne(targetEntity="LayoutconfigEntity", cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="LayoutconfigEntity", cascade={"persist"})
 	 */
 	protected $childrenLayoutconfig;
 
 
 	/***************** Meta *******************/
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $title;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $keywords;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $description;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $author;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $robots;
 
-	/** @Column(type="string", nullable=true) */
+	/** @ORM\Column(type="string", nullable=true) */
 	protected $changefreq;
 
-	/** @Column(type="integer", nullable=true) */
+	/** @ORM\Column(type="integer", nullable=true) */
 	protected $priority;
 
-	/** @Column(type="string", nullable=true) */
+	/** @ORM\Column(type="string", nullable=true) */
 	protected $layout;
 
-	/** @Column(type="string", nullable=true) */
+	/** @ORM\Column(type="string", nullable=true) */
 	protected $childrenLayout;
 
-	/** @Column(type="boolean") */
+	/** @ORM\Column(type="boolean") */
 	protected $copyLayoutFromParent;
 
-	/** @Column(type="string", nullable=true) */
+	/** @ORM\Column(type="string", nullable=true) */
 	protected $cacheMode;
 
-	/** @Column(type="boolean") */
+	/** @ORM\Column(type="boolean") */
 	protected $copyCacheModeFromParent;
 
-	/** @Column(type="boolean") */
+	/** @ORM\Column(type="boolean") */
 	protected $copyLayoutToChildren;
 
 
@@ -215,7 +217,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		if ($this->parent) {
-			$this->url = trim(($this->parent !== NULL ? $this->parent->url . "/" : "") . $this->localUrl, "/");
+			$this->url = trim($this->parent->url . "/" . $this->localUrl, "/");
 		} else {
 			$this->url = '';
 		}
@@ -265,10 +267,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/**
 	 * @param $localUrl
 	 */
-	public function setLocalUrl($localUrl)
+	public function setLocalUrl($localUrl, $recursively = true)
 	{
 		$this->localUrl = $localUrl;
-		$this->generateUrl();
+		$this->generateUrl($recursively);
 	}
 
 

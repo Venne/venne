@@ -12,12 +12,13 @@
 namespace CmsModule\Security\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @Table(name="socialLogin",
- *     uniqueConstraints={@UniqueConstraint(name="uniqueKey", columns={"type", "uniqueKey"})}
+ * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Table(name="socialLogin",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="uniqueKey", columns={"type", "uniqueKey"})}
  * )
  */
 class SocialLoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
@@ -25,18 +26,18 @@ class SocialLoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @ManyToOne(targetEntity="UserEntity", inversedBy="socialLogins")
-	 * @JoinColumn(onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="UserEntity", inversedBy="socialLogins")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $type;
 
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $uniqueKey;
 
-	/** @Column(type="text", nullable=true) */
+	/** @ORM\Column(type="text", nullable=true) */
 	protected $data;
 
 

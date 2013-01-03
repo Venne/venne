@@ -12,38 +12,39 @@
 namespace CmsModule\Security\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Security\Repositories\RoleRepository")
- * @Table(name="role")
+ * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\RoleRepository")
+ * @ORM\Table(name="role")
  */
 class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 
 
 	/**
-	 * @Column(type="string", unique=true, length=32)
+	 * @ORM\Column(type="string", unique=true, length=32)
 	 */
 	protected $name;
 
 	/**
-	 * @OneToMany(targetEntity="RoleEntity", mappedBy="parent")
+	 * @ORM\OneToMany(targetEntity="RoleEntity", mappedBy="parent")
 	 */
 	protected $children;
 
 	/**
-	 * @ManyToOne(targetEntity="RoleEntity", inversedBy="children")
-	 * @JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="RoleEntity", inversedBy="children")
+	 * @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
-	 * @OneToMany(targetEntity="PermissionEntity", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="PermissionEntity", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
 	 */
 	protected $permissions;
 
 	/**
-	 * @ManyToMany(targetEntity="UserEntity", mappedBy="roleEntities")
+	 * @ORM\ManyToMany(targetEntity="UserEntity", mappedBy="roleEntities")
 	 */
 	protected $users;
 

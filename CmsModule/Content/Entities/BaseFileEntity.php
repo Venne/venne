@@ -12,7 +12,7 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
 /**
@@ -23,26 +23,26 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var string
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $name;
 
 	/**
 	 * @var string
-	 * @Column(type="string")
+	 * @ORM\Column(type="string")
 	 */
 	protected $path;
 
 	/**
 	 * @var DirEntity
-	 * @ManyToOne(targetEntity="DirEntity", inversedBy="children")
-	 * @JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\ManyToOne(targetEntity="DirEntity", inversedBy="children")
+	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
 	 * @var bool
-	 * @Column(type="boolean")
+	 * @ORM\Column(type="boolean")
 	 */
 	protected $invisible;
 

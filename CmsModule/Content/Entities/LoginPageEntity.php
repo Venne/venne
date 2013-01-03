@@ -12,28 +12,29 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Content\Entities\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @Table(name="loginPage")
- * @DiscriminatorEntry(name="loginPage")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\Table(name="loginPage")
+ * @ORM\DiscriminatorEntry(name="loginPage")
  */
 class LoginPageEntity extends PageEntity
 {
 
 	/**
 	 * @var PageEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
-	 * @joinColumn(onDelete="SET NULL")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
+	 * @ORM\joinColumn(onDelete="SET NULL")
 	 **/
 	protected $page;
 
 	/**
 	 * @var RegistrationPageEntity
-	 * @ManyToOne(targetEntity="\CmsModule\Content\Entities\RegistrationPageEntity")
-	 * @joinColumn(onDelete="SET NULL")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\RegistrationPageEntity")
+	 * @ORM\joinColumn(onDelete="SET NULL")
 	 **/
 	protected $registration;
 
