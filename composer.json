@@ -14,6 +14,7 @@
 		"venne/doctrine-module":"2.0.x-dev",
 		"venne/assets-module":"2.0.x-dev",
 		"venne/translator-module":"2.0.x-dev",
+		"venne/gedmo-module":"2.0.x-dev",
 		"kdyby/bootstrap-form-renderer":"1.0.*"
 	},
 	"require-dev":{

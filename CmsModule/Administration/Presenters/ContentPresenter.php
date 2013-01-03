@@ -11,6 +11,9 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Content\Entities\LanguageEntity;
+use Gedmo\Translatable\Translatable;
+use Gedmo\Translatable\TranslatableListener;
 use Venne;
 use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Repositories\BaseRepository;
@@ -35,7 +38,13 @@ class ContentPresenter extends BasePresenter
 	public $type;
 
 	/** @persistent */
+	public $contentLang;
+
+	/** @persistent */
 	public $section;
+
+	/** @var LanguageEntity */
+	public $languageEntity;
 
 	/** @var PageRepository */
 	protected $pageRepository;
@@ -65,7 +74,7 @@ class ContentPresenter extends BasePresenter
 	 * @param BaseRepository $pageTagRepository
 	 * @param ContentManager $contentManager
 	 */
-	function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, BaseRepository $pageTagRepository, ContentManager $contentManager)
+	public function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, BaseRepository $pageTagRepository, ContentManager $contentManager)
 	{
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
@@ -98,6 +107,31 @@ class ContentPresenter extends BasePresenter
 	public function injectSpecialFormFactory(SpecialFormFactory $specialFormFactory)
 	{
 		$this->specialFormFactory = $specialFormFactory;
+	}
+
+
+	public function startup()
+	{
+		parent::startup();
+
+		if ($this->contentLang) {
+			foreach ($this->context->entityManager->getEventManager()->getListeners() as $event => $listeners) {
+				foreach ($listeners as $hash => $listener) {
+					if ($listener instanceof TranslatableListener) {
+						$listener->setTranslatableLocale($this->contentLang);
+						$listener->setTranslationFallback(true);
+						$break = true;
+						break;
+					}
+				}
+				if(isset($break)) {
+					break;
+				}
+			}
+			$this->languageEntity = $this->languageRepository->find($this->contentLang);
+		} else {
+			$this->languageEntity = $this->languageRepository->findOneBy(array('short' => $this->context->parameters['website']['defaultLanguage']));
+		}
 	}
 
 
@@ -308,5 +342,6 @@ class ContentPresenter extends BasePresenter
 		$this->template->contentType = $this->contentManager->getContentType($this->template->entity->type);
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
+		$this->template->languageRepository = $this->languageRepository;
 	}
 }

@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Presenters;
 
+use Gedmo\Translatable\TranslatableListener;
 use Venne;
 use Nette\Caching\Cache;
 use CmsModule\Content\Entities\RouteEntity;
@@ -60,6 +61,17 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			throw new \Nette\Application\BadRequestException;
 		}
 		$this->page = $this->route->getPage();
+		foreach ($this->context->eventManager->getListeners() as $event => $listeners) {
+			foreach ($listeners as $hash => $listener) {
+				if ($listener instanceof TranslatableListener) {
+					$langId = (string)$this->context->cms->languageRepository->findOneBy(array('short' => $this->lang))->id;
+					$listener->setTranslatableLocale($langId);
+					$listener->setTranslationFallback(true);
+					break;
+				}
+			}
+		}
+		$this->context->entityManager->refresh($this->page);
 	}
 
 

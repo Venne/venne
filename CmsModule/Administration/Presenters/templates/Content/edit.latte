@@ -6,6 +6,7 @@
 
 	{var $nullLinkParams=>\Venne\Application\UI\Helpers::nullLinkParams($presenter)}
 	<?php unset($nullLinkParams['key']); ?>
+	<?php unset($nullLinkParams['contentLang']); ?>
 
 	{foreach $contentType->sections as $name=>$item}
 		<li{if $section == $name} class="active"{/if}><a class="ajax" href="{first}{$presenter->link('this', array('section'=>NULL) + $nullLinkParams)}{else}{$presenter->link('this', array('section'=>$name) + $nullLinkParams)}{/first}">{_$name}</a></li>
@@ -31,6 +32,17 @@
 		</ul>
 	</li>
 {/if}
+	{if count($entity->languages) > 1}
+		<li>&nbsp;&nbsp;</li>
+		<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">{$presenter->languageEntity} <b class="caret"></b></a>
+			<ul class="dropdown-menu pull-right">
+				{foreach $entity->languages as $language}
+					<li><a class="ajax" href="{link this contentLang=>($language->id !== $languageRepository->findOneBy(array('short' => $presenter->context->parameters['website']['defaultLanguage']))->id ? $language->id : NULL)}">{$language}</a></li>
+				{/foreach}
+			</ul>
+		</li>
+	{/if}
 {/block}
 
 {block content}
