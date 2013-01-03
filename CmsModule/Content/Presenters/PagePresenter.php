@@ -70,6 +70,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function handleChangeLanguage($alias)
 	{
+		if ($this->page->isInLanguageAlias($alias)) {
+			$this->redirect('this', array('lang' => $alias));
+		}
+
 		$page = $this->page->getPageWithLanguageAlias($alias);
 
 		try {
