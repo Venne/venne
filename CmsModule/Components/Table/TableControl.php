@@ -375,12 +375,7 @@ class TableControl extends Control
 
 	public function getQueryBuilder($select = 'a')
 	{
-		$dql = $this->repository->createQueryBuilder($select);
-
-		if ($this->dqlCallback) {
-			$fn = $this->dqlCallback;
-			$fn($dql);
-		}
+		$dql = $this->getRawQueryBuilder($select);
 
 		if ($this->sorter && $this->sort) {
 			$dql = $dql->orderBy(array($this->sorter => $this->sort));
@@ -396,12 +391,25 @@ class TableControl extends Control
 	}
 
 
+	public function getRawQueryBuilder($select = 'a')
+	{
+		$dql = $this->repository->createQueryBuilder($select);
+
+		if ($this->dqlCallback) {
+			$fn = $this->dqlCallback;
+			$fn($dql);
+		}
+
+		return $dql;
+	}
+
+
 	protected function createComponentVp()
 	{
 		$vp = new \CmsModule\Components\VisualPaginator;
 		$pg = $vp->getPaginator();
 		$pg->setItemsPerPage($this->paginator);
-		$pg->setItemCount($this->repository->createQueryBuilder("a")->select("COUNT(a.{$this->primaryColumn})")->getQuery()->getSingleScalarResult());
+		$pg->setItemCount($this->getRawQueryBuilder()->select("COUNT(a.{$this->primaryColumn})")->getQuery()->getSingleScalarResult());
 		return $vp;
 	}
 
