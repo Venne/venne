@@ -103,7 +103,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\RedirectPageEntity')
 		setup:
 			- addSection('Redirection', @cms.redirectFormFactory)
-		tags: [contentType: [name: 'redirect page']]
+		tags: [contentType: [name: 'redirect']]
 
 	cms.registrationContent:
 		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\RegistrationPageEntity')

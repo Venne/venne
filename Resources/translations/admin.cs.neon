@@ -150,3 +150,7 @@ install: instalovat
 uninstall: odinstalovat
 next: další
 previous: předchozí
+'static page': statická stránka
+'login page': stránka pro přihlášení
+'redirect': přespěrování
+'registraion': registrace

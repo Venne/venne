@@ -40,7 +40,7 @@
                 <ul class="dropdown-menu">
 					{if $control->tab == 0}
 						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
-                            <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a>
+                            <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{_$name}</a>
                             </li>
 						{/foreach}
 						{elseif $control->tab == 2}
