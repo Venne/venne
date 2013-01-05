@@ -63,7 +63,7 @@ class DatabasePresenter extends BasePresenter
 			$classes = array();
 			foreach ($robotLoader->getIndexedClasses() as $item => $a) {
 				$ref = \Nette\Reflection\ClassType::from($item);
-				if ($ref->hasAnnotation('Entity')) {
+				if ($ref->hasAnnotation('ORM\Entity')) {
 					$classes[] = $em->getClassMetadata('\\' . $item);
 				}
 			}
