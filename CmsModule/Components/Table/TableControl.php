@@ -459,7 +459,7 @@ class TableControl extends Control
 
 	protected function createComponentActionForm()
 	{
-		$form = new \Venne\Forms\Form;
+		$form = $this->presenter->context->createCms__admin__basicForm();
 		//$form->getElementPrototype()->class[] = 'ajax';
 
 		// filters

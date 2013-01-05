@@ -10,6 +10,7 @@ administration settings: nastavení administrace
 application: aplikace
 application is already installed: 
 application settings: nastavení aplikace
+apply: aplikovat
 base settings: základní nastavení
 basic setup: základní nastavení
 basic meta informations: základní meta informace
@@ -147,3 +148,5 @@ installed: nainstalováno
 uninstalled: odinstalováno
 install: instalovat
 uninstall: odinstalovat
+next: další
+previous: předchozí

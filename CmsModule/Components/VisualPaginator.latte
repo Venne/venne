@@ -8,7 +8,7 @@
 <div class="pagination pagination-centered">
 	<ul>
 
-	<li{if $paginator->isFirst()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isFirst()}#{else}{link this, 'page' => $paginator->page - 1}{/if}">« Previous</a></li>
+	<li{if $paginator->isFirst()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isFirst()}#{else}{link this, 'page' => $paginator->page - 1}{/if}">« {_Previous}</a></li>
 
 	{foreach $steps as $step}
 	{if $step == $paginator->page}
@@ -19,7 +19,7 @@
 	{if $iterator->nextValue > $step + 1}<li class="disabled"><a href="#">{$step}</a></li>{/if}
 	{/foreach}
 
-	<li{if $paginator->isLast()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isLast()}#{else}{link this, 'page' => $paginator->page + 1}{/if}">Next »</a></li>
+	<li{if $paginator->isLast()} class="disabled"{/if}><a class="ajax" href="{if $paginator->isLast()}#{else}{link this, 'page' => $paginator->page + 1}{/if}">{_Next} »</a></li>
 
 	</ul>
 </div>
