@@ -29,7 +29,7 @@ class ModulePresenter extends BasePresenter
 
 	/** @var array */
 	protected $hiddenModules = array(
-		'assets', 'forms', 'doctrine', 'cms', 'translator'
+		'assets', 'forms', 'doctrine', 'cms', 'translator', 'gedmo'
 	);
 
 
