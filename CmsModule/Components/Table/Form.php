@@ -12,7 +12,6 @@
 namespace CmsModule\Components\Table;
 
 use Venne;
-use Venne\Application\UI\Control;
 use Nette\ComponentModel\IContainer;
 
 /**

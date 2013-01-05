@@ -60,11 +60,9 @@ class LanguagePresenter extends BasePresenter
 		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->languageRepository);
-		$table->setPaginator(10);
-		$table->enableSorter();
 
 		// forms
-		$form = $table->addForm($this->form, 'Language');
+		$form = $table->addForm($this->form, 'Language', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
 		// navbar
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
@@ -83,9 +81,12 @@ class LanguagePresenter extends BasePresenter
 		};
 
 		// columns
-		$table->addColumn('name', 'Name', '50%');
-		$table->addColumn('alias', 'Alias', '20%');
-		$table->addColumn('short', 'Short', '30%');
+		$table->addColumn('name', 'Name')
+			->setWidth('50%');
+		$table->addColumn('alias', 'Alias')
+			->setWidth('20%');
+		$table->addColumn('short', 'Short')
+			->setWidth('30%');
 
 		// actions
 		$table->addActionEdit('edit', 'Edit', $form);

@@ -1,14 +1,18 @@
-{if isset($showNavbar)}
-	{control navbar}
-{/if}
-
 <table class="table table-striped table-bordered table-condensed" n:snippet="table">
-{form actionForm}
+	{form actionForm}
     <thead>
+
+	{if isset($showNavbar)}
+	<tr>
+		<th colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">{control navbar}</th>
+	</tr>
+	{/if}
+
     <tr>
 		{foreach $columns as $key=>$column}
-            <th{if $column['width']} style="width: {!$column['width']};"{/if}>
-				{if $sorter}<a class="ajax" n:href="this sort=>$key">{/if}{_$column['title']}{if $sorter}</a>{/if}
+			{if $column->getFilter()}{var $filter=>true}{/if}
+            <th{if $column->width} style="width: {!$column->width};"{/if}>
+				{if $column->isSortable()}<a class="ajax" n:href="sort! column=>$key">{/if}{_$column->title}{if $column->isSortable()}{if isset($sort[$key])} <abbr>{$sort[$key] === 'ASC' ? '↓' : '↑' }</abbr>{/if}</a>{/if}
             </th>
 		{/foreach}
         <th>{_Actions}</th>
@@ -16,13 +20,31 @@
             <th></th>
 		{/if}
     </tr>
+	{if isset($filter)}
+		{var $___form=>$_form}
+		{var $_form=>$_form['filters']}
+		{var $form=>$_form}
+		<tr class="table-filters">
+			{foreach $columns as $key=>$column}
+				<th>
+					{if $column->getFilter()}{input $key class=>'input-block-level'}{/if}
+				</th>
+			{/foreach}
+		{var $_form=>$___form}
+		{var $form=>$___form}
+			<th>{input filters2 class=>'btn btn-block'}{*input reset2 class=>'btn'*}</th>
+			{if count($globalActions) > 0}
+				<th></th>
+			{/if}
+		</tr>
+	{/if}
     </thead>
     <tbody>
 		{foreach $control->getItems() as $item}
         <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
 			{foreach $columns as $key=>$column}
                 <td>
-					{var callback=>$column['callback']}
+					{var callback=>$column->callback}
 				{if $callback}
 					{=$callback($item)}
 					{else}
@@ -47,16 +69,18 @@
 		{/foreach}
     </tbody>
 
-	{if $paginator}
-        <tfoot>
+
+    <tfoot>
         <tr>
             <td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
-				{control vp} {if count($globalActions) > 0} {input action} {input _submit} {/if}
+				{control vp}
+				<div class="pull-left input-append">{input perPage} {input perPageSubmit class=>btn}</div>
+				{if count($globalActions) > 0}
+				<div class="pull-right input-append">{input action} {input _submit class=>btn}</div>
+				{/if}
             </td>
         </tr>
-        </tfoot>
-	{/if}
-
+    </tfoot>
 
 {/form}
 </table>

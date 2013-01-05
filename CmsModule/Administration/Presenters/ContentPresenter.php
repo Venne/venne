@@ -171,24 +171,29 @@ class ContentPresenter extends BasePresenter
 
 		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setRepository($this->pageRepository);
-		$table->setPaginator(10);
-		$table->enableSorter();
 		$table->setDql(function (\Doctrine\ORM\QueryBuilder $builder) {
 			$builder->andWhere('a.translationFor IS NULL AND a.virtualParent IS NULL');
 		});
 
 		// columns
-		$table->addColumn('name', 'Name', '50%');
-		$table->addColumn('url', 'URL', '20%', function ($entity) {
-			return $entity->mainRoute->url;
-		});
-		$table->addColumn('languages', 'Languages', '30%', function ($entity) {
-			$ret = implode(", ", $entity->languages->toArray());
-			foreach ($entity->translations as $translation) {
-				$ret .= ', ' . implode(", ", $translation->languages->toArray());
-			}
-			return $ret;
-		});
+		$table->addColumn('name', 'Name')
+			->setWidth('50%')
+			->setSortable(TRUE)
+			->setFilter();
+		$table->addColumn('url', 'URL')
+			->setWidth('20%')
+			->setCallback(function ($entity) {
+				return $entity->mainRoute->url;
+			});
+		$table->addColumn('languages', 'Languages')
+			->setWidth('30%')
+			->setCallback(function ($entity) {
+				$ret = implode(", ", $entity->languages->toArray());
+				foreach ($entity->translations as $translation) {
+					$ret .= ', ' . implode(", ", $translation->languages->toArray());
+				}
+				return $ret;
+			});
 
 		// actions
 		$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
@@ -219,7 +224,6 @@ class ContentPresenter extends BasePresenter
 		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->pageTagRepository);
-		$table->setPaginator(10);
 
 		// forms
 		$form = $table->addForm($this->specialFormFactory, 'Special form');
@@ -228,13 +232,17 @@ class ContentPresenter extends BasePresenter
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
 
 		// columns
-		$table->addColumn('tag', 'Tag', '40%', function ($entity) {
-			$tags = \CmsModule\Content\Entities\PageTagEntity::getTags();
-			return $tags[$entity->tag];
-		});
-		$table->addColumn('page', 'Page', '60%', function ($entity) {
-			return ($entity->page ? (string)$entity->page : '');
-		});
+		$table->addColumn('tag', 'Tag')
+			->setWidth('40%')
+			->setCallback(function ($entity) {
+				$tags = \CmsModule\Content\Entities\PageTagEntity::getTags();
+				return $tags[$entity->tag];
+			});
+		$table->addColumn('page', 'Page')
+			->setWidth('60%')
+			->setCallback(function ($entity) {
+				return ($entity->page ? (string)$entity->page : '');
+			});
 
 		// actions
 		$table->addActionEdit('edit', 'Edit', $form);

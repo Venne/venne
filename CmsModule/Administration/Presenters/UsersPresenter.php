@@ -81,7 +81,6 @@ class UsersPresenter extends BasePresenter
 		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->userRepository);
-		$table->setPaginator(10);
 
 		// forms
 		$form = $table->addForm($this->form, 'User');
@@ -91,10 +90,13 @@ class UsersPresenter extends BasePresenter
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
 
 		// columns
-		$table->addColumn('email', 'E-mail', '60%');
-		$table->addColumn('roles', 'Roles', '40%', function ($entity) {
-			return implode(", ", $entity->roles);
-		});
+		$table->addColumn('email', 'E-mail')
+			->setWidth('60%');
+		$table->addColumn('roles', 'Roles')
+			->setWidth('40%')
+			->setCallback(function ($entity) {
+				return implode(", ", $entity->roles);
+			});
 
 		// actions
 		$table->addActionEdit('edit', 'Edit', $form);

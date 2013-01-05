@@ -20,12 +20,14 @@ use Venne\Application\UI\Control;
 class TableControl extends Control
 {
 
+	const TYPE_TEXT = 'CmsModule\Components\Table\Columns\BaseColumn';
+
+	const SORT_ASC = 'ASC';
+
+	const SORT_DESC = 'DESC';
 
 	/** @persistent */
-	public $sort;
-
-	/** @persistent */
-	public $order = 'ASC';
+	public $sort = array();
 
 	/** @persistent */
 	public $editId;
@@ -42,6 +44,12 @@ class TableControl extends Control
 	/** @persistent */
 	public $key;
 
+	/** @persistent */
+	public $filters = array();
+
+	/** @persistent */
+	public $perPage;
+
 	/** @var string */
 	protected $templateFile;
 
@@ -51,7 +59,7 @@ class TableControl extends Control
 	/** @var string */
 	protected $primaryColumn;
 
-	/** @var array */
+	/** @var Column[] */
 	protected $columns = array();
 
 	/** @var array */
@@ -72,14 +80,20 @@ class TableControl extends Control
 	/** @var array */
 	protected $globalActions = array();
 
-	/** @var int */
-	protected $paginator;
-
-	/** @var bool */
-	protected $sorter;
-
 	/** @var \Nette\Callback */
 	protected $dqlCallback;
+
+	/** @var int */
+	protected $defaultPerPage = 20;
+
+	/** @var array */
+	protected $defaultFilters = array();
+
+	/** @var array */
+	protected $defaultSort = array();
+
+	/** @var array */
+	protected $perPageList = array(10, 20, 30, 50, 100, 200, 500);
 
 	/** @var array */
 	public $onAttached;
@@ -97,6 +111,9 @@ class TableControl extends Control
 	{
 		parent::attached($presenter);
 
+		$this->sort = $this->defaultSort + $this->sort;
+		$this->filters = $this->defaultFilters + $this->filters;
+
 		$this->onAttached();
 	}
 
@@ -113,12 +130,6 @@ class TableControl extends Control
 	}
 
 
-	public function enableSorter()
-	{
-		$this->sorter = true;
-	}
-
-
 	public function getRepository()
 	{
 		return $this->repository;
@@ -131,9 +142,12 @@ class TableControl extends Control
 	}
 
 
-	public function setPaginator($itemOnPage = 10)
+	/**
+	 * @param int $defaultPerPage
+	 */
+	public function setDefaultPerPage($defaultPerPage)
 	{
-		$this->paginator = $itemOnPage;
+		$this->defaultPerPage = $defaultPerPage;
 	}
 
 
@@ -168,13 +182,17 @@ class TableControl extends Control
 	}
 
 
-	public function addColumn($name, $title, $width = NULL, $callback = NULL)
+	/**
+	 * @param $name
+	 * @param $title
+	 * @param null $width
+	 * @param null $callback
+	 * @return IColumn
+	 */
+	public function addColumn($name, $title, $type = self::TYPE_TEXT)
 	{
-		$this->columns[$name] = array(
-			'title' => $title,
-			'width' => $width,
-			'callback' => $callback,
-		);
+		$type = '\\' . trim($type, '\\');
+		return $this->columns[$name] = new $type($this, $name, $title);
 	}
 
 
@@ -307,6 +325,25 @@ class TableControl extends Control
 	}
 
 
+	public function handleSort($column)
+	{
+		if (!isset($this->sort[$column])) {
+			$this->sort[$column] = self::SORT_ASC;
+		} else if ($this->sort[$column] === self::SORT_ASC) {
+			$this->sort[$column] = self::SORT_DESC;
+		} else {
+			unset($this->sort[$column]);
+		}
+
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->invalidateControl('table');
+		$this->presenter->payload->url = $this->link('this');
+	}
+
+
 	public function handleDoAction($name, $id)
 	{
 		$button = $this[$name];
@@ -317,12 +354,11 @@ class TableControl extends Control
 
 	public function handleEdit()
 	{
-		$this->invalidateControl('form');
-
 		if (!$this->presenter->isAjax()) {
 			$this->redirect('this');
 		}
 
+		$this->invalidateControl('form');
 		$this->presenter->payload->url = $this->link('this');
 	}
 
@@ -353,8 +389,7 @@ class TableControl extends Control
 			$this->template->actions = $this->actions;
 			$this->template->globalActions = $this->globalActions;
 			$this->template->primaryColumn = $this->primaryColumn;
-			$this->template->paginator = $this->paginator;
-			$this->template->sorter = $this->sorter;
+			$this->template->sort = $this->sort;
 
 			$this->template->render();
 		}
@@ -377,14 +412,16 @@ class TableControl extends Control
 	{
 		$dql = $this->getRawQueryBuilder($select);
 
-		if ($this->sorter && $this->sort) {
-			$dql = $dql->orderBy(array($this->sorter => $this->sort));
+		if (count($this->sort) > 0) {
+			foreach ($this->sort as $column => $order) {
+				$dql = $dql->orderBy('a.' . $column, $order);
+			}
 		}
 
-		if ($this->paginator) {
+		if ($this->perPage ? $this->perPage : $this->defaultPerPage) {
 			$dql = $dql
-				->setMaxResults($this->paginator)
-				->setFirstResult(($this["vp"]->page - 1) * $this->paginator);
+				->setMaxResults($this->perPage ? $this->perPage : $this->defaultPerPage)
+				->setFirstResult(($this["vp"]->page - 1) * $dql->getMaxResults());
 		}
 
 		return $dql;
@@ -400,6 +437,12 @@ class TableControl extends Control
 			$fn($dql);
 		}
 
+		if (count($this->filters) > 0) {
+			foreach ($this->filters as $key => $value) {
+				$dql = $this->columns[$key]->getFilter()->setDql($dql, $value);
+			}
+		}
+
 		return $dql;
 	}
 
@@ -408,7 +451,7 @@ class TableControl extends Control
 	{
 		$vp = new \CmsModule\Components\VisualPaginator;
 		$pg = $vp->getPaginator();
-		$pg->setItemsPerPage($this->paginator);
+		$pg->setItemsPerPage($this->perPage ? $this->perPage : $this->defaultPerPage);
 		$pg->setItemCount($this->getRawQueryBuilder()->select("COUNT(a.{$this->primaryColumn})")->getQuery()->getSingleScalarResult());
 		return $vp;
 	}
@@ -417,7 +460,16 @@ class TableControl extends Control
 	protected function createComponentActionForm()
 	{
 		$form = new \Venne\Forms\Form;
-		$form->getElementPrototype()->class[] = 'ajax';
+		//$form->getElementPrototype()->class[] = 'ajax';
+
+		// filters
+		$filters = $form->addContainer('filters');
+		foreach ($this->columns as $column) {
+			if ($filter = $column->getFilter()) {
+				$filter->getControl($filters);
+			}
+		}
+		$filters->setDefaults($this->filters);
 
 		// items
 		$items = $form->addContainer('items');
@@ -431,26 +483,68 @@ class TableControl extends Control
 			$items[$key] = $item->getLabel();
 		}
 
+		// perPage
+		$form->addSelect('perPage')->setItems($this->perPageList, FALSE)->setDefaultValue($this->getParameter('perPage', $this->defaultPerPage));
+
 		$form->addSelect('action', 'Action', $items);
-		$form->addSubmit('_submit', 'Submit');
-		$form->onSuccess[] = callback($this, 'formSuccess');
+		$form->addSubmit('_submit', 'Apply');
+		$form->addSubmit('filters2', 'Apply');
+		$form->addSubmit('reset2', 'Reset');
+		$form->addSubmit('perPageSubmit', 'Apply');
+		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
 
 
-	public function formSuccess($form)
+	public function formSuccess(Venne\Forms\Form $form)
 	{
-		$action = $form['action']->getValue();
-		$button = $this[$action];
+		if ($form['_submit']->isSubmittedBy()) {
+			$action = $form['action']->getValue();
+			$button = $this[$action];
 
-		$values = $form['items']->getValues();
-		foreach ($values as $key => $value) {
-			if ($value) {
-				$button->onClick($button, $this->repository->find(substr($key, 5)));
+			$values = $form['items']->getValues();
+			foreach ($values as $key => $value) {
+				if ($value) {
+					$button->onClick($button, $this->repository->find(substr($key, 5)));
+				}
 			}
-		}
 
-		$button->onSuccess($this);
+			$button->onSuccess($this);
+		} else if ($form['filters2']->isSubmittedBy()) {
+			$this->filters = $form['filters']->getValues();
+
+			foreach ($this->filters as $key => $value) {
+				if (!$value) {
+					unset($this->filters[$key]);
+				}
+			}
+
+			$this['vp']->page = NULL;
+			if (!$this->presenter->isAjax()) {
+				$this->redirect('this');
+			}
+
+			$this->presenter->payload->url = $this->link('this');
+		} else if ($form['reset2']->isSubmittedBy()) {
+			$form['filters']->setValues(array());
+			$this->filters = array();
+
+			$this['vp']->page = NULL;
+			if (!$this->presenter->isAjax()) {
+				$this->redirect('this');
+			}
+
+			$this->presenter->payload->url = $this->link('this');
+		} else if ($form['perPageSubmit']->isSubmittedBy()) {
+			$this->perPage = $form['perPage']->value;
+			$this['vp']->page = NULL;
+
+			if (!$this->presenter->isAjax()) {
+				$this->redirect('this');
+			}
+
+			$this->presenter->payload->url = $this->link('this');
+		}
 	}
 
 
@@ -553,6 +647,60 @@ class TableControl extends Control
 	public function getDql()
 	{
 		return $this->dqlCallback;
+	}
+
+
+	/**
+	 * @param array $perPageList
+	 */
+	public function setPerPageList($perPageList)
+	{
+		$this->perPageList = $perPageList;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPerPageList()
+	{
+		return $this->perPageList;
+	}
+
+
+	/**
+	 * @param array $defaultFilters
+	 */
+	public function setDefaultFilters($defaultFilters)
+	{
+		$this->defaultFilters = $defaultFilters;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getDefaultFilters()
+	{
+		return $this->defaultFilters;
+	}
+
+
+	/**
+	 * @param array $defaultSort
+	 */
+	public function setDefaultSort($defaultSort)
+	{
+		$this->defaultSort = $defaultSort;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getDefaultSort()
+	{
+		return $this->defaultSort;
 	}
 
 

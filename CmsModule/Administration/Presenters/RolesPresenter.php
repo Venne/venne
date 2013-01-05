@@ -65,7 +65,6 @@ class RolesPresenter extends BasePresenter
 		$table = new \CmsModule\Components\Table\TableControl;
 		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->setRepository($this->roleRepository);
-		$table->setPaginator(10);
 
 		// forms
 		$form = $table->addForm($this->roleForm, 'Role');
@@ -75,16 +74,19 @@ class RolesPresenter extends BasePresenter
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
 
 		// columns
-		$table->addColumn('name', 'Name', '40%');
-		$table->addColumn('parent', 'Parents', '60%', function (\CmsModule\Security\Entities\RoleEntity $entity) {
-			$entities = array();
-			$en = $entity;
-			while (($en = $en->getParent())) {
-				$entities[] = $en->getName();
-			}
+		$table->addColumn('name', 'Name')
+			->setWidth('40%');
+		$table->addColumn('parent', 'Parents')
+			->setWidth('60%')
+			->setCallback(function (\CmsModule\Security\Entities\RoleEntity $entity) {
+				$entities = array();
+				$en = $entity;
+				while (($en = $en->getParent())) {
+					$entities[] = $en->getName();
+				}
 
-			return implode(', ', $entities);
-		});
+				return implode(', ', $entities);
+			});
 
 		// actions
 		$table->addActionEdit('permissions', 'Permissions', $permissionsForm);
