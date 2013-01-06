@@ -86,13 +86,18 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			$this->redirect('this', array('lang' => $alias));
 		}
 
-		$page = $this->page->getPageWithLanguageAlias($alias);
-
-		try {
-			$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
-		} catch (\Nette\Application\UI\InvalidLinkException $e) {
-			$this->redirect('this', array('route' => NULL, 'url' => '', 'lang' => $alias));
+		if (!$page = $this->page->getPageWithLanguageAlias($alias)) {
+			$page = $this->page;
+			do {
+				if ($p = $page->getPageWithLanguageAlias($alias)) {
+					$this->redirect('this', array('route' => $p->mainRoute, 'lang' => $alias));
+				}
+				$page = $page->parent;
+			} while ($page);
+			throw new BadRequestException;
 		}
+
+		$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
 	}
 
 
