@@ -402,3 +402,12 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 .table .pagination {
     margin: 0;
 }
+.table tfoot td {
+    text-align: center;
+}
+.table tfoot .pagination {
+    display: inline;
+}
+.table tbody tr:hover td {
+    background-color: #ddffdd;
+}

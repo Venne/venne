@@ -255,6 +255,18 @@ $(function () {
 		}
 	});
 
+	$('.table tr').live('click', function (event) {
+		if (!$(event.target).closest('input[type=checkbox]').length > 0) {
+			var checkbox = $(this).find('input[type=checkbox]').each(function () {
+				if (this.checked) {
+					this.checked = false;
+				} else {
+					this.checked = true;
+				}
+			});
+		}
+	});
+
 });
 
 
