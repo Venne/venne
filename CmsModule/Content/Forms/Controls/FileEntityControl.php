@@ -15,6 +15,7 @@ use Nette;
 use Nette\Utils\Html;
 use Venne\Tools\Objects;
 use CmsModule\Content\Entities\FileEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -47,6 +48,9 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 
 		// remove photos
 		if ($this->multi) {
+			if (!$this->fileEntity) {
+				$this->fileEntity = new ArrayCollection;
+			}
 			foreach ($this->fileEntity as $file) {
 				$delete = isset($values[$this->name . '_delete_' . $file->id]) && $values[$this->name . '_delete_' . $file->id] == 'on';
 				if ($delete) {
@@ -62,28 +66,17 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 		}
 
 		// get photos
-		$photos = array();
 		if ($this->multi) {
 			for ($i = 0; $i < 20; $i++) {
-				$photos[$this->name . '-' . $i] = $values[$this->name . '-' . $i];
+				if ($values[$this->name . '-' . $i]->isOk()) {
+					$this->fileEntity[] = $entity = new FileEntity();
+					$entity->setFile($values[$this->name . '-' . $i]);
+				}
 			}
 		} else {
-			$photos[$this->name . '-0'] = $values[$this->name];
-		}
-
-		// add photo
-		foreach ($photos as $file) {
-			if ($file->isOk()) {
-				if ($this->multi) {
-					$this->fileEntity[] = $entity = new FileEntity();
-					$entity->setFile($file);
-				} else {
-					if (!$this->fileEntity) {
-						$this->fileEntity = new FileEntity();
-					}
-
-					$this->fileEntity->setFile($file);
-				}
+			if ($values[$this->name]->isOk()) {
+				$this->fileEntity = $entity = new FileEntity();
+				$entity->setFile($values[$this->name]);
 			}
 		}
 
@@ -125,7 +118,7 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 
 			$div = $control->create('div', array('style' => 'margin: 5px 0;'));
 			foreach ($files as $file) {
-				$div2 = $div->create('div', array('style' => 'align: center;', 'class' => 'caption'));
+				$div2 = $div->create('div', array('style' => 'float: left; margin-right: 10px;', 'class' => 'caption'));
 				$div2->create('img', array(
 					'src' => $file->getFileUrl(),
 					'style' => 'height: 64px; width: 64px;',
@@ -133,10 +126,17 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 				));
 				$div2->create('br');
 				$div2->create('input', array('type' => 'checkbox', 'name' => $this->name . '_delete_' . $file->id));
-				$div2->create('span')->setText(' delete');
+				$div2->create('span')->setText(' ' . ($this->translator ? $this->translator->translate('delete') : 'delete'));
 			}
 		}
 
 		return $control;
+	}
+
+
+	public function setMulti()
+	{
+		$this->multi = TRUE;
+		return $this;
 	}
 }
