@@ -137,7 +137,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	{
 		$old = $this->path;
 
-		if ($this->parent && is_callable($this->parent, '__load')) {
+		if ($this->parent && $this->parent instanceof \Doctrine\ORM\Proxy\Proxy) {
 			$this->parent->__load();
 		}
 
