@@ -88,10 +88,10 @@ class FileEntity extends BaseFileEntity
 			($this->_oldPath || $this->_oldProtected) &&
 			($this->_oldPath != $this->path || $this->_oldProtected != $this->protected)
 		) {
-			rename(
-				$this->getFilePathBy($this->_oldProtected ? : $this->protected, $this->_oldPath ? : $this->path),
-				$this->getFilePath()
-			);
+			$oldFilePath = $this->getFilePathBy($this->_oldProtected ? : $this->protected, $this->_oldPath ? : $this->path);
+			if (file_exists($oldFilePath)) {
+				rename($oldFilePath, $this->getFilePath());
+			}
 		}
 	}
 

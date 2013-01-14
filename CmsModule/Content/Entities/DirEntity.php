@@ -52,7 +52,7 @@ class DirEntity extends BaseFileEntity
 		$ret = array();
 
 		$parent = $this;
-		while($parent){
+		while ($parent) {
 			$ret[] = $parent->name;
 			$parent = $parent->parent;
 		}
@@ -69,24 +69,29 @@ class DirEntity extends BaseFileEntity
 		$protectedPath = $this->protectedDir . '/' . $this->path;
 		$publicPath = $this->publicDir . '/' . $this->path;
 
-		if($this->_oldPath){
+		if ($this->_oldPath) {
 			$oldProtectedPath = $this->protectedDir . '/' . $this->_oldPath;
 			$oldPublicPath = $this->publicDir . '/' . $this->_oldPath;
 
-			rename($oldProtectedPath, $protectedPath);
-			rename($oldPublicPath, $publicPath);
+			if (file_exists($oldProtectedPath)) {
+				rename($oldProtectedPath, $protectedPath);
+			}
+			if (file_exists($oldPublicPath)) {
+				rename($oldPublicPath, $publicPath);
+			}
 			return;
 		}
 
 		umask(0000);
-		if(!file_exists($protectedPath)){
+		if (!file_exists($protectedPath)) {
 			@mkdir($protectedPath, 0777, true);
 		}
 
-		if(!file_exists($publicPath)){
+		if (!file_exists($publicPath)) {
 			@mkdir($publicPath, 0777, true);
 		}
 	}
+
 
 	/**
 	 * @ORM\PreRemove()
@@ -109,6 +114,7 @@ class DirEntity extends BaseFileEntity
 		$this->children = $children;
 	}
 
+
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */
@@ -122,6 +128,7 @@ class DirEntity extends BaseFileEntity
 	{
 		$this->files = $files;
 	}
+
 
 	public function getFiles()
 	{
@@ -141,6 +148,4 @@ class DirEntity extends BaseFileEntity
 			$item->generatePath();
 		}
 	}
-
-
 }

@@ -29,6 +29,9 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 	/** @var bool */
 	protected $multi = false;
 
+	/** @var bool */
+	private $_valueLoaded = false;
+
 
 	protected function attached($form)
 	{
@@ -44,40 +47,47 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 
 	public function getValue()
 	{
-		$values = $this->getForm()->getHttpData();
+		if (!$this->_valueLoaded) {
+			$path = explode('[', strtr(str_replace(array('[]', ']'), '', $this->getHtmlName()), '.', '_'));
+			unset($path[count($path) - 1]);
+			$values = \Nette\Utils\Arrays::get((array)$this->getForm()->getHttpData(), $path, NULL);
 
-		// remove photos
-		if ($this->multi) {
-			if (!$this->fileEntity) {
-				$this->fileEntity = new ArrayCollection;
-			}
-			foreach ($this->fileEntity as $file) {
-				$delete = isset($values[$this->name . '_delete_' . $file->id]) && $values[$this->name . '_delete_' . $file->id] == 'on';
+			// remove photos
+			if ($this->multi) {
+				if (!$this->fileEntity) {
+					$this->fileEntity = new ArrayCollection;
+				}
+				foreach ($this->fileEntity as $file) {
+					$delete = isset($values[$this->name . '_delete_' . $file->id]) && $values[$this->name . '_delete_' . $file->id] == 'on';
+					if ($delete) {
+						$coll = $this->fileEntity;
+						$coll->removeElement($file);
+					}
+				}
+			} else if ($this->fileEntity) {
+				$delete = isset($values[$this->name . '_delete_' . $this->fileEntity->id]) && $values[$this->name . '_delete_' . $this->fileEntity->id] == 'on';
 				if ($delete) {
-					$coll = $this->fileEntity;
-					$coll->removeElement($file);
+					return NULL;
 				}
 			}
-		} else if ($this->fileEntity) {
-			$delete = isset($values[$this->name . '_delete_' . $this->fileEntity->id]) && $values[$this->name . '_delete_' . $this->fileEntity->id] == 'on';
-			if ($delete) {
-				return NULL;
-			}
-		}
 
-		// get photos
-		if ($this->multi) {
-			for ($i = 0; $i < 20; $i++) {
-				if ($values[$this->name . '-' . $i]->isOk()) {
-					$this->fileEntity[] = $entity = new FileEntity();
-					$entity->setFile($values[$this->name . '-' . $i]);
+			// get photos
+			if ($values) {
+				if ($this->multi) {
+					for ($i = 0; $i < 20; $i++) {
+						if ($values[$this->name . '-' . $i]->isOk()) {
+							$this->fileEntity[] = $entity = new FileEntity();
+							$entity->setFile($values[$this->name . '-' . $i]);
+						}
+					}
+				} else {
+					if ($values[$this->name]->isOk()) {
+						$this->fileEntity = $entity = new FileEntity();
+						$entity->setFile($values[$this->name]);
+					}
 				}
 			}
-		} else {
-			if ($values[$this->name]->isOk()) {
-				$this->fileEntity = $entity = new FileEntity();
-				$entity->setFile($values[$this->name]);
-			}
+			$this->_valueLoaded = true;
 		}
 
 		return $this->fileEntity;
