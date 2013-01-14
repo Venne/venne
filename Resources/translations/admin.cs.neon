@@ -45,6 +45,7 @@ layouts: layouty
 list: výpis
 log browser: prohlížeč logů
 log out: odhlásit
+login: přihlášení
 logged in as: přihlášen jako
 meta info: meta informace
 mode settings: nastavení módu
@@ -70,6 +71,7 @@ system: systém
 templating: šablony
 up: nahoru
 upload new file: nahrát nový soubor
+upload: nahrát
 user: uživatel
 user manager: správce uživatelů
 version: verze
@@ -152,5 +154,6 @@ next: další
 previous: předchozí
 'static page': statická stránka
 'login page': stránka pro přihlášení
-'redirect': přespěrování
+'redirect': přesměrování
 'registraion': registrace
+'remember me on this computer': zapamatovat příhlášení na tomto počítači
