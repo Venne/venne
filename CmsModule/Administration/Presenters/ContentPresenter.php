@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\Entities\LanguageEntity;
 use Gedmo\Translatable\Translatable;
 use Gedmo\Translatable\TranslatableListener;
@@ -19,7 +20,6 @@ use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Forms\BasicFormFactory;
-use CmsModule\Content\Forms\RoutesFormFactory;
 use CmsModule\Content\Forms\SpecialFormFactory;
 
 /**
@@ -61,25 +61,27 @@ class ContentPresenter extends BasePresenter
 	/** @var BasicFormFactory */
 	protected $contentFormFactory;
 
-	/** @var RoutesFormFactory */
-	protected $contentRoutesFormFactory;
+	/** @var RouteControl */
+	protected $contentRouteControlFactory;
 
 	/** @var SpecialFormFactory */
 	protected $specialFormFactory;
 
 
 	/**
-	 * @param PageRepository $pageRepository
-	 * @param BaseRepository $languageRepository
-	 * @param BaseRepository $pageTagRepository
-	 * @param ContentManager $contentManager
+	 * @param \CmsModule\Content\Repositories\PageRepository $pageRepository
+	 * @param \DoctrineModule\Repositories\BaseRepository $languageRepository
+	 * @param \DoctrineModule\Repositories\BaseRepository $pageTagRepository
+	 * @param \CmsModule\Content\ContentManager $contentManager
+	 * @param $routeControlFactory
 	 */
-	public function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, BaseRepository $pageTagRepository, ContentManager $contentManager)
+	public function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, BaseRepository $pageTagRepository, ContentManager $contentManager, $routeControlFactory)
 	{
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
 		$this->pageTagRepository = $pageTagRepository;
 		$this->contentManager = $contentManager;
+		$this->contentRouteControlFactory = $routeControlFactory;
 	}
 
 
@@ -89,15 +91,6 @@ class ContentPresenter extends BasePresenter
 	public function injectContentForm(BasicFormFactory $contentForm)
 	{
 		$this->contentFormFactory = $contentForm;
-	}
-
-
-	/**
-	 * @param RoutesFormFactory $routesForm
-	 */
-	public function injectRoutesForm(RoutesFormFactory $routesForm)
-	{
-		$this->contentRoutesFormFactory = $routesForm;
 	}
 
 
@@ -124,7 +117,7 @@ class ContentPresenter extends BasePresenter
 						break;
 					}
 				}
-				if(isset($break)) {
+				if (isset($break)) {
 					break;
 				}
 			}
@@ -306,7 +299,7 @@ class ContentPresenter extends BasePresenter
 		if ((!$this->section && count($contentType->sections) == 0) || $this->section == 'basic') {
 			$form = $this->contentFormFactory->invoke($entity);
 		} elseif ($this->section == 'routes') {
-			$form = $this->contentRoutesFormFactory->invoke($entity);
+			$form = $this->contentRouteControlFactory->invoke();
 		} else {
 			if ($this->section) {
 				if (!$contentType->hasSection($this->section)) {

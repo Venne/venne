@@ -76,8 +76,8 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
-	cms.contentRoutesFormFactory:
-		class: CmsModule\Content\Forms\RoutesFormFactory(..., @cms.pageRepository)
+	cms.contentRouteFormFactory:
+		class: CmsModule\Content\Forms\RouteFormFactory
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
@@ -171,6 +171,10 @@ factories:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
 			- "$service->getElementPrototype()->class[] = ?"("ajax")
+
+	cms.admin.routeControl:
+		class: CmsModule\Content\Components\RouteControl(@cms.routeRepository)
+		tags: [component]
 
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
