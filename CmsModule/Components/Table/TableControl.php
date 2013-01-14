@@ -550,10 +550,12 @@ class TableControl extends Control
 
 	protected function createComponentEditForm()
 	{
+		$formFactory = $this->forms[$this->editForm];
 		$entity = $this->getRepository()->findOneBy(array($this->primaryColumn => $this->editId));
 
 		/** @var $form \Venne\Forms\Form */
-		$form = $this->forms[$this->editForm]->getFactory()->invoke($entity);
+		$form = $formFactory->getFactory()->invoke($entity);
+		$formFactory->onCreate($form);
 		$form->onError[] = $this->formError;
 		$form->onSuccess[] = $this->formEditSuccess;
 
@@ -584,12 +586,13 @@ class TableControl extends Control
 
 	protected function createComponentCreateForm()
 	{
-		$form = $this->forms[$this->createForm];
-		$entityFactory = $form->getEntityFactory();
+		$formFactory = $this->forms[$this->createForm];
+		$entityFactory = $formFactory->getEntityFactory();
 		$entity = $entityFactory ? $entityFactory() : $this->getRepository()->createNew();
 
 		/** @var $form \Venne\Forms\Form */
-		$form = $form->getFactory()->invoke($entity);
+		$form = $formFactory->getFactory()->invoke($entity);
+		$formFactory->onCreate($form);
 		$form->onError[] = $this->formError;
 		$form->onSuccess[] = $this->formCreateSuccess;
 

@@ -30,6 +30,9 @@ class Form extends \Nette\ComponentModel\Component
 
 	const TYPE_FULL = 'modal-full';
 
+	/** @var array */
+	public $onCreate;
+
 	/** @var \Venne\Forms\FormFactory */
 	protected $factory;
 
