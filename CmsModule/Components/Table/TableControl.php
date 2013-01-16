@@ -22,6 +22,10 @@ class TableControl extends Control
 
 	const TYPE_TEXT = 'CmsModule\Components\Table\Columns\BaseColumn';
 
+	const TYPE_DATE_TIME = 'CmsModule\Components\Table\Columns\DateTimeColumn';
+
+	const TYPE_DATE = 'CmsModule\Components\Table\Columns\DateColumn';
+
 	const SORT_ASC = 'ASC';
 
 	const SORT_DESC = 'DESC';
