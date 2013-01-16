@@ -324,7 +324,6 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 	margin-bottom: 10px;
 }
 .form-horizontal .controls label {
-	display: inline-block;
 	margin: 0 0 0 10px;
 }
 .form-horizontal .full .controls {
