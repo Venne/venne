@@ -53,6 +53,7 @@ h6 {
 	color: #ffffff;
 }
 .page-header {
+	float: left;
 	border: 0;
 	margin: -13px 0 -0px 0;
 }
@@ -109,7 +110,8 @@ h6 {
 
 
 #toolbar {
-	margin: -30px 0 -4px 0;
+	margin: 3px 0 0px 0;
+	float: right;
 }
 .nav-tabs > li > a {
 	background-color: #00B700;
