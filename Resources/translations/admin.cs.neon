@@ -24,6 +24,7 @@ database: databáze
 database settings: nastavení databáze
 dates: data
 default modules: výchozí moduly
+default presenter: výchozí prezenter
 delete: smazat
 delete all: smazat vše
 description: popis
