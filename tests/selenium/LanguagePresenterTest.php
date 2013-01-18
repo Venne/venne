@@ -30,21 +30,21 @@ class LanguagePresenterTest extends AdminPresenterTest
 		$this->type("id=frmcreateForm-alias", "test3");
 		$this->clickAndWait("id=frmcreateForm-_submit");
 
-		$this->assertEquals("test1", $this->getTable("id=snippet-table-table.2.1"));
-		$this->assertEquals("test3", $this->getTable("id=snippet-table-table.2.2"));
-		$this->assertEquals("test2", $this->getTable("id=snippet-table-table.2.3"));
+		$this->assertEquals("test1", $this->getTable("id=snippet-table-table.3.1"));
+		$this->assertEquals("test3", $this->getTable("id=snippet-table-table.3.2"));
+		$this->assertEquals("test2", $this->getTable("id=snippet-table-table.3.3"));
 
-		$this->clickAndWait("xpath=(//a[contains(text(),'Edit')])[4]");
+		$this->clickAndWait("xpath=(//a[contains(text(),'Edit')])[3]");
 		$this->type("id=frmeditForm-name", "test4");
 		$this->type("id=frmeditForm-short", "test5");
 		$this->type("id=frmeditForm-alias", "test6");
 		$this->clickAndWait("id=frmeditForm-_submit");
 
-		$this->assertEquals("test4", $this->getTable("id=snippet-table-table.2.1"));
-		$this->assertEquals("test6", $this->getTable("id=snippet-table-table.2.2"));
-		$this->assertEquals("test5", $this->getTable("id=snippet-table-table.2.3"));
+		$this->assertEquals("test4", $this->getTable("id=snippet-table-table.3.1"));
+		$this->assertEquals("test6", $this->getTable("id=snippet-table-table.3.2"));
+		$this->assertEquals("test5", $this->getTable("id=snippet-table-table.3.3"));
 
-		$this->click("xpath=(//a[contains(text(),'Delete')])[4]");
+		$this->click("xpath=(//a[contains(text(),'Delete')])[3]");
 
 		$this->logout();
 	}
