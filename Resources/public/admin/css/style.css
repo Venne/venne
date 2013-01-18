@@ -424,3 +424,12 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 .table tbody tr:hover td {
     background-color: #ddffdd;
 }
+.table tbody td {
+    padding: 7px;
+}
+.table td.table-td-action {
+    white-space: nowrap; overflow: hidden; padding: 2px;
+}
+.table td.table-td-global {
+    padding: 2px 4px;
+}

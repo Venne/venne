@@ -43,7 +43,7 @@
 		{foreach $control->getItems() as $item}
         <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
 			{if count($globalActions) > 0}
-				<td>
+				<td class="table-td-global">
 					{input 'items-item_'.$item->{$primaryColumn}}
 				</td>
 			{/if}
@@ -57,7 +57,7 @@
 				{/if}
                 </td>
 			{/foreach}
-            <td nowrap="nowrap" style="white-space: nowrap; overflow: hidden;">
+            <td class="table-td-action">
                 <div class="btn-group pull-right">
 					{foreach $actions as $name=>$action}
                         <a class="ajax btn"

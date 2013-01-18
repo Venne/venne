@@ -35,7 +35,7 @@
 			<td>
 				{$info["date"]|date:'%d.%m.%Y'}
 			</td>
-			<td>
+			<td class="table-td-action">
 				<div class="btn-group pull-right">
 					<a class="btn btn-primary" target="_blank" href="{link show name=>$info["link"]}">{_'show'}</a>
 					<a class="btn" n:confirm="really?" href="{link delete! name=>$info["link"]}">{_'delete'}</a>
