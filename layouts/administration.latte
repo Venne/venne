@@ -168,7 +168,7 @@
 
 				{if $presenter->user->isLoggedIn() && $presenter->context->doctrine->createCheckConnection() && !isset($hideMenuItems)}
 				{var _panel=>true}
-				<div id="panel" class="span4" style="width: 320px; margin-top: 7px; margin-left: 0; position: fixed;">
+				<div id="panel" class="span4" style="width: 320px; margin-top: 3px; margin-left: 0; position: fixed;">
 					{control panel}
 				</div>
 				{/if}
@@ -188,7 +188,7 @@
 								{/block}
 								</ul>
 							</div>
-							<div class="well" n:snippet="content">
+							<div class="well well-small" n:snippet="content">
 								{foreach $flashes as $flash}
 								<div class="alert alert-{$flash->type}">
 									<a class="close" data-dismiss="alert">×</a>

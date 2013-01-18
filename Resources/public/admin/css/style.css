@@ -29,18 +29,20 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 h1 {
-    font-size: 30px;
+    font-size: 25px;
 }
 h5 {
     font-size: 12px;
 }
 
 .page-header h1 {
+    margin-top: 5px;
+    margin-bottom: -7px;
 	color: #ffffff;
 }
 .page-header {
 	border: 0;
-	margin: -5px 0 -0px 0;
+	margin: -13px 0 -0px 0;
 }
 
 #ajax-spinner {
@@ -95,7 +97,7 @@ h5 {
 
 
 #toolbar {
-	margin: -35px 0 0 0;
+	margin: -30px 0 -4px 0;
 }
 .nav-tabs > li > a {
 	background-color: #00B700;
@@ -111,6 +113,8 @@ h5 {
 	border-color: #00A300 #00A300 #007000;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 	filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+
+    padding: 5px 8px;
 }
 .nav-tabs > li > a:hover {
 	border-color: #00A000;
@@ -172,6 +176,16 @@ footer {
 
 .btn-primary:hover, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled] {
 	background-color: #00A400;
+}
+
+.btn-group > .btn, .btn-group > .dropdown-menu, .btn-group > .popover {
+    font-size: 13px;
+}
+.btn {
+    font-size: 13px;
+}
+.input-append input, .input-prepend input, .input-append select, .input-prepend select, .input-append .uneditable-input, .input-prepend .uneditable-input, .input-append .dropdown-menu, .input-prepend .dropdown-menu {
+    font-size: 13px;
 }
 
 
