@@ -54,6 +54,7 @@ name: jméno
 navigation: navigace
 next informations: další informace
 pages: stránky
+page: stránka
 parent: rodič
 role: role
 route: routa
@@ -157,3 +158,6 @@ previous: předchozí
 'redirect': přesměrování
 'registration': registrace
 'remember me on this computer': zapamatovat příhlášení na tomto počítači
+'new page': nová stránka
+'page list': seznam stránek
+'special pages': speciální stránky
