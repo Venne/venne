@@ -12,8 +12,9 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
-use DoctrineModule\Repositories\BaseRepository;
 use Nette\Callback;
+use DoctrineModule\Repositories\BaseRepository;
+use CmsModule\Components\Table\Form;
 use CmsModule\Forms\RoleFormFactory;
 use CmsModule\Forms\PermissionsFormFactory;
 
@@ -68,7 +69,7 @@ class RolesPresenter extends BasePresenter
 
 		// forms
 		$form = $table->addForm($this->roleForm, 'Role');
-		$permissionsForm = $table->addForm($this->permissionsForm, 'Permissions');
+		$permissionsForm = $table->addForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_FULL);
 
 		// navbar
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
