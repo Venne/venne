@@ -19,6 +19,9 @@ use Venne;
 abstract class AdminPresenter extends BasePresenter
 {
 
+	/** @persistent */
+	public $compact = false;
+
 	public function startup()
 	{
 		// check admin account

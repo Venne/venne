@@ -25,6 +25,7 @@
 		{js @CmsModule/stringToSlug/jquery.stringToSlug.min.js}
 
 		{js @CmsModule/iframe-post-form/jquery.iframe-post-form.js}
+		{js @CmsModule/typing/jquery.typing-0.2.0.min.js}
 
 		{* nette *}
 		{js @CmsModule/admin/js/netteForms.js}
@@ -52,6 +53,7 @@
 		{if $presenter->mode == $presenter::MODE_EDIT}{js @CmsModule/admin/js/panel.js}{/if}
 		{css @CmsModule/admin/css/style.css}
 		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
+		{if $presenter->compact}{css @CmsModule/admin/css/style_compact.css}{/if}
 
 	{/head}
 
@@ -153,6 +155,17 @@
 							</li>
 						</ul>
 						{/if}
+
+						<ul class="nav pull-right">
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open icon-white"></i> {=($presenter->compact ? 'compact' : 'normal')} view <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li class="nav-header"></li>
+									<li><a n:href="this compact=>false">normal</a></li>
+									<li><a n:href="this compact=>true">compact</a></li>
+								</ul>
+							</li>
+						</ul>
 					{/if}
 
 					</div>
@@ -188,7 +201,7 @@
 								{/block}
 								</ul>
 							</div>
-							<div class="well well-small" n:snippet="content">
+							<div class="well" n:snippet="content">
 								{foreach $flashes as $flash}
 								<div class="alert alert-{$flash->type}">
 									<a class="close" data-dismiss="alert">×</a>

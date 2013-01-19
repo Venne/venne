@@ -76,30 +76,6 @@ $(function () {
 
 
 	// Ajax
-	$.nette.ext('init', null);
-	$.nette.ext('init', {
-		load:function (rh) {
-			$(this.linkSelector).off('click.nette', rh).on('click.nette', rh);
-			var $forms = $(this.formSelector);
-			$forms.off('submit.nette', rh).on('submit.nette', rh);
-			$forms.off('click.nette', ':image', rh).on('click.nette', ':image', rh);
-			$forms.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
-
-			var buttonSelector = this.buttonSelector;
-			$(buttonSelector).each(function () {
-				$(this).closest('form')
-					.off('click.nette', buttonSelector, rh)
-					.on('click.nette', buttonSelector, rh);
-			});
-		},
-		complete:function () {
-			$.nette.load();
-		}
-	}, {
-		linkSelector:'a.ajax',
-		formSelector:'form.ajax',
-		buttonSelector:'input.ajax[type="submit"], input.ajax[type="image"]'
-	});
 	$.nette.ext('formsValidationBind', {
 		success:function (payload) {
 			if (!payload.snippets) {
@@ -211,8 +187,8 @@ $(function () {
 				var fileInput = $(this);
 				$(this).after('<div class="input-append">'
 					+ '<div class="uneditable-input input-xlarge text" id="' + $(this).attr('id') + '_fake" type="text"></div>'
-					+ '<button class="btn hide" id="' + $(this).attr('id') + '_fakeRemove" type="button">Remove</button>'
-					+ '<button class="btn" id="' + $(this).attr('id') + '_fakeButton" type="button">Select file</button>'
+					+ '<button class="btn btn-small hide" id="' + $(this).attr('id') + '_fakeRemove" type="button">Remove</button>'
+					+ '<button class="btn btn-small" id="' + $(this).attr('id') + '_fakeButton" type="button">Select file</button>'
 					+ '</div>');
 				$('#' + $(this).attr('id') + '_fakeButton').live('click', function () {
 					fileInput.click();

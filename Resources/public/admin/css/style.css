@@ -114,6 +114,9 @@ h6 {
 	float: right;
 }
 .nav-tabs > li > a {
+    font-weight: bold;
+    font-size: 13px;
+
 	background-color: #00B700;
 	background-image: -moz-linear-gradient(top, #00C400, #00A300);
 	background-image: -ms-linear-gradient(top, #00C400, #00A300);
@@ -132,7 +135,18 @@ h6 {
 }
 .nav-tabs > li > a:hover {
 	border-color: #00A000;
-	text-decoration: underline;
+    background-image: -moz-linear-gradient(top, #00b300, #009200);
+    background-image: -ms-linear-gradient(top, #00B300, #009200);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#00B300), to(#009200));
+    background-image: -webkit-linear-gradient(top, #00B300, #009200);
+    background-image: -o-linear-gradient(top, #00B300, #009200);
+    background-image: linear-gradient(top, #00B300, #009200);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00B300', endColorstr='#009200', GradientType=0);
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    border-color: #009200 #009200 #007000;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 .nav-tabs > li.active > a {
 	text-shadow: none;
@@ -442,8 +456,41 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
     padding: 7px;
 }
 .table td.table-td-action {
-    white-space: nowrap; overflow: hidden; padding: 2px;
+    white-space: nowrap; overflow: hidden; padding: 4px;
 }
 .table td.table-td-global {
     padding: 2px 4px;
+}
+
+
+input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    height: 16px;
+    line-height: 16px;
+}
+select, input[type="file"] {
+    height: 26px;
+    line-height: 26px;
+}
+select {
+    padding-top: 2px;
+}
+.form-horizontal .control-label {
+    padding-top: 3px;
+}
+.form-horizontal .control-group {
+    margin-bottom: 5px;
+}
+.form-horizontal input + .help-block, .form-horizontal select + .help-block, .form-horizontal textarea + .help-block, .form-horizontal .uneditable-input + .help-block, .form-horizontal .input-prepend + .help-block, .form-horizontal .input-append + .help-block {
+    padding-top: 3px;
+    margin-top: 0px;
+    margin-left: 10px;
+    display: inline-block;
+    color: #aaaaaa;
+}
+legend {
+    margin-bottom: 0px;
+}
+
+.ms-container .ms-selectable li.ms-elem-selectable, .ms-container .ms-selection li.ms-elem-selected {
+    font-size: 13px;
 }
