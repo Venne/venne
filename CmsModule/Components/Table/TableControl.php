@@ -425,7 +425,7 @@ class TableControl extends Control
 		if ($this->perPage ? $this->perPage : $this->defaultPerPage) {
 			$dql = $dql
 				->setMaxResults($this->perPage ? $this->perPage : $this->defaultPerPage)
-				->setFirstResult(($this["vp"]->page - 1) * $dql->getMaxResults());
+				->setFirstResult(($this['vp']->page - 1) * $dql->getMaxResults());
 		}
 
 		return $dql;
@@ -464,7 +464,7 @@ class TableControl extends Control
 	protected function createComponentActionForm()
 	{
 		$form = $this->presenter->context->createCms__admin__basicForm();
-		//$form->getElementPrototype()->class[] = 'ajax';
+		$form->getElementPrototype()->class[] = 'ajax';
 
 		// filters
 		$filters = $form->addContainer('filters');
@@ -490,11 +490,11 @@ class TableControl extends Control
 		// perPage
 		$form->addSelect('perPage')->setItems($this->perPageList, FALSE)->setDefaultValue($this->getParameter('perPage', $this->defaultPerPage));
 
-		$form->addSelect('action', 'Action', $items);
-		$form->addSubmit('_submit', 'Apply');
-		$form->addSubmit('filters2', 'Apply');
-		$form->addSubmit('reset2', 'Reset');
-		$form->addSubmit('perPageSubmit', 'Apply');
+		$form->addSelect('_action', 'Action', $items)->getControlPrototype()->class[] = 'ajax';
+		$form->addSubmit('_submit', 'Apply')->getControlPrototype()->class[] = 'ajax';
+		$form->addSubmit('_filters', 'Apply')->getControlPrototype()->class[] = 'ajax';
+		$form->addSubmit('_reset', 'Reset')->getControlPrototype()->class[] = 'ajax';
+		$form->addSubmit('perPageSubmit', 'Apply')->getControlPrototype()->class[] = 'ajax';
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
 	}
@@ -503,7 +503,7 @@ class TableControl extends Control
 	public function formSuccess(Venne\Forms\Form $form)
 	{
 		if ($form['_submit']->isSubmittedBy()) {
-			$action = $form['action']->getValue();
+			$action = $form['_action']->getValue();
 			$button = $this[$action];
 
 			$values = $form['items']->getValues();
@@ -514,7 +514,7 @@ class TableControl extends Control
 			}
 
 			$button->onSuccess($this);
-		} else if ($form['filters2']->isSubmittedBy()) {
+		} else if ($form['_filters']->isSubmittedBy()) {
 			$this->filters = $form['filters']->getValues();
 
 			foreach ($this->filters as $key => $value) {
@@ -523,30 +523,42 @@ class TableControl extends Control
 				}
 			}
 
-			$this['vp']->page = NULL;
+			$this['vp']->page = 1;
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('this');
 			}
 
+			unset($this['actionForm']);
+			unset($this['vp']);
+			$this->invalidateControl('table-body');
+			$this->invalidateControl('table-foot');
 			$this->presenter->payload->url = $this->link('this');
-		} else if ($form['reset2']->isSubmittedBy()) {
+		} else if ($form['_reset']->isSubmittedBy()) {
 			$form['filters']->setValues(array());
 			$this->filters = array();
 
-			$this['vp']->page = NULL;
+			$this['vp']->page = 1;
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('this');
 			}
 
+			unset($this['actionForm']);
+			unset($this['vp']);
+			$this->invalidateControl('table-body');
+			$this->invalidateControl('table-foot');
 			$this->presenter->payload->url = $this->link('this');
 		} else if ($form['perPageSubmit']->isSubmittedBy()) {
 			$this->perPage = $form['perPage']->value;
-			$this['vp']->page = NULL;
+			$this['vp']->page = 1;
 
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('this');
 			}
 
+			unset($this['actionForm']);
+			unset($this['vp']);
+			$this->invalidateControl('table-body');
+			$this->invalidateControl('table-foot');
 			$this->presenter->payload->url = $this->link('this');
 		}
 	}

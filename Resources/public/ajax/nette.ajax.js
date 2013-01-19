@@ -166,6 +166,11 @@ var nette = function () {
 			if (analyze.isSubmit || analyze.isImage) {
 				analyze.form = analyze.el.closest('form');
 			} else if (analyze.isForm) {
+				if($("input[type=submit][clicked=true]").length) {
+					var name = $("input[type=submit][clicked=true]").attr('name');
+					var value = $("input[type=submit][clicked=true]").val();
+					settings.data += '&' + name + '=' + value;
+				}
 				analyze.form = analyze.el;
 			}
 
@@ -478,29 +483,33 @@ $.nette.ext('abort', {
 	}
 }, {xhr: null});
 
+$.nette.ext('load', {
+	success: function () {
+		$.nette.load();
+	}
+});
+
 // default ajaxification (can be overridden in init())
 $.nette.ext('init', {
 	load: function (rh) {
 		$(this.linkSelector).off('click.nette', rh).on('click.nette', rh);
-		var $forms = $(this.formSelector);
-		$forms.off('submit.nette', rh).on('submit.nette', rh);
-		$forms.off('click.nette', ':image', rh).on('click.nette', ':image', rh);
-		$forms.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
-
-		var buttonSelector = this.buttonSelector;
-		$(buttonSelector).each(function () {
+		$(this.formSelector).off('submit.nette', rh).on('submit.nette', rh)
+			.off('click.nette', ':image', rh).on('click.nette', ':image', rh)
+			.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
+		$('input[clicked="true"]').removeAttr('clicked');
+		$(this.buttonSelector).each(function () {
 			$(this).closest('form')
-				.off('click.nette', buttonSelector, rh)
-				.on('click.nette', buttonSelector, rh);
+				.off('click.nette', this.buttonSelector, rh)
+				.on('click.nette', this.buttonSelector, rh);
+			$(this).on('click.nette', this, function (ui) {
+				$(this).attr('clicked', 'true');
+			});
 		});
-	},
-	success: function () {
-		$.nette.load();
 	}
 }, {
 	linkSelector: 'a.ajax',
 	formSelector: 'form.ajax',
-	buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]'
+	buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]',
 });
 
 })(window.jQuery);

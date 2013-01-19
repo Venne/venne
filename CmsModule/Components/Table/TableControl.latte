@@ -1,5 +1,6 @@
+{form actionForm}
 <table class="table table-striped table-bordered table-condensed" n:snippet="table">
-	{form actionForm}
+	{var $_form=>$control['actionForm']}
     <thead>
 
 	{if isset($showNavbar)}
@@ -35,11 +36,12 @@
 			{/foreach}
 		{var $_form=>$___form}
 		{var $form=>$___form}
-			<th>{input filters2 class=>'btn btn-block'}{*input reset2 class=>'btn'*}</th>
+			<th>{input _filters class=>'btn btn-block ajax'}{*input reset2 class=>'btn'*}</th>
 		</tr>
 	{/if}
     </thead>
-    <tbody>
+    <tbody n:snippet="table-body">
+		{var $_form=>$control['actionForm']}
 		{foreach $control->getItems() as $item}
         <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
 			{if count($globalActions) > 0}
@@ -60,7 +62,7 @@
             <td class="table-td-action">
                 <div class="btn-group pull-right">
 					{foreach $actions as $name=>$action}
-                        <a class="ajax btn"
+                        <a class="ajax btn btn-small"
                            href="{link doAction name=>$name, id=>$item->{$primaryColumn}}">{_$action->getLabel()}</a>
 					{/foreach}
                 </div>
@@ -70,20 +72,30 @@
     </tbody>
 
 
-    <tfoot>
+    <tfoot n:snippet="table-foot">
+		{var $_form=>$control['actionForm']}
         <tr>
             <td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
 				{control vp}
-				<div class="pull-right input-append">{input perPage class=>'input-mini'} {input perPageSubmit class=>btn}</div>
+				<div class="pull-right input-append">{input perPage class=>'input-mini ajax'} {input perPageSubmit class=>'btn btn-small'}</div>
 				{if count($globalActions) > 0}
-				<div class="pull-left input-append">{input action class=>'input-small'} {input _submit class=>btn}</div>
+				<div class="pull-left input-append">{input _action class=>'input-small ajax'} {input _submit class=>'btn btn-small'}</div>
 				{/if}
             </td>
         </tr>
     </tfoot>
-
-{/form}
+		<script>
+			$(function () {
+				$('#snippet-{!$control->lookupPath('Nette\Application\UI\Presenter', TRUE)}-table thead input[type=text]').typing({
+					stop: function (event, $elem) {
+						$('#{!$control['actionForm']['_filters']->getHtmlId()}').click();
+					},
+					delay: 400
+				});
+			});
+		</script>
 </table>
+{/form}
 
 {snippet form}
 	{if $control->editForm}
