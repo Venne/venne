@@ -30,17 +30,17 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $enable;
+	protected $enable = false;
 
 	/**
 	 * @ORM\Column(type="string", unique=true, length=64)
 	 */
-	protected $email;
+	protected $email = '';
 
 	/**
 	 * @ORM\Column(type="string")
 	 */
-	protected $password;
+	protected $password = '';
 
 	/**
 	 * @ORM\Column(type="string", name="`key`", nullable=true)
@@ -91,11 +91,6 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 		$this->roleEntities = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->logins = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->socialLogins = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->enable = false;
-		$this->login = "";
-		$this->password = "";
-		$this->email = "";
-		$this->key = "";
 		$this->generateNewSalt();
 	}
 

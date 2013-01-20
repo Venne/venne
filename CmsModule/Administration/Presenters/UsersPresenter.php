@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use CmsModule\Components\Table\Form;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
@@ -83,8 +84,8 @@ class UsersPresenter extends BasePresenter
 		$table->setRepository($this->userRepository);
 
 		// forms
-		$form = $table->addForm($this->form, 'User');
-		$socialForm = $table->addForm($this->socialForm, 'Social logins');
+		$form = $table->addForm($this->form, 'User', NULL, Form::TYPE_LARGE);
+		$socialForm = $table->addForm($this->socialForm, 'Social logins', NULL, Form::TYPE_LARGE);
 
 		// navbar
 		$table->addButtonCreate('create', 'Create new', $form, 'file');
