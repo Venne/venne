@@ -98,6 +98,14 @@ class DirEntity extends BaseFileEntity
 	 */
 	public function preRemove()
 	{
+		foreach ($this->getChildren() as $dir) {
+			$dir->preRemove();
+		}
+
+		foreach ($this->getFiles() as $file) {
+			$file->preRemove();
+		}
+
 		$protectedPath = $this->protectedDir . '/' . $this->path;
 		$publicPath = $this->publicDir . '/' . $this->path;
 
