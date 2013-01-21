@@ -83,7 +83,11 @@
 					}
 				});
 			} else if (action == "edit") {
-				$.nette.ajax({ url: {link edit!} +'&key2=' + $(el).attr("id") });
+				if($(el).attr("id").substr(0, 2) == 'f_') {
+					$.nette.ajax({ url: {=$presenter['fileTable']->link('doAction!')} +'&fileTable-id=' + $(el).attr("id").replace('f_', '') + '&fileTable-name=editFile' });
+				} else {
+					$.nette.ajax({ url: {=$presenter['table']->link('doAction!')} +'&table-id=' + $(el).attr("id").replace('d_', '') + '&table-name=editDir' });
+				}
 			} else if (action == "view") {
 				window.location = $(el).find('a').attr('href');
 			}

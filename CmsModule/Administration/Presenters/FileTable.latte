@@ -12,11 +12,11 @@
 					{var type=>'text-plain'}
 				{/if}
 				{var ext=>substr($item->getName(), strrpos($item->getName(), '.') + 1)}
-				<a class="noAjax" href="{if $type=='folder'}{=$control->presenter->link('this', array('key'=>$item->id))}{else}{$control->presenter->template->basePath}/public/media/{$item->path}{/if}">
+				<a class="noAjax" href="{if $type=='folder'}{=$control->presenter->link('this', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
 					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
-						<img n:src="$item->getPath(), size=>'64x64'" alt="" />
+						<img n:src="$item->getPath(), size=>'64x64', format=>8" alt="" />
 					{else}
-						<img src="{=$control->presenter->template->basePath}/resources/cmsModule/admin/icons/places/64/{$type}.png" alt="">
+						<img src="{$basePath}/resources/cmsModule/admin/icons/places/64/{$type}.png" alt="">
 					{/if}
 				</a>
 				<h5>{$item->name}</h5>

@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use CmsModule\Components\Table\TableControl;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Forms\DirFormFactory;
@@ -95,15 +96,14 @@ class FilesPresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$_this = $this;
+		$parent = $this->key;
 		$dirRepository = $this->dirRepository;
 
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
+		$table = $this->createTable();
 		$table->setRepository($this->dirRepository);
-		$parent = $this->key;
 
 		$dql = function ($parent) {
 			return function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
@@ -114,18 +114,6 @@ class FilesPresenter extends BasePresenter
 				return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
 			};
 		};
-
-		// forms
-		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($dirRepository, $_this) {
-			$entity = new \CmsModule\Content\Entities\FileEntity();
-			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
-			return $entity;
-		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
-		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
-			$entity = new \CmsModule\Content\Entities\DirEntity();
-			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
-			return $entity;
-		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
 		// navbar
 		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function ($button) use ($_this, $dirRepository, $dql) {
@@ -140,21 +128,20 @@ class FilesPresenter extends BasePresenter
 			$_this->key = $parent ? $parent->id : NULL;
 			$_this['table']->setDql($dql($parent));
 		};
-		$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
-		$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
 
 		$table->setDql($dql($parent));
-		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
 
 		return $table;
 	}
 
 
-	public function createComponentFileTable()
+	protected function createComponentFileTable()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
+		$table = $this->createTable();
 		$table->setRepository($this->fileRepository);
+
 		$parent = $this->key;
+
 		$table->setDql(function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
 			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
 			if ($parent === NULL) {
@@ -162,6 +149,42 @@ class FilesPresenter extends BasePresenter
 			}
 			return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
 		});
+
+		$table->setNavbar();
+
+		return $table;
+	}
+
+
+	/**
+	 * @return \CmsModule\Components\Table\TableControl
+	 */
+	protected function createTable()
+	{
+		$_this = $this;
+		$dirRepository = $this->dirRepository;
+
+		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
+
+		// forms
+		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($dirRepository, $_this) {
+			$entity = new \CmsModule\Content\Entities\FileEntity();
+			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
+			return $entity;
+		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
+		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
+			$entity = new \CmsModule\Content\Entities\DirEntity();
+			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
+			return $entity;
+		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
+
+		$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
+		$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
+
+		$table->addActionEdit('editDir', 'Edit', $dirForm);
+		$table->addActionEdit('editFile', 'Edit', $fileForm);
+
 		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
 
 		return $table;
@@ -235,13 +258,5 @@ class FilesPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$this->template->dirRepository = $this->dirRepository;
-	}
-
-
-	public function handleEdit($key2)
-	{
-		$type = substr($key2, 0, 1);
-		$this->edit = substr($key2, 2);
-		$this->template->edit = $type;
 	}
 }

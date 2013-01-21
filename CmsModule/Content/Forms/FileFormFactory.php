@@ -27,7 +27,8 @@ class FileFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addUpload('file', 'File');
+		$form->addUpload('file', 'File')->getControlPrototype()->attrs['onChange'] = 'var data = $(this).val().split("\\\\"); data = data[data.length - 1]; $("input:eq(" + $("input").index(this) + 1 + ")").val(data);';
+		$form->addText('name', 'Name');
 		$form->addManyToOne('parent', 'Parent');
 
 		$form->addSaveButton('Save');
