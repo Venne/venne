@@ -100,6 +100,8 @@ manage existing pages and content: správa vytvořených stránek a obsahů
 manage files: správa souborů
 manage files and directories: správa souborů a adresářů
 manage users: správa uživatelů
+manage layouts: správa layoutů
+'manage layouts, edit blocks,...': 'editace layoutů, správa bloků,...'
 access control: správa přístupu
 module manager: správa modulů
 environments: prostředí
@@ -162,3 +164,6 @@ previous: předchozí
 'new page': nová stránka
 'page list': seznam stránek
 'special pages': speciální stránky
+normal: normální
+compact: kompaktní
+view: pohled

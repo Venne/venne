@@ -158,11 +158,11 @@
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open icon-white"></i> {=($presenter->compact ? 'compact' : 'normal')} view <b class="caret"></b></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open icon-white"></i> {_($presenter->compact ? 'compact' : 'normal')} {_view} <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="nav-header"></li>
-									<li><a n:href="this compact=>false">normal</a></li>
-									<li><a n:href="this compact=>true">compact</a></li>
+									<li><a n:href="this compact=>false">{_normal}</a></li>
+									<li><a n:href="this compact=>true">{_compact}</a></li>
 								</ul>
 							</li>
 						</ul>
