@@ -3,7 +3,7 @@
 	{var $_form=>$control['actionForm']}
     <thead>
 
-	{if isset($showNavbar)}
+	{if $showNavbar}
 	<tr>
 		<th colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">{control navbar}</th>
 	</tr>

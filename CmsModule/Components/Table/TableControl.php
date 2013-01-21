@@ -13,6 +13,7 @@ namespace CmsModule\Components\Table;
 
 use Venne;
 use Venne\Application\UI\Control;
+use CmsModule\Components\Navbar\NavbarControl;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -98,6 +99,9 @@ class TableControl extends Control
 
 	/** @var array */
 	protected $perPageList = array(10, 20, 30, 50, 100, 200, 500);
+
+	/** @var bool */
+	protected $showNavbar = false;
 
 	/** @var array */
 	public $onAttached;
@@ -394,6 +398,7 @@ class TableControl extends Control
 			$this->template->globalActions = $this->globalActions;
 			$this->template->primaryColumn = $this->primaryColumn;
 			$this->template->sort = $this->sort;
+			$this->template->showNavbar = $this->showNavbar;
 
 			$this->template->render();
 		}
@@ -731,9 +736,23 @@ class TableControl extends Control
 	 */
 	public function getNavbar()
 	{
-		$this->template->showNavbar = true;
+		$this->showNavbar = true;
 
 		return $this['navbar'];
+	}
+
+
+	/**
+	 * @param \CmsModule\Components\Navbar\NavbarControl $navbar
+	 */
+	public function setNavbar(NavbarControl $navbar = NULL)
+	{
+		$this->showNavbar = false;
+		if ($navbar instanceof NavbarControl) {
+			$this['navbar'] = $navbar;
+		} else {
+			unset($this['navbar']);
+		}
 	}
 
 
@@ -742,6 +761,6 @@ class TableControl extends Control
 	 */
 	protected function createComponentNavbar()
 	{
-		return new \CmsModule\Components\Navbar\NavbarControl();
+		return new NavbarControl();
 	}
 }
