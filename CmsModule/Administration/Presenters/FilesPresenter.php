@@ -45,7 +45,7 @@ class FilesPresenter extends BasePresenter
 	protected $fileFormFactory;
 
 
-	function __construct(BaseRepository $fileRepository, BaseRepository $dirRepository)
+	public function __construct(BaseRepository $fileRepository, BaseRepository $dirRepository)
 	{
 		$this->fileRepository = $fileRepository;
 		$this->dirRepository = $dirRepository;
