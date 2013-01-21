@@ -14,6 +14,7 @@ namespace CmsModule\Components;
 use Venne;
 use Venne\Application\UI\Control;
 use CmsModule\Services\ScannerService;
+use CmsModule\Content\ContentManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,17 +28,22 @@ class PanelControl extends Control
 	/** @var ScannerService */
 	protected $scannerService;
 
+	/** @var ContentManager */
+	protected $contentManager;
+
 
 	/**
 	 * @param \CmsModule\Services\ScannerService $scannerService
 	 * @param \Nette\Http\SessionSection $session
+	 * @param \CmsModule\Content\ContentManager $contentManager
 	 */
-	public function __construct(ScannerService $scannerService, \Nette\Http\SessionSection $session)
+	public function __construct(ScannerService $scannerService, \Nette\Http\SessionSection $session, ContentManager $contentManager)
 	{
 		parent::__construct();
 
 		$this->scannerService = $scannerService;
 		$this->session = $session;
+		$this->contentManager = $contentManager;
 	}
 
 
@@ -169,8 +175,10 @@ class PanelControl extends Control
 			->andWhere('a.translationFor IS NULL')
 			->orderBy('a.position');
 
+		$types = $this->contentManager->getContentTypes();
 		foreach ($dql->getQuery()->getResult() as $page) {
-			$item = array("title" => $page->name, 'key' => $page->id);
+			$type = $this->presenter->template->translate($types[$page->type]);
+			$item = array("title" => $page->name . ' <small class="muted">' . $type . '</small>' , 'key' => $page->id);
 
 			if (count($page->children) > 0) {
 				$item['isLazy'] = true;
