@@ -173,7 +173,7 @@ $(function () {
 					var data = $(this).val();
 					if (data) {
 						var data = '<i class="icon-file"></i> ' + data;
-						$('#' + object.attr('id') + '_fake').html(data);
+						$('#' + object.attr('id') + '_fake').html(data.replace('C:\\fakepath\\', ''));
 						$('#' + object.attr('id') + '_fakeRemove').show();
 						$('#' + object.attr('id') + '_fakeButton').text('Change');
 					} else {
@@ -190,10 +190,12 @@ $(function () {
 					+ '<button class="btn btn-small hide" id="' + $(this).attr('id') + '_fakeRemove" type="button">Remove</button>'
 					+ '<button class="btn btn-small" id="' + $(this).attr('id') + '_fakeButton" type="button">Select file</button>'
 					+ '</div>');
-				$('#' + $(this).attr('id') + '_fakeButton').live('click', function () {
+				$('#' + $(this).attr('id') + '_fakeButton').off('click');
+				$('#' + $(this).attr('id') + '_fakeRemove').off('click');
+				$('#' + $(this).attr('id') + '_fakeButton').on('click', function () {
 					fileInput.click();
 				});
-				$('#' + $(this).attr('id') + '_fakeRemove').live('click', function () {
+				$('#' + $(this).attr('id') + '_fakeRemove').on('click', function () {
 					fileInput.replaceWith(fileInput.clone());
 					$('#' + fileInput.attr('id') + '_fake').html('');
 					$('#' + fileInput.attr('id') + '_fakeRemove').hide();
