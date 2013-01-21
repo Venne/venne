@@ -59,7 +59,7 @@ services:
 	cms.fileFormFactory:
 		class: CmsModule\Content\Forms\FileFormFactory(..., @cms.fileRepository)
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.layoutFormFactory:
 		class: CmsModule\Content\Forms\LayoutFormFactory(..., %appDir%, %modules%)
