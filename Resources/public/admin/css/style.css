@@ -456,7 +456,8 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
     padding: 7px;
 }
 .table td.table-td-action {
-    white-space: nowrap; overflow: hidden; padding: 4px;
+    white-space: nowrap;
+    padding: 4px;
 }
 .table td.table-td-global {
     padding: 2px 4px;
