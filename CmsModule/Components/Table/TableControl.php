@@ -247,6 +247,7 @@ class TableControl extends Control
 		$_this = $this;
 
 		$control = $this->addAction($name, $title);
+		$control->setOptions('data-confirm', 'Really remove?');
 		$control->onClick[] = function (Button $button, $entity) use ($_this) {
 			$_this->getRepository()->delete($entity);
 		};

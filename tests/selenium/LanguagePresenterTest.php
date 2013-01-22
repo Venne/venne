@@ -45,6 +45,7 @@ class LanguagePresenterTest extends AdminPresenterTest
 		$this->assertEquals("test5", $this->getTable("id=snippet-table-table.3.3"));
 
 		$this->click("xpath=(//a[contains(text(),'Delete')])[3]");
+		$this->getConfirmation();
 
 		$this->logout();
 	}

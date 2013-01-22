@@ -30,6 +30,9 @@ class Button extends \Nette\ComponentModel\Component
 	/** @var string */
 	protected $label;
 
+	/** @var array */
+	protected $options = array();
+
 
 	/**
 	 * @param string $label
@@ -68,5 +71,25 @@ class Button extends \Nette\ComponentModel\Component
 	public function getTable($need = TRUE)
 	{
 		return $this->lookup('CmsModule\Components\Table\TableControl', $need);
+	}
+
+
+	/**
+	 * @param $key
+	 * @param $value
+	 */
+	public function setOptions($key, $value)
+	{
+		$this->options[$key] = $value;
+	}
+
+
+	/**
+	 * @param $key
+	 * @return null
+	 */
+	public function getOption($key)
+	{
+		return isset($this->options[$key]) ? $this->options[$key] : NULL;
 	}
 }
