@@ -59,6 +59,7 @@ pages: stránky
 page: stránka
 parent: rodič
 really remove?: opravdu odstranit?
+remove: odstranit
 role: role
 route: routa
 routes: routy
