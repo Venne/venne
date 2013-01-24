@@ -78,9 +78,11 @@ $(function () {
 	// Ajax
 	$.nette.ext('data-ajax-confirm', {
 		before: function (xhr, settings) {
-			var question = settings.nette.el.data('confirm');
-			if (question) {
-				return confirm(question);
+			if (settings.nette !== undefined && settings.nette.el !== undefined) {
+				var question = settings.nette.el.data('confirm');
+				if (question) {
+					return confirm(question);
+				}
 			}
 		}
 	});
