@@ -11,9 +11,10 @@
 
 namespace CmsModule\Content\Presenters;
 
-use Gedmo\Translatable\TranslatableListener;
 use Venne;
 use Nette\Caching\Cache;
+use Gedmo\Translatable\TranslatableListener;
+use Nette\Application\BadRequestException;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
 
@@ -43,10 +44,22 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	/** @var \Nette\Caching\Cache */
 	protected $_templateCache;
 
+	/** @var Venne\Module\Helpers */
+	protected $moduleHelpers;
+
 
 	public function injectTemplateCache(\Nette\Caching\IStorage $cache)
 	{
 		$this->_templateCache = new Cache($cache, self::CACHE_OUTPUT);
+	}
+
+
+	/**
+	 * @param \Venne\Module\Helpers $moduleHelpers
+	 */
+	public function injectModulesHelper(Venne\Module\Helpers $moduleHelpers)
+	{
+		$this->moduleHelpers = $moduleHelpers;
 	}
 
 
@@ -110,28 +123,13 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	{
 		if ($this->_layoutPath === NULL) {
 			if (!$this->route->layout) {
-				$this->_layoutPath = false;
-			}
-
-			if ($this->route->layout == 'default') {
-				$layout = $this->context->parameters['website']['layout'];
+				$this->_layoutPath = FALSE;
 			} else {
-				$layout = $this->route->layout;
-			}
-
-			$pos = strpos($layout, "/");
-			$module = lcfirst(substr($layout, 1, $pos - 1));
-
-			if ($module === 'app') {
-				$this->_layoutPath = $this->context->parameters['appDir'] . '/layouts/' . substr($layout, $pos + 1);
-			} else if (!isset($this->context->parameters['modules'][$module]['path'])) {
-				$this->_layoutPath = false;
-			} else {
-				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
+				$this->_layoutPath = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources');
 			}
 		}
 
-		return $this->_layoutPath === false ? NULL : $this->_layoutPath;
+		return $this->_layoutPath === FALSE ? NULL : $this->_layoutPath;
 	}
 
 
@@ -142,8 +140,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function formatLayoutTemplateFiles()
 	{
-		$path = $this->getLayoutPath();
-		return ($path ? array($path . "/@layout.latte") : parent::formatLayoutTemplateFiles());
+		return array($this->getLayoutPath());
 	}
 
 
@@ -155,7 +152,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function formatTemplateFiles()
 	{
 		$ret = parent::formatTemplateFiles();
-		$name = $this->getName();
 		$presenter = str_replace(":", "/", $this->name);
 
 		$path = $this->getLayoutPath();
@@ -173,11 +169,14 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	{
 		if (strpos($name, \CmsModule\Content\ElementManager::ELEMENT_PREFIX) === 0) {
 			$name = substr($name, strlen(\CmsModule\Content\ElementManager::ELEMENT_PREFIX));
-			$name = explode('_', $name, 2);
+			$name = explode('_', $name);
+			$id = end($name);
+			unset($name[count($name) - 1]);
+			$name = implode('_', $name);
 			/** @var $component \CmsModule\Content\IElement */
-			$component = $this->context->cms->elementManager->createInstance($name[1]);
+			$component = $this->context->cms->elementManager->createInstance($id);
 			$component->setRoute($this->route);
-			$component->setName($name[0]);
+			$component->setName($name);
 			return $component;
 		}
 

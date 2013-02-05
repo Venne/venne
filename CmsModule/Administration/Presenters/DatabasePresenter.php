@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use Venne;
+use CmsModule\Module\Installers\CmsInstaller;
 use CmsModule\Forms\SystemDatabaseFormFactory;
 
 /**
@@ -69,6 +70,10 @@ class DatabasePresenter extends BasePresenter
 			}
 
 			$tool->createSchema($classes);
+
+			/** @var $installer CmsInstaller */
+			$installer = $this->context->createInstance('CmsModule\Module\Installers\CmsInstaller');
+			$installer->install($this->context->venne->moduleManager->modules['cms']);
 		}
 		$this->redirect(":Cms:Admin:{$this->getContext()->parameters['administration']['defaultPresenter']}:");
 	}

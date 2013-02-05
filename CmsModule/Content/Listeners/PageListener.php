@@ -109,7 +109,7 @@ class PageListener implements EventSubscriber
 				Cache::TAGS => array('route' => $entity->id),
 			));
 		} elseif ($entity instanceof \CmsModule\Content\Entities\ElementEntity) {
-			foreach ($entity->layoutconfig->routes as $route) {
+			foreach ($entity->layout->routes as $route) {
 				$this->cache->clean(array(
 					Cache::TAGS => array('route' => $route->id),
 				));

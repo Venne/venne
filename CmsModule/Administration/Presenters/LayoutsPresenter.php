@@ -11,10 +11,14 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Content\Entities\LayoutEntity;
 use Venne;
-use CmsModule\Services\ScannerService;
 use CmsModule\Content\Forms\LayoutFormFactory;
-use CmsModule\Content\Forms\LayouteditFormFactory;
+use CmsModule\Content\ElementManager;
+use CmsModule\Content\Elements\Forms\BasicFormFactory;
+use CmsModule\Content\Entities\ElementEntity;
+use CmsModule\Content\LayoutManager;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,139 +31,182 @@ class LayoutsPresenter extends BasePresenter
 	/** @persistent */
 	public $key;
 
-	/** @var ScannerService */
-	protected $scannerService;
+	/** @var LayoutManager */
+	protected $layoutManager;
 
-	/** @var array */
-	protected $_layouts;
+	/** @var Venne\Module\Helpers */
+	protected $moduleHelpers;
+
+	/** @var BaseRepository */
+	protected $layoutRepository;
+
+	/** @var BaseRepository */
+	protected $elementRepository;
 
 	/** @var LayoutFormFactory */
 	protected $layoutFormFactory;
 
-	/** @var LayouteditFormFactory */
-	protected $layouteditFormFactory;
+	/** @var BasicFormFactory */
+	protected $basicFormFactory;
+
+	/** @var LayoutEntity */
+	protected $currentLayout;
 
 
-	/**
-	 * @param ScannerService $scannerService
-	 */
-	public function injectScannerService(ScannerService $scannerService)
+	public function __construct(BaseRepository $layoutRepository, BaseRepository $elementRepository, Venne\Module\Helpers $moduleHelpers)
 	{
-		$this->scannerService = $scannerService;
-	}
-
-
-	public function injectLayoutForm(LayoutFormFactory $layoutForm)
-	{
-		$this->layoutFormFactory = $layoutForm;
-	}
-
-
-	public function injectLayouteditForm(LayouteditFormFactory $layouteditForm)
-	{
-		$this->layouteditFormFactory = $layouteditForm;
+		$this->layoutRepository = $layoutRepository;
+		$this->elementRepository = $elementRepository;
+		$this->moduleHelpers = $moduleHelpers;
 	}
 
 
 	/**
-	 * @secured(privilege="show")
+	 * @param \CmsModule\Content\Forms\LayoutFormFactory $layoutFormFactory
 	 */
-	public function actionDefault()
+	public function injectLayoutFormFactory(LayoutFormFactory $layoutFormFactory)
 	{
+		$this->layoutFormFactory = $layoutFormFactory;
 	}
 
 
 	/**
-	 * @secured(privilege="create")
+	 * @param \CmsModule\Content\LayoutManager $layoutManager
 	 */
-	public function actionCreate()
+	public function injectLayoutManager(LayoutManager $layoutManager)
 	{
+		$this->layoutManager = $layoutManager;
 	}
 
 
 	/**
-	 * @secured(privilege="edit")
+	 * @param \CmsModule\Content\Elements\Forms\BasicFormFactory $basicFormFactory
 	 */
-	public function actionEdit()
+	public function injectBasicFormFactory(BasicFormFactory $basicFormFactory)
 	{
+		$this->basicFormFactory = $basicFormFactory;
 	}
 
 
-	protected function getScannedLayouts()
+	public function startup()
 	{
-		if ($this->_layouts === NULL) {
-			$this->_layouts = $this->scannerService->getLayoutFiles();
+		parent::startup();
+
+		if ($this->key) {
+			$this->currentLayout = $this->layoutRepository->find($this->key);
+			$file = $this->moduleHelpers->expandPath($this->currentLayout->file, 'Resources');
+
+			foreach ($this->layoutManager->getElementsByFile($file) as $key => $type) {
+				if ($this->elementRepository->findOneBy(array('layout' => $this->currentLayout->id, 'nameRaw' => $key))) {
+					continue;
+				}
+
+				$component = $this->context->cms->elementManager->createInstance($type);
+				$component->setLayout($this->currentLayout);
+				$component->setName($key);
+				$component->getEntity();
+			}
 		}
-
-		return $this->_layouts;
 	}
 
 
-	protected function createComponentForm()
+	public function handleCreate($id)
 	{
-		$form = $this->layoutFormFactory->invoke();
-		$form->onSuccess[] = $this->formSuccess;
-		return $form;
-	}
-
-
-	public function formSuccess($form)
-	{
-		$this->flashMessage('Layout has been added.', 'success');
-
-		$values = $form->getValues();
 		if (!$this->isAjax()) {
-			$this->redirect('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
+			$this['table-navbar']->redirect('click!', array('id' => $id));
 		}
+
 		$this->invalidateControl('content');
-		$this->payload->url = $this->link('edit', array('key' => "@{$values['parent']}/{$values['name']}"));
-		$this->setView('edit');
-		$this->changeAction('edit');
-		$this->key = "@{$values['parent']}/{$values['name']}";
+		$this['table-navbar']->handleClick($id);
 
-		// refresh left panel
-		$this['panel']->invalidateControl('content');
+		$this->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
 	}
 
 
-	protected function createComponentFormedit()
+	public function createComponentTable()
 	{
-		$form = $this->layouteditFormFactory->invoke();
-		$form->setData($this->key);
-		$form->onSuccess[] = $this->formeditSuccess;
-		return $form;
+		$_this = $this;
+		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
+		$table->setRepository($this->layoutRepository);
+
+		// forms
+		$form = $table->addForm($this->layoutFormFactory, 'Layout');
+
+		// navbar
+		$table->addButtonCreate('create', 'Create new', $form, 'file');
+
+		// columns
+		$table->addColumn('name', 'Name')
+			->setWidth('60%');
+		$table->addColumn('file', 'File')
+			->setWidth('40%');
+
+		// actions
+		$table->addActionEdit('edit', 'Edit', $form);
+		$table->addAction('elements', 'Elements')->onClick[] = function ($button, $entity) use ($_this) {
+			if (!$_this->isAjax()) {
+				$_this->redirect('this', array('key' => $entity->id));
+			}
+			$_this->invalidateControl('content');
+			$_this->payload->url = $_this->link('this', array('key' => $entity->id));
+			$_this->key = $entity->id;
+		};
+		$table->addActionDelete('delete', 'Delete');
+
+		// global actions
+		$table->setGlobalAction($table['delete']);
+
+		return $table;
 	}
 
 
-	public function formeditSuccess()
+	public function createComponentElementTable()
 	{
-		$this->flashMessage('Layout has been saved.', 'success');
+		$table = new \CmsModule\Components\Table\TableControl;
+		$table->setTemplateConfigurator($this->templateConfigurator);
+		$table->setRepository($this->elementRepository);
 
-		if (!$this->isAjax()) {
-			$this->redirect('this');
-		}
-	}
+		$parent = $this->key;
+		$table->setDql(function (\Doctrine\ORM\QueryBuilder $a) use ($parent) {
+			if (!$parent) {
+				$a->andWhere('a.layout IS NULL');
+			} else {
+				$a->andWhere('a.layout = :id')->setParameter('id', $parent);
+			}
+		});
 
+		// forms
+		$form = $table->addForm($this->basicFormFactory, 'Element');
 
-	public function handleDelete($key)
-	{
-		$path = $this->layouteditFormFactory->getLayoutPathByKey($key);
+		// columns
+		$table->addColumn('nameRaw', 'Name')
+			->setWidth('35%');
+		$table->addColumn('mode', 'Mode')
+			->setWidth('15%')
+			->setCallback(function ($entity) {
+				$modes = ElementEntity::getModes();
+				return $modes[$entity->mode];
+			});
+		$table->addColumn('page', 'Page')
+			->setWidth('25%');
+		$table->addColumn('route', 'Route')
+			->setWidth('25%');
 
-		\Venne\Utils\File::rmdir($path, true);
+		// actions
+		$table->addActionEdit('edit', 'Edit', $form);
+		$table->addActionDelete('delete', 'Delete');
 
-		$this->flashMessage('Layout has been removed.', 'success');
+		// global actions
+		$table->setGlobalAction($table['delete']);
 
-		if (!$this->isAjax()) {
-			$this->redirect('this', array('key' => NULL));
-		}
-		$this->invalidateControl('content');
-		$this['panel']->invalidateControl('content');
-		$this->payload->url = $this->link('this', array('key' => NULL));
+		return $table;
 	}
 
 
 	public function renderDefault()
 	{
-		$this->template->layouts = $this->getScannedLayouts();
+		$this->template->layoutRepository = $this->layoutRepository;
+		$this->template->elementRepository = $this->elementRepository;
 	}
 }

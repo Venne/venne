@@ -93,15 +93,25 @@ services:
 			category: 'Content'
 			name: 'Manage pages'
 			description: 'Manage existing pages and content'
-			priority: 110
+			priority: 120
 		]]
 
 	cms.admin.layoutsPresenter:
-		class: CmsModule\Administration\Presenters\LayoutsPresenter
+		class: CmsModule\Administration\Presenters\LayoutsPresenter(@cms.layoutRepository, @cms.elementRepository)
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Layouts:'
 			category: 'Content'
 			name: 'Manage layouts'
+			description: 'Manage layouts, edit blocks,...'
+			priority: 110
+		]]
+
+	cms.admin.templatesPresenter:
+		class: CmsModule\Administration\Presenters\TemplatesPresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Templates:'
+			category: 'Content'
+			name: 'Manage templates'
 			description: 'Manage layouts, edit blocks,...'
 			priority: 100
 		]]

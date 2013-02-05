@@ -15,6 +15,7 @@ use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
 use FormsModule\Mappers\ConfigMapper;
+use FormsModule\ControlExtensions\ControlExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,6 +45,14 @@ class SystemApplicationFormFactory extends FormFactory
 	}
 
 
+	protected function getControlExtensions()
+	{
+		return array_merge(parent::getControlExtensions(), array(
+			new ControlExtension,
+		));
+	}
+
+
 	/**
 	 * @param Form $form
 	 */
@@ -63,44 +72,50 @@ class SystemApplicationFormFactory extends FormFactory
 
 		/* application */
 		$application->setCurrentGroup($form->addGroup('Application'));
-		$application->addSelect("catchExceptions", "Catch exceptions", array(true => "yes", false => "no"))->setDefaultValue(true);
+		$application->addSelect("catchExceptions", "Catch exceptions", array(TRUE => "yes", FALSE => "no"))->setDefaultValue(TRUE);
+
+		/* session */
+		$session = $venne->addContainer('session');
+		$session->setCurrentGroup($form->addGroup('Session'));
+		$session->addTextWithSelect('savePath', 'Save path')->setItems(array('%tempDir%/sessions' => '%tempDir%/sessions'));
 
 		/* debugger */
 		$debugger->setCurrentGroup($group = $form->addGroup("Debugger"));
-		$debugger->addSelect("strictMode", "Strict mode")->setItems(array("yes", "no"), false);
+		$debugger->addSelect("strictMode", "Strict mode")->setItems(array("yes", "no"), FALSE);
 		$debugger->addText("edit", "Editor");
 		$debugger->addText("browser", "Browser");
 		$debugger->addText("email", "E-mail for logs")
 			->addCondition($form::FILLED)->addRule($form::EMAIL);
 
 		$stopwatch->setCurrentGroup($group);
-		$stopwatch->addCheckbox("debugger", "Stopwatch panel")->setDefaultValue(true);
+		$stopwatch->addCheckbox("debugger", "Stopwatch panel")->setDefaultValue(TRUE);
 
 		$application->setCurrentGroup($group);
-		$application->addCheckbox("debugger", "Debugger panel in bluescreen")->setDefaultValue(true);
+		$application->addCheckbox("debugger", "Debugger panel in bluescreen")->setDefaultValue(TRUE);
 
 		$routing->setCurrentGroup($group);
-		$routing->addCheckbox("debugger", "Routing panel")->setDefaultValue(true);
+		$routing->addCheckbox("debugger", "Routing panel")->setDefaultValue(TRUE);
 
 		$container->setCurrentGroup($group);
-		$container->addCheckbox("debugger", "DI panel")->setDefaultValue(true);
+		$container->addCheckbox("debugger", "DI panel")->setDefaultValue(TRUE);
 
 		$security->setCurrentGroup($group);
-		$security->addCheckbox("debugger", "Security panel")->setDefaultValue(true);
+		$security->addCheckbox("debugger", "Security panel")->setDefaultValue(TRUE);
 
 		$doctrine->setCurrentGroup($group);
-		$doctrine->addCheckbox("debugger", "Database panel")->setDefaultValue(true);
+		$doctrine->addCheckbox("debugger", "Database panel")->setDefaultValue(TRUE);
 
 
 		/* session */
 		$container = $nette->addContainer("session");
 		$container->setCurrentGroup($form->addGroup("Sessions"));
-		$container->addCheckbox("autoStart", "Autostart")->setDefaultValue(false);
-		$container->addText/*WithSelect*/("expiration", "Expiration");//->setItems(array("+ 1 day", "+ 10 days", "+ 30 days", "+ 1 year"), false);
+		$container->addCheckbox("autoStart", "Autostart")->setDefaultValue(FALSE);
+		$container->addText /*WithSelect*/
+			("expiration", "Expiration"); //->setItems(array("+ 1 day", "+ 10 days", "+ 30 days", "+ 1 year"), false);
 
 		/* templating */
 		$nette->setCurrentGroup($form->addGroup("Templating"));
-		$nette->addSelect("xhtml", "XHTML", array(true => "yes", false => "no"))->setDefaultValue(true);
+		$nette->addSelect("xhtml", "XHTML", array(TRUE => "yes", FALSE => "no"))->setDefaultValue(TRUE);
 
 		$form->addSubmit('_submit', 'Save');
 	}

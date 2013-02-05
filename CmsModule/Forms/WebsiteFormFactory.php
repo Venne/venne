@@ -15,12 +15,9 @@ use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
 use FormsModule\Mappers\ConfigMapper;
-use CmsModule\Services\ScannerService;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class WebsiteFormFactory extends FormFactory
 {
@@ -34,12 +31,10 @@ class WebsiteFormFactory extends FormFactory
 
 
 	/**
-	 * @param ScannerService $scannerService
 	 * @param ConfigMapper $mapper
 	 */
-	public function __construct(ScannerService $scannerService, ConfigMapper $mapper)
+	public function __construct(ConfigMapper $mapper)
 	{
-		$this->scannerService = $scannerService;
 		$this->mapper = $mapper;
 	}
 
@@ -72,7 +67,6 @@ class WebsiteFormFactory extends FormFactory
 		$form->addText("keywords", "Keywords");
 		$form->addText("description", "Description");
 		$form->addText("author", "Author");
-		$form->addSelect('layout', 'Layout', $this->scannerService->getLayoutFiles())->setPrompt('-------');
 		$form->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');
 		$form['cacheMode']->addCondition($form::EQUAL, 'time')->toggle('cacheValue');
 

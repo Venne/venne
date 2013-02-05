@@ -12,9 +12,9 @@
 namespace CmsModule\Content\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
-use CmsModule\Services\ScannerService;
+use DoctrineModule\Forms\FormFactory;
+use DoctrineModule\Forms\Mappers\EntityMapper;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,26 +22,19 @@ use CmsModule\Services\ScannerService;
 class LayoutFormFactory extends FormFactory
 {
 
-	/** @var string */
-	protected $appDir;
+	/** @var Venne\Module\TemplateManager */
+	protected $templateManager;
 
 	/** @var array */
 	protected $modules;
 
-	/** @var ScannerService */
-	protected $scannerService;
 
-
-	/**
-	 * @param ScannerService $scannerService
-	 * @param $appDir
-	 * @param $modules
-	 */
-	public function __construct(ScannerService $scannerService, $appDir, $modules)
+	public function __construct(EntityMapper $mapper, Venne\Module\TemplateManager $templateManager, $modules)
 	{
-		$this->scannerService = $scannerService;
-		$this->appDir = $appDir;
-		$this->modules = $modules;
+		parent::__construct($mapper);
+
+		$this->templateManager = $templateManager;
+		$this->modules = & $modules;
 	}
 
 
@@ -50,41 +43,10 @@ class LayoutFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$layouts = array_keys($this->scannerService->getLayoutFiles());
-		if (array_search('app', $layouts) === false) {
-			$layouts = array_merge(array('app'), $layouts);
-		}
-
-		$form->addGroup('Layout settings');
 		$form->addText('name', 'Name');
-		$form->addSelect('parent', 'Save to')->setItems($layouts, FALSE);
+		$form->addSelect('file', 'File')->setItems($this->templateManager->getLayouts());
 
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 
-
-	public function handleSuccess(Form $form)
-	{
-		$values = $form->getValues();
-		$path = $this->getLayoutPathBy($values['parent'], $values['name']);
-
-		umask(0000);
-		@mkdir($path, 0777, true);
-
-		file_put_contents($path . '/@layout.latte', '');
-	}
-
-
-	protected function getLayoutPathBy($module, $name)
-	{
-		return ($module === 'app' ? $this->appDir : $this->modules[$module]['path']) . '/layouts/' . $name;
-	}
-
-
-	protected function getLayoutPathByKey($key)
-	{
-		$module = substr($key, 1, strpos($key, '/') - 1);
-		$name = substr($key, strrpos($key, '/') + 1);
-		return $this->getLayoutPathBy($module, $name);
-	}
 }

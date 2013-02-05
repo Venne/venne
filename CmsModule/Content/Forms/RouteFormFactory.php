@@ -11,8 +11,6 @@
 
 namespace CmsModule\Content\Forms;
 
-use CmsModule\Services\ScannerService;
-use DoctrineModule\Forms\Mappers\EntityMapper;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
@@ -22,21 +20,6 @@ use DoctrineModule\Forms\FormFactory;
  */
 class RouteFormFactory extends FormFactory
 {
-	/** @var \CmsModule\Services\ScannerService */
-	protected $scannerService;
-
-
-	/**
-	 * @param \DoctrineModule\Forms\Mappers\EntityMapper $mapper
-	 * @param \CmsModule\Services\ScannerService $scannerService
-	 */
-	public function __construct(EntityMapper $mapper, ScannerService $scannerService)
-	{
-		parent::__construct($mapper);
-
-		$this->scannerService = $scannerService;
-	}
-
 
 	/**
 	 * @param Form $form
@@ -56,22 +39,22 @@ class RouteFormFactory extends FormFactory
 		// layout
 		$form->setCurrentGroup($form->addGroup());
 		$form->addCheckbox('copyLayoutFromParent', 'Layout from parent');
-		$form['copyLayoutFromParent']->addCondition($form::EQUAL, false)->toggle('group-layout_' . $form->data->id);
+		$form['copyLayoutFromParent']->addCondition($form::EQUAL, FALSE)->toggle('group-layout_' . $form->data->id);
 
 		$form->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-layout_' . $form->data->id));
-		$form->addSelect('layout', 'Layout', $this->scannerService->getLayoutFiles())->setPrompt('-------');
+		$form->addManyToOne('layout', 'Layout');
 
 		$form->setCurrentGroup($form->addGroup());
 		$form->addCheckbox('copyLayoutToChildren', 'Share layout with children');
-		$form['copyLayoutToChildren']->addCondition($form::EQUAL, false)->toggle('group-layout2_' . $form->data->id);
+		$form['copyLayoutToChildren']->addCondition($form::EQUAL, FALSE)->toggle('group-layout2_' . $form->data->id);
 
 		$form->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-layout2_' . $form->data->id));
-		$form->addSelect('childrenLayout', 'Share new layout', $this->scannerService->getLayoutFiles())->setPrompt('-------');
+		$form->addManyToOne('childrenLayout', 'Share new layout');
 
 		// cache
 		$form->setCurrentGroup($form->addGroup());
 		$form->addCheckbox('copyCacheModeFromParent', 'Cache mode from parent');
-		$form['copyCacheModeFromParent']->addCondition($form::EQUAL, false)->toggle('group-cache_' . $form->data->id);
+		$form['copyCacheModeFromParent']->addCondition($form::EQUAL, FALSE)->toggle('group-cache_' . $form->data->id);
 
 		$form->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-cache_' . $form->data->id));
 		$form->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');

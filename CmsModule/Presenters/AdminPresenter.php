@@ -85,7 +85,7 @@ abstract class AdminPresenter extends BasePresenter
 	 */
 	public function formatLayoutTemplateFiles()
 	{
-		return array($this->getContext()->parameters['modules']['cms']['path'] . '/layouts/administration.latte');
+		return array($this->getContext()->parameters['modules']['cms']['path'] . '/Resources/layouts/administration.latte');
 	}
 
 

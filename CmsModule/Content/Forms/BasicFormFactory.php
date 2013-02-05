@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Forms;
 
+use Nette\Forms\Controls\SelectBox;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
@@ -78,15 +79,39 @@ class BasicFormFactory extends FormFactory
 		// parent
 		if (!$form->data->translationFor) {
 			if ($form->data->parent) {
+				/** @var $parent SelectBox */
 				$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL))->setPrompt(FALSE);
 			}
 		}
 
+		$mainRoute->setCurrentGroup($form->addGroup('Layout'));
+
+		if ($form->data->parent) {
+			$mainRoute->addCheckbox('copyLayoutFromParent', 'Layout from parent');
+		} else {
+			$mainRoute->addHidden('copyLayoutFromParent', 'Layout from parent');
+		}
+		$mainRoute['copyLayoutFromParent']->addCondition($form::EQUAL, FALSE)->toggle('group-layout_' . $form->data->id);
+
+		if ($form->data->parent) {
+			$mainRoute->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-layout_' . $form->data->id));
+		} else {
+			$mainRoute->setCurrentGroup($form->getForm()->addGroup('Layout')->setOption('id', 'group-layout_' . $form->data->id));
+		}
+		$mainRoute->addManyToOne('layout', 'Layout');
+
+		$mainRoute->setCurrentGroup($form->addGroup());
+		$mainRoute->addCheckbox('copyLayoutToChildren', 'Share layout with children');
+		$mainRoute['copyLayoutToChildren']->addCondition($form::EQUAL, FALSE)->toggle('group-layout2_' . $form->data->id);
+
+		$mainRoute->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-layout2_' . $form->data->id));
+		$mainRoute->addManyToOne('childrenLayout', 'Share new layout');
+
 		// Navigation
 		$form->addGroup('Navigation');
-		$form->addCheckbox('navigationShow', 'Show in navigation')->addCondition($form::EQUAL, true)->toggle('form-navigation-own');
+		$form->addCheckbox('navigationShow', 'Show in navigation')->addCondition($form::EQUAL, TRUE)->toggle('form-navigation-own');
 		$form->addGroup()->setOption('id', 'form-navigation-own');
-		$form->addCheckbox('navigationOwn', 'Use own title')->addCondition($form::EQUAL, true)->toggle('form-navigation-title');
+		$form->addCheckbox('navigationOwn', 'Use own title')->addCondition($form::EQUAL, TRUE)->toggle('form-navigation-title');
 		$form->addGroup()->setOption('id', 'form-navigation-title');
 		$form->addText('navigationTitleRaw', 'Navigation title');
 
@@ -103,28 +128,28 @@ class BasicFormFactory extends FormFactory
 
 		$js = '
         	function detectAuto() {
-				$("#'.$form['name']->getHtmlId().'").unbind("keyup keydown blur");
-				$("#'.$form['name']->getHtmlId().'").stringToSlug({getPut: ".localUrlTemplate", space: "-" });
+				$("#' . $form['name']->getHtmlId() . '").unbind("keyup keydown blur");
+				$("#' . $form['name']->getHtmlId() . '").stringToSlug({getPut: ".localUrlTemplate", space: "-" });
 
-				$("#'.$form['name']->getHtmlId().'").trigger("keyup");
+				$("#' . $form['name']->getHtmlId() . '").trigger("keyup");
 
 				if($("#form-checkbox").is(":checked")) {
-		            $("#'.$form['name']->getHtmlId().'").stringToSlug({getPut: ".localUrl", space: "-" });
+		            $("#' . $form['name']->getHtmlId() . '").stringToSlug({getPut: ".localUrl", space: "-" });
 				}
 
 				if($("#form-checkbox-title").is(":checked")) {
-		            $("#'.$form['name']->getHtmlId().'").bind("keydown keyup blur", function(){
+		            $("#' . $form['name']->getHtmlId() . '").bind("keydown keyup blur", function(){
 		            	$(".formTitle").val($(this).val());
 		            });
 				}
 			}
 
 			function detectCheckbox() {
-			    if($("#'.$form['mainRoute']['localUrlTemplate']->getHtmlId().'").val() == $(".localUrl").val()){
+			    if($("#' . $form['mainRoute']['localUrlTemplate']->getHtmlId() . '").val() == $(".localUrl").val()){
 					$("#form-checkbox").attr("checked", true);
 				}
 
-				if($("#'.$form['name']->getHtmlId().'").val() == $(".formTitle").val()){
+				if($("#' . $form['name']->getHtmlId() . '").val() == $(".formTitle").val()){
 					$("#form-checkbox-title").attr("checked", true);
 				}
 			}
@@ -148,12 +173,12 @@ class BasicFormFactory extends FormFactory
 
 				$("#form-checkbox").live("click", function(event){
 				    detectAuto();
-				    $("#'.$form['name']->getHtmlId().'").trigger("keyup");
+				    $("#' . $form['name']->getHtmlId() . '").trigger("keyup");
 				});
 
 				$("#form-checkbox-title").live("click", function(){
 				    detectAuto();
-				    $("#'.$form['name']->getHtmlId().'").trigger("keyup");
+				    $("#' . $form['name']->getHtmlId() . '").trigger("keyup");
 				});
 			});
 		';
@@ -178,8 +203,12 @@ class BasicFormFactory extends FormFactory
 
 	public function handleLoad(Form $form)
 	{
-		if ($form->data->navigationTitleRaw !== null) {
-			$form['navigationOwn']->value = true;
+		if (!$form->data->parent) {
+			$form['mainRoute']['copyLayoutFromParent']->value = FALSE;
+		}
+
+		if ($form->data->navigationTitleRaw !== NULL) {
+			$form['navigationOwn']->value = TRUE;
 		}
 	}
 
@@ -188,7 +217,7 @@ class BasicFormFactory extends FormFactory
 	{
 		if ($e instanceof \Nette\InvalidArgumentException) {
 			$form->addError($e->getMessage());
-			return true;
+			return TRUE;
 		}
 	}
 }

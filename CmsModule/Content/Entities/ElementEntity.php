@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
+use CmsModule\Content\Elements\Helpers;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Entities\IdentifiedEntity;
 
@@ -36,11 +37,11 @@ abstract class ElementEntity extends IdentifiedEntity
 	protected static $modes = array(self::MODE_LAYOUT => 'Layout', self::MODE_PAGE => 'page', self::MODE_ROUTE => 'route');
 
 	/**
-	 * @var \CmsModule\Content\Entities\LayoutconfigEntity
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LayoutconfigEntity")
+	 * @var \CmsModule\Content\Entities\LayoutEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LayoutEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
-	protected $layoutconfig;
+	protected $layout;
 
 	/**
 	 * @var \CmsModule\Content\Entities\PageEntity
@@ -64,21 +65,28 @@ abstract class ElementEntity extends IdentifiedEntity
 
 	/**
 	 * @var int
+	 * @ORM\Column(type="string")
+	 */
+	protected $nameRaw;
+
+	/**
+	 * @var int
 	 * @ORM\Column(type="integer")
 	 */
 	protected $mode;
 
 
 	/**
-	 * @param LayoutconfigEntity $layoutconfigEntity
+	 * @param LayoutEntity $layoutEntity
 	 * @param RouteEntity $route
 	 */
-	final public function setDefaults($name, RouteEntity $route)
+	final public function setDefaults($name, LayoutEntity $layout, PageEntity $page = NULL, RouteEntity $route = NULL)
 	{
-		$this->name = $name;
+		$this->nameRaw = $name;
+		$this->name = Helpers::encodeName($name);
 		$this->route = $route;
-		$this->page = $route->getPage();
-		$this->layoutconfig = $route->getLayoutconfig();
+		$this->page = $page;
+		$this->layout = $layout;
 
 		$this->mode = self::MODE_LAYOUT;
 	}
@@ -116,11 +124,65 @@ abstract class ElementEntity extends IdentifiedEntity
 
 
 	/**
+	 * @param \CmsModule\Content\Entities\LayoutEntity $layout
+	 */
+	public function setLayout($layout)
+	{
+		$this->layout = $layout;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\LayoutEntity
+	 */
+	public function getLayout()
+	{
+		return $this->layout;
+	}
+
+
+	/**
+	 * @param int $name
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+	}
+
+
+	/**
 	 * @return int
 	 */
 	public function getName()
 	{
 		return $this->name;
+	}
+
+
+	/**
+	 * @param int $nameRaw
+	 */
+	public function setNameRaw($nameRaw)
+	{
+		$this->nameRaw = $nameRaw;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getNameRaw()
+	{
+		return $this->nameRaw;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\PageEntity $page
+	 */
+	public function setPage($page)
+	{
+		$this->page = $page;
 	}
 
 
@@ -134,19 +196,19 @@ abstract class ElementEntity extends IdentifiedEntity
 
 
 	/**
+	 * @param \CmsModule\Content\Entities\RouteEntity $route
+	 */
+	public function setRoute($route)
+	{
+		$this->route = $route;
+	}
+
+
+	/**
 	 * @return \CmsModule\Content\Entities\RouteEntity
 	 */
 	public function getRoute()
 	{
 		return $this->route;
-	}
-
-
-	/**
-	 * @return \CmsModule\Content\Entities\LayoutconfigEntity
-	 */
-	public function getLayoutconfig()
-	{
-		return $this->layoutconfig;
 	}
 }

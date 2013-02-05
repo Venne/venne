@@ -14,12 +14,13 @@ namespace CmsModule\Content\Elements;
 use Venne;
 use CmsModule\Content\Control;
 use CmsModule\Content\IElement;
-use CmsModule\Content\Entities\LayoutconfigEntity;
+use CmsModule\Content\Entities\LayoutEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Elements\Forms\ClearFormFactory;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
 use Doctrine\ORM\EntityManager;
+use DoctrineModule\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,8 +28,8 @@ use Doctrine\ORM\EntityManager;
 abstract class BaseElement extends Control implements IElement
 {
 
-	/** @var LayoutconfigEntity */
-	protected $layoutconfigEntity;
+	/** @var LayoutEntity */
+	protected $layoutEntity;
 
 	/** @var RouteEntity */
 	protected $routeEntity;
@@ -39,8 +40,11 @@ abstract class BaseElement extends Control implements IElement
 	/** @var EntityManager */
 	protected $entityManager;
 
-	/** @var int */
+	/** @var string */
 	protected $name;
+
+	/** @var string */
+	protected $nameRaw;
 
 	/** @var ClearFormFactory */
 	protected $_clearFormFactory;
@@ -79,7 +83,17 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	public function setName($name)
 	{
-		$this->name = $name;
+		$this->name = Helpers::encodeName($name);
+		$this->nameRaw = $name;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\LayoutEntity $layoutEntity
+	 */
+	public function setLayout(LayoutEntity $layoutEntity)
+	{
+		$this->layoutEntity = $layoutEntity;
 	}
 
 
@@ -90,7 +104,7 @@ abstract class BaseElement extends Control implements IElement
 	{
 		$this->routeEntity = $routeEntity;
 		$this->pageEntity = $routeEntity->getPage();
-		$this->layoutconfigEntity = $routeEntity->getLayoutconfig();
+		$this->layoutEntity = $routeEntity->getLayout();
 	}
 
 
@@ -101,7 +115,6 @@ abstract class BaseElement extends Control implements IElement
 	{
 		throw new \Nette\NotImplementedException("Please set entity name in the inherited class.");
 	}
-
 
 
 	/**
@@ -120,7 +133,7 @@ abstract class BaseElement extends Control implements IElement
 	{
 		$class = '\\' . $this->getEntityName();
 		$ret = new $class;
-		$ret->setDefaults($this->name, $this->routeEntity);
+		$ret->setDefaults($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity);
 		return $ret;
 	}
 
@@ -128,24 +141,26 @@ abstract class BaseElement extends Control implements IElement
 	/**
 	 * @return \CmsModule\Content\Entities\ElementEntity
 	 */
-	protected function getEntity()
+	public function getEntity()
 	{
-		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_LAYOUT)))) {
+		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_LAYOUT)))) {
 			return $ret;
 		}
 
-		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id, 'page' => $this->pageEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_PAGE)))) {
+		if ($this->pageEntity && ($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id, 'page' => $this->pageEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_PAGE)))) {
 			return $ret;
 		}
 
-		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id, 'page' => $this->pageEntity->id, 'route' => $this->routeEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE)))) {
+		if ($this->pageEntity && $this->routeEntity && ($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id, 'page' => $this->pageEntity->id, 'route' => $this->routeEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE)))) {
 			return $ret;
 		}
 
 		$ret = $this->createEntity();
-		if (($entity = $this->getRepository()->findOneBy(array('name' => $this->name, 'layoutconfig' => $this->layoutconfigEntity->id)))) {
+		if (($entity = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id)))) {
 			$ret->setMode($entity->mode);
 		}
+		$this->entityManager->persist($ret);
+		$this->entityManager->flush($ret);
 		return $ret;
 	}
 
@@ -169,12 +184,14 @@ abstract class BaseElement extends Control implements IElement
 
 	protected function createComponentClearForm()
 	{
-		return $this->_clearFormFactory->invoke($this->getEntity());
+		$form = $this->_clearFormFactory->invoke($this->getEntity());
+		return $form;
 	}
 
 
 	protected function createComponentBasicForm()
 	{
-		return $this->_basicFormFactory->invoke($this->createEntity());
+		$form = $this->_basicFormFactory->invoke($this->createEntity());
+		return $form;
 	}
 }

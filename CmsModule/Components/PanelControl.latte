@@ -3,6 +3,7 @@
         <li{if $control->tab == 0} class="active"{/if}><a class="ajax" n:href="tab! tab=>0">{_'Pages'}</a></li>
         <li{if $control->tab == 2} class="active"{/if}><a class="ajax" n:href="tab! tab=>2">{_'Files'}</a></li>
         <li{if $control->tab == 3} class="active"{/if}><a class="ajax" n:href="tab! tab=>3">{_'Layouts'}</a></li>
+		<li{if $control->tab == 4} class="active"{/if}><a class="ajax" n:href="tab! tab=>4">{_'Templates'}</a></li>
     </ul>
 </div>
 
@@ -29,12 +30,20 @@
                    href="{plink :Cms:Admin:Layouts: key=>NULL}"><span
                         class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
+			{if $control->tab == 4}
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:')" class="ajax btn"
+				   href="{plink :Cms:Admin:Templates: key=>NULL}"><span
+						class="icon icon-list-alt"></span> {_'Show in table'}</a>
+			{/if}
             </div>
             <div class="btn-group pull-right">
 
-			{if $control->tab == 3}
-                <a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
-                   href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+			{if $control->tab == 4}
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:create')" class="ajax btn"
+                   href="{plink :Cms:Admin:Templates:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+			{elseif $control->tab == 3}
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
+				   href="{plink :Cms:Admin:Layouts:default, do=>create, id=>navbar-create}"><span class="icon icon-file"></span> {_'Create new'}</a>
 				{elseif $presenter->isAuthorized(':Cms:Admin:Content:create')}
                 <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <span class="caret"></span></button>
                 <ul class="dropdown-menu">
@@ -50,7 +59,7 @@
                         <li><a class="ajax"
                                href="{plink :Cms:Admin:Files:default do=>dir, id=>navbar-upload}">Upload
                             file</a></li>
-					{/if}
+						{/if}
                 </ul>
 			{/if}
             </div>

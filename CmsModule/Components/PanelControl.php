@@ -13,7 +13,6 @@ namespace CmsModule\Components;
 
 use Venne;
 use Venne\Application\UI\Control;
-use CmsModule\Services\ScannerService;
 use CmsModule\Content\ContentManager;
 
 /**
@@ -25,23 +24,23 @@ class PanelControl extends Control
 	/** @var \Nette\Http\SessionSection */
 	protected $session;
 
-	/** @var ScannerService */
-	protected $scannerService;
+	/** @var Venne\Module\TemplateManager */
+	protected $templateManager;
 
 	/** @var ContentManager */
 	protected $contentManager;
 
 
 	/**
-	 * @param \CmsModule\Services\ScannerService $scannerService
+	 * @param \Venne\Module\TemplateManager $templateManager
 	 * @param \Nette\Http\SessionSection $session
 	 * @param \CmsModule\Content\ContentManager $contentManager
 	 */
-	public function __construct(ScannerService $scannerService, \Nette\Http\SessionSection $session, ContentManager $contentManager)
+	public function __construct(Venne\Module\TemplateManager $templateManager, \Nette\Http\SessionSection $session, ContentManager $contentManager)
 	{
 		parent::__construct();
 
-		$this->scannerService = $scannerService;
+		$this->templateManager = $templateManager;
 		$this->session = $session;
 		$this->contentManager = $contentManager;
 	}
@@ -81,7 +80,7 @@ class PanelControl extends Control
 
 	public function getState($id)
 	{
-		return isset($this->session->state[$this->getTab()][$id]) ? $this->session->state[$this->getTab()][$id] : false;
+		return isset($this->session->state[$this->getTab()][$id]) ? $this->session->state[$this->getTab()][$id] : FALSE;
 	}
 
 
@@ -110,11 +109,21 @@ class PanelControl extends Control
 			$browser->onExpand[] = $this->fileExpand;
 		} else if ($this->tab == 3) {
 			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getLayouts"), callback($this, "setLayoutParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:edit', array('key' => 'this') + $nullLinkParams));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:', array('key' => 'this') + $nullLinkParams));
 			$browser->onExpand[] = $this->layoutExpand;
+		} else if ($this->tab == 4) {
+			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getTemplates"), callback($this, "setTemplateParent"));
+			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Templates:edit', array('key' => 'this') + $nullLinkParams));
+			$browser->onExpand[] = $this->templateExpand;
 		}
 		$browser->setTemplateConfigurator($this->templateConfigurator);
 		return $browser;
+	}
+
+
+	public function templateExpand($key, $open)
+	{
+		$this->setState($key, $open);
 	}
 
 
@@ -126,26 +135,59 @@ class PanelControl extends Control
 
 	public function getLayouts($parent = NULL)
 	{
-		$this->setState($parent, true);
+		$this->setState($parent, TRUE);
 
 		$data = array();
-		$layouts = $this->scannerService->getLayoutFiles();
+		$repository = $this->getPresenter()->getContext()->cms->layoutRepository;
 
-		if (!$parent) {
-			foreach (array_keys($layouts) as $name) {
-				$item = array('title' => $name, 'key' => $name, 'isFolder' => true, 'isLazy' => true);
+		foreach ($repository->findAll() as $entity) {
+			$item = array('title' => $entity->name, 'key' => $entity->id);
 
-				if ($this->getState($name)) {
-					$item['expand'] = true;
-					$item['children'] = $this->getLayouts($name);
+			$data[] = $item;
+		}
+
+		return $data;
+	}
+
+
+	public function getTemplates()
+	{
+		$data = array();
+
+		foreach ($this->presenter->context->parameters['modules'] as $moduleName => $val) {
+			if (!count($this->templateManager->getLayoutsByModule($moduleName))) {
+				continue;
+			}
+
+			$item = array('title' => $moduleName, 'key' => $moduleName, 'isFolder' => TRUE, 'isLazy' => TRUE);
+
+			if ($this->getState($moduleName)) {
+				$item['expand'] = TRUE;
+			}
+
+			$data2 = array();
+			foreach ($this->templateManager->getLayoutsByModule($moduleName) as $name => $key) {
+				$s = array('title' => '@' . $name . ' <small class="muted">' . $this->template->translate('layout') . '</small>', 'key' => $key);
+
+				foreach ($this->templateManager->getTemplatesByModule($moduleName, $name) as $name => $key) {
+					$item2 = array('title' => $name . ' <small class="muted">' . $this->template->translate('template') . '</small>', 'key' => $key);
+					$s['children'][] = $item2;
 				}
 
-				$data[] = $item;
+				if ($this->getState($key)) {
+					$s['expand'] = TRUE;
+				}
+
+				$data2[] = $s;
 			}
-		} else {
-			foreach ($layouts[$parent] as $key => $name) {
-				$data[] = array('title' => $name, 'key' => $key);
+
+
+			foreach ($this->templateManager->getTemplatesByModule($moduleName) as $name => $key) {
+				$data2[] = array('title' => $name . ' <small class="muted">' . $this->template->translate('template') . '</small>', 'key' => $key);
 			}
+
+			$item['children'] = $data2;
+			$data[] = $item;
 		}
 
 		return $data;
@@ -160,7 +202,7 @@ class PanelControl extends Control
 
 	public function getPages($parent = NULL)
 	{
-		$this->setState((int)$parent, true);
+		$this->setState((int)$parent, TRUE);
 
 		$repository = $this->getPresenter()->getContext()->cms->pageRepository;
 		$data = array();
@@ -178,14 +220,14 @@ class PanelControl extends Control
 		$types = $this->contentManager->getContentTypes();
 		foreach ($dql->getQuery()->getResult() as $page) {
 			$type = $this->presenter->template->translate($types[$page->type]);
-			$item = array("title" => $page->name . ' <small class="muted">' . $type . '</small>' , 'key' => $page->id);
+			$item = array("title" => $page->name . ' <small class="muted">' . $type . '</small>', 'key' => $page->id);
 
 			if (count($page->children) > 0) {
-				$item['isLazy'] = true;
+				$item['isLazy'] = TRUE;
 			}
 
 			if (!$page->parent || $this->getState((int)$page->id)) {
-				$item['expand'] = true;
+				$item['expand'] = TRUE;
 				$item['children'] = $this->getPages($page->id);
 			}
 
@@ -206,7 +248,7 @@ class PanelControl extends Control
 	{
 		$parent = $parent ? substr($parent, 2) : NULL;
 
-		$this->setState((int)$parent, true);
+		$this->setState((int)$parent, TRUE);
 
 		$dirRepository = $this->getPresenter()->getContext()->cms->dirRepository;
 		$fileRepository = $this->getPresenter()->getContext()->cms->fileRepository;
@@ -218,19 +260,19 @@ class PanelControl extends Control
 		} else {
 			$dql = $dql->andWhere('a.parent IS NULL');
 		}
-		$dql = $dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
+		$dql = $dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 
 		foreach ($dql->getQuery()->getResult() as $page) {
 			$item = array("title" => $page->name, 'key' => 'd:' . $page->id);
 
-			$item["isFolder"] = true;
+			$item["isFolder"] = TRUE;
 
 			if (count($page->children) > 0 || count($page->files) > 0) {
-				$item['isLazy'] = true;
+				$item['isLazy'] = TRUE;
 			}
 
 			if ($this->getState($page->id)) {
-				$item['expand'] = true;
+				$item['expand'] = TRUE;
 				$item['children'] = $this->getFiles('d:' . $page->id);
 			}
 
@@ -245,7 +287,7 @@ class PanelControl extends Control
 		}
 
 		foreach ($dql->getQuery()->getResult() as $page) {
-			$item = array("title" => $page->name, 'key' => 'f:' . $page->id);
+			$item = array('title' => $page->name, 'key' => 'f:' . $page->id);
 			$data[] = $item;
 		}
 
@@ -263,7 +305,7 @@ class PanelControl extends Control
 		if ($dropmode == "before" || $dropmode == "after") {
 			$entity->setParent(
 				$target->parent ? : NULL,
-				true,
+				TRUE,
 				$dropmode == "after" ? $target : $target->previous
 			);
 		} else {
@@ -292,7 +334,7 @@ class PanelControl extends Control
 		if ($dropmode == "before" || $dropmode == "after") {
 			$entity->setParent(
 				$target->parent ? : NULL,
-				true,
+				TRUE,
 				$dropmode == "after" ? $target : $target->previous
 			);
 		} else {

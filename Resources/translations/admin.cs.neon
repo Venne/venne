@@ -3,7 +3,7 @@
 about: o
 account settings: nastavení účtu
 actions: akce
-'advanced options': pokročilé volby
+advanced options: pokročilé volby
 admin account: administrátorský účet
 administration: administrace
 administration settings: nastavení administrace
@@ -33,6 +33,8 @@ download current module list: stáhnout aktuální seznam modulů
 edit: editovat
 e-mails: e-maily
 environments settings: nastavení prostředí
+elements: elementy
+file: soubor
 files: soubory
 files and attachements: soubory a přílohy
 general: globální
@@ -71,9 +73,11 @@ sessions: relace
 show: zobrazit
 show in table: zobrazit tabulku
 show website: zobrazit web
+share data with: sdílet data s
 sign in: přihlásit se
 system: systém
 templating: šablony
+templates: šablony
 up: nahoru
 upload new file: nahrát nový soubor
 upload: nahrát
@@ -104,6 +108,7 @@ manage files: správa souborů
 manage files and directories: správa souborů a adresářů
 manage users: správa uživatelů
 manage layouts: správa layoutů
+manage templates: správa šablon
 'manage layouts, edit blocks,...': 'editace layoutů, správa bloků,...'
 access control: správa přístupu
 module manager: správa modulů

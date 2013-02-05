@@ -12,9 +12,8 @@
 namespace CmsModule\Content\Elements\Forms;
 
 use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
-use DoctrineModule\Forms\Mappers\EntityMapper;
+use DoctrineModule\Forms\FormFactory;
 use CmsModule\Content\Repositories\PageRepository;
 
 /**
@@ -23,45 +22,33 @@ use CmsModule\Content\Repositories\PageRepository;
 class BasicFormFactory extends FormFactory
 {
 
-	/** @var EntityMapper */
-	protected $mapper;
-
-
-	/**
-	 * @param EntityMapper $mapper
-	 */
-	public function __construct(EntityMapper $mapper)
-	{
-		$this->mapper = $mapper;
-	}
-
-
-	protected function getMapper()
-	{
-		return $this->mapper;
-	}
-
 
 	/**
 	 * @param Form $form
 	 */
 	public function configure(Form $form)
 	{
-		$form->addSelect('mode', 'Share data with', \CmsModule\Content\Entities\ElementEntity::getModes());
+		$form->addGroup();
+		$mode = $form->addSelect('mode', 'Share data with', \CmsModule\Content\Entities\ElementEntity::getModes());
+		$mode
+			->addCondition($form::IS_IN, array(1, 2))->toggle('form-group-page')
+			->endCondition()
+			->addCondition($form::EQUAL, 2)->toggle('form-group-route');
+
+		$form->addManyToOne('layout', 'Layout');
+
+		$form->addGroup()->setOption('id', 'form-group-page');
+		$page = $form->addManyToOne('page', 'Page');
+		$page
+			->addConditionOn($mode, $form::IS_IN, array(1, 2))->addRule($form::FILLED);
+
+		$form->addGroup()->setOption('id', 'form-group-route');
+		$form->addManyToOne('route', 'Route')
+			->setDependOn($page, 'page')
+			->addConditionOn($mode, $form::EQUAL, 2)->addRule($form::FILLED);
+
+
+		$form->addGroup();
 		$form->addSaveButton('Save');
-	}
-
-
-	public function handleSave($form)
-	{
-		/** @var $entity \CmsModule\Content\Entities\ElementEntity */
-		$entity = clone $form->data;
-		$repository = $this->mapper->getEntityManager()->getRepository(get_class($entity));
-
-		foreach ($repository->findBy(array('name' => $entity->getName(), 'layoutconfig' => $entity->getLayoutconfig()->id)) as $item) {
-			$repository->delete($item);
-		}
-
-		$repository->save($entity);
 	}
 }

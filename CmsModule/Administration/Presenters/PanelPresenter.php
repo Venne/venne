@@ -13,7 +13,6 @@ namespace CmsModule\Administration\Presenters;
 
 use Venne;
 use DoctrineModule\Repositories\BaseRepository;
-use CmsModule\Forms\UserFormFactory;
 use CmsModule\Content\Entities\RouteEntity;
 
 /**
@@ -93,14 +92,17 @@ class PanelPresenter extends BasePresenter
 	{
 		if (strpos($name, \CmsModule\Content\ElementManager::ELEMENT_PREFIX) === 0) {
 			$name = substr($name, strlen(\CmsModule\Content\ElementManager::ELEMENT_PREFIX));
-			$name = explode('_', $name, 2);
+			$name = explode('_', $name);
+			$id = end($name);
+			unset($name[count($name) - 1]);
+			$name = implode('_', $name);
 
 			$route = $this->getContext()->cms->routeRepository->find($this->elementRouteId);
 
 			/** @var $component \CmsModule\Content\IElement */
-			$component = $this->context->cms->elementManager->createInstance($name[1]);
+			$component = $this->context->cms->elementManager->createInstance($id);
 			$component->setRoute($route);
-			$component->setName($name[0]);
+			$component->setName($name);
 			return $component;
 		}
 

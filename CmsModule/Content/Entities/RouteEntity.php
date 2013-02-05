@@ -28,8 +28,6 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	const CACHE = 'Cms.RouteEntity';
 
-	const DEFAULT_LAYOUT = 'default';
-
 	const DEFAULT_CACHE_MODE = 'default';
 
 	const CACHE_MODE_TIME = 'time';
@@ -100,16 +98,18 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $children;
 
 	/**
-	 * @var LayoutconfigEntity
-	 * @ORM\ManyToOne(targetEntity="LayoutconfigEntity", inversedBy="routes", cascade={"persist"})
+	 * @var LayoutEntity
+	 * @ORM\ManyToOne(targetEntity="LayoutEntity", inversedBy="routes", cascade={"persist"})
+	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
-	protected $layoutconfig;
+	protected $layout;
 
 	/**
-	 * @var LayoutconfigEntity
-	 * @ORM\ManyToOne(targetEntity="LayoutconfigEntity", cascade={"persist"})
+	 * @var LayoutEntity
+	 * @ORM\ManyToOne(targetEntity="LayoutEntity", cascade={"persist"})
+	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
-	protected $childrenLayoutconfig;
+	protected $childrenLayout;
 
 
 	/***************** Meta *******************/
@@ -134,12 +134,6 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/** @ORM\Column(type="integer", nullable=true) */
 	protected $priority;
-
-	/** @ORM\Column(type="string", nullable=true) */
-	protected $layout;
-
-	/** @ORM\Column(type="string", nullable=true) */
-	protected $childrenLayout;
 
 	/** @ORM\Column(type="boolean") */
 	protected $copyLayoutFromParent;
@@ -174,12 +168,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->params = json_encode(array());
 		$this->paramCounter = 0;
 		$this->children = new ArrayCollection;
-		$this->layout = self::DEFAULT_LAYOUT;
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
-		$this->copyLayoutFromParent = true;
-		$this->copyCacheModeFromParent = true;
-		$this->copyLayoutToChildren = true;
-		$this->layoutconfig = new LayoutconfigEntity($this);
+		$this->copyLayoutFromParent = TRUE;
+		$this->copyCacheModeFromParent = TRUE;
+		$this->copyLayoutToChildren = TRUE;
 
 		$this->title = '';
 		$this->keywords = '';
@@ -210,7 +202,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/**
 	 * @param bool $recursively
 	 */
-	public function generateUrl($recursively = true)
+	public function generateUrl($recursively = TRUE)
 	{
 		if ($this->parent !== NULL && method_exists($this->parent, "__load")) {
 			$this->parent->__load();
@@ -233,23 +225,18 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/**
 	 * @param bool $recursively
 	 */
-	public function generateLayouts($recursively = true)
+	public function generateLayouts($recursively = TRUE)
 	{
 		if ($this->parent !== NULL && method_exists($this->parent, "__load")) {
 			$this->parent->__load();
 		}
 
 		if ($this->copyLayoutFromParent) {
-			$this->layout = $this->parent ? ($this->parent->copyLayoutToChildren ? $this->parent->layout : $this->parent->childrenLayout) : self::DEFAULT_LAYOUT;
-			$this->layoutconfig = $this->parent ? ($this->parent->copyLayoutToChildren ? $this->parent->layoutconfig : $this->parent->childrenLayoutconfig) : new LayoutconfigEntity($this);
-		} else {
-			$this->layoutconfig = new LayoutconfigEntity($this);
+			$this->layout = $this->parent ? ($this->parent->copyLayoutToChildren ? $this->parent->layout : $this->parent->childrenLayout) : NULL;
 		}
 
-		if (!$this->copyLayoutToChildren) {
-			$this->childrenLayoutconfig = new LayoutconfigEntity($this);
-		} else {
-			$this->childrenLayoutconfig = NULL;
+		if ($this->copyLayoutToChildren) {
+			$this->childrenLayout = $this->layout;
 		}
 
 		if ($this->copyCacheModeFromParent) {
@@ -267,7 +254,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	/**
 	 * @param $localUrl
 	 */
-	public function setLocalUrl($localUrl, $recursively = true)
+	public function setLocalUrl($localUrl, $recursively = TRUE)
 	{
 		$this->localUrl = $localUrl;
 		$this->generateUrl($recursively);
@@ -288,7 +275,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function setParams($params)
 	{
-		$delete = array("module", "presenter", "action");
+		$delete = array('module', 'presenter', 'action');
 		foreach ($delete as $item) {
 			if (isset($params[$item])) {
 				unset($params[$item]);
@@ -399,7 +386,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function setRobots($robots)
 	{
-		if (array_search($robots, self::$robotsValues) === false) {
+		if (array_search($robots, self::$robotsValues) === FALSE) {
 			throw new \Nette\InvalidArgumentException;
 		}
 
@@ -425,9 +412,13 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-	public function setLayout($layout)
+	public function setLayout(LayoutEntity $layout = NULL)
 	{
-		if ($this->layout === $layout || $this->copyLayoutFromParent) {
+		if ($layout === NULL && $this->layout === NULL) {
+			return;
+		}
+
+		if ($layout && $this->layout && $layout->id == $this->layout->id) {
 			return;
 		}
 
@@ -442,9 +433,13 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-	public function setChildrenLayout($childrenLayout)
+	public function setChildrenLayout(LayoutEntity $childrenLayout = NULL)
 	{
-		if ($this->childrenLayout === $childrenLayout || $this->copyLayoutToChildren) {
+		if ($childrenLayout === NULL && $this->childrenLayout === NULL) {
+			return;
+		}
+
+		if ($childrenLayout && $this->childrenLayout && $childrenLayout->id == $this->childrenLayout->id) {
 			return;
 		}
 
@@ -507,7 +502,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function setChangefreq($changefreq)
 	{
-		if ($changefreq !== NULL && array_search($changefreq, self::$changefreqValues) === false) {
+		if ($changefreq !== NULL && array_search($changefreq, self::$changefreqValues) === FALSE) {
 			throw new \Nette\InvalidArgumentException;
 		}
 
@@ -536,42 +531,6 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getPriority()
 	{
 		return $this->priority;
-	}
-
-
-	/**
-	 * @param \CmsModule\Content\Entities\LayoutconfigEntity $layoutconfig
-	 */
-	public function setLayoutconfig($layoutconfig)
-	{
-		$this->layoutconfig = $layoutconfig;
-	}
-
-
-	/**
-	 * @return \CmsModule\Content\Entities\LayoutconfigEntity
-	 */
-	public function getLayoutconfig()
-	{
-		return $this->layoutconfig;
-	}
-
-
-	/**
-	 * @param \CmsModule\Content\Entities\LayoutconfigEntity $childrenLayoutconfig
-	 */
-	public function setChildrenLayoutconfig($childrenLayoutconfig)
-	{
-		$this->childrenLayoutconfig = $childrenLayoutconfig;
-	}
-
-
-	/**
-	 * @return \CmsModule\Content\Entities\LayoutconfigEntity
-	 */
-	public function getChildrenLayoutconfig()
-	{
-		return $this->childrenLayoutconfig;
 	}
 
 

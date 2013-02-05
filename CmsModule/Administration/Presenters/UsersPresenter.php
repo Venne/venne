@@ -92,7 +92,9 @@ class UsersPresenter extends BasePresenter
 
 		// columns
 		$table->addColumn('email', 'E-mail')
-			->setWidth('60%');
+			->setWidth('60%')
+			->setSortable(TRUE)
+			->setFilter();
 		$table->addColumn('roles', 'Roles')
 			->setWidth('40%')
 			->setCallback(function ($entity) {

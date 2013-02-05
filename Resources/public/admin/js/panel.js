@@ -55,8 +55,8 @@ $(function () {
 			if (_venne_panel_load) {
 				$.get($(this).contents().get(0).location.href + '&do=refreshElement', function (data) {
 					parameters = data['state'];
-					html = $(data['snippets']['snippet--element']);
-					id = html.attr('id');
+					var html = $(data['snippets']['snippet--element']);
+					var id = html.attr('id');
 
 					$('#' + id, topDocument).html(html.html());
 					$("#venne-panel", topDocument)[0].contentWindow.redrawRectangles();

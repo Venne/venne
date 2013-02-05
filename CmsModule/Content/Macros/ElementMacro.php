@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Macros;
 
+use CmsModule\Content\Elements\Helpers;
 use Venne;
 use Nette\Utils\Strings;
 use Nette\Latte\MacroNode;
@@ -45,11 +46,22 @@ class ElementMacro extends MacroSet
 		$name = $writer->formatWord($rawName[0]);
 		$method = isset($rawName[1]) ? ucfirst($rawName[1]) : '';
 		$method = Strings::match($method, '#^\w*$#') ? "render$method" : "{\"render$method\"}";
-		$id = $node->tokenizer->fetchWord();
+		$idRaw = $node->tokenizer->fetchWord();
 
-		return (!$id ? 'if (!isset($presenter->template->_elementCounter)) { $presenter->template->_elementCounter = 0;} else { $presenter->template->_elementCounter++; }' : '')
-			. '$_ctrl = $_presenter->getComponent(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . ' . ($id ? $id : '$presenter->template->_elementCounter') . ' . \'_\' . ' . $name . '); '
-			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "<span id=\"' . \CmsModule\Content\ElementManager::ELEMENT_PREFIX . ($id ? (is_numeric($id) ? $id : '{' . $id . '}') : '{$presenter->template->_elementCounter}') . '_' . $rawName[0] . '\" style=\"display: inline-block; min-width: 50px; min-height: 25px;\" class=\"venne-element-container\" data-venne-element-id=\"' . ($id ? : '{$presenter->template->_elementCounter}') . '\" data-venne-element-name=\"' . $rawName[0] . '\" data-venne-element-route=\"" . $presenter->route->id . "\" data-venne-element-buttons=\"" . (str_replace(\'"\', "\'", json_encode($_ctrl->getViews()))) . "\">"; }'
+		if (!$idRaw) {
+			throw new CompileException("Missing element title in {element}");
+		}
+
+		if (substr($idRaw, 0, 1) !== '$') {
+			$id = Helpers::encodeName($idRaw);
+		} else {
+			$id = $idRaw;
+		}
+
+		return
+			'$_ctrl = $_presenter->getComponent(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . ' . '"' . $id . '"' . ' . \'_\' . ' . $name . '); '
+			. '$_ctrl->setName("' . $idRaw . '");'
+			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "<span id=\"' . \CmsModule\Content\ElementManager::ELEMENT_PREFIX . (substr($id, 0, 1) === '$' ? '{' . $id . '}' : $id) . '_' . $rawName[0] . '\" style=\"display: inline-block; min-width: 50px; min-height: 25px;\" class=\"venne-element-container\" data-venne-element-id=\"' . trim($id, '"\'') . '\" data-venne-element-name=\"' . $rawName[0] . '\" data-venne-element-route=\"" . $presenter->route->id . "\" data-venne-element-buttons=\"" . (str_replace(\'"\', "\'", json_encode($_ctrl->getViews()))) . "\">"; }'
 			. 'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '
 			. "\$_ctrl->$method();"
 			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "</span>"; }';

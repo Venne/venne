@@ -31,8 +31,8 @@ services:
 	cms.administrationManager:
 		class: CmsModule\Administration\AdministrationManager
 
-	cms.scannerService:
-		class: CmsModule\Services\ScannerService
+	cms.layoutManager:
+		class: CmsModule\Content\LayoutManager(@cms.layoutRepository)
 
 	cms.securityManager:
 		class: CmsModule\Security\SecurityManager
@@ -42,8 +42,16 @@ services:
 		class: CmsModule\Content\Entities\PageEntity
 		tags: [repository]
 
+	cms.layoutRepository:
+		class: CmsModule\Content\Entities\LayoutEntity
+		tags: [repository]
+
 	cms.routeRepository:
 		class: CmsModule\Content\Entities\RouteEntity
+		tags: [repository]
+
+	cms.elementRepository:
+		class: CmsModule\Content\Entities\ElementEntity
 		tags: [repository]
 
 	cms.languageRepository:
