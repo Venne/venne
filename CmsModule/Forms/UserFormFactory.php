@@ -14,12 +14,22 @@ namespace CmsModule\Forms;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
+use CmsModule\Content\Forms\ControlExtensions\ControlExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class UserFormFactory extends FormFactory
 {
+	/**
+	 * @return array
+	 */
+	protected function getControlExtensions()
+	{
+		return array_merge(parent::getControlExtensions(), array(
+			new ControlExtension,
+		));
+	}
 
 
 	/**
@@ -27,14 +37,14 @@ class UserFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$group = $form->addGroup();
-		$form->addCheckbox("enable", "Enable")->setDefaultValue(true);
+		$form->addGroup();
+		$form->addCheckbox("enable", "Enable")->setDefaultValue(TRUE);
 		$form->addText("email", "E-mail")
 			->addRule(Form::EMAIL, "Enter email");
 
 		$form->addText("key", "Authentization key")->setOption("description", "If is set user cannot log in.");
 
-		$form->addCheckbox("password_new", "Set password")->addCondition($form::EQUAL, true)->toggle('setPasswd');
+		$form->addCheckbox("password_new", "Set password")->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
 		$form->addGroup()->setOption('id', 'setPasswd');
 		$form->addPassword("password", "Password")
 			->setOption("description", "minimal length is 5 char")
@@ -44,6 +54,8 @@ class UserFormFactory extends FormFactory
 		$form->addPassword("password_confirm", "Confirm password")
 			->addConditionOn($form['password_new'], Form::FILLED)
 			->addRule(Form::EQUAL, 'Invalid re password', $form['password']);
+		$form->addGroup();
+		$form->addFileEntityInput('avatar', 'Avatar');
 
 		$form->addGroup("Next informations");
 		$form->addManyToMany("roleEntities", 'Roles');
@@ -56,7 +68,17 @@ class UserFormFactory extends FormFactory
 	{
 		if ($e->getCode() == '23000') {
 			$form->addError("User is not unique");
-			return true;
+			return TRUE;
+		}
+	}
+
+
+	public function handleAttached(Form $form)
+	{
+		if ($form->isSubmitted()) {
+			if (!$form['password_new']->value) {
+				unset($form['password']);
+			}
 		}
 	}
 

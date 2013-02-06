@@ -13,6 +13,7 @@ namespace CmsModule\Security\Entities;
 
 use Venne;
 use Doctrine\ORM\Mapping as ORM;
+use CmsModule\Content\Entities\FileEntity;
 use DoctrineModule\Entities\IdentifiedEntity;
 use Nette\Security\IIdentity;
 
@@ -30,7 +31,7 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $enable = false;
+	protected $enable = FALSE;
 
 	/**
 	 * @ORM\Column(type="string", unique=true, length=64)
@@ -51,6 +52,13 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	 * @ORM\Column(type="string")
 	 */
 	protected $salt;
+
+	/**
+	 * @var \CmsModule\Content\Entities\FileEntity
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\FileEntity", cascade={"all"}, orphanRemoval=true)
+	 * @ORM\JoinColumn(onDelete="SET NULL")
+	 */
+	protected $avatar;
 
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection
@@ -101,7 +109,7 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	public function invalidateLogins()
 	{
 		foreach ($this->logins as $login) {
-			$login->reload = true;
+			$login->reload = TRUE;
 		}
 	}
 
@@ -130,14 +138,14 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	public function verifyByPassword($password)
 	{
 		if (!$this->isEnable()) {
-			return false;
+			return FALSE;
 		}
 
 		if ($this->password == $this->getHash($password)) {
-			return true;
+			return TRUE;
 		}
 
-		return false;
+		return FALSE;
 	}
 
 
@@ -161,9 +169,9 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	{
 		if ($this->key == $key) {
 			$this->key = NULL;
-			return true;
+			return TRUE;
 		}
-		return false;
+		return FALSE;
 	}
 
 
@@ -175,9 +183,9 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	public function isEnable()
 	{
 		if (!$this->key && $this->enable) {
-			return true;
+			return TRUE;
 		}
-		return false;
+		return FALSE;
 	}
 
 
@@ -301,6 +309,29 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	public function getSocialLogins()
 	{
 		return $this->socialLogins;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\FileEntity $avatar
+	 */
+	public function setAvatar($avatar)
+	{
+		$this->avatar = $avatar;
+
+		if ($this->avatar instanceof FileEntity) {
+			$this->avatar->setName('__avatar__' . $this->avatar->getName());
+			$this->avatar->setInvisible(TRUE);
+		}
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\FileEntity
+	 */
+	public function getAvatar()
+	{
+		return $this->avatar;
 	}
 
 
