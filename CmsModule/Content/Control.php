@@ -29,11 +29,11 @@ class Control extends \Venne\Application\UI\Control
 	{
 		$list = parent::formatTemplateFiles();
 		$refl = $this->getReflection();
+		$path = dirname($this->getPresenter()->getLayoutPath());
 
 		return array_merge(array(
-			dirname($this->getPresenter()->getLayoutPath()) . '/' . $refl->getShortName() . '.latte',
-			$this->getPresenter()->getLayoutPath() . '/' . $refl->getShortName() . '.latte',
-			dirname($this->getPresenter()->getLayoutPath()) . '/' . $refl->getShortName() . '.latte',
+			dirname($path) . '/' . $refl->getShortName() . '.latte',
+			$path . '/' . $refl->getShortName() . '.latte',
 		), $list);
 	}
 }

@@ -154,7 +154,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$ret = parent::formatTemplateFiles();
 		$presenter = str_replace(":", "/", $this->name);
 
-		$path = $this->getLayoutPath();
+		$path = dirname($this->getLayoutPath());
 		if ($path) {
 			$ret = array_merge(array(
 				"$path/$presenter/$this->view.latte",
