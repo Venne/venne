@@ -74,6 +74,14 @@ class AuthorizatorFactory extends Object
 	}
 
 
+	public function clearPermissionSession()
+	{
+		if (isset($this->session['permission'])) {
+			unset($this->session['permission']);
+		}
+	}
+
+
 	/**
 	 * Get permission for current user.
 	 *

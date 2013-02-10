@@ -19,6 +19,11 @@ parameters:
 
 services:
 
+	user:
+		setup:
+			- '$service->onLoggedOut[] = ?'([@authorizatorFactory, 'clearPermissionSession'])
+			- '$service->onLoggedIn[] = ?'([@authorizatorFactory, 'clearPermissionSession'])
+
 	cms.formRenderer:
 		class: Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer
 
