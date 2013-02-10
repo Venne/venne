@@ -30,10 +30,10 @@ class AuthorizatorFactory extends Object
 {
 
 
-	const SESSION_SECTION = "Venne.Security.Authorizator";
+	const SESSION_SECTION = 'Venne.Security.Authorizator';
 
 	/** @var array */
-	protected $defaultRoles = array("admin", "authenticated", "guest");
+	protected $defaultRoles = array('admin', 'authenticated', 'guest');
 
 	/** @var PresenterFactory */
 	protected $presenterFactory;
@@ -80,14 +80,14 @@ class AuthorizatorFactory extends Object
 	 * @param User $user
 	 * @return Permission
 	 */
-	public function getPermissionsByUser(User $user, $fromSession = false)
+	public function getPermissionsByUser(User $user, $fromSession = FALSE)
 	{
 		if ($fromSession) {
-			if ($this->session["permission"]) {
-				return $this->session["permission"];
+			if ($this->session['permission']) {
+				return $this->session['permission'];
 			}
 
-			return $this->session["permission"] = $this->getPermissionsByUser($user, false);
+			return $this->session['permission'] = $this->getPermissionsByUser($user, FALSE);
 		}
 
 		return $this->getPermissionsByRoles(array_merge($user->roles, array("guest", "authenticated")));
