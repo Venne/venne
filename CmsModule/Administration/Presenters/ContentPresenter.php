@@ -112,8 +112,8 @@ class ContentPresenter extends BasePresenter
 				foreach ($listeners as $hash => $listener) {
 					if ($listener instanceof TranslatableListener) {
 						$listener->setTranslatableLocale($this->contentLang);
-						$listener->setTranslationFallback(true);
-						$break = true;
+						$listener->setTranslationFallback(TRUE);
+						$break = TRUE;
 						break;
 					}
 				}
@@ -142,8 +142,32 @@ class ContentPresenter extends BasePresenter
 	public function actionSpecial()
 	{
 		if (!$this->getApplication()->catchExceptions) {
-			$this->flashMessage('Capturing error pages will not work. Please enable catch exceptions in application settings.', 'info', true);
+			$this->flashMessage('Capturing error pages will not work. Please enable catch exceptions in application settings.', 'info', TRUE);
 		}
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
 	}
 
 
@@ -189,22 +213,27 @@ class ContentPresenter extends BasePresenter
 			});
 
 		// actions
-		$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
-			if (!$presenter->isAjax()) {
-				$presenter->redirect('edit', array('key' => $entity->id));
-			}
-			$presenter->invalidateControl('content');
-			$presenter->payload->url = $presenter->link('edit', array('key' => $entity->id));
-			$presenter->setView('edit');
-			$presenter->changeAction('edit');
-			$presenter->key = $entity->id;
-		};
-		$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($presenter) {
-			$presenter['panel']->invalidateControl('content');
-		};
+		if ($this->isAuthorized('edit')) {
+			$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
+				if (!$presenter->isAjax()) {
+					$presenter->redirect('edit', array('key' => $entity->id));
+				}
+				$presenter->invalidateControl('content');
+				$presenter->payload->url = $presenter->link('edit', array('key' => $entity->id));
+				$presenter->setView('edit');
+				$presenter->changeAction('edit');
+				$presenter->key = $entity->id;
+			};
+		}
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+		if ($this->isAuthorized('remove')) {
+			$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($presenter) {
+				$presenter['panel']->invalidateControl('content');
+			};
+
+			// global actions
+			$table->setGlobalAction($table['delete']);
+		}
 
 		return $table;
 	}
@@ -222,7 +251,9 @@ class ContentPresenter extends BasePresenter
 		$form = $table->addForm($this->specialFormFactory, 'Special form');
 
 		// navbar
-		$table->addButtonCreate('create', 'Create new', $form, 'file');
+		if ($this->isAuthorized('create')) {
+			$table->addButtonCreate('create', 'Create new', $form, 'file');
+		}
 
 		// columns
 		$table->addColumn('tag', 'Tag')
@@ -238,11 +269,16 @@ class ContentPresenter extends BasePresenter
 			});
 
 		// actions
-		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addActionDelete('delete', 'Delete');
+		if ($this->isAuthorized('edit')) {
+			$table->addActionEdit('edit', 'Edit', $form);
+		}
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+		if ($this->isAuthorized('remove')) {
+			$table->addActionDelete('delete', 'Delete');
+
+			// global actions
+			$table->setGlobalAction($table['delete']);
+		}
 
 		return $table;
 	}
@@ -264,11 +300,11 @@ class ContentPresenter extends BasePresenter
 		$this->flashMessage("Page has been created");
 
 		if (!$this->isAjax()) {
-			$this->redirect('edit', array('type' => null, 'key' => $form->data->id));
+			$this->redirect('edit', array('type' => NULL, 'key' => $form->data->id));
 		}
 		$this->invalidateControl('content');
 		$this['panel']->invalidateControl('content');
-		$this->payload->url = $this->link('edit', array('type' => null, 'key' => $form->data->id));
+		$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->id));
 		$this->setView('edit');
 		$this->changeAction('edit');
 		$this->key = $form->data->id;

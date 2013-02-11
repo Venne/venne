@@ -14,6 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use Nette\Callback;
 use CmsModule\Forms\WebsiteFormFactory;
+use Nette\Application\ForbiddenRequestException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -42,12 +43,32 @@ class InformationsPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
 	public function createComponentWebsiteForm()
 	{
-		$presenter = $this;
-
 		$form = $this->form->createForm();
 		$form->onSuccess[] = $this->formSuccess;
+
+		// permissions
+		if (!$this->isAuthorized('edit')) {
+			$form->onAttached[] = function ($form) {
+				if ($form->isSubmitted()) {
+					throw new ForbiddenRequestException;
+				}
+			};
+
+			foreach ($form->getComponents(TRUE) as $component) {
+				$component->setDisabled(TRUE);
+			}
+		}
+
 		return $form;
 	}
 

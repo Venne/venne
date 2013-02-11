@@ -64,6 +64,14 @@ class ModulePresenter extends BasePresenter
 
 
 	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
 	 * @secured(privilege="edit")
 	 */
 	public function handleSync()

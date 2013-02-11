@@ -71,6 +71,30 @@ class ApplicationPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured
+	 */
+	public function actionDatabase()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionAccount()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionAdmin()
+	{
+	}
+
+
 	public function createComponentSystemForm()
 	{
 		$form = $this->systemForm->invoke();
@@ -81,8 +105,7 @@ class ApplicationPresenter extends BasePresenter
 	public function createComponentApplicationForm()
 	{
 		$form = $this->applicationForm->invoke();
-		$form->onSuccess[] = function($form)
-		{
+		$form->onSuccess[] = function ($form) {
 			$form->getPresenter()->flashMessage("Application settings has been updated", "success");
 			$form->getPresenter()->redirect("this");
 		};
@@ -93,8 +116,7 @@ class ApplicationPresenter extends BasePresenter
 	public function createComponentDatabaseForm()
 	{
 		$form = $this->databaseForm->invoke();
-		$form->onSuccess[] = function($form)
-		{
+		$form->onSuccess[] = function ($form) {
 			$form->getPresenter()->flashMessage("Database settings has been updated", "success");
 			$form->getPresenter()->redirect("this");
 		};
@@ -105,8 +127,7 @@ class ApplicationPresenter extends BasePresenter
 	public function createComponentAccountForm()
 	{
 		$form = $this->accountForm->invoke();
-		$form->onSuccess[] = function($form)
-		{
+		$form->onSuccess[] = function ($form) {
 			$form->getPresenter()->flashMessage("Account settings has been updated", "success");
 			$form->getPresenter()->redirect("this");
 		};

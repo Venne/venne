@@ -61,6 +61,30 @@ class RolesPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
+	}
+
+
 	public function createComponentTable()
 	{
 		$table = new \CmsModule\Components\Table\TableControl;
@@ -72,7 +96,9 @@ class RolesPresenter extends BasePresenter
 		$permissionsForm = $table->addForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_FULL);
 
 		// navbar
-		$table->addButtonCreate('create', 'Create new', $form, 'file');
+		if ($this->isAuthorized('create')) {
+			$table->addButtonCreate('create', 'Create new', $form, 'file');
+		}
 
 		// columns
 		$table->addColumn('name', 'Name')
@@ -90,12 +116,17 @@ class RolesPresenter extends BasePresenter
 			});
 
 		// actions
-		$table->addActionEdit('permissions', 'Permissions', $permissionsForm);
-		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addActionDelete('delete', 'Delete');
+		if ($this->isAuthorized('edit')) {
+			$table->addActionEdit('permissions', 'Permissions', $permissionsForm);
+			$table->addActionEdit('edit', 'Edit', $form);
+		}
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+		if ($this->isAuthorized('remove')) {
+			$table->addActionDelete('delete', 'Delete');
+
+			// global actions
+			$table->setGlobalAction($table['delete']);
+		}
 
 		return $table;
 	}

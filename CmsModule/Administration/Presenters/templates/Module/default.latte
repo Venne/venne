@@ -4,6 +4,7 @@
 
 {block content}
 
+{if $presenter->isAuthorized('edit')}
 <div class="navbar">
     <div class="navbar-inner">
         <div class="container">
@@ -13,6 +14,7 @@
         </div>
     </div>
 </div>
+{/if}
 
 {snippet confirm}
 	{if isset($solutions)}
@@ -94,7 +96,7 @@
             </td>
             <td class="table-td-action">
 
-                <div class="btn-group">
+                <div n:if="$presenter->isAuthorized('edit')" class="btn-group">
                     <a class="btn dropdown-toggle" data-toggle="dropdown"
                        href="#">{_$presenter->moduleManager->getStatus($module)} <span class="caret"></span>
                     </a>

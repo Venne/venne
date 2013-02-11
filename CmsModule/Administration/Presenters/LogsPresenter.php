@@ -37,31 +37,6 @@ class LogsPresenter extends BasePresenter
 	/**
 	 * @secured(privilege="show")
 	 */
-	public function handleDelete()
-	{
-		unlink($this->logDir . "/" . $this->getParameter("name"));
-		$this->flashMessage("Log has been removed", "success");
-		$this->redirect("this");
-	}
-
-
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function handleDeleteAll()
-	{
-		foreach ($this->getFiles() as $item) {
-			unlink($this->logDir . "/" . $item["link"]);
-		}
-
-		$this->flashMessage("Logs were removed", "success");
-		$this->redirect("this");
-	}
-
-
-	/**
-	 * @secured(privilege="show")
-	 */
 	public function actionShow()
 	{
 		$this->sendResponse(new \Nette\Application\Responses\TextResponse(file_get_contents($this->logDir . "/" . $this->getParameter("name"))));
@@ -74,6 +49,39 @@ class LogsPresenter extends BasePresenter
 	public function actionDefault()
 	{
 		$this->template->files = $this->getFiles();
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="remove")
+	 */
+	public function handleDelete()
+	{
+		unlink($this->logDir . "/" . $this->getParameter("name"));
+		$this->flashMessage("Log has been removed", "success");
+		$this->redirect("this");
+	}
+
+
+	/**
+	 * @secured(privilege="remove")
+	 */
+	public function handleDeleteAll()
+	{
+		foreach ($this->getFiles() as $item) {
+			unlink($this->logDir . "/" . $item["link"]);
+		}
+
+		$this->flashMessage("Logs were removed", "success");
+		$this->redirect("this");
 	}
 
 

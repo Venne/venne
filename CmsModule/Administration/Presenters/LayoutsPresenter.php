@@ -110,6 +110,41 @@ class LayoutsPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
 	public function handleCreate($id)
 	{
 		if (!$this->isAjax()) {
@@ -134,7 +169,9 @@ class LayoutsPresenter extends BasePresenter
 		$form = $table->addForm($this->layoutFormFactory, 'Layout');
 
 		// navbar
-		$table->addButtonCreate('create', 'Create new', $form, 'file');
+		if ($this->isAuthorized('create')) {
+			$table->addButtonCreate('create', 'Create new', $form, 'file');
+		}
 
 		// columns
 		$table->addColumn('name', 'Name')
@@ -143,19 +180,24 @@ class LayoutsPresenter extends BasePresenter
 			->setWidth('40%');
 
 		// actions
-		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addAction('elements', 'Elements')->onClick[] = function ($button, $entity) use ($_this) {
-			if (!$_this->isAjax()) {
-				$_this->redirect('this', array('key' => $entity->id));
-			}
-			$_this->invalidateControl('content');
-			$_this->payload->url = $_this->link('this', array('key' => $entity->id));
-			$_this->key = $entity->id;
-		};
-		$table->addActionDelete('delete', 'Delete');
+		if ($this->isAuthorized('edit')) {
+			$table->addActionEdit('edit', 'Edit', $form);
+			$table->addAction('elements', 'Elements')->onClick[] = function ($button, $entity) use ($_this) {
+				if (!$_this->isAjax()) {
+					$_this->redirect('this', array('key' => $entity->id));
+				}
+				$_this->invalidateControl('content');
+				$_this->payload->url = $_this->link('this', array('key' => $entity->id));
+				$_this->key = $entity->id;
+			};
+		}
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+		if ($this->isAuthorized('remove')) {
+			$table->addActionDelete('delete', 'Delete');
+
+			// global actions
+			$table->setGlobalAction($table['delete']);
+		}
 
 		return $table;
 	}

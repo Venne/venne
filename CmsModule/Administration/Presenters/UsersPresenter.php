@@ -77,6 +77,30 @@ class UsersPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
+	}
+
+
 	public function createComponentTable()
 	{
 		$table = new \CmsModule\Components\Table\TableControl;
@@ -88,7 +112,9 @@ class UsersPresenter extends BasePresenter
 		$socialForm = $table->addForm($this->socialForm, 'Social logins', NULL, Form::TYPE_LARGE);
 
 		// navbar
-		$table->addButtonCreate('create', 'Create new', $form, 'file');
+		if ($this->isAuthorized('create')) {
+			$table->addButtonCreate('create', 'Create new', $form, 'file');
+		}
 
 		// columns
 		$table->addColumn('email', 'E-mail')
@@ -102,12 +128,17 @@ class UsersPresenter extends BasePresenter
 			});
 
 		// actions
-		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addActionEdit('socialLogins', 'Social Logins', $socialForm);
-		$table->addActionDelete('delete', 'Delete');
+		if ($this->isAuthorized('edit')) {
+			$table->addActionEdit('edit', 'Edit', $form);
+			$table->addActionEdit('socialLogins', 'Social Logins', $socialForm);
+		}
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+		if ($this->isAuthorized('remove')) {
+			$table->addActionDelete('delete', 'Delete');
+
+			// global actions
+			$table->setGlobalAction($table['delete']);
+		}
 
 		return $table;
 	}

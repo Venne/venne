@@ -84,7 +84,7 @@ class TemplatesPresenter extends BasePresenter
 
 
 	/**
-	 * @secured(privilege="create")
+	 * @secured
 	 */
 	public function actionCreate()
 	{
@@ -92,9 +92,17 @@ class TemplatesPresenter extends BasePresenter
 
 
 	/**
-	 * @secured(privilege="edit")
+	 * @secured
 	 */
 	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
 	{
 	}
 
@@ -165,6 +173,9 @@ class TemplatesPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="remove")
+	 */
 	public function handleDelete($key)
 	{
 		$path = $this->moduleHelpers->expandPath($key, 'Resources');

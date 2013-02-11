@@ -55,6 +55,30 @@ class LanguagePresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
+	}
+
+
 	public function createComponentTable()
 	{
 		$table = new \CmsModule\Components\Table\TableControl;
@@ -65,7 +89,9 @@ class LanguagePresenter extends BasePresenter
 		$form = $table->addForm($this->form, 'Language', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
 		// navbar
-		$table->addButtonCreate('create', 'Create new', $form, 'file');
+		if ($this->isAuthorized('create')) {
+			$table->addButtonCreate('create', 'Create new', $form, 'file');
+		}
 
 		// redirect on first language
 		$_this = $this;
@@ -89,15 +115,20 @@ class LanguagePresenter extends BasePresenter
 			->setWidth('30%');
 
 		// actions
-		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($_this, $repository) {
-			if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() == 0) {
-				$_this->redirect('this');
-			}
-		};
+		if ($this->isAuthorized('edit')) {
+			$table->addActionEdit('edit', 'Edit', $form);
+		}
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+		if ($this->isAuthorized('remove')) {
+			$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($_this, $repository) {
+				if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() == 0) {
+					$_this->redirect('this');
+				}
+			};
+
+			// global actions
+			$table->setGlobalAction($table['delete']);
+		}
 
 		return $table;
 	}

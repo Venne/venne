@@ -14,6 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use Venne;
 use Venne\Caching\CacheManager;
 use Venne\Forms\Form;
+use Nette\Application\ForbiddenRequestException;
 use Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer;
 
 /**
@@ -54,7 +55,7 @@ class CachePresenter extends BasePresenter
 	/**
 	 * @secured(privilege="edit")
 	 */
-	public function handleClear()
+	public function actionEdit()
 	{
 	}
 
@@ -76,6 +77,19 @@ class CachePresenter extends BasePresenter
 		$form->addSaveButton('Clear');
 
 		$form->onSuccess[] = $this->processForm;
+
+		// permissions
+		if (!$this->isAuthorized('edit')) {
+			$form->onAttached[] = function ($form) {
+				if ($form->isSubmitted()) {
+					throw new ForbiddenRequestException;
+				}
+			};
+
+			foreach ($form->getComponents(TRUE) as $component) {
+				$component->setDisabled(TRUE);
+			}
+		}
 
 		return $form;
 	}

@@ -83,6 +83,33 @@ class FilesPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured
+	 */
+	public function actionCreate()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionEdit()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionRemove()
+	{
+	}
+
+
+	/**
+	 * @secured(privilege="create")
+	 */
 	public function handleDir($id)
 	{
 		if (!$this->isAjax()) {
@@ -107,7 +134,7 @@ class FilesPresenter extends BasePresenter
 
 		$dql = function ($parent) {
 			return function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
-				$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
+				$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 				if ($parent === NULL) {
 					return $dql->andWhere('a.parent IS NULL');
 				}
@@ -143,7 +170,7 @@ class FilesPresenter extends BasePresenter
 		$parent = $this->key;
 
 		$table->setDql(function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
-			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', false);
+			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 			if ($parent === NULL) {
 				return $dql->andWhere('a.parent IS NULL');
 			}
@@ -179,11 +206,15 @@ class FilesPresenter extends BasePresenter
 			return $entity;
 		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
-		$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
-		$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
+		if ($this->isAuthorized('create')) {
+			$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
+			$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
+		}
 
-		$table->addActionEdit('editDir', 'Edit', $dirForm);
-		$table->addActionEdit('editFile', 'Edit', $fileForm);
+		if ($this->isAuthorized('edit')) {
+			$table->addActionEdit('editDir', 'Edit', $dirForm);
+			$table->addActionEdit('editFile', 'Edit', $fileForm);
+		}
 
 		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
 
@@ -191,6 +222,9 @@ class FilesPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="edit")
+	 */
 	public function handleSetParent($from, $to, $dropmode)
 	{
 		$dirRepository = $this->dirRepository;
@@ -208,7 +242,7 @@ class FilesPresenter extends BasePresenter
 		if ($dropmode == "before" || $dropmode == "after") {
 			$entity->setParent(
 				$target->parent ? : NULL,
-				true,
+				TRUE,
 				$dropmode == "after" ? $target : $target->previous
 			);
 		} else {
@@ -230,6 +264,9 @@ class FilesPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="remove")
+	 */
 	public function handleDelete($key2)
 	{
 		$repository = substr($key2, 0, 1) == 'd' ? $this->dirRepository : $this->fileRepository;
@@ -250,7 +287,7 @@ class FilesPresenter extends BasePresenter
 		parent::beforeRender();
 
 		if ($this->browserMode) {
-			$this->template->hideMenuItems = true;
+			$this->template->hideMenuItems = TRUE;
 		}
 	}
 
