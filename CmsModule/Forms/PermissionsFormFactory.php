@@ -139,10 +139,6 @@ class PermissionsFormFactory extends FormFactory
 		$entity->getPermissions()->clear();
 
 		foreach ($values as $resource => $items) {
-			if ($items['all']) {
-				$entity->permissions[] = new \CmsModule\Security\Entities\PermissionEntity($entity, $this->unformatName($resource));
-			}
-
 			foreach ($items['privileges'] as $privilege => $item) {
 				if ($item) {
 					$entity->permissions[] = new \CmsModule\Security\Entities\PermissionEntity($entity, $this->unformatName($resource), $privilege);
