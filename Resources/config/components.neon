@@ -12,7 +12,7 @@ services:
 	cms.userFormFactory:
 		class: CmsModule\Forms\UserFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.userSocialFormFactory:
 		class: CmsModule\Forms\UserSocialFormFactory
