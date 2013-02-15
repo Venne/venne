@@ -1,32 +1,26 @@
 <?php
 
 /**
- * Nette Framework Extras
+ * This file is part of the Venne:CMS (https://github.com/Venne)
  *
- * This source file is subject to the New BSD License.
+ * Copyright (c) 2011, 2012 Josef Kříž (http://www.josef-kriz.cz)
  *
- * For more information please see http://extras.nettephp.com
- *
- * @copyright  Copyright (c) 2009 David Grudl
- * @license	New BSD License
- * @link	   http://extras.nettephp.com
- * @package	Nette Extras
- * @version	$Id: VisualPaginator.php 4 2009-07-14 15:22:02Z david@grudl.com $
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
  */
 
 namespace CmsModule\Components;
 
 use Venne;
-use Venne\Application\UI\Control;
 use Nette\Utils\Paginator;
-
+use Venne\Application\UI\Control;
+use CmsModule\Content\Presenters\PagePresenter;
 
 /**
  * Visual paginator control.
  *
- * @author	 David Grudl
+ * @author     David Grudl
  * @copyright  Copyright (c) 2009 David Grudl
- * @package	Nette Extras
  */
 class VisualPaginator extends Control
 {
@@ -36,7 +30,6 @@ class VisualPaginator extends Control
 
 	/** @persistent */
 	public $page = 1;
-
 
 
 	/**
@@ -51,7 +44,6 @@ class VisualPaginator extends Control
 	}
 
 
-
 	/**
 	 * Renders paginator.
 	 *
@@ -63,7 +55,6 @@ class VisualPaginator extends Control
 		$page = $paginator->page;
 		if ($paginator->pageCount < 2) {
 			$steps = array($page);
-
 		} else {
 			$arr = range(max($paginator->firstPage, $page - 3), min($paginator->lastPage, $page + 3));
 			$count = 4;
@@ -82,7 +73,6 @@ class VisualPaginator extends Control
 	}
 
 
-
 	/**
 	 * Loads state informations.
 	 *
@@ -95,4 +85,26 @@ class VisualPaginator extends Control
 		$this->getPaginator()->page = $this->page;
 	}
 
+
+	/**
+	 * Formats component template files
+	 *
+	 * @param string
+	 * @return array
+	 */
+	protected function formatTemplateFiles()
+	{
+		if (!$this->presenter instanceof PagePresenter) {
+			return parent::formatTemplateFiles();
+		}
+
+		$list = parent::formatTemplateFiles();
+		$refl = $this->getReflection();
+		$path = dirname($this->getPresenter()->getLayoutPath());
+
+		return array_merge(array(
+			dirname($path) . '/' . $refl->getShortName() . '.latte',
+			$path . '/' . $refl->getShortName() . '.latte',
+		), $list);
+	}
 }
