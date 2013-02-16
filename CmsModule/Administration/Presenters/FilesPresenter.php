@@ -284,11 +284,11 @@ class FilesPresenter extends BasePresenter
 
 	public function beforeRender()
 	{
-		parent::beforeRender();
-
 		if ($this->browserMode) {
 			$this->template->hideMenuItems = TRUE;
 		}
+
+		parent::beforeRender();
 	}
 
 

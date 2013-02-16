@@ -22,23 +22,25 @@ use Venne;
 class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 {
 
-
-	public function startup()
+	public function beforeRender()
 	{
-		parent::startup();
+		parent::beforeRender();
 
 		if (!$this->getSignal()) {
 			$this->invalidateControl('content');
 			$this->invalidateControl('header');
 			$this->invalidateControl('toolbar');
-			$this['panel']->invalidateControl('tabs');
+
+			if (!isset($this->template->hideMenuItems)) {
+				$this['panel']->invalidateControl('tabs');
+			}
 		}
 	}
 
 
 	public function handleLogout()
 	{
-		$this->user->logout(true);
+		$this->user->logout(TRUE);
 		$this->flashMessage('Logout success');
 		$this->redirect('this');
 	}

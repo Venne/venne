@@ -43,9 +43,9 @@ class PanelPresenter extends BasePresenter
 	protected $_layoutPath;
 
 
-	public function startup()
+	public function beforeRender()
 	{
-		parent::startup();
+		parent::beforeRender();
 
 		$this->validateControl('content');
 		$this->validateControl('panel');
