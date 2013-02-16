@@ -495,3 +495,8 @@ legend {
 .ms-container .ms-selectable li.ms-elem-selectable, .ms-container .ms-selection li.ms-elem-selected {
     font-size: 13px;
 }
+
+.venne-element-container form {
+    display: block;
+    width: 770px;
+}

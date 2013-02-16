@@ -60,7 +60,7 @@ class ElementMacro extends MacroSet
 
 		return
 			'$_ctrl = $_presenter->getComponent(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . ' . '"' . $id . '"' . ' . \'_\' . ' . $name . '); '
-			. '$_ctrl->setName("' . $idRaw . '");'
+			. '$_ctrl->setName("' . trim($idRaw, '"\'') . '");'
 			. 'if ($presenter->mode == \CmsModule\Presenters\BasePresenter::MODE_EDIT) { echo "<span id=\"' . \CmsModule\Content\ElementManager::ELEMENT_PREFIX . (substr($id, 0, 1) === '$' ? '{' . $id . '}' : $id) . '_' . $rawName[0] . '\" style=\"display: inline-block; min-width: 50px; min-height: 25px;\" class=\"venne-element-container\" data-venne-element-id=\"' . trim($id, '"\'') . '\" data-venne-element-name=\"' . $rawName[0] . '\" data-venne-element-route=\"" . $presenter->route->id . "\" data-venne-element-buttons=\"" . (str_replace(\'"\', "\'", json_encode($_ctrl->getViews()))) . "\">"; }'
 			. 'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '
 			. "\$_ctrl->$method();"

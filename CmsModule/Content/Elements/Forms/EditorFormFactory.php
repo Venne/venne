@@ -34,7 +34,7 @@ class EditorFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addContentEditor('text', 'Text');
+		$form->addContentEditor('text', 'Text', 20, 5)->getControlPrototype()->attrs['class'][] = 'input-block-level';
 		$form->addSaveButton('Save');
 	}
 }
