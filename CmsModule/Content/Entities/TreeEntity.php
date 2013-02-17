@@ -22,6 +22,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
+	 * @var TreeEntity
 	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="children")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
@@ -103,6 +104,23 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 			$this->moveUp($next);
 		}
 
+		if ($this->parent) {
+			foreach ($this->parent->children as $key => $item) {
+				if ($item->id === $this->id) {
+					$this->parent->children->remove($key);
+					break;
+				}
+			}
+		}
+
+		if ($this->mainRoute->parent) {
+			foreach ($this->mainRoute->parent->getChildren() as $key => $route) {
+				if ($route->id === $this->mainRoute->id) {
+					$this->mainRoute->parent->getChildren()->remove($key);
+				}
+			}
+		}
+
 		$this->previous = NULL;
 		$this->parent = NULL;
 		$this->next = NULL;
@@ -128,8 +146,10 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-	protected function getRoot(PageEntity $entity)
+	public function getRoot(PageEntity $entity = NULL)
 	{
+		$entity = $entity ? : $this;
+
 		while ($entity->parent) {
 			$entity = $entity->parent;
 		}
@@ -216,6 +236,11 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 					}
 					$this->position = 1;
 				}
+			} else {
+				$this->parent = NULL;
+				$this->previous = NULL;
+				$this->next = NULL;
+				$this->position = 1;
 			}
 		}
 	}

@@ -12,8 +12,8 @@
 namespace CmsModule\Content\Entities;
 
 use Venne;
-use Doctrine\ORM\Mapping as ORM;
 use DateTime;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -140,7 +140,7 @@ abstract class PageEntity extends TreeEntity
 		$this->routes[] = $this->mainRoute;
 		$this->mainRoute->page = $this;
 
-		$this->navigationShow = true;
+		$this->navigationShow = TRUE;
 	}
 
 
@@ -182,6 +182,21 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
+	 * Set this page as root.
+	 */
+	public function setAsRoot()
+	{
+		$main = $this->getRoot();
+		$this->setParent(NULL);
+		$main->setParent($this);
+
+		foreach ($main->children as $item) {
+			$item->setParent($this);
+		}
+	}
+
+
+	/**
 	 * @param $parent
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
@@ -208,10 +223,10 @@ abstract class PageEntity extends TreeEntity
 	/**
 	 * Generate URL.
 	 */
-	protected function generateUrl()
+	protected function generateUrl($recursively = TRUE)
 	{
 		foreach ($this->routes as $route) {
-			$route->generateUrl();
+			$route->generateUrl($recursively);
 		}
 	}
 
@@ -282,10 +297,10 @@ abstract class PageEntity extends TreeEntity
 	{
 		foreach ($this->languages as $language) {
 			if ($language->alias == $alias) {
-				return true;
+				return TRUE;
 			}
 		}
-		return false;
+		return FALSE;
 	}
 
 

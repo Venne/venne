@@ -209,7 +209,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		if ($this->parent) {
-			$this->url = trim($this->parent->url . "/" . $this->localUrl, "/");
+			$this->url = trim($this->parent->url . '/' . $this->localUrl, '/');
 		} else {
 			$this->url = '';
 		}
