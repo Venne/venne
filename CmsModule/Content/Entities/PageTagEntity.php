@@ -44,10 +44,10 @@ class PageTagEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		self::TAG_ERROR_500 => 'Internal Server Error page',
 	);
 
+
 	/**
 	 * @var PageEntity
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
-	 * @ORM\JoinColumn(onDelete="SET NULL")
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")
 	 */
 	protected $page;
 

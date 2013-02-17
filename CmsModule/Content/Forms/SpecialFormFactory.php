@@ -36,7 +36,7 @@ class SpecialFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addSelect('tag', 'Tag', \CmsModule\Content\Entities\PageTagEntity::getTags());
-		$form->addManyToOne('page');
+		$form->addOneToOne('page', 'Page');
 
 		$form->addSaveButton('Save');
 	}

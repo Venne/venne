@@ -114,6 +114,13 @@ abstract class PageEntity extends TreeEntity
 	 */
 	protected $navigationShow;
 
+	/**
+	 * @var PageTagEntity
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageTagEntity", inversedBy="page")
+	 * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+	 */
+	protected $tag;
+
 
 	/**
 	 * @param $type
@@ -450,7 +457,25 @@ abstract class PageEntity extends TreeEntity
 	 */
 	public function getNavigationTitle()
 	{
-		return $this->navigationTitleRaw !== null ? $this->navigationTitleRaw : $this->name;
+		return $this->navigationTitleRaw !== NULL ? $this->navigationTitleRaw : $this->name;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\PageTagEntity $tag
+	 */
+	public function setTag($tag)
+	{
+		$this->tag = $tag;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\PageTagEntity
+	 */
+	public function getTag()
+	{
+		return $this->tag;
 	}
 
 
