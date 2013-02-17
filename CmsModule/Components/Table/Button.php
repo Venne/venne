@@ -27,6 +27,9 @@ class Button extends \Nette\ComponentModel\Component
 	/** @var array */
 	public $onSuccess;
 
+	/** @var array */
+	public $onRender;
+
 	/** @var string */
 	protected $label;
 

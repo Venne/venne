@@ -62,6 +62,7 @@
             <td class="table-td-action">
                 <div class="btn-group pull-right">
 					{foreach $actions as $name=>$action}
+						{$action->onRender($action, $item)}
                         <a class="ajax btn btn-small"
                            href="{link doAction name=>$name, id=>$item->{$primaryColumn}}"{if $action->getOption('data-confirm')} data-confirm="{_$action->getOption('data-confirm')}"{/if}>{_$action->getLabel()}</a>
 					{/foreach}
