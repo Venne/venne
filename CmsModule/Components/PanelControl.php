@@ -14,6 +14,7 @@ namespace CmsModule\Components;
 use Venne;
 use Venne\Application\UI\Control;
 use CmsModule\Content\ContentManager;
+use CmsModule\Content\Entities\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -302,18 +303,22 @@ class PanelControl extends Control
 		$entity = $repository->find($from);
 		$target = $repository->find($to);
 
-		if ($dropmode == "before" || $dropmode == "after") {
-			$entity->setParent(
-				$target->parent ? : NULL,
-				TRUE,
-				$dropmode == "after" ? $target : $target->previous
-			);
+		if ($target->parent === NULL && ($dropmode == 'before' || $dropmode == 'after')) {
+			$entity->setAsRoot();
+			$repository->save($target);
 		} else {
-			$entity->setParent($target);
+			if ($dropmode == 'before' || $dropmode == 'after') {
+				$entity->setParent(
+					$target->parent ? : NULL,
+					TRUE,
+					$dropmode == 'after' ? $target : $target->previous
+				);
+			} else {
+				$entity->setParent($target);
+			}
+			$repository->save($entity);
 		}
-
-
-		$repository->save($entity);
+		$this->presenter['panel']->invalidateControl('content');
 	}
 
 
