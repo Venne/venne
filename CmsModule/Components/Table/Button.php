@@ -36,6 +36,9 @@ class Button extends \Nette\ComponentModel\Component
 	/** @var array */
 	protected $options = array();
 
+	/** @var bool */
+	protected $disabled = FALSE;
+
 
 	/**
 	 * @param string $label
@@ -49,11 +52,13 @@ class Button extends \Nette\ComponentModel\Component
 
 
 	/**
-	 * @param string $label
+	 * @param $label
+	 * @return $this
 	 */
 	public function setLabel($label)
 	{
 		$this->label = $label;
+		return $this;
 	}
 
 
@@ -80,10 +85,12 @@ class Button extends \Nette\ComponentModel\Component
 	/**
 	 * @param $key
 	 * @param $value
+	 * @return $this
 	 */
 	public function setOptions($key, $value)
 	{
 		$this->options[$key] = $value;
+		return $this;
 	}
 
 
@@ -94,5 +101,25 @@ class Button extends \Nette\ComponentModel\Component
 	public function getOption($key)
 	{
 		return isset($this->options[$key]) ? $this->options[$key] : NULL;
+	}
+
+
+	/**
+	 * @param bool $value
+	 * @return $this
+	 */
+	public function setDisabled($value = TRUE)
+	{
+		$this->disabled = (bool)$value;
+		return $this;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isDisabled()
+	{
+		return $this->disabled;
 	}
 }
