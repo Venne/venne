@@ -213,6 +213,7 @@ class ContentPresenter extends BasePresenter
 			});
 
 		// actions
+		$repository = $this->pageRepository;
 		if ($this->isAuthorized('edit')) {
 			$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
 				if (!$presenter->isAjax()) {
@@ -223,6 +224,22 @@ class ContentPresenter extends BasePresenter
 				$presenter->setView('edit');
 				$presenter->changeAction('edit');
 				$presenter->key = $entity->id;
+			};
+			$action = $table->addAction('setAsRoot', 'Set as root');
+			$action->onRender[] = function ($button, $entity) {
+				$button->setDisabled($entity->parent === NULL);
+			};
+			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
+				$main = $entity->getRoot();
+				$entity->setAsRoot();
+				$repository->save($main);
+
+				if (!$presenter->isAjax()) {
+					$presenter->redirect('this');
+				}
+				$presenter->invalidateControl('content');
+				$presenter['panel']->invalidateControl('content');
+				$presenter->payload->url = $presenter->link('this');
 			};
 		}
 
