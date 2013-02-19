@@ -231,7 +231,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 		$this->template->entity = $this->page;
 		$this->template->route = $this->route;
-		$this["head"]->setTitle($this->route->title);
-		$this["head"]->setRobots($this->route->robots);
+		$this['head']->setTitle($this->route->title);
+		$this['head']->setRobots($this->route->robots);
+		$this['head']->setKeywords($this->route->keywords);
+		$this['head']->setDescription($this->route->description);
+		$this['head']->setAuthor($this->route->author);
 	}
 }
