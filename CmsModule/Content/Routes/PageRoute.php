@@ -26,11 +26,11 @@ class PageRoute extends Route
 {
 
 
-	const DEFAULT_MODULE = "Cms";
+	const DEFAULT_MODULE = 'Cms';
 
-	const DEFAULT_PRESENTER = "Base";
+	const DEFAULT_PRESENTER = 'Base';
 
-	const DEFAULT_ACTION = "default";
+	const DEFAULT_ACTION = 'default';
 
 	/** @var \Nette\DI\Container|\SystemContainer */
 	protected $container;
@@ -66,13 +66,13 @@ class PageRoute extends Route
 		$this->languages = $languages;
 		$this->defaultLanguage = $defaultLanguage;
 
-		parent::__construct($prefix . '<url .+>[/<module qwertzuiop>/<presenter qwertzuiop>]' . (strpos($prefix, '<lang>') === false ? '?lang=<lang>' : ''), $parameters + array(
-			"presenter" => self::DEFAULT_PRESENTER,
-			"module" => self::DEFAULT_MODULE,
-			"action" => self::DEFAULT_ACTION,
+		parent::__construct($prefix . '<url .+>[/<module qwertzuiop>/<presenter qwertzuiop>]' . (count($this->languages) > 1 && strpos($prefix, '<lang>') === FALSE ? '?lang=<lang>' : ''), $parameters + array(
+			'presenter' => self::DEFAULT_PRESENTER,
+			'module' => self::DEFAULT_MODULE,
+			'action' => self::DEFAULT_ACTION,
 			'lang' => NULL,
-			"url" => array(
-				self::VALUE => "",
+			'url' => array(
+				self::VALUE => '',
 				self::FILTER_IN => NULL,
 				self::FILTER_OUT => NULL,
 			)
@@ -117,34 +117,34 @@ class PageRoute extends Route
 			return NULL;
 		}
 
-		if (($request = parent::match($httpRequest)) === NULL || !array_key_exists("url", $request->parameters)) {
+		if (($request = parent::match($httpRequest)) === NULL || !array_key_exists('url', $request->parameters)) {
 			return NULL;
 		}
 
 		$parameters = $request->parameters;
 
 		if (count($this->languages) > 1) {
-			if (!isset($parameters["lang"])) {
-				$parameters["lang"] = $this->defaultLanguage;
+			if (!isset($parameters['lang'])) {
+				$parameters['lang'] = $this->defaultLanguage;
 			}
 
 			try {
-				$route = $this->getRouteRepository()->createQueryBuilder("a")
-					->leftJoin("a.page", "m")
-					->leftJoin("m.languages", "p")
-					->where("a.url = :url")
-					->andWhere("p.alias = :lang")
-					->setParameter("lang", $parameters["lang"])
-					->setParameter("url", $parameters["url"])
+				$route = $this->getRouteRepository()->createQueryBuilder('a')
+					->leftJoin('a.page', 'm')
+					->leftJoin('m.languages', 'p')
+					->where('a.url = :url')
+					->andWhere('p.alias = :lang')
+					->setParameter('lang', $parameters['lang'])
+					->setParameter('url', $parameters['url'])
 					->getQuery()->getSingleResult();
 			} catch (\Doctrine\ORM\NoResultException $e) {
 				return NULL;
 			}
 		} else {
 			try {
-				$route = $this->getRouteRepository()->createQueryBuilder("a")
-					->where("a.url = :url")
-					->setParameter("url", $parameters["url"])
+				$route = $this->getRouteRepository()->createQueryBuilder('a')
+					->where('a.url = :url')
+					->setParameter('url', $parameters['url'])
 					->getQuery()->getSingleResult();
 			} catch (\Doctrine\ORM\NoResultException $e) {
 				return NULL;
@@ -165,12 +165,12 @@ class PageRoute extends Route
 	protected function modifyMatchRequest(\Nette\Application\Request $appRequest, RouteEntity $route, $parameters)
 	{
 		$parameters = $route->params + $parameters;
-		$parameters["route"] = $route;
-		$type = explode(":", $route->type);
-		$parameters["action"] = $type[count($type) - 1];
-		$parameters["lang"] = $appRequest->parameters["lang"] ? : $this->defaultLanguage;
+		$parameters['route'] = $route;
+		$type = explode(':', $route->type);
+		$parameters['action'] = $type[count($type) - 1];
+		$parameters['lang'] = $appRequest->parameters['lang'] ? : $this->defaultLanguage;
 		unset($type[count($type) - 1]);
-		$presenter = join(":", $type);
+		$presenter = join(':', $type);
 		$appRequest->setParameters($parameters);
 		$appRequest->setPresenterName($presenter);
 		return $appRequest;
@@ -198,26 +198,26 @@ class PageRoute extends Route
 		} else if (array_key_exists('url', $parameters)) {
 			$url = $parameters['url'];
 			if (count($this->languages) > 1) {
-				if (!isset($parameters["lang"])) {
-					$parameters["lang"] = $this->defaultLanguage;
+				if (!isset($parameters['lang'])) {
+					$parameters['lang'] = $this->defaultLanguage;
 				}
 				try {
-					$route = $this->getRouteRepository()->createQueryBuilder("a")
-						->leftJoin("a.page", "m")
-						->leftJoin("m.languages", "p")
-						->where("a.url = :url")
-						->andWhere("p.alias = :lang")
-						->setParameter("url", $url)
-						->setParameter("lang", $parameters["lang"])
+					$route = $this->getRouteRepository()->createQueryBuilder('a')
+						->leftJoin('a.page', 'm')
+						->leftJoin('m.languages', 'p')
+						->where('a.url = :url')
+						->andWhere('p.alias = :lang')
+						->setParameter('url', $url)
+						->setParameter('lang', $parameters['lang'])
 						->getQuery()->getSingleResult();
 				} catch (\Doctrine\ORM\NoResultException $e) {
 					return NULL;
 				}
 			} else {
 				try {
-					$route = $this->getRouteRepository()->createQueryBuilder("a")
-						->andWhere("a.url = :url")
-						->setParameter("url", $url)
+					$route = $this->getRouteRepository()->createQueryBuilder('a')
+						->andWhere('a.url = :url')
+						->setParameter('url', $url)
 						->getQuery()->getSingleResult();
 				} catch (\Doctrine\ORM\NoResultException $e) {
 					return NULL;
@@ -241,7 +241,7 @@ class PageRoute extends Route
 	 */
 	protected function modifyConstructRequest(\Nette\Application\Request $request, RouteEntity $route, $parameters)
 	{
-		$request->setPresenterName(self::DEFAULT_MODULE . ":" . self::DEFAULT_PRESENTER);
+		$request->setPresenterName(self::DEFAULT_MODULE . ':' . self::DEFAULT_PRESENTER);
 		$request->setParameters(array(
 			'module' => self::DEFAULT_MODULE,
 			'presenter' => self::DEFAULT_PRESENTER,
