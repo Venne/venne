@@ -11,13 +11,11 @@
 
 namespace CmsModule\Content\Routes;
 
-use Nette\Object;
 use Nette\Callback;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\Routers\Route;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
-use CmsModule\Content\ContentManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -57,7 +55,7 @@ class PageRoute extends Route
 	 * @param $languages
 	 * @param $defaultLanguage
 	 */
-	public function __construct(\Nette\DI\Container $container, \Nette\Caching\IStorage $cache, Callback $checkConnectionFactory, $prefix, $parameters, $languages, $defaultLanguage)
+	public function __construct(\Nette\DI\Container $container, \Nette\Caching\IStorage $cache, Callback $checkConnectionFactory, $prefix, $parameters, $languages, $defaultLanguage, $oneWay = FALSE)
 	{
 		$this->container = $container;
 		$this->_templateCache = new \Nette\Caching\Cache($cache, \CmsModule\Content\Presenters\PagePresenter::CACHE_OUTPUT);
@@ -76,7 +74,7 @@ class PageRoute extends Route
 				self::FILTER_IN => NULL,
 				self::FILTER_OUT => NULL,
 			)
-		));
+		), $oneWay ? Route::ONE_WAY : NULL);
 	}
 
 

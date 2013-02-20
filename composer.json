@@ -49,6 +49,7 @@
 						"description": "",
 						"author": "",
 						"routePrefix": "",
+						"oneWayRoutePrefix": "",
 						"languages": {},
 						"defaultLanguage": "cs",
 						"defaultPresenter": "Homepage",

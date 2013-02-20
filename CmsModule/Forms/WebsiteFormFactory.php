@@ -75,6 +75,7 @@ class WebsiteFormFactory extends FormFactory
 
 		$form->addGroup("System");
 		$form->addTextWithSelect("routePrefix", "Route prefix");
+		$form->addTextWithSelect("oneWayRoutePrefix", "One way route prefix");
 
 		$form->addSubmit('_submit', 'Save');
 	}
@@ -84,7 +85,7 @@ class WebsiteFormFactory extends FormFactory
 	{
 		$url = $form->presenter->context->httpRequest->url;
 		$domain = trim($url->host . $url->scriptPath, "/") . "/";
-		$params = array("<lang>/", "//$domain<lang>/", "//<lang>.$domain");
+		$params = array("", "<lang>/", "//$domain<lang>/", "//<lang>.$domain");
 
 		$form['routePrefix']->setItems($params, false);
 	}

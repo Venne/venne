@@ -103,6 +103,7 @@ image: obrázek
 keywords: klíčová slova
 author: autor
 route prefix: předpona routování
+one way route prefix: jednocestná předpona
 edit base meta informations about this website: editace základních meta informací webu
 manage pages: správa stránek
 manage existing pages and content: správa vytvořených stránek a obsahů

@@ -106,6 +106,13 @@ class CmsExtension extends CompilerExtension
 		)
 			->addTag("route", array("priority" => 100));
 
+		if (isset($container->parameters['website']['oneWayRoutePrefix'])) {
+			$container->addDefinition($this->prefix("oneWayPageRoute"))
+				->setClass("CmsModule\Content\Routes\PageRoute", array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', $container->parameters['website']['oneWayRoutePrefix'], $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"], TRUE)
+				)
+				->addTag("route", array("priority" => 99));
+		}
+
 		// File route
 		$container->addDefinition($this->prefix("fileRoute"))
 			->setClass("CmsModule\Content\Routes\FileRoute")
