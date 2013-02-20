@@ -14,6 +14,7 @@ namespace CmsModule\Forms;
 use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
+use DoctrineModule\DI\DoctrineExtension;
 use FormsModule\Mappers\ConfigMapper;
 use FormsModule\ControlExtensions\ControlExtension;
 
@@ -116,6 +117,9 @@ class SystemApplicationFormFactory extends FormFactory
 		/* templating */
 		$nette->setCurrentGroup($form->addGroup("Templating"));
 		$nette->addSelect("xhtml", "XHTML", array(TRUE => "yes", FALSE => "no"))->setDefaultValue(TRUE);
+
+		$doctrine->setCurrentGroup($form->addGroup('Doctrine'));
+		$doctrine->addSelect('cacheClass', 'Cache type', DoctrineExtension::getCaches());
 
 		$form->addSubmit('_submit', 'Save');
 	}
