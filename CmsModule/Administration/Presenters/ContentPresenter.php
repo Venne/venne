@@ -336,7 +336,6 @@ class ContentPresenter extends BasePresenter
 		/** @var $entity \CmsModule\Entities\PageEntity */
 		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
 		$entity->setTranslationFor($pageEntity);
-		$entity->setParent($pageEntity->parent);
 
 		$form = $this->contentFormFactory->invoke($entity);
 		$form->onSuccess[] = $this->formSuccess;
