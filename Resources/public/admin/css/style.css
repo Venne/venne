@@ -500,3 +500,11 @@ legend {
     display: block;
     width: 770px;
 }
+
+.dropdown-menu {
+    z-index: 1080;
+}
+
+.input-append .add-on, .input-prepend .add-on {
+    padding: 2px 5px;
+}

@@ -71,7 +71,7 @@ $(function () {
 
 	// Jquery plugins
 	$('select[multiple]').multiSelect();
-	$('input[data-dateinput-type]').dateinput(dateInputOptions);
+	$('input[data-dateinput-type]').datepicker();
 	$('select[data-venne-form-textwithselect]').textWithSelect();
 
 
@@ -120,7 +120,7 @@ $(function () {
 
 			for (var i in payload.snippets) {
 				$('#' + i + ' input[data-dateinput-type]').each(function () {
-					$(this).dateinput(dateInputOptions);
+					$(this).datepicker();
 				});
 			}
 		}
