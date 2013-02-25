@@ -325,6 +325,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		$this->parent = $parent;
+		if ($parent) {
+			$parent->children[] = $this;
+		}
+
 		$this->generateUrl();
 		$this->generateLayouts();
 	}
