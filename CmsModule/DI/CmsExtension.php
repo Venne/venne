@@ -59,7 +59,7 @@ class CmsExtension extends CompilerExtension
 
 		$container->addDefinition("authorizator")
 			->setClass("Nette\Security\Permission")
-			->setFactory("@authorizatorFactory::getPermissionsByUser", array('@user', true));
+			->setFactory("@authorizatorFactory::getPermissionsByUser", array('@user', TRUE));
 
 		$container->addDefinition("authenticator")
 			->setClass("CmsModule\Security\Authenticator", array("%administration.login.name%", "%administration.login.password%", "@doctrine.checkConnectionFactory", "@cms.userRepository"));
@@ -77,20 +77,20 @@ class CmsExtension extends CompilerExtension
 		// Sitemap
 		$container->addDefinition($this->prefix("robotsRoute"))
 			->setClass("Nette\Application\Routers\Route", array('robots.txt',
-			array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => NULL)
-		))
+				array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => NULL)
+			))
 			->addTag("route", array("priority" => 999999999));
 		$container->addDefinition($this->prefix("sitemapRoute"))
 			->setClass("Nette\Application\Routers\Route", array('<lang>/sitemap.xml',
-			array('presenter' => 'Cms:Sitemap', 'action' => 'sitemap',)
-		))
+				array('presenter' => 'Cms:Sitemap', 'action' => 'sitemap',)
+			))
 			->addTag("route", array("priority" => 999999998));
 
 		// Administration
 		$container->addDefinition($this->prefix("adminRoute"))
 			->setClass("Nette\Application\Routers\Route", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/]<presenter>[/<action>[/<id>]]',
-			array('module' => 'Cms:Admin', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default',)
-		))
+				array('module' => 'Cms:Admin', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default',)
+			))
 			->addTag("route", array("priority" => 100000));
 
 		// installation
@@ -102,8 +102,8 @@ class CmsExtension extends CompilerExtension
 
 		// CMS route
 		$container->addDefinition($this->prefix("pageRoute"))
-			->setClass("CmsModule\Content\Routes\PageRoute", array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', /*'@cms.contentManager', '@cms.routeRepository', '@cms.languageRepository', */$prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
-		)
+			->setClass("CmsModule\Content\Routes\PageRoute", array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
+			)
 			->addTag("route", array("priority" => 100));
 
 		if (isset($container->parameters['website']['oneWayRoutePrefix'])) {

@@ -87,6 +87,6 @@ class WebsiteFormFactory extends FormFactory
 		$domain = trim($url->host . $url->scriptPath, "/") . "/";
 		$params = array("", "<lang>/", "//$domain<lang>/", "//<lang>.$domain");
 
-		$form['routePrefix']->setItems($params, false);
+		$form['routePrefix']->setItems($params, FALSE);
 	}
 }
