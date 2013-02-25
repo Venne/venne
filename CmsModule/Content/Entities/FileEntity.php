@@ -54,7 +54,7 @@ class FileEntity extends BaseFileEntity
 	{
 		parent::__construct();
 
-		$this->protected = false;
+		$this->protected = FALSE;
 	}
 
 
@@ -135,13 +135,13 @@ class FileEntity extends BaseFileEntity
 	}
 
 
-	public function getFilePath($withoutBasePath = false)
+	public function getFilePath($withoutBasePath = FALSE)
 	{
 		return ($withoutBasePath ? '' : ($this->protected ? $this->protectedDir : $this->publicDir) . '/') . $this->path;
 	}
 
 
-	public function getFileUrl($withoutBasePath = false)
+	public function getFileUrl($withoutBasePath = FALSE)
 	{
 		return ($withoutBasePath ? '' : $this->publicUrl . '/') . $this->path;
 	}
