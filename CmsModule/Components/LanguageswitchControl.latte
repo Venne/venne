@@ -1,8 +1,8 @@
 {var languages=>$control->getItems()}
 
-<ul class="nav">
-	<li class="active dropdown">
-		<a href="javaScript:;" class="dropdown-toogle" data-toggle="dropdown">{$language}</a>
+<ul class="nav pull-right">
+	<li class="dropdown">
+		<a href="javaScript:;" class="dropdown-toogle" data-toggle="dropdown"><span class="icon-flag"></span> {$language} <b class="caret"></b></a>
 
 		<ul class="dropdown-menu">
 		{foreach $languages as $language}
