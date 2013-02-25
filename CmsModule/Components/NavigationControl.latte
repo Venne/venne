@@ -5,6 +5,7 @@
 {if $root}
 {define #menu}
 
+	{var j=>0}
 	{foreach $items as $item}
 
 		{var entity=>$item->getPageWithLanguageAlias($presenter->lang)}
@@ -21,7 +22,7 @@
 			{/if}
 		{else}
 
-{if $iterator->isFirst()}
+{if $j==0}
 <ul {if !$first}class="dropdown-menu"{else}class="nav"{/if}>
 		{if $first && $showMain && $root->navigationShow}
             {include #item active=>$presenter->route->url === '', children=>array(), link=>$presenter->link('this', array('route'=>$root->mainRoute)), entity=>$root->getPageWithLanguageAlias($presenter->lang), item=>$root}
@@ -32,6 +33,8 @@
 				{include #item active=>$active, children=>$children, link=>$link, entity=>$entity, item=>$item, sub=>$sub}
 			{/if}
 		{/if}
+
+		{var j=>$j + 1}
 
 	{/foreach}
 </ul>
