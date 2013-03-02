@@ -15,9 +15,9 @@ use Venne;
 use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\Mappers\EntityMapper;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Administration\AdministrationManager;
+use CmsModule\Security\Repositories\PermissionRepository;
 use Nette\Application\PresenterFactory;
 use Venne\Security\IControlVerifierReader;
 
@@ -42,15 +42,15 @@ class PermissionsFormFactory extends FormFactory
 	/** @var EntityMapper */
 	protected $mapper;
 
-	/** @var BaseRepository */
+	/** @var PermissionRepository */
 	protected $repository;
 
 
 	/**
 	 * @param EntityMapper $mapper
-	 * @param BaseRepository $repository
+	 * @param PermissionRepository $repository
 	 */
-	public function __construct(EntityMapper $mapper, BaseRepository $repository)
+	public function __construct(EntityMapper $mapper, PermissionRepository $repository)
 	{
 		$this->mapper = $mapper;
 		$this->repository = $repository;
@@ -122,7 +122,7 @@ class PermissionsFormFactory extends FormFactory
 				$checkbox = $privilegeContainer->addCheckbox($privilege, $privilege);
 				$checkbox->setDefaultValue($permissions->isAllowed($form->data->name, $resource, $privilege));
 				if ($val) {
-					$checkbox->disabled = true;
+					$checkbox->disabled = TRUE;
 				}
 			}
 		}

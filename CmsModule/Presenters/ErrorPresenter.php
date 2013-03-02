@@ -11,8 +11,7 @@
 
 namespace CmsModule\Presenters;
 
-use Venne;
-use DoctrineModule\Repositories\BaseRepository;
+use CmsModule\Content\Repositories\PageTagRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,18 +19,16 @@ use DoctrineModule\Repositories\BaseRepository;
 class ErrorPresenter extends FrontPresenter
 {
 
-	/** @var BaseRepository */
-	protected $repository;
+	/** @var PageTagRepository */
+	protected $pageTagRepository;
 
 
 	/**
-	 * @param BaseRepository $repository
+	 * @param PageTagRepository $pageTagRepository
 	 */
-	public function __construct(BaseRepository $repository)
+	public function injectPageTagRepository(PageTagRepository $pageTagRepository)
 	{
-		parent::__construct();
-
-		$this->repository = $repository;
+		$this->pageTagRepository = $pageTagRepository;
 	}
 
 
@@ -50,7 +47,7 @@ class ErrorPresenter extends FrontPresenter
 		\Nette\Diagnostics\Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
 
 		if (in_array($code, array(403, 404, 405, 410, 500))) {
-			$specialPage = $this->repository->findOneBy(array('tag' => "error_$code"));
+			$specialPage = $this->pageTagRepository->findOneBy(array('tag' => "error_$code"));
 
 			if ($specialPage && $specialPage->page) {
 				$params = $specialPage->page->mainRoute->params + array('route' => $specialPage->page->mainRoute);

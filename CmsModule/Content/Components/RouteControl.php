@@ -12,9 +12,8 @@
 namespace CmsModule\Content\Components;
 
 use CmsModule\Content\Forms\RouteFormFactory;
-use Venne;
+use CmsModule\Content\Repositories\RouteRepository;
 use CmsModule\Content\SectionControl;
-use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,7 +21,7 @@ use DoctrineModule\Repositories\BaseRepository;
 class RouteControl extends SectionControl
 {
 
-	/** @var BaseRepository */
+	/** @var RouteRepository */
 	protected $routeRepository;
 
 	/** @var RouteFormFactory */
@@ -30,10 +29,10 @@ class RouteControl extends SectionControl
 
 
 	/**
-	 * @param \DoctrineModule\Repositories\BaseRepository $routeRepository
+	 * @param RouteRepository $routeRepository
 	 * @param \CmsModule\Content\Forms\RouteFormFactory $routeFormFactory
 	 */
-	public function __construct(BaseRepository $routeRepository, RouteFormFactory $routeFormFactory)
+	public function __construct(RouteRepository $routeRepository, RouteFormFactory $routeFormFactory)
 	{
 		parent::__construct();
 

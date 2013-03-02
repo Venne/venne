@@ -12,13 +12,13 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Entities\LayoutEntity;
-use Venne;
+use CmsModule\Content\Repositories\ElementRepository;
+use CmsModule\Content\Repositories\LayoutRepository;
 use CmsModule\Content\Forms\LayoutFormFactory;
 use CmsModule\Content\ElementManager;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
 use CmsModule\Content\Entities\ElementEntity;
 use CmsModule\Content\LayoutManager;
-use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -34,13 +34,13 @@ class LayoutsPresenter extends BasePresenter
 	/** @var LayoutManager */
 	protected $layoutManager;
 
-	/** @var Venne\Module\Helpers */
+	/** @var \Venne\Module\Helpers */
 	protected $moduleHelpers;
 
-	/** @var BaseRepository */
+	/** @var LayoutRepository */
 	protected $layoutRepository;
 
-	/** @var BaseRepository */
+	/** @var ElementRepository */
 	protected $elementRepository;
 
 	/** @var LayoutFormFactory */
@@ -53,7 +53,7 @@ class LayoutsPresenter extends BasePresenter
 	protected $currentLayout;
 
 
-	public function __construct(BaseRepository $layoutRepository, BaseRepository $elementRepository, Venne\Module\Helpers $moduleHelpers)
+	public function __construct(LayoutRepository $layoutRepository, ElementRepository $elementRepository, \Venne\Module\Helpers $moduleHelpers)
 	{
 		$this->layoutRepository = $layoutRepository;
 		$this->elementRepository = $elementRepository;

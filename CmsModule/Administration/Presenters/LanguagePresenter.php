@@ -11,7 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use CmsModule\Content\Repositories\LanguageRepository;
 use Nette\Application\UI\Form;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\LanguageFormFactory;
@@ -25,14 +25,17 @@ class LanguagePresenter extends BasePresenter
 {
 
 
-	/** @var BaseRepository */
+	/** @var LanguageRepository */
 	protected $languageRepository;
 
 	/** @var \CmsModule\Forms\LanguageFormFactory */
 	protected $form;
 
 
-	public function __construct(BaseRepository $languageRepository)
+	/**
+	 * @param \CmsModule\Content\Repositories\LanguageRepository $languageRepository
+	 */
+	public function injectLanguageRepository(LanguageRepository $languageRepository)
 	{
 		$this->languageRepository = $languageRepository;
 	}

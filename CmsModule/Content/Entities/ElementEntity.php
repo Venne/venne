@@ -18,7 +18,7 @@ use DoctrineModule\Entities\IdentifiedEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\ElementRepository")
  * @ORM\Table(name="element", indexes={@ORM\index(name="name_idx", columns={"name"})})
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")

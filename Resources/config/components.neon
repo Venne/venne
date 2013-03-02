@@ -52,12 +52,12 @@ services:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.dirFormFactory:
-		class: CmsModule\Content\Forms\DirFormFactory(..., @cms.dirRepository)
+		class: CmsModule\Content\Forms\DirFormFactory
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.fileFormFactory:
-		class: CmsModule\Content\Forms\FileFormFactory(..., @cms.fileRepository)
+		class: CmsModule\Content\Forms\FileFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
@@ -72,7 +72,7 @@ services:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.contentFormFactory:
-		class: CmsModule\Content\Forms\BasicFormFactory(..., @cms.pageRepository)
+		class: CmsModule\Content\Forms\BasicFormFactory
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
@@ -82,7 +82,7 @@ services:
 			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.permissionsFormFactory:
-		class: CmsModule\Forms\PermissionsFormFactory(..., @cms.roleRepository)
+		class: CmsModule\Forms\PermissionsFormFactory
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 			- injectAuthorizatorFactory
@@ -173,7 +173,7 @@ factories:
 			- "$service->getElementPrototype()->class[] = ?"("ajax")
 
 	cms.admin.routeControl:
-		class: CmsModule\Content\Components\RouteControl(@cms.routeRepository)
+		class: CmsModule\Content\Components\RouteControl
 		tags: [component]
 
 	cms.headControl:
@@ -187,11 +187,11 @@ factories:
 		tags: [widget: panel]
 
 	cms.navigationControl:
-		class: CmsModule\Components\NavigationControl(@cms.pageRepository, %website.routePrefix%)
+		class: CmsModule\Components\NavigationControl(%website.routePrefix%)
 		tags: [widget: navigation]
 
 	cms.breadcrumbControl:
-		class: CmsModule\Components\BreadcrumbControl(@cms.pageRepository, %website.routePrefix%)
+		class: CmsModule\Components\BreadcrumbControl(%website.routePrefix%)
 		tags: [widget: breadcrumb]
 
 	cms.flashMessageControl:
@@ -206,7 +206,7 @@ factories:
 		tags: [widget: login]
 
 	cms.languageswitchControl:
-		class: CmsModule\Components\LanguageswitchControl(@cms.languageRepository)
+		class: CmsModule\Components\LanguageswitchControl
 		tags: [widget: languageswitch]
 
 	cms.textElement:

@@ -11,10 +11,9 @@
 
 namespace CmsModule\Content\Presenters;
 
-use Venne;
+use CmsModule\Content\Repositories\FileRepository;
 use Nette\Image;
 use Venne\Application\UI\Presenter;
-use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -35,19 +34,19 @@ class FilePresenter extends Presenter
 	public $url;
 
 	/** @var bool */
-	protected $cached = false;
+	protected $cached = FALSE;
 
-	/** @var BaseRepository */
+	/** @var FileRepository */
 	protected $fileRepository;
 
 
 	/**
-	 * @param BaseRepository $fileRepository
+	 * @param FileRepository $fileRepository
 	 */
-	public function __construct(BaseRepository $fileRepository)
+	public function injectFileRepository(FileRepository $fileRepository)
 	{
 		$this->fileRepository = $fileRepository;
-		$this->autoCanonicalize = false;
+		$this->autoCanonicalize = FALSE;
 	}
 
 
@@ -60,7 +59,7 @@ class FilePresenter extends Presenter
 		$this->url = $this->getParameter('url');
 
 		if (substr($this->url, 0, 7) === '_cache/') {
-			$this->cached = true;
+			$this->cached = TRUE;
 			$this->url = substr($this->url, 7);
 		}
 
@@ -72,7 +71,7 @@ class FilePresenter extends Presenter
 
 		// resize
 		if ($this->size && $this->size !== 'default') {
-			if (strpos($this->size, 'x') !== false) {
+			if (strpos($this->size, 'x') !== FALSE) {
 				$format = explode('x', $this->size);
 				$width = $format[0] !== '?' ? $format[0] : NULL;
 				$height = $format[1] !== '?' ? $format[1] : NULL;
@@ -89,7 +88,7 @@ class FilePresenter extends Presenter
 		$file = $this->context->parameters['wwwDir'] . "/public/media/_cache/{$this->size}/{$this->format}/{$this->type}/{$entity->getPath()}";
 		$dir = dirname($file);
 		umask(0000);
-		@mkdir($dir, 0777, true);
+		@mkdir($dir, 0777, TRUE);
 		$image->save($file, 90, $type);
 		$image->send($type, 90);
 	}

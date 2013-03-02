@@ -11,7 +11,8 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use CmsModule\Content\Repositories\DirRepository;
+use CmsModule\Content\Repositories\FileRepository;
 use CmsModule\Components\Table\TableControl;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Forms\FileFormFactory;
@@ -33,10 +34,10 @@ class FilesPresenter extends BasePresenter
 	/** @persistent */
 	public $browserMode;
 
-	/** @var BaseRepository */
+	/** @var DirRepository */
 	protected $dirRepository;
 
-	/** @var BaseRepository */
+	/** @var FileRepository */
 	protected $fileRepository;
 
 	/** @var DirFormFactory */
@@ -46,7 +47,7 @@ class FilesPresenter extends BasePresenter
 	protected $fileFormFactory;
 
 
-	public function __construct(BaseRepository $fileRepository, BaseRepository $dirRepository)
+	public function __construct(FileRepository $fileRepository, DirRepository $dirRepository)
 	{
 		$this->fileRepository = $fileRepository;
 		$this->dirRepository = $dirRepository;

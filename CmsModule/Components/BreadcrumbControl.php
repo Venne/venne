@@ -11,9 +11,8 @@
 
 namespace CmsModule\Components;
 
-use Venne;
 use CmsModule\Content\Control;
-use DoctrineModule\Repositories\BaseRepository;
+use CmsModule\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,14 +24,16 @@ class BreadcrumbControl extends Control
 	/** @var string */
 	protected $routePrefix;
 
-	/** @var BaseRepository */
+	/** @var PageRepository */
 	protected $pageRepository;
 
 
-	function __construct($pageRepository, $routePrefix)
+	public function __construct($routePrefix, PageRepository $pageRepository)
 	{
-		$this->pageRepository = $pageRepository;
+		parent::__construct();
+
 		$this->routePrefix = $routePrefix;
+		$this->pageRepository = $pageRepository;
 	}
 
 

@@ -13,9 +13,10 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\Entities\LanguageEntity;
-use Gedmo\Translatable\Translatable;
+use CmsModule\Content\Entities\PageTagEntity;
+use CmsModule\Content\Repositories\LanguageRepository;
+use CmsModule\Content\Repositories\PageTagRepository;
 use Gedmo\Translatable\TranslatableListener;
-use Venne;
 use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\ContentManager;
@@ -49,10 +50,10 @@ class ContentPresenter extends BasePresenter
 	/** @var PageRepository */
 	protected $pageRepository;
 
-	/** @var BaseRepository */
+	/** @var LanguageRepository */
 	protected $languageRepository;
 
-	/** @var BaseRepository */
+	/** @var PageTagRepository */
 	protected $pageTagRepository;
 
 	/** @var ContentManager */
@@ -68,15 +69,10 @@ class ContentPresenter extends BasePresenter
 	protected $specialFormFactory;
 
 
-	/**
-	 * @param \CmsModule\Content\Repositories\PageRepository $pageRepository
-	 * @param \DoctrineModule\Repositories\BaseRepository $languageRepository
-	 * @param \DoctrineModule\Repositories\BaseRepository $pageTagRepository
-	 * @param \CmsModule\Content\ContentManager $contentManager
-	 * @param $routeControlFactory
-	 */
-	public function __construct(PageRepository $pageRepository, BaseRepository $languageRepository, BaseRepository $pageTagRepository, ContentManager $contentManager, $routeControlFactory)
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, PageTagRepository $pageTagRepository, ContentManager $contentManager, $routeControlFactory)
 	{
+		parent::__construct();
+
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
 		$this->pageTagRepository = $pageTagRepository;

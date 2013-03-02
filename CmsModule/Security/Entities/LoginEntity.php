@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\LoginRepository")
  * @ORM\Table(name="login",indexes={@ORM\index(name="search_idx", columns={"sessionId"})})
  */
 class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity

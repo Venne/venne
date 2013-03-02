@@ -11,9 +11,8 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use CmsModule\Security\Repositories\UserRepository;
 use CmsModule\Components\Table\Form;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
 
@@ -30,7 +29,7 @@ class UsersPresenter extends BasePresenter
 	/** @persistent */
 	public $page;
 
-	/** @var \DoctrineModule\Repositories\BaseRepository */
+	/** @var UserRepository */
 	protected $userRepository;
 
 	/** @var UserFormFactory */
@@ -41,12 +40,10 @@ class UsersPresenter extends BasePresenter
 
 
 	/**
-	 * @param BaseRepository $userRepository
+	 * @param \CmsModule\Security\Repositories\UserRepository $userRepository
 	 */
-	public function __construct(BaseRepository $userRepository)
+	public function injectUserRepository(UserRepository $userRepository)
 	{
-		parent::__construct();
-
 		$this->userRepository = $userRepository;
 	}
 

@@ -44,54 +44,61 @@ services:
 
 
 	cms.pageRepository:
-		class: CmsModule\Content\Entities\PageEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\PageRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\PageEntity')
 
 	cms.layoutRepository:
-		class: CmsModule\Content\Entities\LayoutEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\LayoutRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\LayoutEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.routeRepository:
-		class: CmsModule\Content\Entities\RouteEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\RouteRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\RouteEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.elementRepository:
-		class: CmsModule\Content\Entities\ElementEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\ElementRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\ElementEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.languageRepository:
-		class: CmsModule\Content\Entities\LanguageEntity
+		class: CmsModule\Content\Repositories\LanguageRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\LanguageEntity')
 		setup:
 			- injectConfigBuilder(@cms.configService)
-		tags: [repository]
 
 	cms.loginRepository:
-		class: CmsModule\Security\Entities\LoginEntity
-		tags: [repository]
+		class: CmsModule\Security\Repositories\LoginRepository
+		factory: @entityManager::getRepository('CmsModule\Security\Entities\LoginEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.roleRepository:
-		class: CmsModule\Security\Entities\RoleEntity
-		tags: [repository]
+		class: CmsModule\Security\Repositories\RoleRepository
+		factory: @entityManager::getRepository('CmsModule\Security\Entities\RoleEntity')
 
 	cms.userRepository:
-		class: CmsModule\Security\Entities\UserEntity
-		tags: [repository]
+		class: CmsModule\Security\Repositories\UserRepository
+		factory: @entityManager::getRepository('CmsModule\Security\Entities\UserEntity')
 
 	cms.permissionRepository:
-		class: CmsModule\Security\Entities\PermissionEntity
-		tags: [repository]
+		class: CmsModule\Security\Repositories\PermissionRepository
+		factory: @entityManager::getRepository('CmsModule\Security\Entities\PermissionEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.fileRepository:
-		class: CmsModule\Content\Entities\FileEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\FileRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\FileEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.dirRepository:
-		class: CmsModule\Content\Entities\DirEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\DirRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\DirEntity')
 
 	cms.pageTagRepository:
-		class: CmsModule\Content\Entities\PageTagEntity
-		tags: [repository]
+		class: CmsModule\Content\Repositories\PageTagRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\PageTagEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 
 	cms.pageListener:

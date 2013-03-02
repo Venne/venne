@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageTagRepository")
  * @ORM\Table(name="pageTag")
  */
 class PageTagEntity extends \DoctrineModule\Entities\IdentifiedEntity

@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\LayoutRepository")
  * @ORM\Table(name="layout")
  */
 class LayoutEntity extends \DoctrineModule\Entities\NamedEntity

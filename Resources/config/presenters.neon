@@ -1,7 +1,7 @@
 services:
 
 	cms.sitemapPresenter:
-		class: CmsModule\Presenters\SitemapPresenter(@cms.languageRepository, @cms.pageRepository, %administration.routePrefix%)
+		class: CmsModule\Presenters\SitemapPresenter(..., ..., %administration.routePrefix%)
 		tags: [presenter]
 
 	cms.admin.administratorPresenter:
@@ -29,7 +29,7 @@ services:
 		]]
 
 	cms.admin.usersPresenter:
-		class: CmsModule\Administration\Presenters\UsersPresenter(@cms.userRepository)
+		class: CmsModule\Administration\Presenters\UsersPresenter
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Users:'
 			category: 'Security'
@@ -39,7 +39,7 @@ services:
 		]]
 
 	cms.admin.rolesPresenter:
-		class: CmsModule\Administration\Presenters\RolesPresenter(@cms.roleRepository)
+		class: CmsModule\Administration\Presenters\RolesPresenter
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Roles:'
 			category: 'Security'
@@ -53,7 +53,7 @@ services:
 		tags: [presenter]
 
 	cms.admin.languagePresenter:
-		class: CmsModule\Administration\Presenters\LanguagePresenter(@cms.languageRepository)
+		class: CmsModule\Administration\Presenters\LanguagePresenter
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Language:'
 			category: 'Website'
@@ -87,7 +87,7 @@ services:
 ##		tags: [presenter]
 #
 	cms.admin.contentPresenter:
-		class: CmsModule\Administration\Presenters\ContentPresenter(@cms.pageRepository, @cms.languageRepository, @cms.pageTagRepository, @cms.contentManager, @cms.admin.routeControlFactory)
+		class: CmsModule\Administration\Presenters\ContentPresenter(..., ..., ..., ..., @cms.admin.routeControlFactory)
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Content:'
 			category: 'Content'
@@ -97,7 +97,7 @@ services:
 		]]
 
 	cms.admin.layoutsPresenter:
-		class: CmsModule\Administration\Presenters\LayoutsPresenter(@cms.layoutRepository, @cms.elementRepository)
+		class: CmsModule\Administration\Presenters\LayoutsPresenter
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Layouts:'
 			category: 'Content'
@@ -117,7 +117,7 @@ services:
 		]]
 
 	cms.admin.filesPresenter:
-		class: CmsModule\Administration\Presenters\FilesPresenter(@cms.fileRepository, @cms.dirRepository)
+		class: CmsModule\Administration\Presenters\FilesPresenter
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Files:'
 			category: 'Content'
@@ -127,7 +127,7 @@ services:
 		]]
 
 	cms.filePresenter:
-		class: CmsModule\Content\Presenters\FilePresenter(@cms.fileRepository)
+		class: CmsModule\Content\Presenters\FilePresenter
 		tags: [presenter]
 
 	cms.admin.modulePresenter:
@@ -173,5 +173,5 @@ services:
 		tags: [presenter]
 
 	cms.errorPresenter:
-		class: CmsModule\Presenters\ErrorPresenter(@cms.pageTagRepository)
+		class: CmsModule\Presenters\ErrorPresenter
 		tags: [presenter]

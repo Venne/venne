@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\RouteRepository")
  * @ORM\Table(name="route", indexes={
  * @ORM\Index(name="type_idx", columns={"type"}),
  * @ORM\Index(name="url_idx", columns={"url"}),

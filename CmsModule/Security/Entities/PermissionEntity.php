@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
+ * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\PermissionRepository")
  * @ORM\Table(name="permission")
  */
 class PermissionEntity extends \DoctrineModule\Entities\IdentifiedEntity

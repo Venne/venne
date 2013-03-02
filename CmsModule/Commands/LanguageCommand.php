@@ -11,13 +11,12 @@
 
 namespace CmsModule\Commands;
 
-use Venne;
+use CmsModule\Content\Repositories\LanguageRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use CmsModule\Services\ConfigBuilder;
 
 /**
  * Command to execute DQL queries in a given EntityManager.
@@ -25,14 +24,11 @@ use CmsModule\Services\ConfigBuilder;
 class LanguageCommand extends Command
 {
 
-	/** @var \DoctrineModule\Repositories\BaseRepository */
+	/** @var LanguageRepository */
 	protected $repository;
 
 
-	/**
-	 * @param \DoctrineModule\Repositories\BaseRepository $repository
-	 */
-	public function __construct(\DoctrineModule\Repositories\BaseRepository $repository)
+	public function __construct(LanguageRepository $repository)
 	{
 		parent::__construct();
 
@@ -49,10 +45,10 @@ class LanguageCommand extends Command
 			->setName('cms:language:add')
 			->setDescription('Add new language.')
 			->setDefinition(array(
-			new InputArgument('name', InputArgument::REQUIRED, 'Language name.'),
-			new InputArgument('short', InputArgument::REQUIRED, 'Short.'),
-			new InputArgument('alias', InputArgument::REQUIRED, 'Alias.')
-		));
+				new InputArgument('name', InputArgument::REQUIRED, 'Language name.'),
+				new InputArgument('short', InputArgument::REQUIRED, 'Short.'),
+				new InputArgument('alias', InputArgument::REQUIRED, 'Alias.')
+			));
 	}
 
 

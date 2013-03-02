@@ -11,7 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use CmsModule\Security\Repositories\RoleRepository;
 use Nette\Callback;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Components\Table\Form;
@@ -26,7 +26,7 @@ use CmsModule\Forms\PermissionsFormFactory;
 class RolesPresenter extends BasePresenter
 {
 
-	/** @var BaseRepository */
+	/** @var RoleRepository */
 	protected $roleRepository;
 
 	/** @var RoleFormFactory */
@@ -37,10 +37,10 @@ class RolesPresenter extends BasePresenter
 
 
 	/**
-	 * @param BaseRepository $roleRepository
+	 * @param RoleRepository $roleRepository
 	 * @param PermissionsFormFactory $permissionsForm
 	 */
-	function __construct(BaseRepository $roleRepository, PermissionsFormFactory $permissionsForm)
+	function __construct(RoleRepository $roleRepository, PermissionsFormFactory $permissionsForm)
 	{
 		$this->roleRepository = $roleRepository;
 		$this->permissionsForm = $permissionsForm;

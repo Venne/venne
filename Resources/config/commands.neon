@@ -8,5 +8,5 @@ services:
 		tags: [command]
 
 	cms.languageCommand:
-		class: CmsModule\Commands\LanguageCommand(@cms.languageRepository)
+		class: CmsModule\Commands\LanguageCommand
 		tags: [command]
