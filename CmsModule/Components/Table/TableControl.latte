@@ -63,8 +63,7 @@
                 <div class="btn-group pull-right">
 					{foreach $actions as $name=>$action}
 						{$action->onRender($action, $item)}
-                        <a class="ajax btn btn-small{if $action->isDisabled()} disabled{/if}"
-                           href="{link doAction name=>$name, id=>$item->{$primaryColumn}}"{if $action->getOption('data-confirm')} data-confirm="{_$action->getOption('data-confirm')}"{/if}>{_$action->getLabel()}</a>
+                        {$action->getControl($item->{$primaryColumn})}
 					{/foreach}
                 </div>
             </td>

@@ -11,9 +11,7 @@
 
 namespace CmsModule\Components\Table;
 
-use Venne;
-use Venne\Application\UI\Control;
-use Nette\ComponentModel\IContainer;
+use Nette\Utils\Html;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -39,6 +37,9 @@ class Button extends \Nette\ComponentModel\Component
 	/** @var bool */
 	protected $disabled = FALSE;
 
+	/** @var Html */
+	protected $control;
+
 
 	/**
 	 * @param string $label
@@ -48,6 +49,7 @@ class Button extends \Nette\ComponentModel\Component
 		parent::__construct();
 
 		$this->label = $label;
+		$this->control = Html::el('a');
 	}
 
 
@@ -121,5 +123,33 @@ class Button extends \Nette\ComponentModel\Component
 	public function isDisabled()
 	{
 		return $this->disabled;
+	}
+
+
+	public function getControl($id)
+	{
+		$control = clone $this->control;
+		$control->class[] = 'ajax btn btn-small';
+		$control->disabled = $this->disabled;
+
+		if ($this->getOption('data-confirm')) {
+			$control->{'data - confirm'} = $this->getOption('data-confirm');
+		}
+
+		$control->setText($this->parent->template->translate($this->getLabel()));
+
+		$control->href = $this->parent->link('doAction', array('name' => $this->name, 'id' => $id));
+
+		return $control;
+	}
+
+
+	/**
+	 * Returns control's HTML element template.
+	 * @return Nette\Utils\Html
+	 */
+	final public function getControlPrototype()
+	{
+		return $this->control;
 	}
 }
