@@ -146,7 +146,7 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 
 
 	/**
-	 * @return mixed
+	 * @return UserEntity[]
 	 */
 	public function getUsers()
 	{
