@@ -10,6 +10,7 @@
 
 		{var entity=>$item->getPageWithLanguageAlias($presenter->lang)}
 		{continueIf $entity===NULL}
+		{continueIf !$entity->published || !$entity->mainRoute->published}
 
 		{var active=>$control->isActive($entity)}
 		{var link=>$control->getLink($entity)}
