@@ -95,26 +95,10 @@
 				{$module->getVersion()}
             </td>
             <td class="table-td-action">
-
-                <div n:if="$presenter->isAuthorized('edit')" class="btn-group">
-                    <a class="btn btn-small dropdown-toggle" data-toggle="dropdown"
-                       href="#">
-						{if $presenter->moduleManager->getStatus($module) == 'installed'}
-						<span class="icon icon-ok"></span>
-						{else}
-						<span class="icon icon-remove"></span>
-						{/if}
-						{_$presenter->moduleManager->getStatus($module)} <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-						{if $presenter->moduleManager->getStatus($module) === \Venne\Module\ModuleManager::STATUS_INSTALLED}
-                            <li><a n:href="uninstall! $name"><span class="icon icon-off"></span> {_Uninstall}</a></li>
-						{/if}
-						{if $presenter->moduleManager->getStatus($module) === \Venne\Module\ModuleManager::STATUS_UNINSTALLED}
-                            <li><a n:href="install! $name"><span class="icon icon-refresh"></span> {_Install}</a></li>
-						{/if}
-                    </ul>
-                </div>
+				<div n:if="$presenter->isAuthorized('edit')" class="btn-group pull-right">
+					<a class="ajax btn btn-small{if $presenter->moduleManager->getStatus($module) != 'installed'} btn-success{/if}"{if $presenter->moduleManager->getStatus($module) == 'installed'} disabled="disabled"{/if} n:href="install! $name"><span class="icon icon-refresh icon-white"></span> {_Install}</a>
+					<a class="ajax btn btn-small{if $presenter->moduleManager->getStatus($module) == 'installed'} btn-danger{/if}"{if $presenter->moduleManager->getStatus($module) != 'installed'} disabled="disabled"{/if} n:href="uninstall! $name"><span class="icon icon-off icon-white"></span> {_Uninstall}</a>
+				</div>
             </td>
         </tr>
 		{/if}
