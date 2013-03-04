@@ -121,6 +121,12 @@ abstract class PageEntity extends TreeEntity
 	 */
 	protected $tag;
 
+	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $published = FALSE;
+
 
 	/**
 	 * @param $type
@@ -491,6 +497,24 @@ abstract class PageEntity extends TreeEntity
 	public function getTag()
 	{
 		return $this->tag;
+	}
+
+
+	/**
+	 * @param boolean $published
+	 */
+	public function setPublished($published)
+	{
+		$this->published = $published;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getPublished()
+	{
+		return $this->published;
 	}
 
 

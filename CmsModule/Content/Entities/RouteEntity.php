@@ -111,6 +111,12 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $childrenLayout;
 
+	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $published = TRUE;
+
 
 	/***************** Meta *******************/
 
@@ -564,6 +570,24 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getCacheMode()
 	{
 		return $this->cacheMode;
+	}
+
+
+	/**
+	 * @param boolean $published
+	 */
+	public function setPublished($published)
+	{
+		$this->published = $published;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getPublished()
+	{
+		return $this->published;
 	}
 
 

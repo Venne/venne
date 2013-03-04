@@ -43,6 +43,16 @@
 			</ul>
 		</li>
 	{/if}
+
+	<li>&nbsp;&nbsp;</li>
+	<li class="dropdown">
+		{if $entity->published}
+		<a n:href="hide!"><span class="icon icon-arrow-down icon-white"></span> Hide</a>
+		{else}
+		<a n:href="publish!"><span class="icon icon-arrow-up icon-white"></span> Publish</a>
+		{/if}
+	</li>
+
 {/block}
 
 {block content}

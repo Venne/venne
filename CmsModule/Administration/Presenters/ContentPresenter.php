@@ -178,6 +178,34 @@ class ContentPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handlePublish()
+	{
+		$entity = $this->pageRepository->find($this->key);
+		$entity->published = TRUE;
+		$this->pageRepository->save($entity);
+
+		$this->flashMessage('Page has been published', 'success');
+		$this->redirect('this');
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleHide()
+	{
+		$entity = $this->pageRepository->find($this->key);
+		$entity->published = False;
+		$this->pageRepository->save($entity);
+
+		$this->flashMessage('Page has been hidden', 'success');
+		$this->redirect('this');
+	}
+
+
 	public function createComponentTable()
 	{
 		$presenter = $this;
@@ -211,6 +239,40 @@ class ContentPresenter extends BasePresenter
 		// actions
 		$repository = $this->pageRepository;
 		if ($this->isAuthorized('edit')) {
+			$action = $table->addAction('on', 'On');
+			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
+				$entity->published = TRUE;
+				$repository->save($entity);
+
+				if (!$presenter->isAjax()) {
+					$presenter->redirect('this');
+				}
+
+				$presenter->invalidateControl('content');
+				$presenter['panel']->invalidateControl('content');
+				$presenter->payload->url = $presenter->link('this');
+			};
+			$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
+				$button->setDisabled($entity->published);
+			};
+
+			$action = $table->addAction('off', 'Off');
+			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
+				$entity->published = FALSE;
+				$repository->save($entity);
+
+				if (!$presenter->isAjax()) {
+					$presenter->redirect('this');
+				}
+
+				$presenter->invalidateControl('content');
+				$presenter['panel']->invalidateControl('content');
+				$presenter->payload->url = $presenter->link('this');
+			};
+			$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
+				$button->setDisabled(!$entity->published);
+			};
+
 			$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
 				if (!$presenter->isAjax()) {
 					$presenter->redirect('edit', array('key' => $entity->id));

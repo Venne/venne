@@ -11,6 +11,8 @@
 
 namespace CmsModule\Content\Routes;
 
+use CmsModule\Content\Repositories\LanguageRepository;
+use CmsModule\Content\Repositories\RouteRepository;
 use Nette\Callback;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\Routers\Route;
@@ -78,12 +80,18 @@ class PageRoute extends Route
 	}
 
 
+	/**
+	 * @return LanguageRepository
+	 */
 	protected function getLangRepository()
 	{
 		return $this->container->cms->languageRepository;
 	}
 
 
+	/**
+	 * @return RouteRepository
+	 */
 	protected function getRouteRepository()
 	{
 		return $this->container->cms->routeRepository;
@@ -131,9 +139,12 @@ class PageRoute extends Route
 					->leftJoin('a.page', 'm')
 					->leftJoin('m.languages', 'p')
 					->where('a.url = :url')
+					->andWhere('a.published = :true')
+					->andWhere('m.published = :true')
 					->andWhere('p.alias = :lang')
 					->setParameter('lang', $parameters['lang'])
 					->setParameter('url', $parameters['url'])
+					->setParameter('true', TRUE)
 					->getQuery()->getSingleResult();
 			} catch (\Doctrine\ORM\NoResultException $e) {
 				return NULL;
@@ -141,8 +152,12 @@ class PageRoute extends Route
 		} else {
 			try {
 				$route = $this->getRouteRepository()->createQueryBuilder('a')
+					->leftJoin('a.page', 'm')
 					->where('a.url = :url')
+					->andWhere('a.published = :true')
+					->andWhere('m.published = :true')
 					->setParameter('url', $parameters['url'])
+					->setParameter('true', TRUE)
 					->getQuery()->getSingleResult();
 			} catch (\Doctrine\ORM\NoResultException $e) {
 				return NULL;
@@ -204,9 +219,12 @@ class PageRoute extends Route
 						->leftJoin('a.page', 'm')
 						->leftJoin('m.languages', 'p')
 						->where('a.url = :url')
+						->andWhere('a.published = :true')
+						->andWhere('m.published = :true')
 						->andWhere('p.alias = :lang')
 						->setParameter('url', $url)
 						->setParameter('lang', $parameters['lang'])
+						->setParameter('true', TRUE)
 						->getQuery()->getSingleResult();
 				} catch (\Doctrine\ORM\NoResultException $e) {
 					return NULL;
@@ -214,8 +232,12 @@ class PageRoute extends Route
 			} else {
 				try {
 					$route = $this->getRouteRepository()->createQueryBuilder('a')
+						->leftJoin('a.page', 'm')
 						->andWhere('a.url = :url')
+						->andWhere('a.published = :true')
+						->andWhere('m.published = :true')
 						->setParameter('url', $url)
+						->setParameter('true', TRUE)
 						->getQuery()->getSingleResult();
 				} catch (\Doctrine\ORM\NoResultException $e) {
 					return NULL;

@@ -66,6 +66,40 @@ class RouteControl extends SectionControl
 			->setSortable(TRUE)
 			->setFilter();
 
+		$repository = $this->routeRepository;
+		$presenter = $this;
+		$action = $table->addAction('on', 'On');
+		$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
+			$entity->published = TRUE;
+			$repository->save($entity);
+
+			if (!$presenter->presenter->isAjax()) {
+				$presenter->redirect('this');
+			}
+
+			$presenter['table']->invalidateControl('table');
+			$presenter->presenter->payload->url = $presenter->link('this');
+		};
+		$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
+			$button->setDisabled($entity->published);
+		};
+
+		$action = $table->addAction('off', 'Off');
+		$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
+			$entity->published = FALSE;
+			$repository->save($entity);
+
+			if (!$presenter->presenter->isAjax()) {
+				$presenter->redirect('this');
+			}
+
+			$presenter['table']->invalidateControl('table');
+			$presenter->presenter->payload->url = $presenter->link('this');
+		};
+		$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
+			$button->setDisabled(!$entity->published);
+		};
+
 		$table->addActionEdit('edit', 'Edit', $form);
 
 		return $table;
