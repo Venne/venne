@@ -146,7 +146,7 @@ class RegistrationPresenter extends PagePresenter
 
 	public function processSuccess($form)
 	{
-		$this->flashMessage('Registration is complete', 'success');
+		$this->flashMessage('Your registration is complete', 'success');
 
 		// email
 		if ($this->page->mode === RegistrationPageEntity::MODE_MAIL || $this->page->mode === RegistrationPageEntity::MODE_MAIL_CHECKUP) {
