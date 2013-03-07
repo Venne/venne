@@ -483,33 +483,33 @@ $.nette.ext('abort', {
 	}
 }, {xhr: null});
 
-$.nette.ext('load', {
-	success: function () {
-		$.nette.load();
-	}
-});
-
 // default ajaxification (can be overridden in init())
 $.nette.ext('init', {
 	load: function (rh) {
 		$(this.linkSelector).off('click.nette', rh).on('click.nette', rh);
-		$(this.formSelector).off('submit.nette', rh).on('submit.nette', rh)
-			.off('click.nette', ':image', rh).on('click.nette', ':image', rh)
-			.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
+		var $forms = $(this.formSelector);
+		$forms.off('submit.nette', rh).on('submit.nette', rh);
+		$forms.off('click.nette', ':image', rh).on('click.nette', ':image', rh);
+		$forms.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
+
 		$('input[clicked="true"]').removeAttr('clicked');
-		$(this.buttonSelector).each(function () {
+		var buttonSelector = this.buttonSelector;
+		$(buttonSelector).each(function () {
 			$(this).closest('form')
-				.off('click.nette', this.buttonSelector, rh)
-				.on('click.nette', this.buttonSelector, rh);
+				.off('click.nette', buttonSelector, rh)
+				.on('click.nette', buttonSelector, rh);
 			$(this).on('click.nette', this, function (ui) {
 				$(this).attr('clicked', 'true');
 			});
 		});
+	},
+	success: function () {
+		$.nette.load();
 	}
 }, {
 	linkSelector: 'a.ajax',
 	formSelector: 'form.ajax',
-	buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]',
+	buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]'
 });
 
 })(window.jQuery);
