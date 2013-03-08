@@ -19,7 +19,19 @@ The best way to install Venne:CMS is create new project using
 
 ### Manual
 
-Next way to install Venne:CMS is download and unpack [archive](https://github.com/Venne/cms-module/downloads).
+Next way to install Venne:CMS is download and unpack archive.
+
+**CMS with additional modules**
+- [zip archive](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.zip)
+- [tgz archive](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.tgz)
+- [zip archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.ws.zip)
+- [tgz archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.ws.tgz)
+
+**CMS without additional modules**
+- [zip archive](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.zip)
+- [tgz archive](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.tgz)
+- [zip archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.ws.zip)
+- [tgz archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.ws.tgz)
 
 ## Modules
 
