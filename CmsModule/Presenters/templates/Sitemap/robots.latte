@@ -1,5 +1,7 @@
 User-agent: *
 {if $routePrefix}Disallow: /{$routePrefix}/{/if}
+Disallow: /*?do=*
+Disallow: /*&do=*
 
 {foreach $languageRepository->findBy(array(), array('id'=>'ASC')) as $language}
 Sitemap: {link sitemap lang=>$language->alias}
