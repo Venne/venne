@@ -97,7 +97,7 @@ class AdministratorPresenter extends BasePresenter
 
 		// Resources dir
 		if (!file_exists($this->resourcesDir . "/cmsModule")) {
-			@symlink("../../vendor/venne/core-module/Resources/public", $this->resourcesDir . "/cmsModule");
+			@symlink("../../vendor/venne/cms-module/Resources/public", $this->resourcesDir . "/cmsModule");
 		}
 
 		// Extensions
