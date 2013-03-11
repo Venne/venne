@@ -11,7 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use Nette\Application\BadRequestException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,9 +37,17 @@ class LogsPresenter extends BasePresenter
 	/**
 	 * @secured(privilege="show")
 	 */
-	public function actionShow()
+	public function actionShow($name)
 	{
-		$this->sendResponse(new \Nette\Application\Responses\TextResponse(file_get_contents($this->logDir . "/" . $this->getParameter("name"))));
+		if (!is_string($name)) { // be aware of arrays and other inputs
+			throw new BadRequestException;
+		}
+		if (preg_match("#^exception-([0-9a-zA-Z\-]+)\.html$#D", $name)) {
+			$this->sendResponse(new \Nette\Application\Responses\TextResponse(file_get_contents($this->logDir . '/' . $name)));
+		} else {
+			// prevent directory traversal
+			throw new BadRequestException;
+		}
 	}
 
 
