@@ -133,7 +133,7 @@ class Button extends \Nette\ComponentModel\Component
 		$control->disabled = $this->disabled;
 
 		if ($this->getOption('data-confirm')) {
-			$control->{'data - confirm'} = $this->getOption('data-confirm');
+			$control->{'data-confirm'} = $this->getOption('data-confirm');
 		}
 
 		$control->setText($this->parent->template->translate($this->getLabel()));
