@@ -80,7 +80,7 @@ class BasicFormFactory extends FormFactory
 		if (!$form->data->translationFor) {
 			if ($form->data->parent) {
 				/** @var $parent SelectBox */
-				$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL))->setPrompt(FALSE);
+				$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL))->setPrompt(NULL);
 			}
 		}
 
