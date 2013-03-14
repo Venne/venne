@@ -17,7 +17,7 @@ use Venne\Forms\Form;
 use DoctrineModule\Forms\Mappers\EntityMapper;
 use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Administration\AdministrationManager;
-use CmsModule\Security\Repositories\PermissionRepository;
+use CmsModule\Security\Repositories\RoleRepository;
 use Nette\Application\PresenterFactory;
 use Venne\Security\IControlVerifierReader;
 
@@ -42,15 +42,15 @@ class PermissionsFormFactory extends FormFactory
 	/** @var EntityMapper */
 	protected $mapper;
 
-	/** @var PermissionRepository */
+	/** @var RoleRepository */
 	protected $repository;
 
 
 	/**
 	 * @param EntityMapper $mapper
-	 * @param PermissionRepository $repository
+	 * @param RoleRepository $repository
 	 */
-	public function __construct(EntityMapper $mapper, PermissionRepository $repository)
+	public function __construct(EntityMapper $mapper, RoleRepository $repository)
 	{
 		$this->mapper = $mapper;
 		$this->repository = $repository;
