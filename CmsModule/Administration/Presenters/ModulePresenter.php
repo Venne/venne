@@ -98,7 +98,7 @@ class ModulePresenter extends BasePresenter
 
 		if (!$confirm && count($problem->getSolutions()) > 0) {
 			$this->template->solutions = $problem->getSolutions();
-			$this->template->solutionAction = 'uninstall';
+			$this->template->solutionAction = 'install';
 			$this->template->solutionModule = $name;
 			return;
 		}
