@@ -1,4 +1,4 @@
-services:
+factories:
 
 	cms.sitemapPresenter:
 		class: CmsModule\Presenters\SitemapPresenter(..., ..., %administration.routePrefix%)
