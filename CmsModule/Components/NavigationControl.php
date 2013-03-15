@@ -71,7 +71,7 @@ class NavigationControl extends Control
 	public function render($startDepth = NULL, $maxDepth = NULL, $followActive = NULL, $showMain = FALSE)
 	{
 		$cacheKey = array(
-			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $this->getPresenter()->lang
+			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $showMain, $this->getPresenter()->lang
 		);
 
 		$this->template->startDepth = $startDepth ? : 0;
