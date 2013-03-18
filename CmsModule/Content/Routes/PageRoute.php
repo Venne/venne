@@ -142,6 +142,7 @@ class PageRoute extends Route
 					->andWhere('a.published = :true')
 					->andWhere('m.published = :true')
 					->andWhere('p.alias = :lang')
+					->andWhere('m.tag IS NULL')
 					->setParameter('lang', $parameters['lang'])
 					->setParameter('url', $parameters['url'])
 					->setParameter('true', TRUE)
@@ -156,6 +157,7 @@ class PageRoute extends Route
 					->where('a.url = :url')
 					->andWhere('a.published = :true')
 					->andWhere('m.published = :true')
+					->andWhere('m.tag IS NULL')
 					->setParameter('url', $parameters['url'])
 					->setParameter('true', TRUE)
 					->getQuery()->getSingleResult();
@@ -222,6 +224,7 @@ class PageRoute extends Route
 						->andWhere('a.published = :true')
 						->andWhere('m.published = :true')
 						->andWhere('p.alias = :lang')
+						->andWhere('m.tag IS NULL')
 						->setParameter('url', $url)
 						->setParameter('lang', $parameters['lang'])
 						->setParameter('true', TRUE)
@@ -236,6 +239,7 @@ class PageRoute extends Route
 						->andWhere('a.url = :url')
 						->andWhere('a.published = :true')
 						->andWhere('m.published = :true')
+						->andWhere('m.tag IS NULL')
 						->setParameter('url', $url)
 						->setParameter('true', TRUE)
 						->getQuery()->getSingleResult();

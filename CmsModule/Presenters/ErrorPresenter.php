@@ -11,7 +11,7 @@
 
 namespace CmsModule\Presenters;
 
-use CmsModule\Content\Repositories\PageTagRepository;
+use CmsModule\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,16 +19,16 @@ use CmsModule\Content\Repositories\PageTagRepository;
 class ErrorPresenter extends FrontPresenter
 {
 
-	/** @var PageTagRepository */
-	protected $pageTagRepository;
+	/** @var PageRepository */
+	protected $pageRepository;
 
 
 	/**
-	 * @param PageTagRepository $pageTagRepository
+	 * @param PageRepository $pageRepository
 	 */
-	public function injectPageTagRepository(PageTagRepository $pageTagRepository)
+	public function injectPageTagRepository(PageRepository $pageRepository)
 	{
-		$this->pageTagRepository = $pageTagRepository;
+		$this->pageRepository = $pageRepository;
 	}
 
 
@@ -47,11 +47,11 @@ class ErrorPresenter extends FrontPresenter
 		\Nette\Diagnostics\Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
 
 		if (in_array($code, array(403, 404, 405, 410, 500))) {
-			$specialPage = $this->pageTagRepository->findOneBy(array('tag' => "error_$code"));
+			$page = $this->pageRepository->findOneBy(array('tag' => "error_$code", 'published' => TRUE));
 
-			if ($specialPage && $specialPage->page) {
-				$params = $specialPage->page->mainRoute->params + array('route' => $specialPage->page->mainRoute);
-				$this->forward(':' . $specialPage->page->mainRoute->type, $params);
+			if ($page && $page->mainRoute->published) {
+				$params = $page->mainRoute->params + array('route' => $page->mainRoute);
+				$this->forward(':' . $page->mainRoute->type, $params);
 			}
 		}
 	}

@@ -95,11 +95,6 @@ services:
 		class: CmsModule\Content\Repositories\DirRepository
 		factory: @entityManager::getRepository('CmsModule\Content\Entities\DirEntity')
 
-	cms.pageTagRepository:
-		class: CmsModule\Content\Repositories\PageTagRepository
-		factory: @entityManager::getRepository('CmsModule\Content\Entities\PageTagEntity')
-		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
-
 
 	cms.pageListener:
 		class: CmsModule\Content\Listeners\PageListener

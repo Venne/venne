@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
+use Nette\InvalidArgumentException;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,7 +19,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @ORM\Table(name="page")
+ * @ORM\Table(name="page", indexes={@ORM\Index(name="tag_idx", columns={"tag"})})
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"base" = "PageEntity"})
@@ -35,16 +35,13 @@ abstract class PageEntity extends TreeEntity
 
 	const TAG_ERROR_405 = 'error_405';
 
-	const TAG_ERROR_410 = 'error_410';
-
 	const TAG_ERROR_500 = 'error_500';
 
 	/** @var array */
 	protected static $tags = array(
-		self::TAG_ERROR_403 => 'Forbidden page',
 		self::TAG_ERROR_404 => 'Not Found page',
+		self::TAG_ERROR_403 => 'Forbidden page',
 		self::TAG_ERROR_405 => 'Method Not Allowed',
-		self::TAG_ERROR_410 => 'Gone',
 		self::TAG_ERROR_500 => 'Internal Server Error page',
 	);
 
@@ -115,9 +112,8 @@ abstract class PageEntity extends TreeEntity
 	protected $navigationShow;
 
 	/**
-	 * @var PageTagEntity
-	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageTagEntity", inversedBy="page")
-	 * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
+	 * @var
+	 * @ORM\Column(type="string", nullable=true, unique=true)
 	 */
 	protected $tag;
 
@@ -207,6 +203,10 @@ abstract class PageEntity extends TreeEntity
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
 	{
+		if ($this->tag) {
+			return;
+		}
+
 		parent::setParent($parent, $setPrevious, $previous);
 
 		$this->mainRoute->parent = $this->parent && $this->parent->mainRoute ? $this->parent->mainRoute : NULL;
@@ -483,16 +483,26 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
-	 * @param \CmsModule\Content\Entities\PageTagEntity $tag
+	 * @param string $tag
 	 */
 	public function setTag($tag)
 	{
+		$tag = !$tag ? NULL : $tag;
+
+		if (!isset(self::$tags[$tag]) && $tag !== NULL) {
+			throw new InvalidArgumentException('Tag must be one of ' . join(', ', self::$tags) . ' or NULL.');
+		}
+
+		if ($tag === NULL) {
+			$this->setParent($this->getRoot());
+		}
+
 		$this->tag = $tag;
 	}
 
 
 	/**
-	 * @return \CmsModule\Content\Entities\PageTagEntity
+	 * @return string
 	 */
 	public function getTag()
 	{

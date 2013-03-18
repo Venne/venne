@@ -210,9 +210,9 @@ class PanelControl extends Control
 
 		$dql = $repository->createQueryBuilder('a');
 		if ($parent) {
-			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
+			$dql = $dql->andWhere('a.parent = ?1 AND a.tag IS NULL')->setParameter(1, $parent);
 		} else {
-			$dql = $dql->andWhere('a.parent IS NULL AND a.virtualParent IS NULL');
+			$dql = $dql->andWhere('(a.parent IS NULL OR a.tag IS NOT NULL) AND a.virtualParent IS NULL');
 		}
 		$dql
 			->andWhere('a.translationFor IS NULL')

@@ -13,15 +13,13 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\Entities\LanguageEntity;
-use CmsModule\Content\Entities\PageTagEntity;
+use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
-use CmsModule\Content\Repositories\PageTagRepository;
 use Gedmo\Translatable\TranslatableListener;
 use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Forms\BasicFormFactory;
-use CmsModule\Content\Forms\SpecialFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -53,9 +51,6 @@ class ContentPresenter extends BasePresenter
 	/** @var LanguageRepository */
 	protected $languageRepository;
 
-	/** @var PageTagRepository */
-	protected $pageTagRepository;
-
 	/** @var ContentManager */
 	protected $contentManager;
 
@@ -65,17 +60,13 @@ class ContentPresenter extends BasePresenter
 	/** @var RouteControl */
 	protected $contentRouteControlFactory;
 
-	/** @var SpecialFormFactory */
-	protected $specialFormFactory;
 
-
-	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, PageTagRepository $pageTagRepository, ContentManager $contentManager, $routeControlFactory)
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, $routeControlFactory)
 	{
 		parent::__construct();
 
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
-		$this->pageTagRepository = $pageTagRepository;
 		$this->contentManager = $contentManager;
 		$this->contentRouteControlFactory = $routeControlFactory;
 	}
@@ -87,15 +78,6 @@ class ContentPresenter extends BasePresenter
 	public function injectContentForm(BasicFormFactory $contentForm)
 	{
 		$this->contentFormFactory = $contentForm;
-	}
-
-
-	/**
-	 * @param SpecialFormFactory $specialFormFactory
-	 */
-	public function injectSpecialFormFactory(SpecialFormFactory $specialFormFactory)
-	{
-		$this->specialFormFactory = $specialFormFactory;
 	}
 
 
@@ -198,7 +180,7 @@ class ContentPresenter extends BasePresenter
 	public function handleHide()
 	{
 		$entity = $this->pageRepository->find($this->key);
-		$entity->published = False;
+		$entity->published = FALSE;
 		$this->pageRepository->save($entity);
 
 		$this->flashMessage('Page has been hidden', 'success');
@@ -227,13 +209,21 @@ class ContentPresenter extends BasePresenter
 				return $entity->mainRoute->url;
 			});
 		$table->addColumn('languages', 'Languages')
-			->setWidth('30%')
+			->setWidth('20%')
 			->setCallback(function ($entity) {
 				$ret = implode(", ", $entity->languages->toArray());
 				foreach ($entity->translations as $translation) {
 					$ret .= ', ' . implode(", ", $translation->languages->toArray());
 				}
 				return $ret;
+			});
+		$table->addColumn('tag', 'Tag')
+			->setWidth('10%')
+			->setCallback(function ($entity) {
+				if ($entity->tag) {
+					$tags = PageEntity::getTags();
+					return $tags[$entity->tag];
+				}
 			});
 
 		// actions
@@ -285,7 +275,7 @@ class ContentPresenter extends BasePresenter
 			};
 			$action = $table->addAction('setAsRoot', 'Set as root');
 			$action->onRender[] = function ($button, $entity) {
-				$button->setDisabled($entity->parent === NULL);
+				$button->setDisabled($entity->parent === NULL || $entity->tag);
 			};
 			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
 				$main = $entity->getRoot();
@@ -305,51 +295,6 @@ class ContentPresenter extends BasePresenter
 			$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($presenter) {
 				$presenter['panel']->invalidateControl('content');
 			};
-
-			// global actions
-			$table->setGlobalAction($table['delete']);
-		}
-
-		return $table;
-	}
-
-
-	public function createComponentSpecialTable()
-	{
-		$presenter = $this;
-
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->pageTagRepository);
-
-		// forms
-		$form = $table->addForm($this->specialFormFactory, 'Special form');
-
-		// navbar
-		if ($this->isAuthorized('create')) {
-			$table->addButtonCreate('create', 'Create new', $form, 'file');
-		}
-
-		// columns
-		$table->addColumn('tag', 'Tag')
-			->setWidth('40%')
-			->setCallback(function ($entity) {
-				$tags = \CmsModule\Content\Entities\PageTagEntity::getTags();
-				return $tags[$entity->tag];
-			});
-		$table->addColumn('page', 'Page')
-			->setWidth('60%')
-			->setCallback(function ($entity) {
-				return ($entity->page ? (string)$entity->page : '');
-			});
-
-		// actions
-		if ($this->isAuthorized('edit')) {
-			$table->addActionEdit('edit', 'Edit', $form);
-		}
-
-		if ($this->isAuthorized('remove')) {
-			$table->addActionDelete('delete', 'Delete');
 
 			// global actions
 			$table->setGlobalAction($table['delete']);

@@ -16,6 +16,7 @@ use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Repositories\BaseRepository;
+use CmsModule\Content\Entities\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -76,11 +77,19 @@ class BasicFormFactory extends FormFactory
 			->setOption('description', $htmlTitle)
 			->getControlPrototype()->class[] = 'formTitle';
 
+		// tags
+		if (!$form->data->translationFor) {
+			$tag = $form->addSelect('tag', 'Page type', array_merge(array(FALSE => 'Normal page'), PageEntity::getTags()));
+		}
+
 		// parent
 		if (!$form->data->translationFor) {
 			if ($form->data->parent) {
 				/** @var $parent SelectBox */
+				$form->addGroup()->setOption('id', 'parent-group');
 				$form->addManyToOne("parent", "Parent content", NULL, NULL, array("translationFor" => NULL))->setPrompt(NULL);
+
+				$tag->addCondition($form::EQUAL, FALSE)->toggle('parent-group');
 			}
 		}
 
@@ -217,6 +226,12 @@ class BasicFormFactory extends FormFactory
 	{
 		if ($e instanceof \Nette\InvalidArgumentException) {
 			$form->addError($e->getMessage());
+			return TRUE;
+		} else if ($e instanceof \Doctrine\DBAL\DBALException && strpos($e->getMessage(), 'Duplicate entry') !== false) {
+			$form->addError('Duplicate entry');
+			return TRUE;
+		} elseif ($e instanceof \Exception) {
+			$form->addError('Type: ' . get_class($e) . '. ' . $e->getMessage());
 			return TRUE;
 		}
 	}

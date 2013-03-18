@@ -79,7 +79,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 				if ($listener instanceof TranslatableListener) {
 					$langId = (string)$this->context->cms->languageRepository->findOneBy(array('short' => $this->lang))->id;
 					$listener->setTranslatableLocale($langId);
-					$listener->setTranslationFallback(true);
+					$listener->setTranslationFallback(TRUE);
 					break;
 				}
 			}
