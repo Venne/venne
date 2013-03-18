@@ -19,15 +19,11 @@ use Venne;
 interface IContentType
 {
 
-	public function __construct($type, $name, $entityName);
+	public function __construct($name, $entityName);
 
 
 
 	public function getName();
-
-
-
-	public function getType();
 
 
 

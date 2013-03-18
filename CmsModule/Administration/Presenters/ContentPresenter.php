@@ -336,7 +336,7 @@ class ContentPresenter extends BasePresenter
 		$pageEntity = $this->pageRepository->find($this->getParameter("key"));
 		$contentType = $this->contentManager->getContentType($pageEntity::getType());
 
-		/** @var $entity \CmsModule\Entities\PageEntity */
+		/** @var $entity \CmsModule\Content\Entities\PageEntity */
 		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
 		$entity->setTranslationFor($pageEntity);
 
@@ -350,7 +350,7 @@ class ContentPresenter extends BasePresenter
 	{
 		$repository = $this->pageRepository;
 		$entity = $repository->find($this->getParameter("key"));
-		$contentType = $this->contentManager->getContentType($entity->type);
+		$contentType = $this->contentManager->getContentType(get_class($entity));
 
 		if ((!$this->section && count($contentType->sections) == 0) || $this->section == 'basic') {
 			$form = $this->contentFormFactory->invoke($entity);
@@ -396,7 +396,7 @@ class ContentPresenter extends BasePresenter
 		$this->invalidateControl('toolbar');
 
 		$this->template->entity = $this->pageRepository->find($this->key);
-		$this->template->contentType = $this->contentManager->getContentType($this->template->entity->type);
+		$this->template->contentType = $this->contentManager->getContentType(get_class($this->template->entity));
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
 		$this->template->languageRepository = $this->languageRepository;

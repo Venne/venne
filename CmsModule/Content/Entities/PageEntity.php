@@ -529,17 +529,6 @@ abstract class PageEntity extends TreeEntity
 
 
 	/**
-	 * @return string
-	 */
-	public static function getType()
-	{
-		$ref = new \Nette\Reflection\ClassType(get_called_class());
-		$annotation = $ref->getAnnotation('ORM\DiscriminatorEntry');
-		return $annotation['name'];
-	}
-
-
-	/**
 	 * @return array
 	 */
 	public static function getTags()

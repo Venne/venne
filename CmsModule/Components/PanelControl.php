@@ -220,7 +220,7 @@ class PanelControl extends Control
 
 		$types = $this->contentManager->getContentTypes();
 		foreach ($dql->getQuery()->getResult() as $page) {
-			$type = $this->presenter->template->translate($types[$page->type]);
+			$type = $this->presenter->template->translate($types[get_class($page)]);
 			$item = array("title" => $page->name . ' <small class="muted">' . $type . '</small>', 'key' => $page->id);
 
 			if (count($page->children) > 0) {

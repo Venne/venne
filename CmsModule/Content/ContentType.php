@@ -22,18 +22,17 @@ class ContentType extends Object implements IContentType
 
 	/** @var string */
 	protected $name;
-	/** @var string */
-	protected $type;
+
 	/** @var string */
 	protected $entityName;
+
 	/** @var ContentTypeSection[] */
 	protected $sections = array();
 
 
-	public function __construct($type, $name, $entityName)
+	public function __construct($name, $entityName)
 	{
 		$this->name = $name;
-		$this->type = $type;
 		$this->entityName = $entityName;
 	}
 
@@ -79,15 +78,6 @@ class ContentType extends Object implements IContentType
 	/**
 	 * @return string
 	 */
-	public function getType()
-	{
-		return $this->type;
-	}
-
-
-	/**
-	 * @return string
-	 */
 	public function getEntityName()
 	{
 		return $this->entityName;
@@ -101,6 +91,4 @@ class ContentType extends Object implements IContentType
 	{
 		return $this->sections;
 	}
-
-
 }
