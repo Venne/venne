@@ -204,6 +204,16 @@ class TableControl extends Control
 	}
 
 
+	/**
+	 * @param $name
+	 * @return IColumn
+	 */
+	public function getColumn($name)
+	{
+		return $this->columns[$name];
+	}
+
+
 	public function addColumnFloor($floor, $name, $title, $width = NULL, $callback = NULL)
 	{
 		if (!isset($this['_floor_' . $floor])) {
