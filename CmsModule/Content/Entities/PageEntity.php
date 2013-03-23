@@ -494,7 +494,10 @@ abstract class PageEntity extends TreeEntity
 		}
 
 		if ($tag === NULL) {
-			$this->setParent($this->getRoot());
+			$root = $this->getRoot();
+			if ($root !== $this) {
+				$this->setParent($root);
+			}
 		}
 
 		$this->tag = $tag;
