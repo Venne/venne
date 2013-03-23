@@ -101,7 +101,7 @@ class TableControl extends Control
 	protected $perPageList = array(10, 20, 30, 50, 100, 200, 500);
 
 	/** @var bool */
-	protected $showNavbar = false;
+	protected $showNavbar = FALSE;
 
 	/** @var array */
 	public $onAttached;
@@ -737,7 +737,7 @@ class TableControl extends Control
 	 */
 	public function getNavbar()
 	{
-		$this->showNavbar = true;
+		$this->showNavbar = TRUE;
 
 		return $this['navbar'];
 	}
@@ -748,7 +748,7 @@ class TableControl extends Control
 	 */
 	public function setNavbar(NavbarControl $navbar = NULL)
 	{
-		$this->showNavbar = false;
+		$this->showNavbar = FALSE;
 		if ($navbar instanceof NavbarControl) {
 			$this['navbar'] = $navbar;
 		} else {
