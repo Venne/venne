@@ -87,7 +87,7 @@ factories:
 ##		tags: [presenter]
 #
 	cms.admin.contentPresenter:
-		class: CmsModule\Administration\Presenters\ContentPresenter(..., ..., ..., @cms.admin.routeControlFactory)
+		class: CmsModule\Administration\Presenters\ContentPresenter(..., ..., ..., ..., @cms.admin.routeControlFactory)
 		tags: [presenter, administration: [
 			link: 'Cms:Admin:Content:'
 			category: 'Content'

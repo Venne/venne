@@ -76,6 +76,9 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
+	cms.contentTableFactory:
+		class: CmsModule\Content\Components\ContentTableFactory
+
 	cms.contentRouteFormFactory:
 		class: CmsModule\Content\Forms\RouteFormFactory
 		setup:

@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Content\Components\ContentTableFactory;
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\PageEntity;
@@ -60,14 +61,18 @@ class ContentPresenter extends BasePresenter
 	/** @var RouteControl */
 	protected $contentRouteControlFactory;
 
+	/** @var ContentTableFactory */
+	protected $contentTableFactory;
 
-	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, $routeControlFactory)
+
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory)
 	{
 		parent::__construct();
 
 		$this->pageRepository = $pageRepository;
 		$this->languageRepository = $languageRepository;
 		$this->contentManager = $contentManager;
+		$this->contentTableFactory = $contentTableFactory;
 		$this->contentRouteControlFactory = $routeControlFactory;
 	}
 
@@ -192,39 +197,7 @@ class ContentPresenter extends BasePresenter
 	{
 		$presenter = $this;
 
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setRepository($this->pageRepository);
-		$table->setDql(function (\Doctrine\ORM\QueryBuilder $builder) {
-			$builder->andWhere('a.translationFor IS NULL AND a.virtualParent IS NULL');
-		});
-
-		// columns
-		$table->addColumn('name', 'Name')
-			->setWidth('50%')
-			->setSortable(TRUE)
-			->setFilter();
-		$table->addColumn('url', 'URL')
-			->setWidth('20%')
-			->setCallback(function ($entity) {
-				return $entity->mainRoute->url;
-			});
-		$table->addColumn('languages', 'Languages')
-			->setWidth('20%')
-			->setCallback(function ($entity) {
-				$ret = implode(", ", $entity->languages->toArray());
-				foreach ($entity->translations as $translation) {
-					$ret .= ', ' . implode(", ", $translation->languages->toArray());
-				}
-				return $ret;
-			});
-		$table->addColumn('tag', 'Tag')
-			->setWidth('10%')
-			->setCallback(function ($entity) {
-				if ($entity->tag) {
-					$tags = PageEntity::getTags();
-					return $tags[$entity->tag];
-				}
-			});
+		$table = $this->contentTableFactory->create();
 
 		// actions
 		$repository = $this->pageRepository;
