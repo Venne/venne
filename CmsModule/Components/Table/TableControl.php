@@ -122,7 +122,7 @@ class TableControl extends Control
 		$this->sort = $this->defaultSort + $this->sort;
 		$this->filters = $this->defaultFilters + $this->filters;
 
-		$this->onAttached();
+		$this->onAttached($this);
 	}
 
 
