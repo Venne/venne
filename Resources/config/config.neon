@@ -23,6 +23,8 @@ services:
 		setup:
 			- '$service->onLoggedOut[] = ?'([@authorizatorFactory, 'clearPermissionSession'])
 			- '$service->onLoggedIn[] = ?'([@authorizatorFactory, 'clearPermissionSession'])
+			- '$service->onLoggedIn[] = ?' ([@cms.userLogListener, onLoggedIn])
+			- '$service->onLoggedOut[] = ?' ([@cms.userLogListener, onLoggedOut])
 
 	cms.formRenderer:
 		class: Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer
@@ -95,6 +97,10 @@ services:
 		class: CmsModule\Content\Repositories\DirRepository
 		factory: @entityManager::getRepository('CmsModule\Content\Entities\DirEntity')
 
+	cms.logRepository:
+		class: CmsModule\Content\Repositories\LogRepository
+		factory: @entityManager::getRepository('CmsModule\Content\Entities\LogEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.pageListener:
 		class: CmsModule\Content\Listeners\PageListener
@@ -103,6 +109,16 @@ services:
 	cms.fileListener:
 		class: CmsModule\Content\Listeners\FileListener
 		tags: [listener]
+
+	cms.logListener:
+		class: CmsModule\Content\Listeners\LogListener
+		tags: [listener]
+
+	cms.userLogListener:
+		class: CmsModule\Content\Listeners\UserLogListener
+
+	cms.formLogListener:
+		class: CmsModule\Content\Listeners\FormLogListener
 
 	cms.contentHelper:
 		class: CmsModule\Helpers\ContentHelper

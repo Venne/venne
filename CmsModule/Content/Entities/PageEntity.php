@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Entities;
 
+use Doctrine\ORM\UnitOfWork;
 use Nette\InvalidArgumentException;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"base" = "PageEntity"})
  */
-abstract class PageEntity extends TreeEntity
+abstract class PageEntity extends TreeEntity implements IloggableEntity
 {
 
 	const CACHE = 'Cms.PageEntity';
@@ -537,5 +538,20 @@ abstract class PageEntity extends TreeEntity
 	public static function getTags()
 	{
 		return self::$tags;
+	}
+
+
+	public function log(LogEntity $logEntity, UnitOfWork $unitOfWork, $action)
+	{
+		$changeSet = $unitOfWork->getEntityChangeSet($this);
+		$logEntity->setPage($this);
+
+		if (count($changeSet) === 1 && isset($changeSet['published'])) {
+			if ($changeSet['published'][1] === TRUE) {
+				$logEntity->setMessage('Page has been published');
+			} else {
+				$logEntity->setMessage('Page has been unpublished');
+			}
+		}
 	}
 }

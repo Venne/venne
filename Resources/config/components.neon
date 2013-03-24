@@ -2,7 +2,7 @@ services:
 	cms.websiteFormFactory:
 		class: CmsModule\Forms\WebsiteFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.loggableFormFactory)
 
 	cms.languageFormFactory:
 		class: CmsModule\Forms\LanguageFormFactory
@@ -34,22 +34,22 @@ services:
 	cms.applicationFormFactory:
 		class: CmsModule\Forms\SystemApplicationFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
 	cms.databaseFormFactory:
 		class: CmsModule\Forms\SystemDatabaseFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
 	cms.accountFormFactory:
 		class: CmsModule\Forms\SystemAccountFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
 	cms.systemFormFactory:
 		class: CmsModule\Forms\SystemAdministrationFormFactory(..., ..., %administration.routePrefix%)
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
 	cms.dirFormFactory:
 		class: CmsModule\Content\Forms\DirFormFactory
@@ -96,7 +96,7 @@ services:
 	cms.clearFormFactory:
 		class: CmsModule\Content\Elements\Forms\ClearFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
 	cms.basicFormFactory:
 		class: CmsModule\Content\Elements\Forms\BasicFormFactory
@@ -174,6 +174,21 @@ factories:
 			- setRenderer(@cms.formRenderer)
 			- setTranslator(@translator.translator)
 			- "$service->getElementPrototype()->class[] = ?"("ajax")
+
+	cms.admin.loggableForm:
+		class: Venne\Forms\Form
+		setup:
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+			- '$service->onSuccess[] = ?'([@cms.formLogListener, 'onSuccess'])
+
+	cms.admin.loggableAjaxForm:
+		class: Venne\Forms\Form
+		setup:
+			- setRenderer(@cms.formRenderer)
+			- setTranslator(@translator.translator)
+			- "$service->getElementPrototype()->class[] = ?"("ajax")
+			- '$service->onSuccess[] = ?'([@cms.formLogListener, 'onSuccess'])
 
 	cms.admin.routeControl:
 		class: CmsModule\Content\Components\RouteControl

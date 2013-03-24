@@ -28,9 +28,9 @@ class PageListener implements EventSubscriber
 
 	/** @var array */
 	protected $entities = array(
-		'CmsModule\Content\Entities\PageEntity' => true,
-		'CmsModule\Content\Entities\RouteEntity' => true,
-		'CmsModule\Content\Entities\ElementEntity' => true,
+		'CmsModule\Content\Entities\PageEntity' => TRUE,
+		'CmsModule\Content\Entities\RouteEntity' => TRUE,
+		'CmsModule\Content\Entities\ElementEntity' => TRUE,
 	);
 
 

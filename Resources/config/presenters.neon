@@ -140,6 +140,10 @@ factories:
 			priority: 10
 		]]
 
+	cms.admin.dashboardPresenter:
+		class: CmsModule\Administration\Presenters\DashboardPresenter
+		tags: [presenter]
+
 	cms.admin.databasePresenter:
 		class: CmsModule\Administration\Presenters\DatabasePresenter(@cms.databaseFormFactory)
 		tags: [presenter]

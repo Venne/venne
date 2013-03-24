@@ -93,6 +93,12 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	 */
 	protected $socialData;
 
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime")
+	 */
+	protected $created;
+
 
 	public function __construct()
 	{
@@ -100,6 +106,7 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 		$this->logins = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->socialLogins = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->generateNewSalt();
+		$this->created = new \DateTime;
 	}
 
 
@@ -332,6 +339,24 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	public function getAvatar()
 	{
 		return $this->avatar;
+	}
+
+
+	/**
+	 * @param \DateTime $created
+	 */
+	public function setCreated($created)
+	{
+		$this->created = $created;
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getCreated()
+	{
+		return $this->created;
 	}
 
 
