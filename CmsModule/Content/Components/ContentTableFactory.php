@@ -63,8 +63,9 @@ class ContentTableFactory extends Object
 				return $ret;
 			});
 
-		$table->onAttached[] = function ($table) {
-			$this->onAttached($table);
+		$_this = $this;
+		$table->onAttached[] = function ($table) use ($_this) {
+			$_this->onAttached($table);
 		};
 
 		return $table;
