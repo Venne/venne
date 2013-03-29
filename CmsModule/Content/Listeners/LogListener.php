@@ -53,6 +53,10 @@ class LogListener implements EventSubscriber
 	 */
 	public function onFlush(OnFlushEventArgs $eventArgs)
 	{
+		if (!$this->container->doctrine->createCheckConnection()) {
+			return;
+		}
+
 		$em = $eventArgs->getEntityManager();
 		$uow = $em->getUnitOfWork();
 
