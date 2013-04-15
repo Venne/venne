@@ -118,7 +118,7 @@ services:
 		class: CmsModule\Content\Listeners\UserLogListener
 
 	cms.formLogListener:
-		class: CmsModule\Content\Listeners\FormLogListener
+		class: CmsModule\Content\Listeners\FormLogListener(@doctrine.checkConnectionFactory)
 
 	cms.contentHelper:
 		class: CmsModule\Helpers\ContentHelper

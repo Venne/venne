@@ -35,6 +35,10 @@ class UserLogListener
 
 	public function onLoggedIn(User $user)
 	{
+		if (!$this->container->doctrine->createCheckConnection()) {
+			return;
+		}
+
 		$userEntity = $this->getUserRepository()->findOneBy(array('email' => $user->identity->id));
 
 		if ($userEntity) {
@@ -48,6 +52,10 @@ class UserLogListener
 
 	public function onLoggedOut(User $user)
 	{
+		if (!$this->container->doctrine->createCheckConnection()) {
+			return;
+		}
+
 		$userEntity = $this->getUserRepository()->findOneBy(array('email' => $user->identity->id));
 
 		if ($userEntity) {

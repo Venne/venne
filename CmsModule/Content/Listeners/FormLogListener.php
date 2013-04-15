@@ -15,6 +15,7 @@ use CmsModule\Content\Entities\LogEntity;
 use CmsModule\Content\Repositories\LogRepository;
 use CmsModule\Forms\ILoggableForm;
 use CmsModule\Security\Repositories\UserRepository;
+use Nette\Callback;
 use Nette\Security\User;
 use Venne\Forms\Form;
 
@@ -33,17 +34,25 @@ class FormLogListener
 	/** @var LogRepository */
 	private $logRepository;
 
+	/** @var callable */
+	private $checkConnection;
 
-	public function __construct(User $user, UserRepository $userRepository, LogRepository $logRepository)
+
+	public function __construct($checkConnection, User $user, UserRepository $userRepository, LogRepository $logRepository)
 	{
 		$this->user = $user;
 		$this->userRepository = $userRepository;
 		$this->logRepository = $logRepository;
+		$this->checkConnection = $checkConnection;
 	}
 
 
 	public function onSuccess(Form $form)
 	{
+		if (!Callback::create($this->checkConnection)->invoke()) {
+			return;
+		}
+
 		$presenter = $form->presenter;
 
 		$logEntity = new LogEntity($this->getUser(), 'Venne\\Forms\\Form', NULL, LogEntity::ACTION_OTHER);
