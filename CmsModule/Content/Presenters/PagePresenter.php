@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content\Presenters;
 
-use Venne;
+use CmsModule\Content\Entities\LanguageEntity;
 use Nette\Caching\Cache;
 use Gedmo\Translatable\TranslatableListener;
 use Nette\Application\BadRequestException;
@@ -38,6 +38,9 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public $route;
 
+	/** @var LanguageEntity */
+	private $language;
+
 	/** @var string */
 	protected $_layoutPath;
 
@@ -57,7 +60,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	/**
 	 * @param \Venne\Module\Helpers $moduleHelpers
 	 */
-	public function injectModulesHelper(Venne\Module\Helpers $moduleHelpers)
+	public function injectModulesHelper(\Venne\Module\Helpers $moduleHelpers)
 	{
 		$this->moduleHelpers = $moduleHelpers;
 	}
@@ -85,6 +88,18 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			}
 		}
 		$this->context->entityManager->refresh($this->page);
+	}
+
+
+	/**
+	 * @return LanguageEntity
+	 */
+	public function getLanguage()
+	{
+		if (!$this->language) {
+			$this->language = $this->context->cms->languageRepository->findOneBy(array('alias' => $this->lang));
+		}
+		return $this->language;
 	}
 
 
@@ -177,6 +192,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			$component = $this->context->cms->elementManager->createInstance($id);
 			$component->setRoute($this->route);
 			$component->setName($name);
+			$component->setLanguage($this->getLanguage());
 			return $component;
 		}
 

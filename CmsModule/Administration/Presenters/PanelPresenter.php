@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Content\Entities\LanguageEntity;
 use Venne;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\RouteEntity;
@@ -34,10 +35,16 @@ class PanelPresenter extends BasePresenter
 	public $elementRouteId;
 
 	/** @persistent */
+	public $elementLanguageId;
+
+	/** @persistent */
 	public $elementView;
 
 	/** @var RouteEntity */
 	public $route;
+
+	/** @var  LanguageEntity */
+	public $language;
 
 	/** @var string */
 	protected $_layoutPath;
@@ -59,7 +66,10 @@ class PanelPresenter extends BasePresenter
 		$this->template->elementView = $this->elementView;
 		$this->template->elementRouteId = $this->elementRouteId;
 		if ($this->elementRouteId) {
-			$this->route = $this->getContext()->cms->routeRepository->find($this->elementRouteId);
+			$this->route = $this->context->cms->routeRepository->find($this->elementRouteId);
+		}
+		if ($this->elementLanguageId) {
+			$this->language = $this->context->cms->languageRepository->find($this->elementLanguageId);
 		}
 
 		$this->invalidateControl('elementView');
@@ -77,13 +87,13 @@ class PanelPresenter extends BasePresenter
 
 	public function handleElement()
 	{
-		$this->template->showElementView = true;
+		$this->template->showElementView = TRUE;
 	}
 
 
 	public function handleRefreshElement()
 	{
-		$this->template->showElement = true;
+		$this->template->showElement = TRUE;
 		$this->elementView = NULL;
 	}
 
@@ -103,6 +113,7 @@ class PanelPresenter extends BasePresenter
 			$component = $this->context->cms->elementManager->createInstance($id);
 			$component->setRoute($route);
 			$component->setName($name);
+			$component->setLanguage($this->context->cms->languageRepository->find($this->elementLanguageId));
 			return $component;
 		}
 
@@ -119,7 +130,7 @@ class PanelPresenter extends BasePresenter
 	{
 		if ($this->_layoutPath === NULL) {
 			if (!$this->route->layout) {
-				$this->_layoutPath = false;
+				$this->_layoutPath = FALSE;
 			}
 
 			if ($this->route->layout == 'default') {
@@ -134,12 +145,12 @@ class PanelPresenter extends BasePresenter
 			if ($module === 'app') {
 				$this->_layoutPath = $this->context->parameters['appDir'] . '/layouts/' . substr($layout, $pos + 1);
 			} else if (!isset($this->context->parameters['modules'][$module]['path'])) {
-				$this->_layoutPath = false;
+				$this->_layoutPath = FALSE;
 			} else {
 				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
 			}
 		}
 
-		return $this->_layoutPath === false ? NULL : $this->_layoutPath;
+		return $this->_layoutPath === FALSE ? NULL : $this->_layoutPath;
 	}
 }

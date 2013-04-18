@@ -33,8 +33,22 @@ abstract class ElementEntity extends IdentifiedEntity
 
 	const MODE_ROUTE = 2;
 
+	const LANGMODE_SHARE = 0;
+
+	const LANGMODE_SPLIT = 1;
+
 	/** @var array */
-	protected static $modes = array(self::MODE_LAYOUT => 'Layout', self::MODE_PAGE => 'page', self::MODE_ROUTE => 'route');
+	protected static $modes = array(
+		self::MODE_LAYOUT => 'Layout',
+		self::MODE_PAGE => 'page',
+		self::MODE_ROUTE => 'route'
+	);
+
+	/** @var array */
+	protected static $langModes = array(
+		self::LANGMODE_SHARE => 'share',
+		self::LANGMODE_SPLIT => 'split',
+	);
 
 	/**
 	 * @var \CmsModule\Content\Entities\LayoutEntity
@@ -58,6 +72,13 @@ abstract class ElementEntity extends IdentifiedEntity
 	protected $route;
 
 	/**
+	 * @var \CmsModule\Content\Entities\LanguageEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LanguageEntity")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
+	 */
+	protected $language;
+
+	/**
 	 * @var int
 	 * @ORM\Column(type="string")
 	 */
@@ -73,22 +94,30 @@ abstract class ElementEntity extends IdentifiedEntity
 	 * @var int
 	 * @ORM\Column(type="integer")
 	 */
-	protected $mode;
+	protected $mode = 0;
+
+	/**
+	 * @var int
+	 * @ORM\Column(type="integer")
+	 */
+	protected $langMode = 0;
 
 
 	/**
-	 * @param LayoutEntity $layoutEntity
+	 * @param $name
+	 * @param LayoutEntity $layout
+	 * @param PageEntity $page
 	 * @param RouteEntity $route
+	 * @param LanguageEntity $language
 	 */
-	final public function setDefaults($name, LayoutEntity $layout, PageEntity $page = NULL, RouteEntity $route = NULL)
+	final public function setDefaults($name, LayoutEntity $layout, PageEntity $page = NULL, RouteEntity $route = NULL, LanguageEntity $language)
 	{
 		$this->nameRaw = $name;
 		$this->name = Helpers::encodeName($name);
 		$this->route = $route;
 		$this->page = $page;
 		$this->layout = $layout;
-
-		$this->mode = self::MODE_LAYOUT;
+		$this->language = $language;
 	}
 
 
@@ -120,6 +149,15 @@ abstract class ElementEntity extends IdentifiedEntity
 	public static function getModes()
 	{
 		return self::$modes;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public static function getLangModes()
+	{
+		return self::$langModes;
 	}
 
 
@@ -210,5 +248,41 @@ abstract class ElementEntity extends IdentifiedEntity
 	public function getRoute()
 	{
 		return $this->route;
+	}
+
+
+	/**
+	 * @param int $langMode
+	 */
+	public function setLangMode($langMode)
+	{
+		$this->langMode = $langMode;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getLangMode()
+	{
+		return $this->langMode;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\LanguageEntity $language
+	 */
+	public function setLanguage($language)
+	{
+		$this->language = $language;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\LanguageEntity
+	 */
+	public function getLanguage()
+	{
+		return $this->language;
 	}
 }

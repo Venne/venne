@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Elements\Forms;
 
+use CmsModule\Content\Entities\ElementEntity;
 use Venne;
 use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
@@ -29,7 +30,14 @@ class BasicFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addGroup();
-		$mode = $form->addSelect('mode', 'Share data with', \CmsModule\Content\Entities\ElementEntity::getModes());
+		$form->addSelect('langMode', 'Language mode', ElementEntity::getLangModes())
+			->addCondition($form::EQUAL, ElementEntity::LANGMODE_SPLIT)->toggle('form-group-language');
+
+		$form->addGroup()->setOption('id', 'form-group-language');
+		$form->addManyToOne('language', 'Language');
+
+		$form->addGroup();
+		$mode = $form->addSelect('mode', 'Share data with', ElementEntity::getModes());
 		$mode
 			->addCondition($form::IS_IN, array(1, 2))->toggle('form-group-page')
 			->endCondition()

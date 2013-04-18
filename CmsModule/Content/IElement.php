@@ -11,12 +11,10 @@
 
 namespace CmsModule\Content;
 
-use Venne;
-use Nette\Application\UI\IRenderable;
-use CmsModule\Content\Entities\LayoutconfigEntity;
+use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
-use Doctrine\ORM\EntityManager;
+use Nette\Application\UI\IRenderable;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -30,6 +28,13 @@ interface IElement extends IRenderable
 	 * @param RouteEntity $routeEntity
 	 */
 	public function setRoute(RouteEntity $routeEntity);
+
+
+	/**
+	 * @abstract
+	 * @param LanguageEntity $languageEntity
+	 */
+	public function setLanguage(LanguageEntity $languageEntity);
 
 
 	/**

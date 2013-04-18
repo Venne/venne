@@ -11,6 +11,8 @@
 
 namespace CmsModule\Content\Elements;
 
+use CmsModule\Content\Entities\ElementEntity;
+use CmsModule\Content\Entities\LanguageEntity;
 use Venne;
 use CmsModule\Content\Control;
 use CmsModule\Content\IElement;
@@ -36,6 +38,9 @@ abstract class BaseElement extends Control implements IElement
 
 	/** @var PageEntity */
 	protected $pageEntity;
+
+	/** @var  LanguageEntity */
+	protected $languageEntity;
 
 	/** @var EntityManager */
 	protected $entityManager;
@@ -109,6 +114,15 @@ abstract class BaseElement extends Control implements IElement
 
 
 	/**
+	 * @param LanguageEntity $languageEntity
+	 */
+	public function setLanguage(LanguageEntity $languageEntity)
+	{
+		$this->languageEntity = $languageEntity;
+	}
+
+
+	/**
 	 * @return string
 	 */
 	protected function getEntityName()
@@ -133,7 +147,7 @@ abstract class BaseElement extends Control implements IElement
 	{
 		$class = '\\' . $this->getEntityName();
 		$ret = new $class;
-		$ret->setDefaults($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity);
+		$ret->setDefaults($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity, $this->languageEntity);
 		return $ret;
 	}
 
@@ -143,16 +157,53 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	public function getEntity()
 	{
-		if (($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_LAYOUT)))) {
-			return $ret;
-		}
+		$data = array(
+			ElementEntity::LANGMODE_SPLIT => array(
+				'langMode' => ElementEntity::LANGMODE_SPLIT,
+				'language' => $this->languageEntity->id,
+			),
+			ElementEntity::LANGMODE_SHARE => array(
+				'langMode' => ElementEntity::LANGMODE_SHARE,
+			),
+		);
 
-		if ($this->pageEntity && ($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id, 'page' => $this->pageEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_PAGE)))) {
-			return $ret;
-		}
+		foreach ($data as $i) {
+			$ret = $this->getRepository()->findOneBy(array(
+				'name' => $this->name,
+				'layout' => $this->layoutEntity->id,
+				'mode' => ElementEntity::MODE_LAYOUT,
+			) + $i);
 
-		if ($this->pageEntity && $this->routeEntity && ($ret = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id, 'page' => $this->pageEntity->id, 'route' => $this->routeEntity->id, 'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE)))) {
-			return $ret;
+			if ($ret) {
+				return $ret;
+			}
+
+			if ($this->pageEntity) {
+				$ret = $this->getRepository()->findOneBy(array(
+					'name' => $this->name,
+					'layout' => $this->layoutEntity->id,
+					'page' => $this->pageEntity->id,
+					'mode' => ElementEntity::MODE_PAGE,
+				) + $i);
+
+				if ($ret) {
+					return $ret;
+				}
+			}
+
+			if ($this->pageEntity && $this->routeEntity) {
+				$ret = $this->getRepository()->findOneBy(array(
+					'name' => $this->name,
+					'layout' => $this->layoutEntity->id,
+					'page' => $this->pageEntity->id,
+					'route' => $this->routeEntity->id,
+					'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE,
+				) + $i);
+
+				if ($ret) {
+					return $ret;
+				}
+			}
 		}
 
 		$ret = $this->createEntity();
