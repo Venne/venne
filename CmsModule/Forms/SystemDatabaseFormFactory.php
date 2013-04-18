@@ -80,7 +80,7 @@ class SystemDatabaseFormFactory extends FormFactory
 
 		$form->addGroup()->setOption('id', 'group-connection');
 		$form->addText("host", "Host");
-		$form->addText("port", "Port");
+		$form->addText("port", "Port")->getControlPrototype()->placeholder[] = 'default';
 		$form->addText("dbname", "Database");
 
 		$form->addGroup()->setOption('id', 'group-sqlite');
