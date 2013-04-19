@@ -29,7 +29,13 @@ class Control extends \Venne\Application\UI\Control
 	{
 		$list = parent::formatTemplateFiles();
 		$refl = $this->getReflection();
-		$path = dirname($this->getPresenter()->getLayoutPath());
+
+		foreach ($this->getPresenter()->formatLayoutTemplateFiles() as $file) {
+			if (is_file($file)) {
+				$path = dirname($file);
+				break;
+			}
+		}
 
 		return array_merge(array(
 			dirname($path) . '/' . $refl->getShortName() . '.latte',
