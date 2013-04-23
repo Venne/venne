@@ -140,7 +140,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			if (!$this->route->layout) {
 				$this->_layoutPath = FALSE;
 			} else {
-				$this->_layoutPath = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources');
+				$this->_layoutPath = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources/layouts');
 			}
 		}
 
@@ -167,12 +167,11 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function formatTemplateFiles()
 	{
 		$ret = parent::formatTemplateFiles();
-		$presenter = str_replace(":", "/", $this->name);
+		$presenter = str_replace(":", ".", $this->name);
 
 		$path = dirname($this->getLayoutPath());
 		if ($path) {
 			$ret = array_merge(array(
-				"$path/$presenter/$this->view.latte",
 				"$path/$presenter.$this->view.latte",
 			), $ret);
 		}

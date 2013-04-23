@@ -178,7 +178,7 @@ class TemplatesPresenter extends BasePresenter
 	 */
 	public function handleDelete($key)
 	{
-		$path = $this->moduleHelpers->expandPath($key, 'Resources');
+		$path = $this->moduleHelpers->expandPath($key, 'Resources/layouts');
 
 		unlink($path);
 

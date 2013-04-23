@@ -109,14 +109,14 @@ class LayouteditFormFactory extends FormFactory
 
 	public function handleAttached(Form $form)
 	{
-		$path = $this->moduleHelpers->expandPath($form->data, 'Resources');
+		$path = $this->moduleHelpers->expandPath($form->data, 'Resources/layouts');
 		$type = $this->getTypeByKey($form->data);
 
 		if ($path && !is_writable($path)) {
 			$form->addError("File '$path' is not writable.");
 		}
 
-		if ($type === self::TYPE_PRESENTER || $type === self::TYPE_COMPONENT) {
+		if ($form->data && ($type === self::TYPE_PRESENTER || $type === self::TYPE_COMPONENT)) {
 			$module = $this->getModuleByKey($form->data);
 
 			$form['layout']->setItems(array_keys($this->templateManager->getLayoutsByModule($module)), FALSE)->setPrompt('-- All --');
@@ -128,7 +128,7 @@ class LayouteditFormFactory extends FormFactory
 	{
 		if ($form->data) {
 
-			$data = trim(file_get_contents($this->moduleHelpers->expandPath($form->data, 'Resources')));
+			$data = trim(file_get_contents($this->moduleHelpers->expandPath($form->data, 'Resources/layouts')));
 
 			$type = $this->getTypeByKey($form->data);
 			$module = $this->getModuleByKey($form->data);
@@ -155,10 +155,10 @@ class LayouteditFormFactory extends FormFactory
 	public function handleSuccess(Form $form)
 	{
 		$values = $form->getValues();
-		$oldPath = $this->moduleHelpers->expandPath($form->data, 'Resources');
+		$oldPath = $this->moduleHelpers->expandPath($form->data, 'Resources/layouts');
 		$form->data = $this->getKeyByValues($values);
 
-		$path = $this->moduleHelpers->expandPath($form->data, 'Resources');
+		$path = $this->moduleHelpers->expandPath($form->data, 'Resources/layouts');
 
 		umask(0000);
 		if (!file_exists(dirname($path))) {
@@ -180,18 +180,12 @@ class LayouteditFormFactory extends FormFactory
 		$key = "@{$values['target']}Module";
 
 		if ($values['type'] === self::TYPE_LAYOUT) {
-			$key .= "/layouts/{$values['layoutName']}/@layout.latte";
+			$key .= "/{$values['layoutName']}/@layout.latte";
 		} else if ($values['type'] === self::TYPE_COMPONENT) {
-			if($values['layout']) {
-				$key .= "/layouts/{$values['layout']}";
-			}
-			$key .= "/templates/{$values['component']}Control.latte";
+			$key .= ($values['layout'] ? '/' . $values['layout'] : '') . "/{$values['component']}Control.latte";
 		} else if ($values['type'] === self::TYPE_PRESENTER) {
-			if($values['layout']) {
-				$key .= "/layouts/{$values['layout']}";
-			}
-			$p = str_replace(':', '/', $values['presenter']);
-			$key .= "/templates/{$p}/{$values['action']}.latte";
+			$p = str_replace(':', '.', $values['presenter']);
+			$key .= ($values['layout'] ? '/' . $values['layout'] : '') . "/{$p}.{$values['action']}.latte";
 		}
 
 		return $key;
@@ -216,7 +210,7 @@ class LayouteditFormFactory extends FormFactory
 	protected function getLayoutByKey($key)
 	{
 		$key = explode('/', $key);
-		return $key[array_search('layout', $key) + 2];
+		return count($key > 2) ? $key[count($key) - 2] : NULL;
 	}
 
 
@@ -243,22 +237,20 @@ class LayouteditFormFactory extends FormFactory
 
 	protected function getPresenterByKey($key)
 	{
-		$ret = '';
-		$key = explode('/', $key);
-		$index = array_search('templates', $key) + 1;
+		$key = substr($key, strrpos($key, '/') + 1);
+		$key = explode('.', $key);
+		unset($key[count($key) - 1]);
+		unset($key[count($key) - 1]);
 
-		while ($index < count($key) - 1) {
-			$ret .= ':' . $key[$index++];
-		}
-
-		return substr($ret, 1);
+		return implode(':', $key);
 	}
 
 
 	protected function getActionByKey($key)
 	{
-		$key = explode('/', $key);
-		return lcfirst(substr($key[count($key) - 1], 0, -6));
+		$key = substr($key, strrpos($key, '/') + 1);
+		$key = explode('.', $key);
+		return lcfirst($key[count($key) - 2]);
 	}
 
 
@@ -274,8 +266,6 @@ class LayouteditFormFactory extends FormFactory
 			return self::TYPE_LAYOUT;
 		}
 
-		if (array_search('templates', $key) !== FALSE) {
-			return self::TYPE_PRESENTER;
-		}
+		return self::TYPE_PRESENTER;
 	}
 }
