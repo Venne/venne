@@ -3,29 +3,24 @@
 {/block}
 
 {block toolbar}
-{include "./head.latte"}
 {/block}
 
-{block #breadcrumb}
-	{if $entity->parent}{include #breadcrumb, entity=>$entity->parent, ok=>true}{/if}
-<li{if !isset($ok)} class="active"{/if}>
-	<span class="divider">/</span> {if isset($ok)}<a class="ajax"
-		href="{link :Cms:Admin:Files: key=>$entity->id}">{/if}{$entity->name}{if isset($ok)}</a>{/if}
-</li>
+{block breadcrumb-item}
+	{if $entity->parent}{include #breadcrumb-item, entity=>$entity->parent, ok=>true}{/if}
+	<li{if !isset($ok)} class="active"{/if}>
+		<span class="divider">/</span> {if isset($ok)}<a class="ajax"
+														 href="{link :Cms:Admin:Files: key=>$entity->id, do=>changeDir}">{/if}{$entity->name}{if isset($ok)}</a>{/if}
+	</li>
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	{var entity=>$presenter->key ? $dirRepository->find($presenter->key) : NULL}
+	<li{if !$entity} class="active"{/if}><span class="divider">/</span> {if $entity}<a class="ajax" n:href="this key=>NULL, do=>changeDir">{/if}{include #header}{if $entity}</a>{/if}</li>
+	{if $entity}{include #breadcrumb-item, entity=>$entity}{/if}
 {/block}
 
 {block content}
-
-{var entity=>$presenter->key ? $dirRepository->find($presenter->key) : NULL}
-
-<ul class="breadcrumb">
-	<li{if !$entity} class="active"{/if}>
-		<span class="divider">/</span> {if $entity}<a class="ajax" href="{link :Cms:Admin:Files: key=>NULL}">{/if}
-	root{if $entity}</a>{/if}
-	</li>
-{if $entity}{include #breadcrumb, entity=>$entity}{/if}
-</ul>
-
 
 <ul id="fileMenu" class="contextMenu">
 	<li class="view"><a href="#view">View</a></li>

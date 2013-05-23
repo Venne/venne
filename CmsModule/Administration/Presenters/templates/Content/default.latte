@@ -3,11 +3,14 @@
 {/block}
 
 {block toolbar}
-	{include "./head.latte"}
 {/block}
 
-{block content}
+{block breadcrumb}
+	{include #parent}
+	<li class="active"><span class="divider">/</span> {include #header}</li>
+{/block}
 
+{block #content}
 {if $presenter->isAuthorized('create')}
 <div class="navbar">
 	<div class="navbar-inner">

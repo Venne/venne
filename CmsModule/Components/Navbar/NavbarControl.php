@@ -32,6 +32,16 @@ class NavbarControl extends Control
 
 
 	/**
+	 * @param $name
+	 * @return Section
+	 */
+	public function getSection($name)
+	{
+		return $this[$name];
+	}
+
+
+	/**
 	 * Returns navbar.
 	 * @param  bool   throw exception if form doesn't exist?
 	 * @return CmsModule\Components\Navbar\NavbarControl

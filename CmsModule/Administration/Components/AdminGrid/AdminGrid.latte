@@ -1,0 +1,138 @@
+{snippet breadcrumb}
+{if !$control->parentFloor && count($control->floors)}
+<ul class="breadcrumb">
+	{if $control->floor}
+	<li><a class="ajax" n:href="floor floor=>NULL, floorId=>NULL">{_Root}</a> <span class="divider">/</span></li>
+	{else}
+	<li class="active">{_Root}</li>
+	{/if}
+
+	{var pControl=>$control}
+	{while $pControl->floor}
+		{if $pControl->floor}
+			{var c=>$pControl->floors[$pControl->floor]}
+
+			{if $c->floor}
+				<li><a class="ajax" href="#">{$pControl->getRepository()->find($control->floorId)}</a> <span class="divider">/</span></li>
+			{else}
+				<li class="active">{$pControl->getRepository()->find($control->floorId)}</li>
+			{/if}
+		{/if}
+		{var pControl=>$c}
+	{/while}
+</ul>
+{/if}
+{/snippet}
+
+{snippet navbar}
+{if !$control->floor}
+	{if $showNavbar}{control navbar}{/if}
+{/if}
+{/snippet}
+
+{snippet table}
+{if $control->floor}
+	{control $control->floors[$control->floor]}
+{else}
+	{control table}
+{/if}
+{/snippet}
+
+{snippet navbarFormContainer}
+{if $control->getFormName() && !$control->id}
+	<div id="modal-{!$control->getName()}" class="modal hide fade{if $form->type} {$form->type}{/if}" tabindex="-1"
+		 data-focus-on="input:first">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3>{_$form->title}</h3>
+		</div>
+		<div class="modal-body" n:snippet="navbarForm">
+			{control navbarForm}
+
+			{if $control['navbarForm']->isSubmitted() === $control['navbarForm']->getSaveButton() && !$control['navbarForm']->getErrors()}
+			<div class="modal-close"></div>
+			{/if}
+
+			<script>
+				$(function () {
+					var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
+					input.hide();
+					if (input.parent().find('input[name!="_submit"]').length == 0) {
+						input.parent().hide();
+					}
+					{if $control['navbarForm']->isSubmitted() === $control['navbarForm']->getSaveButton() && !$control['navbarForm']->getErrors()}
+					$('#modal-{!$control->getName()}').modal('hide').remove();
+					{/if}
+				});
+			</script>
+		</div>
+		<div class="modal-footer">
+			<button type="button" data-dismiss="modal" class="btn">Zavřít</button>
+			<button type="button" class="btn btn-primary">Uložit</button>
+		</div>
+	</div>
+	<script>
+		$(function () {
+			$('#modal-{!$control->getName()}').modal('show').on('hidden', function () {
+				if($('#modal-{!$control->getName()} .modal-close').length !=1){
+					$.nette.ajax({ url: {link close!}});
+				}
+			});
+			$('#modal-{!$control->getName()} .btn-primary').on('click', function (e) {
+				e.preventDefault();
+				$('#modal-{!$control->getName()} form input[name="_submit"]').click();
+			});
+		});
+	</script>
+{/if}
+{/snippet}
+
+
+{snippet actionFormContainer}
+{if $control->getFormName() && $control->id}
+	<div id="modal-{!$control->getName()}" class="modal hide fade{if $form->type} {$form->type}{/if}" tabindex="-1"
+		 data-focus-on="input:first">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3>{_$form->title}</h3>
+		</div>
+		<div class="modal-body" n:snippet="actionForm">
+			{control actionForm}
+
+			{if $control['actionForm']->isSubmitted() === $control['actionForm']->getSaveButton() && !$control['actionForm']->getErrors()}
+				<div class="modal-close"></div>
+			{/if}
+
+			<script>
+				$(function () {
+					var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
+					input.hide();
+					if (input.parent().find('input[name!="_submit"]').length == 0) {
+						input.parent().hide();
+					}
+					{if $control['actionForm']->isSubmitted() === $control['actionForm']->getSaveButton() && !$control['actionForm']->getErrors()}
+					$('#modal-{!$control->getName()}').modal('hide').remove();
+					{/if}
+				});
+			</script>
+		</div>
+		<div class="modal-footer">
+			<button type="button" data-dismiss="modal" class="btn">Zavřít</button>
+			<button type="button" class="btn btn-primary">Uložit</button>
+		</div>
+	</div>
+	<script>
+		$(function () {
+			$('#modal-{!$control->getName()}').modal('show').on('hidden', function () {
+				if($('#modal-{!$control->getName()} .modal-close').length !=1){
+					$.nette.ajax({ url: {link close!}});
+				}
+			});
+			$('#modal-{!$control->getName()} .btn-primary').on('click', function (e) {
+				e.preventDefault();
+				$('#modal-{!$control->getName()} form input[name="_submit"]').click();
+			});
+		});
+	</script>
+{/if}
+{/snippet}

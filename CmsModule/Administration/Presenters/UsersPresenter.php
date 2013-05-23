@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Security\Repositories\UserRepository;
 use CmsModule\Components\Table\Form;
 use CmsModule\Forms\UserFormFactory;
@@ -20,7 +21,6 @@ use CmsModule\Forms\UserSocialFormFactory;
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
- * @persistent (vp)
  */
 class UsersPresenter extends BasePresenter
 {
@@ -100,43 +100,51 @@ class UsersPresenter extends BasePresenter
 
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->userRepository);
-
-		// forms
-		$form = $table->addForm($this->form, 'User', NULL, Form::TYPE_LARGE);
-		$socialForm = $table->addForm($this->socialForm, 'Social logins', NULL, Form::TYPE_LARGE);
-
-		// navbar
-		if ($this->isAuthorized('create')) {
-			$table->addButtonCreate('create', 'Create new', $form, 'file');
-		}
+		$admin = new AdminGrid($this->userRepository);
 
 		// columns
+		$table = $admin->getTable();
+		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('email', 'E-mail')
-			->setWidth('60%')
-			->setSortable(TRUE)
-			->setFilter();
+			->setSortable()
+			->getCellPrototype()->width = '60%';
+		$table->getColumn('email')
+			->setFilter()->setSuggestion();
+
 		$table->addColumn('roles', 'Roles')
-			->setWidth('40%')
-			->setCallback(function ($entity) {
+			->setSortable()
+			->getCellPrototype()->width = '40%';
+		$table->getColumn('roles')
+			->setCustomRender(function ($entity) {
 				return implode(", ", $entity->roles);
 			});
 
 		// actions
 		if ($this->isAuthorized('edit')) {
-			$table->addActionEdit('edit', 'Edit', $form);
-			$table->addActionEdit('socialLogins', 'Social Logins', $socialForm);
+			$table->addAction('edit', 'Edit')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$table->addAction('socialLogins', 'Social Logins')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$form = $admin->createForm($this->form, 'User', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
+			$socialForm = $admin->createForm($this->socialForm, 'Social Logins', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
+
+			$admin->connectFormWithAction($form, $table->getAction('edit'));
+			$admin->connectFormWithAction($socialForm, $table->getAction('socialLogins'));
+
+			// Toolbar
+			$toolbar = $admin->getNavbar();
+			$toolbar->addSection('new', 'Create', 'file');
+			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
 		}
 
 		if ($this->isAuthorized('remove')) {
-			$table->addActionDelete('delete', 'Delete');
-
-			// global actions
-			$table->setGlobalAction($table['delete']);
+			$table->addAction('delete', 'Delete')
+				->getElementPrototype()->class[] = 'ajax';
+			$admin->connectActionAsDelete($table->getAction('delete'));
 		}
 
-		return $table;
+		return $admin;
 	}
 }

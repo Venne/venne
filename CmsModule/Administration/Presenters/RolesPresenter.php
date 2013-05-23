@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Security\Repositories\RoleRepository;
 use Nette\Callback;
 use DoctrineModule\Repositories\BaseRepository;
@@ -87,25 +88,22 @@ class RolesPresenter extends BasePresenter
 
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->roleRepository);
-
-		// forms
-		$form = $table->addForm($this->roleForm, 'Role');
-		$permissionsForm = $table->addForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_FULL);
-
-		// navbar
-		if ($this->isAuthorized('create')) {
-			$table->addButtonCreate('create', 'Create new', $form, 'file');
-		}
+		$admin = new AdminGrid($this->roleRepository);
 
 		// columns
+		$table = $admin->getTable();
+		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('name', 'Name')
-			->setWidth('40%');
-		$table->addColumn('parent', 'Parents')
-			->setWidth('60%')
-			->setCallback(function (\CmsModule\Security\Entities\RoleEntity $entity) {
+			->setSortable()
+			->getCellPrototype()->width = '40%';
+		$table->getColumn('name')
+			->setFilter()->setSuggestion();
+
+		$table->addColumn('parent', 'Parent')
+			->setSortable()
+			->getCellPrototype()->width = '60%';
+		$table->getColumn('parent')
+			->setCustomRender(function (\CmsModule\Security\Entities\RoleEntity $entity) {
 				$entities = array();
 				$en = $entity;
 				while (($en = $en->getParent())) {
@@ -117,17 +115,30 @@ class RolesPresenter extends BasePresenter
 
 		// actions
 		if ($this->isAuthorized('edit')) {
-			$table->addActionEdit('permissions', 'Permissions', $permissionsForm);
-			$table->addActionEdit('edit', 'Edit', $form);
+			$table->addAction('edit', 'Edit')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$table->addAction('permissions', 'Permissions')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$form = $admin->createForm($this->roleForm, 'Role');
+			$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
+
+			$admin->connectFormWithAction($form, $table->getAction('edit'));
+			$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'));
+
+			// Toolbar
+			$toolbar = $admin->getNavbar();
+			$toolbar->addSection('new', 'Create', 'file');
+			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
 		}
 
 		if ($this->isAuthorized('remove')) {
-			$table->addActionDelete('delete', 'Delete');
-
-			// global actions
-			$table->setGlobalAction($table['delete']);
+			$table->addAction('delete', 'Delete')
+				->getElementPrototype()->class[] = 'ajax';
+			$admin->connectActionAsDelete($table->getAction('delete'));
 		}
 
-		return $table;
+		return $admin;
 	}
 }

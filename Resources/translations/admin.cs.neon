@@ -33,6 +33,7 @@ delete all: smazat vše
 description: popis
 download current module list: stáhnout aktuální seznam modulů
 edit: editovat
+editing: editace
 e-mails: e-maily
 environments settings: nastavení prostředí
 elements: elementy
@@ -125,6 +126,8 @@ module manager: správa modulů
 environments: prostředí
 manage environments: správa prostředí
 mode: mód
+new translation: nový překlad
+remove this language: odstranit tento jazyk
 strict mode: striktní mód
 iPs for devel: iP adresy pro vývoj
 inputs: vstupní pole
@@ -181,6 +184,9 @@ previous: předchozí
 'registration': registrace
 'remember me on this computer': zapamatovat příhlášení na tomto počítači
 'new page': nová stránka
+new template: nová šablona
+global shortcuts: globální zkratky
+publish the entire site: přepublikovat celý web
 'page list': seznam stránek
 'special pages': speciální stránky
 normal: normální

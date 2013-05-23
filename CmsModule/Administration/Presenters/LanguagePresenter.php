@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Repositories\LanguageRepository;
 use Nette\Application\UI\Form;
 use DoctrineModule\Repositories\BaseRepository;
@@ -84,55 +85,61 @@ class LanguagePresenter extends BasePresenter
 
 	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->languageRepository);
-
-		// forms
-		$form = $table->addForm($this->form, 'Language', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
-
-		// navbar
-		if ($this->isAuthorized('create')) {
-			$table->addButtonCreate('create', 'Create new', $form, 'file');
-		}
-
-		// redirect on first language
 		$_this = $this;
 		$repository = $this->languageRepository;
-		$table->onAttached[] = function () use ($table, $_this, $repository) {
-			if ($table->createForm) {
-				$table['createForm']->onSuccess[] = function () use ($_this, $repository) {
-					if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() <= 1) {
-						$_this->redirect('this');
-					}
-				};
-			}
-		};
+		$admin = new AdminGrid($this->languageRepository);
 
 		// columns
+		$table = $admin->getTable();
+		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('name', 'Name')
-			->setWidth('50%');
+			->setSortable()
+			->getCellPrototype()->width = '50%';
+
 		$table->addColumn('alias', 'Alias')
-			->setWidth('20%');
+			->setSortable()
+			->getCellPrototype()->width = '20%';
+
 		$table->addColumn('short', 'Short')
-			->setWidth('30%');
+			->setSortable()
+			->getCellPrototype()->width = '30%';
 
 		// actions
 		if ($this->isAuthorized('edit')) {
-			$table->addActionEdit('edit', 'Edit', $form);
+			$table->addAction('edit', 'Edit')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$form = $admin->createForm($this->form, 'Language', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
+			$admin->connectFormWithAction($form, $table->getAction('edit'));
+
+			// Toolbar
+			$toolbar = $admin->getNavbar();
+			$toolbar->addSection('new', 'Create', 'file');
+			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+
+			$admin->onAttached[] = function (AdminGrid $admin) use ($table, $_this, $repository) {
+				if ($admin->formName && !$admin->id) {
+					$admin['navbarForm']->onSuccess[] = function () use ($_this, $repository) {
+						if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() <= 1) {
+							$_this->redirect('this');
+						}
+					};
+				}
+			};
 		}
 
 		if ($this->isAuthorized('remove')) {
-			$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($_this, $repository) {
+			$table->addAction('delete', 'Delete')
+				->getElementPrototype()->class[] = 'ajax';
+			$admin->connectActionAsDelete($table->getAction('delete'));
+
+			$table->getAction('delete')->onClick[] = function () use ($_this, $repository) {
 				if ($repository->createQueryBuilder('a')->select('count(a.id)')->getQuery()->getSingleScalarResult() == 0) {
 					$_this->redirect('this');
 				}
 			};
-
-			// global actions
-			$table->setGlobalAction($table['delete']);
 		}
 
-		return $table;
+		return $admin;
 	}
 }

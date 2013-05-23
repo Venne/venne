@@ -11,9 +11,10 @@
 	{head}
 
 		{* jquery *}
-		{js @CmsModule/jquery/js/jquery-1.8.2.min.js}
-		{js @CmsModule/jquery/js/jquery-ui-1.8.23.custom.min.js}
-		{css @CmsModule/jquery/css/ui-lightness/jquery-ui-1.8.23.custom.css, media=>'screen, projection, tv'}
+		{js @CmsModule/jquery/js/jquery-1.9.1.min.js}
+		{js @CmsModule/jquery/js/jquery-migrate-1.1.1.min.js}
+		{js @CmsModule/jquery/js/jquery-ui-1.10.1.custom.min.js}
+		{css @CmsModule/jquery/css/ui-lightness/jquery-ui-1.10.1.custom.css, media=>'screen, projection, tv'}
 
 		{* jquery plugins *}
 		{js @CmsModule/admin/js/jquery.contextMenu.js}
@@ -54,15 +55,20 @@
 		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
 		{if $presenter->compact}{css @CmsModule/admin/css/style_compact.css}{/if}
 
+		{* Grido *}
+		{js @CmsModule/grido/js/jquery.hashchange.min.js}
+		{js @CmsModule/grido/js/jquery.maskedinput.min.js}
+		{js @CmsModule/grido/js/jquery.grido.js}
+		{css @CmsModule/grido/css/grido.css}
+
 	{/head}
 
 	{body}
 
 		{* Top navigation *}
-		{snippet panel}
-		<div class="navbar navbar-fixed-top navbar-inverse" id="navigation">
+		<div class="navbar navbar-fixed-top navbar-inverse" id="navigation" n:snippet="navigation">
 			<div class="navbar-inner">
-				<div class="container-fluid" n:snippet="navigation">
+				<div class="container-fluid">
 
 					<a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax {/if}brand" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" /></a>
 
@@ -121,7 +127,7 @@
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-user icon-white"></span> {if $presenter->user->identity instanceof \CmsModule\Security\Entities\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-user icon-white"></span> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class="nav-header">{_'Actions'}</li>
 								<li n:if="$presenter->isAuthorized(':Cms:Admin:Users:edit')"><a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax{/if}" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id, mode=>NULL}{else}{link :Cms:Admin:Application:account mode=>NULL}{/if}"><i class="icon-user icon-white"></i> {_'Account settings'}</a></li>
@@ -133,7 +139,7 @@
 						{if $presenter->mode == $presenter::MODE_NORMAL}
 						<ul class="nav pull-right">
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-flag icon-white"></i> {$presenter->lang} <b class="caret"></b></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-flag icon-white"></i> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="nav-header"></li>
 									<li><a n:href="this lang=>cs">cs</a></li>
@@ -147,7 +153,7 @@
 						<ul class="nav pull-right">
 							<li>
 							{if $presenter->mode == $presenter::MODE_NORMAL}
-								<a href="{$basePath}/"><i class="icon-refresh icon-white"></i> {_'Show website'}</a>
+								<a href="{$basePath}/"><i class="icon-refresh icon-white"></i> </a>
 								{elseif $presenter->mode == $presenter::MODE_EDIT}
 								<a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':', array('mode'=>NULL))}"><i class="icon-refresh icon-white"></i> {_'Show administration'}</a>
 							{/if}
@@ -157,7 +163,7 @@
 
 						<ul class="nav pull-right">
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open icon-white"></i> {_($presenter->compact ? 'compact' : 'normal')} {_view} <b class="caret"></b></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open icon-white"></i> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="nav-header"></li>
 									<li><a n:href="this compact=>false">{_normal}</a></li>
@@ -171,7 +177,6 @@
 				</div>
 			</div>
 		</div>
-		{/snippet}
 
 		{* Center *}
 		{if $presenter->mode == $presenter::MODE_NORMAL}
@@ -189,25 +194,39 @@
 					<div class="row-fluid">
 						<div class="span12">
 
-							<div class="page-header" n:snippet="header">
-								<h1>{block #header}{/block}</h1>
+							<div class="container-fluid" style="margin-bottom: -15px;">
+								<div class="row-fluid">
+									<div class="span12">
+										<div class="page-header pull-right" n:snippet="header">
+											{block #breadcrumb-container}
+											<ul class="breadcrumb pull-right" style="margin: 0px; padding: 8px 15px 12px 15px; background-color: #ffffff;">
+												{block #breadcrumb}
+												<li><span class="divider">{_Path}:</span> <a class="ajax" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><span class="icon icon-globe"></span> {_Dashboard}</a></li>
+												{/block}
+											</ul>
+											{/block}
+											<h1 class="pull-left" style="margin: -5px 0 0 0px;">{block #header}{/block}</h1>
+										</div>
+									</div>
+								</div>
 							</div>
 
 							{* content *}
-							<div class="container-fluid" n:snippet="toolbar">
-								<ul id="toolbar" class="nav nav-tabs  pull-right" style="margin-bottom: -0px; border-bottom: 0;">
-								{block #toolbar}
-								{/block}
-								</ul>
-							</div>
 							<div class="well" n:snippet="content">
+
 								{foreach $flashes as $flash}
-								<div class="alert alert-{$flash->type}">
-									<a class="close" data-dismiss="alert">×</a>
-									{$flash->message}
-								</div>
+									<div class="alert alert-{$flash->type}">
+										<a class="close" data-dismiss="alert">×</a>
+										{$flash->message}
+									</div>
 								{/foreach}
-								{content}
+
+								{block #toolbar}
+								<ul id="toolbar" class="nav nav-tabs">
+									{block #toolbar-items}{/block}
+								</ul>
+								{/block}
+								{include #content}
 							</div>
 
 							{* footer *}
@@ -223,7 +242,7 @@
 			</div>
 		</div>
 		{else}
-			{content}
+			{include #content}
 		{/if}
 
 	{/body}

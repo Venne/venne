@@ -30,7 +30,7 @@ class FlashMessageControl extends Control
 
 	protected function getFlashes($global = FALSE)
 	{
-		$component = $this->presenter;
+		$component = $this;
 
 		$ret = $this->getFlashesByControl($component);
 

@@ -48,7 +48,7 @@ class SystemAccountFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addGroup();
+		$form->addGroup('Admin account');
 		$form->addText("name", "Name");
 		$form->addPassword("password", "Password")->setOption("description", "minimal length is 5 char");
 		$form->addPassword("_password", "Confirm password");

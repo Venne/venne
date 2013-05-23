@@ -3,30 +3,13 @@
 {/block}
 
 {block toolbar}
-	{include "./head.latte"}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active"><span class="divider">/</span> {include #header}</li>
 {/block}
 
 {block content}
 
-<ul class="breadcrumb">
-
-	<li{if !$control->key} class="active"{/if}>
-		<span class="divider">/</span> {if $control->key}<a class="ajax" href="{link this key=>NULL}">{/if}root{if $control->key}</a>{/if}
-	</li>
-
-	{if $control->key}
-		{var $entity=>$layoutRepository->find($control->key)}
-		{var active=>true}
-
-			<li{if $active} class="active"{/if}>
-				<span class="divider">/</span> {if !$active}<a class="ajax" href="{link this key=>$entity->id}">{/if}
-				{$entity->name}{if !$active}</a>{/if}
-			</li>
-	{/if}
-</ul>
-
-{if $presenter->key}
-	{control elementTable}
-{else}
-	{control table}
-{/if}
+{control table}

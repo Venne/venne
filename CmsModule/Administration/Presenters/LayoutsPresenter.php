@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Entities\LayoutEntity;
 use CmsModule\Content\Repositories\ElementRepository;
 use CmsModule\Content\Repositories\LayoutRepository;
@@ -19,6 +20,8 @@ use CmsModule\Content\ElementManager;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
 use CmsModule\Content\Entities\ElementEntity;
 use CmsModule\Content\LayoutManager;
+use Grido\Components\Filters\Filter;
+use Grido\DataSources\Doctrine;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -94,7 +97,7 @@ class LayoutsPresenter extends BasePresenter
 
 		if ($this->key) {
 			$this->currentLayout = $this->layoutRepository->find($this->key);
-			$file = $this->moduleHelpers->expandPath($this->currentLayout->file, 'Resources');
+			$file = $this->moduleHelpers->expandPath($this->currentLayout->file, 'Resources/layouts');
 
 			foreach ($this->layoutManager->getElementsByFile($file) as $key => $type) {
 				if ($this->elementRepository->findOneBy(array('layout' => $this->currentLayout->id, 'nameRaw' => $key))) {
@@ -142,107 +145,129 @@ class LayoutsPresenter extends BasePresenter
 	}
 
 
-	/**
-	 * @secured
-	 */
-	public function handleCreate($id)
+	public function handleCreate()
 	{
-		if (!$this->isAjax()) {
-			$this['table-navbar']->redirect('click!', array('id' => $id));
-		}
-
+		$this['table']['navbar']->{'handleClick'}('navbar-new');
 		$this->invalidateControl('content');
-		$this['table-navbar']->handleClick($id);
-
-		$this->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
 	}
 
 
 	public function createComponentTable()
 	{
-		$_this = $this;
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->layoutRepository);
-
-		// forms
-		$form = $table->addForm($this->layoutFormFactory, 'Layout');
-
-		// navbar
-		if ($this->isAuthorized('create')) {
-			$table->addButtonCreate('create', 'Create new', $form, 'file');
-		}
+		$admin = new AdminGrid($this->layoutRepository);
 
 		// columns
+		$table = $admin->getTable();
+		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('name', 'Name')
-			->setWidth('60%');
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('name')->getCellPrototype()->width = '60%';
+
 		$table->addColumn('file', 'File')
-			->setWidth('40%');
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('file')->getCellPrototype()->width = '40%';
 
 		// actions
 		if ($this->isAuthorized('edit')) {
-			$table->addActionEdit('edit', 'Edit', $form);
-			$table->addAction('elements', 'Elements')->onClick[] = function ($button, $entity) use ($_this) {
-				if (!$_this->isAjax()) {
-					$_this->redirect('this', array('key' => $entity->id));
-				}
-				$_this->invalidateControl('content');
-				$_this->payload->url = $_this->link('this', array('key' => $entity->id));
-				$_this->key = $entity->id;
-			};
+			$table->addAction('edit', 'Edit')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$table->addAction('elements', 'Elements')
+				->getElementPrototype()->class[] = 'ajax';
+
+			$form = $admin->createForm($this->layoutFormFactory, 'Layout');
+			$admin->connectFormWithAction($form, $table->getAction('edit'));
+
+			// Toolbar
+			$toolbar = $admin->getNavbar();
+			$toolbar->addSection('new', 'Create', 'file');
+			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+
+			$admin->connectActionWithFloor($table->getAction('elements'), $this['elementTable'], 'Borec');
 		}
 
 		if ($this->isAuthorized('remove')) {
-			$table->addActionDelete('delete', 'Delete');
-
-			// global actions
-			$table->setGlobalAction($table['delete']);
+			$table->addAction('delete', 'Delete')
+				->getElementPrototype()->class[] = 'ajax';
+			$admin->connectActionAsDelete($table->getAction('delete'));
 		}
 
-		return $table;
+		return $admin;
 	}
 
 
 	public function createComponentElementTable()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->elementRepository);
-
-		$parent = $this->key;
-		$table->setDql(function (\Doctrine\ORM\QueryBuilder $a) use ($parent) {
-			if (!$parent) {
-				$a->andWhere('a.layout IS NULL');
-			} else {
-				$a->andWhere('a.layout = :id')->setParameter('id', $parent);
-			}
-		});
-
-		// forms
-		$form = $table->addForm($this->basicFormFactory, 'Element');
+		$admin = new AdminGrid($this->elementRepository);
 
 		// columns
+		$table = $admin->getTable();
+		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('nameRaw', 'Name')
-			->setWidth('35%');
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('nameRaw')->getCellPrototype()->width = '23%';
+
 		$table->addColumn('mode', 'Mode')
-			->setWidth('15%')
-			->setCallback(function ($entity) {
+			->setSortable()
+			->setCustomRender(function ($entity) {
 				$modes = ElementEntity::getModes();
 				return $modes[$entity->mode];
-			});
+			})
+			->getCellPrototype()->width = '12%';
+
+		$table->addColumn('langMode', 'Language mode')
+			->setSortable()
+			->setCustomRender(function ($entity) {
+				$modes = ElementEntity::getLangModes();
+				return $modes[$entity->langMode];
+			})
+			->getCellPrototype()->width = '12%';
+
 		$table->addColumn('page', 'Page')
-			->setWidth('25%');
+			->setSortable()
+			->getCellPrototype()->width = '20%';
+
 		$table->addColumn('route', 'Route')
-			->setWidth('25%');
+			->setSortable()
+			->getCellPrototype()->width = '20%';
+
+		$table->addColumn('language', 'Language')
+			->setSortable()
+			->getCellPrototype()->width = '15%';
+
+		// filters
+		$table->addFilter('mode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getModes());
+		$table->addFilter('langMode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getLangModes());
 
 		// actions
-		$table->addActionEdit('edit', 'Edit', $form);
-		$table->addActionDelete('delete', 'Delete');
+		if ($this->isAuthorized('edit')) {
+			$table->addAction('edit', 'Edit')
+				->getElementPrototype()->class[] = 'ajax';
 
-		// global actions
-		$table->setGlobalAction($table['delete']);
+			$form = $admin->createForm($this->basicFormFactory, 'Element');
+			$admin->connectFormWithAction($form, $table->getAction('edit'));
+		}
 
-		return $table;
+		if ($this->isAuthorized('remove')) {
+			$table->addAction('delete', 'Delete')
+				->getElementPrototype()->class[] = 'ajax';
+			$admin->connectActionAsDelete($table->getAction('delete'));
+		}
+
+		$admin->onRender[] = function (AdminGrid $admin) {
+			$qb = $admin->getRepository()->createQueryBuilder('a');
+			if (!$admin->parentFloor->floorId) {
+				$qb = $qb->andWhere('a.layout IS NULL');
+			} else {
+				$qb = $qb->andWhere('a.layout = :id')->setParameter('id', $admin->getParentFloor()->floorId);
+			}
+			$admin->getTable()->setModel(new Doctrine($qb));
+		};
+
+		return $admin;
 	}
 
 

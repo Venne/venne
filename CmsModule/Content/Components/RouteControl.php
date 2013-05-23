@@ -11,9 +11,11 @@
 
 namespace CmsModule\Content\Components;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Forms\RouteFormFactory;
 use CmsModule\Content\Repositories\RouteRepository;
 use CmsModule\Content\SectionControl;
+use Grido\DataSources\Doctrine;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -41,68 +43,39 @@ class RouteControl extends SectionControl
 	}
 
 
-	protected function createComponentTable()
+	public function createComponentTable()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
-		$table->setTemplateConfigurator($this->templateConfigurator);
-		$table->setRepository($this->routeRepository);
+		$admin = new AdminGrid($this->routeRepository);
 
-		$pageId = $this->getEntity()->id;
-		$table->setDql(function ($sql) use ($pageId) {
-			$sql = $sql->andWhere('a.page = :page')->setParameter('page', $pageId);
-			return $sql;
-		});
-
-		// forms
-		$form = $table->addForm($this->routeFormFactory, 'Route', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
-
+		// columns
+		$table = $admin->getTable();
+		$table->setModel(new Doctrine($this->routeRepository->createQueryBuilder('a')
+				->andWhere('a.page = :page')
+				->setParameter('page', $this->entity->id)
+		));
+		$table->setTranslator($this->presenter->context->translator->translator);
 		$table->addColumn('title', 'Title')
-			->setWidth('50%')
-			->setSortable(TRUE)
-			->setFilter();
+			->setSortable()
+			->getCellPrototype()->width = '100%';
+		$table->getColumn('title')
+			->setFilter()->setSuggestion();
 
 		$table->addColumn('url', 'Url')
-			->setWidth('50%')
-			->setSortable(TRUE)
-			->setFilter();
+			->setSortable()
+			->getCellPrototype()->width = '100%';
+		$table->getColumn('url')
+			->setFilter()->setSuggestion();
 
-		$repository = $this->routeRepository;
-		$presenter = $this;
-		$action = $table->addAction('on', 'On');
-		$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
-			$entity->published = TRUE;
-			$repository->save($entity);
+		// actions
+		$table->addAction('edit', 'Edit')
+			->getElementPrototype()->class[] = 'ajax';
 
-			if (!$presenter->presenter->isAjax()) {
-				$presenter->redirect('this');
-			}
+		$form = $admin->createForm($this->routeFormFactory, 'Route', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
-			$presenter['table']->invalidateControl('table');
-			$presenter->presenter->payload->url = $presenter->link('this');
-		};
-		$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
-			$button->setDisabled($entity->published);
-		};
+		$admin->connectFormWithAction($form, $table->getAction('edit'));
 
-		$action = $table->addAction('off', 'Off');
-		$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
-			$entity->published = FALSE;
-			$repository->save($entity);
 
-			if (!$presenter->presenter->isAjax()) {
-				$presenter->redirect('this');
-			}
-
-			$presenter['table']->invalidateControl('table');
-			$presenter->presenter->payload->url = $presenter->link('this');
-		};
-		$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
-			$button->setDisabled(!$entity->published);
-		};
-
-		$table->addActionEdit('edit', 'Edit', $form);
-
-		return $table;
+		return $admin;
 	}
 
 

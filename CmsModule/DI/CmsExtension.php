@@ -25,7 +25,25 @@ class CmsExtension extends CompilerExtension
 		'stopwatch' => array(
 			'debugger' => NULL
 		),
-
+		'administration' => array(
+			'login' => array(
+				'name' => '',
+				'password' => '',
+			),
+			'routePrefix' => 'admin',
+		),
+		'website' => array(
+			'title' => '',
+			'titleSeparator' => '|',
+			'keywords' => '',
+			'description' => '',
+			'author' => '',
+			'routePrefix' => '',
+			'languages' => array(),
+			'defaultLanguage' => 'cs',
+			'defaultPresenter' => 'Homepage',
+			'errorPresenter' => 'Error',
+		),
 	);
 
 
@@ -35,7 +53,11 @@ class CmsExtension extends CompilerExtension
 	 */
 	public function loadConfiguration()
 	{
-		parent::loadConfiguration();
+		$this->compiler->parseServices(
+			$this->getContainerBuilder(),
+			$this->loadFromFile(dirname(dirname(__DIR__)) . '/Resources/config/config.neon')
+		);
+
 		$container = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
 

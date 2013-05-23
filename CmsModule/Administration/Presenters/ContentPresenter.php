@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Components\ContentTableFactory;
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\Entities\LanguageEntity;
@@ -21,6 +22,8 @@ use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Forms\BasicFormFactory;
+use Grido\DataSources\Doctrine;
+use Nette\Application\BadRequestException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -120,17 +123,6 @@ class ContentPresenter extends BasePresenter
 
 
 	/**
-	 * @secured(privilege="show")
-	 */
-	public function actionSpecial()
-	{
-		if (!$this->getApplication()->catchExceptions) {
-			$this->flashMessage('Capturing error pages will not work. Please enable catch exceptions in application settings.', 'info', TRUE);
-		}
-	}
-
-
-	/**
 	 * @secured
 	 */
 	public function actionCreate()
@@ -147,35 +139,11 @@ class ContentPresenter extends BasePresenter
 
 
 	/**
-	 * @secured
-	 */
-	public function actionRemove()
-	{
-	}
-
-
-	public function handleDelete($id)
-	{
-		$entity = $this->pageRepository->find($id);
-		$link = $this->link('this', array('key' => $entity->translationFor->id));
-
-		$this->pageRepository->delete($entity);
-		$this->flashMessage('Translation has been removed', 'success');
-		$this->redirectUrl($link);
-	}
-
-
-	/**
 	 * @secured(privilege="edit")
 	 */
 	public function handlePublish()
 	{
-		$entity = $this->pageRepository->find($this->key);
-		$entity->published = TRUE;
-		$this->pageRepository->save($entity);
-
-		$this->flashMessage('Page has been published', 'success');
-		$this->redirect('this');
+		$this->handleOn($this->key);
 	}
 
 
@@ -184,16 +152,186 @@ class ContentPresenter extends BasePresenter
 	 */
 	public function handleHide()
 	{
-		$entity = $this->pageRepository->find($this->key);
+		$this->handleOff($this->key);
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleRemove($id)
+	{
+		if (!$entity = $this->pageRepository->find($id)) {
+			throw new BadRequestException;
+		}
+
+		$this->pageRepository->delete($entity);
+		$this->flashMessage("Page `$entity` has been removed");
+
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->invalidateControl('content');
+		$this->payload->url = $this->link('this');
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleOn($id)
+	{
+		if (!$entity = $this->pageRepository->find($id)) {
+			throw new BadRequestException;
+		}
+
+		$entity->published = TRUE;
+		$this->pageRepository->save($entity);
+
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->invalidateControl('content');
+		$this->payload->url = $this->link('this');
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleOff($id)
+	{
+		if (!$entity = $this->pageRepository->find($id)) {
+			throw new BadRequestException;
+		}
+
 		$entity->published = FALSE;
 		$this->pageRepository->save($entity);
 
-		$this->flashMessage('Page has been hidden', 'success');
-		$this->redirect('this');
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->invalidateControl('content');
+		$this->payload->url = $this->link('this');
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleSetAsRoot($id)
+	{
+		if (!$entity = $this->pageRepository->find($id)) {
+			throw new BadRequestException;
+		}
+
+		$main = $entity->getRoot();
+		$entity->setAsRoot();
+		$this->pageRepository->save($main);
+
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this['panel']->invalidateControl('content');
+		$this->invalidateControl('content');
+		$this->payload->url = $this->link('this');
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
+	public function handleDelete($id)
+	{
+		if (!$entity = $this->pageRepository->find($id)) {
+			throw new BadRequestException;
+		}
+
+		$link = $this->link('this', array('key' => $entity->translationFor->id));
+
+		$this->pageRepository->delete($entity);
+		$this->flashMessage('Translation has been removed', 'success');
+		$this->redirectUrl($link);
 	}
 
 
 	public function createComponentTable()
+	{
+		$adminGrid = new AdminGrid($this->pageRepository);
+
+		$_this = $this;
+		$table = $adminGrid->getTable();
+
+		$table->addColumn('name', 'Name')
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('name')->getCellPrototype()->width = '50%';
+		$table->addColumn('mainRoute', 'URL')
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('mainRoute')->getCellPrototype()->width = '25%';
+		$table->addColumn('languages', 'Languages')
+			->setCustomRender(function ($entity) {
+				$ret = implode(", ", $entity->languages->toArray());
+				foreach ($entity->translations as $translation) {
+					$ret .= ', ' . implode(", ", $translation->languages->toArray());
+				}
+				return $ret;
+			})
+			->getCellPrototype()->width = '25%';
+
+		$table->addAction('on', 'On')
+			->setCustomRender(function ($entity, $element) {
+				if ((bool)$entity->published) {
+					$element->class[] = 'disabled';
+				};
+				return $element;
+			})
+			->setCustomHref(function ($entity) use ($_this) {
+				return $_this->link('on!', array($entity->id));
+			})
+			->getElementPrototype()->class[] = 'ajax';
+		$table->addAction('off', 'Off')
+			->setCustomRender(function ($entity, $element) {
+				if (!(bool)$entity->published) {
+					$element->class[] = 'disabled';
+				};
+				return $element;
+			})
+			->setCustomHref(function ($entity) use ($_this) {
+				return $_this->link('off!', array($entity->id));
+			})
+			->getElementPrototype()->class[] = 'ajax';
+		$table->addAction('edit', 'Edit')
+			->setCustomHref(function ($entity) use ($_this) {
+				return $_this->link('edit', array('key' => $entity->id));
+			})
+			->getElementPrototype()->class[] = 'ajax';
+		$table->addAction('setAsRoot', 'Set as root')
+			->setCustomRender(function ($entity, $element) {
+				if ($entity->parent === NULL || $entity->tag) {
+					$element->class[] = 'disabled';
+				};
+				return $element;
+			})
+			->setCustomHref(function ($entity) use ($_this) {
+				return $_this->link('setAsRoot!', array($entity->id));
+			})
+			->getElementPrototype()->class[] = 'ajax';
+		$table->addAction('remove', 'Remove')
+			->getElementPrototype()->class[] = 'ajax';
+
+		$adminGrid->connectActionAsDelete($table->getAction('remove'));
+
+		return $adminGrid;
+	}
+
+
+	public function createComponentTable2()
 	{
 		$presenter = $this;
 
@@ -296,7 +434,6 @@ class ContentPresenter extends BasePresenter
 			$this->redirect('edit', array('type' => NULL, 'key' => $form->data->id));
 		}
 		$this->invalidateControl('content');
-		$this['panel']->invalidateControl('content');
 		$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->id));
 		$this->setView('edit');
 		$this->changeAction('edit');
@@ -307,7 +444,7 @@ class ContentPresenter extends BasePresenter
 	public function createComponentFormTranslate()
 	{
 		$pageEntity = $this->pageRepository->find($this->getParameter("key"));
-		$contentType = $this->contentManager->getContentType($pageEntity::getType());
+		$contentType = $this->contentManager->getContentType(get_class($pageEntity));
 
 		/** @var $entity \CmsModule\Content\Entities\PageEntity */
 		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
@@ -365,13 +502,16 @@ class ContentPresenter extends BasePresenter
 
 	public function renderEdit()
 	{
-		$this->invalidateControl('content');
-		$this->invalidateControl('toolbar');
-
 		$this->template->entity = $this->pageRepository->find($this->key);
 		$this->template->contentType = $this->contentManager->getContentType(get_class($this->template->entity));
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
 		$this->template->languageRepository = $this->languageRepository;
+	}
+
+
+	public function renderTranslate()
+	{
+		$this->template->entity = $this->pageRepository->find($this->key);
 	}
 }

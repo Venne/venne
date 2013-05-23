@@ -1,9 +1,14 @@
 {block header}
-	New content page
+	{_'New template'}
 {/block}
 
 {block toolbar}
-	{include "./head.latte"}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><span class="divider">/</span> <a n:href="default">{_'Templates'}</a></li>
+	<li class="active"><span class="divider">/</span> {include #header}</li>
 {/block}
 
 {block content}

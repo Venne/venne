@@ -3,7 +3,11 @@
 {/block}
 
 {block toolbar}
-	{include "./head.latte"}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active"><span class="divider">/</span> {include #header}</li>
 {/block}
 
 {block content}
@@ -15,7 +19,7 @@
 			<ul class="nav">
 
 				<li class="dropdown">
-					<a class="ajax" href="{plink :Cms:Admin:Layouts:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+					<a class="ajax" href="{plink :Cms:Admin:Templates:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
 				</li>
 
 			</ul>

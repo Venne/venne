@@ -17,23 +17,19 @@ use Venne;
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
- * @persistent(panel)
  */
 class BasePresenter extends \CmsModule\Presenters\AdminPresenter
 {
 
-	public function beforeRender()
+	public function startup()
 	{
-		parent::beforeRender();
+		parent::startup();
 
-		if (!$this->getSignal()) {
+		if ($this->getParameter('do') === NULL && $this->isAjax()) {
+			$this->invalidateControl('navigation');
 			$this->invalidateControl('content');
 			$this->invalidateControl('header');
 			$this->invalidateControl('toolbar');
-
-			if (!isset($this->template->hideMenuItems)) {
-				$this['panel']->invalidateControl('tabs');
-			}
 		}
 	}
 

@@ -138,6 +138,17 @@ $(function () {
 			}
 		}
 	});
+	$.nette.ext('gridBind', {
+		success:function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			for (var i in payload.snippets) {
+				$('#' + i + ' table.grido').grido();
+			}
+		}
+	});
 	$.nette.ext('formsIframePostBind', {
 		init:function () {
 			this.init(this.selector);

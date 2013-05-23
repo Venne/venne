@@ -1,7 +1,14 @@
-{block header}{_'New page'}{/block}
+{var $types=>$presenter->context->cms->contentManager->getContentTypes()}
+{block header}{_'New page'} ({_$types[$presenter->type]}){/block}
 
 {block toolbar}
 	{include "./head.latte"}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><span class="divider">/</span> <a n:href="default type=>NULL">{_'Content'}</a></li>
+	<li class="active"><span class="divider">/</span> {_'New page'}</li>
 {/block}
 
 {block content}

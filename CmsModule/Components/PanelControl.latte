@@ -18,7 +18,7 @@
             <div class="btn-group">
 			{if $control->tab == 0}
                 <a n:if="$presenter->isAuthorized(':Cms:Admin:Content:')" class="ajax btn"
-                   href="{plink :Cms:Admin:Content:}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                   href="{plink :Cms:Admin:Content: key=>NULL, section=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 2}
                 <a n:if="$presenter->isAuthorized(':Cms:Admin:Files:')" class="ajax btn"
@@ -43,7 +43,7 @@
                    href="{plink :Cms:Admin:Templates:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
 			{elseif $control->tab == 3}
 				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
-				   href="{plink :Cms:Admin:Layouts:default, do=>create, id=>navbar-create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+				   href="{plink :Cms:Admin:Layouts:default, do=>create}"><span class="icon icon-file"></span> {_'Create new'}</a>
 				{elseif $presenter->isAuthorized(':Cms:Admin:Content:create')}
                 <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <span class="caret"></span></button>
                 <ul class="dropdown-menu">

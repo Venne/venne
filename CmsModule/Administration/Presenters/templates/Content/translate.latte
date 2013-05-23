@@ -1,9 +1,15 @@
 {block header}
-New translation
+	{$entity->name}: {_'New translation'}
 {/block}
 
 {block toolbar}
-{include "./head.latte"}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><span class="divider">/</span> <a class="ajax" n:href="default key=>NULL">{_'Content'}</a></li>
+	<li><span class="divider">/</span> <a class="ajax" n:href="edit">{_Editing}</a></li>
+	<li class="active"><span class="divider">/</span> {_'New translation'}</li>
 {/block}
 
 {block content}

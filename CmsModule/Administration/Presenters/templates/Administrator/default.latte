@@ -1,10 +1,13 @@
-{block #header}Administrator account{/block}
+{block #header}{_'Administrator account'}{/block}
+
+{block toolbar}
+{/block}
 
 {block content}
 {if count($flashes) == 1}
 	{control systemAccountForm}
 {else}
 <p>
-	Please fix issues and <a n:href="this">refresh page</a>.
+	<a n:href="this">{_'Please fix issues and refresh page'}</a>.
 </p>
 {/if}

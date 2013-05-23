@@ -13,7 +13,6 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Repositories\LogRepository;
 use CmsModule\Security\Repositories\UserRepository;
-use GoogleanalyticsModule\AnalyticsManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -63,5 +62,12 @@ class DashboardPresenter extends BasePresenter
 	{
 		$this->template->logRepository = $this->logRepository;
 		$this->template->userRepository = $this->userRepository;
+	}
+
+
+	protected function createComponentLog()
+	{
+		$log = new \CmsModule\Administration\Components\LogControl;
+		return $log;
 	}
 }

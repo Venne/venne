@@ -87,7 +87,6 @@ class PanelControl extends Control
 
 	public function handleTab($tab)
 	{
-		$this->presenter->validateControl('content');
 		$this->invalidateControl('content');
 		$this->invalidateControl('tabs');
 		$this->tab = $tab;
@@ -318,7 +317,7 @@ class PanelControl extends Control
 			}
 			$repository->save($entity);
 		}
-		$this->presenter['panel']->invalidateControl('content');
+		$this->invalidateControl('content');
 	}
 
 

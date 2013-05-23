@@ -2,7 +2,14 @@
 	{_'About Venne:CMS'}
 {/block}
 
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active"><span class="divider">/</span> {include #header}</li>
+{/block}
+
 {block content}
 
-	
 <h2>Version {=\Venne\Framework::VERSION}</h2>

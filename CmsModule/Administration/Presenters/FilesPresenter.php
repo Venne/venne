@@ -109,6 +109,21 @@ class FilesPresenter extends BasePresenter
 
 
 	/**
+	 * @secured(privilege="show")
+	 */
+	public function handleChangeDir()
+	{
+		if (!$this->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->invalidateControl('content');
+		$this->invalidateControl('header');
+		$this->payload->url = $this->link('this');
+	}
+
+
+	/**
 	 * @secured(privilege="create")
 	 */
 	public function handleDir($id)

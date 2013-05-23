@@ -98,7 +98,7 @@ abstract class AdminPresenter extends BasePresenter
 	{
 		parent::beforeRender();
 
-		$this["head"]->setTitle("Venne:CMS");
+		$this["head"]->setTitle("Administration");
 		$this["head"]->setRobots($this["head"]::ROBOTS_NOINDEX | $this["head"]::ROBOTS_NOFOLLOW);
 	}
 }

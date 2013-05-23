@@ -2,8 +2,13 @@
 	{_'Application settings'}
 {/block}
 
-{block toolbar}
+{block toolbar-items}
 	{include "./head.latte"}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active"><span class="divider">/</span> {include #header}</li>
 {/block}
 
 {block content}

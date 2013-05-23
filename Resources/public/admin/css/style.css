@@ -53,9 +53,10 @@ h6 {
 	color: #ffffff;
 }
 .page-header {
-	float: left;
+	float: right;
 	border: 0;
-	margin: -13px 0 -0px 0;
+    margin: 0;
+    width: 100%;
 }
 
 #ajax-spinner {
@@ -110,8 +111,8 @@ h6 {
 
 
 #toolbar {
-	margin: 3px 0 0px 0;
-	float: right;
+	margin: 0;
+    width: 100%;
 }
 .nav-tabs > li > a {
     font-weight: bold;
@@ -409,7 +410,7 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
    margin-top: -56px !important;
 }
 
-.table thead th {
+/*.table thead th {
     background: #fafafa;
     background: -moz-linear-gradient(top, #fafafa 0%, #f3f3f3 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#f3f3f3));
@@ -461,7 +462,7 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 }
 .table td.table-td-global {
     padding: 2px 4px;
-}
+}*/
 
 
 input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {

@@ -35,15 +35,26 @@ class LanguageFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addTextWithSelect("name", "Name")->setItems(array("English", "Deutsch", "Čeština"), false)->setOption("description", "(enhlish, deutsch,...)")->addRule($form::FILLED, "Please set name");
-		$form->addTextWithSelect("short", "Short")->setItems(array("en", "de", "cs"), false)->setOption("description", "(en, de,...)")->addRule($form::FILLED, "Please set short");
-		$form->addTextWithSelect("alias", "Alias")->setItems(array("en", "de", "cs", "www"), false)->setOption("description", "(www, en, de,...)")->addRule($form::FILLED, "Please set alias");
+		$form->addTextWithSelect("name", "Name")
+			->setItems(array("English", "Deutsch", "Čeština"), false)
+			->setOption("description", "(enhlish, deutsch,...)")
+			->addRule($form::FILLED, "Please set name");
+
+		$form->addTextWithSelect("short", "Short")
+			->setItems(array("en", "de", "cs"), false)
+			->setOption("description", "(en, de,...)")
+			->addRule($form::FILLED, "Please set short");
+
+		$form->addTextWithSelect("alias", "Alias")
+			->setItems(array("en", "de", "cs", "www"), false)
+			->setOption("description", "(www, en, de,...)")
+			->addRule($form::FILLED, "Please set alias");
 
 		$form->addSaveButton('Save');
 	}
 
 
-	public function handleCatchError(Form $form, \DoctrineModule\SqlException $e)
+	public function handleCatchError(Form $form, $e)
 	{
 		$m = explode("'", $e->getMessage());
 		$form->addError("Duplicate entry '{$m[1]}'");
