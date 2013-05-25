@@ -13,5 +13,8 @@
 	},
 	"replace":{
 		"nette/nette":"*"
+	},
+	"config": {
+		"vendor-dir": "static"
 	}
 }
