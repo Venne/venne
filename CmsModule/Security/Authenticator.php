@@ -59,13 +59,18 @@ class Authenticator extends Venne\Security\Authenticator
 			list($username, $password) = $credentials;
 
 			if ($this->checkConnection->invoke()) {
-				$user = $this->userRepository->findOneBy(array("email" => $username, "enable" => 1));
-				if ($user && $user->verifyByPassword($password)) {
-					return new \Nette\Security\Identity($username, $user->getRoles());
-				}
-			}
+				$user = $this->userRepository->findOneBy(array('email' => $username, 'enable' => 1));
 
-			throw new AuthenticationException("User '$username' not found.", self::IDENTITY_NOT_FOUND);
+				if (!$user) {
+					throw $ex;
+				}
+
+				if (!$user->verifyByPassword($password)) {
+					throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
+				}
+
+				return new \Nette\Security\Identity($username, $user->getRoles());
+			}
 		}
 	}
 }

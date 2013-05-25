@@ -89,7 +89,28 @@ class LoginPresenterTest extends TestCase
 
 		$el = $dom->find('div[class="alert alert-warning"]');
 		Assert::equal(1, count($el));
-		Assert::equal("User 'admin' not found.", trim((string)$el[0]));
+		Assert::equal('The password is incorrect.', trim((string)$el[0]));
+	}
+
+
+	public function testBadUsername()
+	{
+		$request = new \Nette\Application\Request('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+			'username' => 'wrong', 'password' => 'wrong', 'remember' => FALSE, '_submit' => 'Přihlásit se'
+		));
+		$response = $this->presenter->run($request);
+
+		Assert::true($response instanceof TextResponse);
+		Assert::true($response->getSource() instanceof ITemplate);
+
+		$html = (string)$response->getSource();
+		$dom = DomQuery::fromXml($html);
+
+		Assert::true($dom->has('div[class="alert alert-warning"]'));
+
+		$el = $dom->find('div[class="alert alert-warning"]');
+		Assert::equal(1, count($el));
+		Assert::equal('The username is incorrect.', trim((string)$el[0]));
 	}
 }
 
