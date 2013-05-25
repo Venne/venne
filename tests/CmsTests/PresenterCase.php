@@ -9,32 +9,28 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsTests\Administration;
+namespace CmsTests;
 
 use CmsModule\Administration\Presenters\AdministratorPresenter;
 use Nette\Application\IResponse;
 use Nette\Application\Responses\RedirectResponse;
 use Nette\Application\Responses\TextResponse;
+use Nette\DI\Container;
 use Nette\Templating\ITemplate;
 use Tester\Assert;
 use Tester\DomQuery;
 use Tester\TestCase;
 use Venne\Config\Configurator;
 
-require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/bootstrap.php';
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class BasePresenterTest extends TestCase
+class PresenterCase extends TestCase
 {
 
 	protected $presenter;
-
-	protected $head;
-
-	protected $title;
-
 
 	private $HTML401NamedToNumeric = array(
 		'&nbsp;' => '&#160;', # no-break space = non-breaking space, U+00A0 ISOnum
@@ -294,11 +290,14 @@ class BasePresenterTest extends TestCase
 	/** @var AdministratorPresenter */
 	private $_presenter;
 
+	/** @var Container|\SystemContainer */
+	private $_container;
+
 
 	public function setUp()
 	{
-		$container = id(new Configurator(dirname(dirname(__DIR__)), getLoader()))->createContainer();
-		$presenterFactory = $container->getByType('Nette\Application\IPresenterFactory');
+		$this->_container = id(new Configurator(dirname(__DIR__), getLoader()))->createContainer();
+		$presenterFactory = $this->_container->getByType('Nette\Application\IPresenterFactory');
 
 		$this->_presenter = $presenterFactory->createPresenter($this->presenter);
 		$this->_presenter->autoCanonicalize = FALSE;
@@ -312,6 +311,15 @@ class BasePresenterTest extends TestCase
 	protected function getPresenter()
 	{
 		return $this->_presenter;
+	}
+
+
+	/**
+	 * @return Container|\SystemContainer
+	 */
+	protected function getContainer()
+	{
+		return $this->_container;
 	}
 
 
@@ -355,18 +363,35 @@ class BasePresenterTest extends TestCase
 
 	public function assertCssContain(DomQuery $dom, $expected, $selector)
 	{
-		if(!$el = $dom->find($selector)) {
+		if (!$el = $dom->find($selector)) {
 			Assert::fail("Selector '$selector' does not exists. ");
 		}
 		Assert::equal($expected, trim((string)$el[0]));
 	}
 
+
 	public function assertXpathContain(DomQuery $dom, $expected, $selector)
 	{
-		if(!$el = $dom->xpath($selector)) {
+		if (!$el = $dom->xpath($selector)) {
 			Assert::fail("Selector '$selector' does not exists. ");
 		}
 		Assert::equal($expected, trim((string)$el[0]));
+	}
+
+
+	public function assertXpathContainAttribute(DomQuery $dom, $expected, $selector, $attribute)
+	{
+		if (!$el = $dom->xpath($selector)) {
+			Assert::fail("Selector '$selector' does not exists. ");
+		}
+		$attrs = (array)$el[0]->attributes();
+		$attrs = $attrs['@attributes'];
+
+		if (!isset($attrs[$attribute])) {
+			Assert::fail("Attribute '$attribute' does not exists. ");
+		}
+
+		Assert::equal($expected, $attrs[$attribute]);
 	}
 
 }

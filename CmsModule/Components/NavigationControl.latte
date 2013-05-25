@@ -44,7 +44,7 @@
 {/define}
 
 {define #item}
-	<li class="{if $active} active{/if}{if $children} dropdown{/if}">
+	<li class="{if $active}active{/if}{if $children} dropdown{/if}">
 		<a href="{$link}" class="{if $active} active{/if}{if $children} dropdown-toogle" data-toggle="dropdown{/if}">{$entity->navigationTitle}</a>
 
 		{if $children}

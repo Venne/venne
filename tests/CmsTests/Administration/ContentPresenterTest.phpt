@@ -25,10 +25,10 @@ require __DIR__ . '/AdministrationCase.php';
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class DashboardPresenterTest extends AdministrationCase
+class ContentPresenterTest extends AdministrationCase
 {
 
-	protected $presenter = 'Cms:Admin:Dashboard';
+	protected $presenter = 'Cms:Admin:Content';
 
 
 	public function testBasicTags()
@@ -38,12 +38,25 @@ class DashboardPresenterTest extends AdministrationCase
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);
 
-		$this->assertCssContain($dom, 'Dashboard', 'h1');
+		$this->assertCssContain($dom, 'Content', 'h1');
 		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertCssContain($dom, 'Logged in user', '#snippet--content h2');
-		$this->assertXpathContain($dom, 'Administrator', '//*[@id="snippet--content"]//h4');
+		$this->assertXpathContain($dom, 'Content', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+	}
+
+
+	public function testActionCreate()
+	{
+		$response = $this->getResponse('GET', array('action' => 'create', 'type' => 'CmsModule\Content\Entities\StaticPageEntity'));
+		Assert::true($response instanceof TextResponse);
+		Assert::true($response->getSource() instanceof ITemplate);
+		$dom = $this->getDom($response);
+
+		$this->assertCssContain($dom, 'New page (static page)', 'h1');
+		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
+		$this->assertXpathContain($dom, 'Content', '//div[@id="snippet--header"]/ul/li[2]/a');
+		$this->assertXpathContain($dom, 'New page', '//div[@id="snippet--header"]/ul/li[@class="active"]');
 	}
 
 }
 
-\run(new DashboardPresenterTest);
+\run(new ContentPresenterTest);

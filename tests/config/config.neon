@@ -3,15 +3,11 @@
 parameters:
 	database:
 		driver: pdo_sqlite
-		host: ""
-		user: ""
-		password: ""
-		dbname: ""
 		charset: utf8
 		driverOptions:
 			1002: SET NAMES utf8
 			
-		proxyDir: %appDir%/proxy
+		proxyDir: %tempDir%/proxy
 		proxyNamespace: proxy
 		path: %tempDir%/database.db
 		
@@ -37,6 +33,8 @@ parameters:
 		defaultLanguage: en
 		defaultPresenter: Homepage
 		errorPresenter: Error
+		cacheMode: null
+		cacheValue: "10"
 		
 	
 php:

@@ -25,10 +25,10 @@ require __DIR__ . '/AdministrationCase.php';
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class DashboardPresenterTest extends AdministrationCase
+class LogsPresenterTest extends AdministrationCase
 {
 
-	protected $presenter = 'Cms:Admin:Dashboard';
+	protected $presenter = 'Cms:Admin:Logs';
 
 
 	public function testBasicTags()
@@ -38,12 +38,11 @@ class DashboardPresenterTest extends AdministrationCase
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);
 
-		$this->assertCssContain($dom, 'Dashboard', 'h1');
+		$this->assertCssContain($dom, 'Log browser', 'h1');
 		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertCssContain($dom, 'Logged in user', '#snippet--content h2');
-		$this->assertXpathContain($dom, 'Administrator', '//*[@id="snippet--content"]//h4');
+		$this->assertXpathContain($dom, 'Log browser', '//div[@id="snippet--header"]/ul/li[@class="active"]');
 	}
 
 }
 
-\run(new DashboardPresenterTest);
+\run(new LogsPresenterTest);

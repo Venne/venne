@@ -7,9 +7,9 @@ return array(
 	'dataDir'       => __DIR__ . '/data',
 	'libsDir'       => dirname(__DIR__) . '/vendor',
 	'tempDir'       => __DIR__ . '/temp',
-	'wwwDir'        => __DIR__ . '/www',
-	'wwwCacheDir'   => __DIR__ . '/www/cache',
-	'publicDir'		=> __DIR__ . '/www/public',
-	'resourcesDir'  => __DIR__ . '/www/resources',
+	'wwwDir'        => __DIR__,
+	'wwwCacheDir'   => __DIR__ . '/cache',
+	'publicDir'		=> __DIR__ . '/public',
+	'resourcesDir'  => __DIR__ . '/resources',
 	'modulesDir'	=> __DIR__ . '/modules',
 );
