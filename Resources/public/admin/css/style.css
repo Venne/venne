@@ -219,105 +219,105 @@ footer {
 
 
 /* navigation */
-#navigation .brand {
+.navigation .brand {
     padding: 0 20px 0 0;
     margin-left: 0;
 }
-#navigation.navbar .navbar-inner {
+.navigation.navbar .navbar-inner {
     background: #000000 url('./../images/admin-panel.png') repeat;
     height: 42px;
 }
-#navigation.navbar .nav > li > a {
+.navigation.navbar .nav > li > a {
     color: #888888;
     text-shadow: none;
 }
-#navigation.navbar .nav > li > a:hover {
+.navigation.navbar .nav > li > a:hover {
     color: #bbbbbb;
 }
-#navigation ul.nav li.dropdown:hover ul.dropdown-menu{
+.navigation ul.nav li.dropdown:hover ul.dropdown-menu{
     display: block;
 }
-#navigation ul.nav li.dropdown ul.dropdown-menu{
+.navigation ul.nav li.dropdown ul.dropdown-menu{
 	margin-top: -1px;
 }
-#navigation ul.nav li.dropdown ul.dropdown-menu a{
+.navigation ul.nav li.dropdown ul.dropdown-menu a{
 	font-size: 110%;
 	color: #dddddd;
 	/*font-weight: bold;*/
 }
-#navigation ul.nav li.dropdown ul.dropdown-menu a span{
+.navigation ul.nav li.dropdown ul.dropdown-menu a span{
 	margin: 5px 0;
 	display: block;
 	font-weight: normal;
 	font-size: 80%;
 	color: #888888;
 }
-#navigation ul.nav li.dropdown ul.dropdown-menu:before {
+.navigation ul.nav li.dropdown ul.dropdown-menu:before {
     display: none;
 }
-#navigation ul.nav li.dropdown ul.dropdown-menu:after {
+.navigation ul.nav li.dropdown ul.dropdown-menu:after {
     display: none;
 }
-#navigation ul.nav li.dropdown.open .dropdown-toggle {
+.navigation ul.nav li.dropdown.open .dropdown-toggle {
 	color: #ffffff;
 	background: #ccc;
 	background: rgba(0, 0, 0, 0.3);
 }
-#navigation ul.nav li.dropdown.open,
-#navigation ul.nav li.dropdown:hover{
+.navigation ul.nav li.dropdown.open,
+.navigation ul.nav li.dropdown:hover{
 	background-color: #222222;
 }
-#navigation ul.nav li.dropdown:hover a {
+.navigation ul.nav li.dropdown:hover a {
     color: #bbbbbb;
 }
 
 
 
-#navigation .topbar div > ul.secondary-nav .menu-dropdown,
-#navigation .nav.secondary-nav .menu-dropdown,
-#navigation .topbar div > ul.secondary-nav .dropdown-menu,
-#navigation .nav.secondary-nav .dropdown-menu {
+.navigation .topbar div > ul.secondary-nav .menu-dropdown,
+.navigation .nav.secondary-nav .menu-dropdown,
+.navigation .topbar div > ul.secondary-nav .dropdown-menu,
+.navigation .nav.secondary-nav .dropdown-menu {
 	right: 0;
 	border: 0;
 }
-#navigation .topbar div > ul a.menu:hover,
-#navigation .nav a.menu:hover,
-#navigation .topbar div > ul li.open .menu,
-#navigation .nav li.open .menu,
-#navigation .topbar div > ul .dropdown-toggle:hover,
-#navigation .nav .dropdown-toggle:hover,
-#navigation .topbar div > ul .dropdown.open .dropdown-toggle,
-#navigation .nav .dropdown.open .dropdown-toggle {
+.navigation .topbar div > ul a.menu:hover,
+.navigation .nav a.menu:hover,
+.navigation .topbar div > ul li.open .menu,
+.navigation .nav li.open .menu,
+.navigation .topbar div > ul .dropdown-toggle:hover,
+.navigation .nav .dropdown-toggle:hover,
+.navigation .topbar div > ul .dropdown.open .dropdown-toggle,
+.navigation .nav .dropdown.open .dropdown-toggle {
 	background: #444;
 	background: rgba(255, 255, 255, 0.05);
 }
-#navigation .topbar div > ul .menu-dropdown,
-#navigation .nav .menu-dropdown,
-#navigation .topbar div > ul .dropdown-menu,
-#navigation .nav .dropdown-menu {
+.navigation .topbar div > ul .menu-dropdown,
+.navigation .nav .menu-dropdown,
+.navigation .topbar div > ul .dropdown-menu,
+.navigation .nav .dropdown-menu {
 	background-color: #333;
 }
-#navigation .topbar div > ul .menu-dropdown a.menu,
-#navigation .nav .menu-dropdown a.menu,
-#navigation .topbar div > ul .dropdown-menu a.menu,
-#navigation .nav .dropdown-menu a.menu,
-#navigation .topbar div > ul .menu-dropdown .dropdown-toggle,
-#navigation .nav .menu-dropdown .dropdown-toggle,
-#navigation .topbar div > ul .dropdown-menu .dropdown-toggle,
-#navigation .nav .dropdown-menu .dropdown-toggle {
+.navigation .topbar div > ul .menu-dropdown a.menu,
+.navigation .nav .menu-dropdown a.menu,
+.navigation .topbar div > ul .dropdown-menu a.menu,
+.navigation .nav .dropdown-menu a.menu,
+.navigation .topbar div > ul .menu-dropdown .dropdown-toggle,
+.navigation .nav .menu-dropdown .dropdown-toggle,
+.navigation .topbar div > ul .dropdown-menu .dropdown-toggle,
+.navigation .nav .dropdown-menu .dropdown-toggle {
 	color: #ffffff;
 }
-#navigation .topbar div > ul .menu-dropdown li a,
-#navigation .nav .menu-dropdown li a,
-#navigation .topbar div > ul .dropdown-menu li a,
-#navigation .nav .dropdown-menu li a {
+.navigation .topbar div > ul .menu-dropdown li a,
+.navigation .nav .menu-dropdown li a,
+.navigation .topbar div > ul .dropdown-menu li a,
+.navigation .nav .dropdown-menu li a {
 	color: #999;
 	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
-#navigation .topbar div > ul .menu-dropdown li a:hover,
-#navigation .nav .menu-dropdown li a:hover,
-#navigation .topbar div > ul .dropdown-menu li a:hover,
-#navigation .nav .dropdown-menu li a:hover {
+.navigation .topbar div > ul .menu-dropdown li a:hover,
+.navigation .nav .menu-dropdown li a:hover,
+.navigation .topbar div > ul .dropdown-menu li a:hover,
+.navigation .nav .dropdown-menu li a:hover {
 	background-color: #191919;
 	background-repeat: repeat-x;
 	background-image: -khtml-gradient(linear, left top, left bottom, from(#292929), to(#191919));
@@ -330,20 +330,20 @@ footer {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#292929', endColorstr='#191919', GradientType=0);
 	color: #ffffff;
 }
-#navigation .topbar div > ul .menu-dropdown .active a,
-#navigation .nav .menu-dropdown .active a,
-#navigation .topbar div > ul .dropdown-menu .active a,
-#navigation .nav .dropdown-menu .active a {
+.navigation .topbar div > ul .menu-dropdown .active a,
+.navigation .nav .menu-dropdown .active a,
+.navigation .topbar div > ul .dropdown-menu .active a,
+.navigation .nav .dropdown-menu .active a {
 	color: #ffffff;
 }
-#navigation .topbar div > ul .menu-dropdown .divider,
-#navigation .nav .menu-dropdown .divider,
-#navigation .topbar div > ul .dropdown-menu .divider,
-#navigation .nav .dropdown-menu .divider {
+.navigation .topbar div > ul .menu-dropdown .divider,
+.navigation .nav .menu-dropdown .divider,
+.navigation .topbar div > ul .dropdown-menu .divider,
+.navigation .nav .dropdown-menu .divider {
 	background-color: #222;
 	border-color: #444;
 }
-#navigation.navbar .divider-vertical {
+.navigation.navbar .divider-vertical {
     border-right: 0;
     border-left: 1px solid #222222;
 }

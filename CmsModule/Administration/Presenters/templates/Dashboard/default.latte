@@ -170,7 +170,7 @@
 
 			<h2>{_Statistics}</h2>
 
-			{if $presenter->context->parameters['modules']['googleanalytics']['status'] === 'installed'}
+			{if isset($presenter->context->parameters['modules']['googleanalytics']) && $presenter->context->parameters['modules']['googleanalytics']['status'] === 'installed'}
 			<h3>{_'Visitors last month'}</h3>
 			{control googleAnalyticsVisitors history=>'-1 month', options=>[pointSize=>4], toolbar=>true}
 
