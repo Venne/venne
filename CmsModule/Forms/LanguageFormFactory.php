@@ -37,7 +37,7 @@ class LanguageFormFactory extends FormFactory
 	{
 		$form->addTextWithSelect("name", "Name")
 			->setItems(array("English", "Deutsch", "Čeština"), false)
-			->setOption("description", "(enhlish, deutsch,...)")
+			->setOption("description", "(english, deutsch,...)")
 			->addRule($form::FILLED, "Please set name");
 
 		$form->addTextWithSelect("short", "Short")

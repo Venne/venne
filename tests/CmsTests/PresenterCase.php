@@ -12,6 +12,7 @@
 namespace CmsTests;
 
 use CmsModule\Administration\Presenters\AdministratorPresenter;
+use Nette\Application\IPresenterFactory;
 use Nette\Application\IResponse;
 use Nette\Application\Responses\RedirectResponse;
 use Nette\Application\Responses\TextResponse;
@@ -293,13 +294,16 @@ class PresenterCase extends TestCase
 	/** @var Container|\SystemContainer */
 	private $_container;
 
+	/** @var IPresenterFactory */
+	private $_presenterFactory;
+
 
 	public function setUp()
 	{
 		$this->_container = id(new Configurator(dirname(__DIR__), getLoader()))->createContainer();
-		$presenterFactory = $this->_container->getByType('Nette\Application\IPresenterFactory');
+		$this->_presenterFactory = $this->_container->getByType('Nette\Application\IPresenterFactory');
 
-		$this->_presenter = $presenterFactory->createPresenter($this->presenter);
+		$this->_presenter = $this->_presenterFactory->createPresenter($this->presenter);
 		$this->_presenter->autoCanonicalize = FALSE;
 		$this->_presenter->user->login('admin', 'admin');
 	}
@@ -320,6 +324,15 @@ class PresenterCase extends TestCase
 	protected function getContainer()
 	{
 		return $this->_container;
+	}
+
+
+	/**
+	 * @return IPresenterFactory
+	 */
+	protected function getPresenterFactory()
+	{
+		return $this->_presenterFactory;
 	}
 
 
