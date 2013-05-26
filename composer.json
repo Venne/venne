@@ -39,7 +39,7 @@
 							"password": ""
 						},
 						"routePrefix": "admin",
-						"defaultPresenter": "Content"
+						"defaultPresenter": "Dashboard"
 					},
 					"website": {
 						"name": "Blog",
