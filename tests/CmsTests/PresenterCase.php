@@ -11,13 +11,10 @@
 
 namespace CmsTests;
 
-use CmsModule\Administration\Presenters\AdministratorPresenter;
+use Nette\Application\IPresenter;
 use Nette\Application\IPresenterFactory;
 use Nette\Application\IResponse;
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
 use Nette\DI\Container;
-use Nette\Templating\ITemplate;
 use Tester\Assert;
 use Tester\DomQuery;
 use Tester\TestCase;
@@ -31,8 +28,7 @@ require __DIR__ . '/bootstrap.php';
 class PresenterCase extends TestCase
 {
 
-	protected $presenter;
-
+	/** @var array */
 	private $HTML401NamedToNumeric = array(
 		'&nbsp;' => '&#160;', # no-break space = non-breaking space, U+00A0 ISOnum
 		'&iexcl;' => '&#161;', # inverted exclamation mark, U+00A1 ISOnum
@@ -288,33 +284,46 @@ class PresenterCase extends TestCase
 		'&euro;' => '&#8364;', # euro sign, U+20AC NEW
 	);
 
-	/** @var AdministratorPresenter */
-	private $_presenter;
-
 	/** @var Container|\SystemContainer */
-	private $_container;
+	private $container;
 
 	/** @var IPresenterFactory */
-	private $_presenterFactory;
+	private $presenterFactory;
+
+	/** @var IPresenter */
+	private $lastPresenter;
+
+	/** @var int */
+	private $containerCounter = 0;
+
+	/** @var int */
+	private $environmentCounter = 0;
+
+	/** @var string */
+	private $sandboxDir;
+
+	/** @var Configurator */
+	private $configurator;
 
 
-	public function setUp()
+	/**
+	 * @param string $sandboxDir
+	 */
+	protected function setSandboxDir($sandboxDir)
 	{
-		$this->_container = id(new Configurator(dirname(__DIR__), getLoader()))->createContainer();
-		$this->_presenterFactory = $this->_container->getByType('Nette\Application\IPresenterFactory');
-
-		$this->_presenter = $this->_presenterFactory->createPresenter($this->presenter);
-		$this->_presenter->autoCanonicalize = FALSE;
-		$this->_presenter->user->login('admin', 'admin');
+		$this->sandboxDir = $sandboxDir;
 	}
 
 
 	/**
-	 * @return AdministratorPresenter
+	 * @return string
 	 */
-	protected function getPresenter()
+	protected function getSandboxDir()
 	{
-		return $this->_presenter;
+		if (!$this->sandboxDir) {
+			$this->sandboxDir = dirname(__DIR__);
+		}
+		return $this->sandboxDir;
 	}
 
 
@@ -323,7 +332,22 @@ class PresenterCase extends TestCase
 	 */
 	protected function getContainer()
 	{
-		return $this->_container;
+		if (!$this->container) {
+			$this->container = $this->getConfigurator()->createContainer();
+		}
+		return $this->container;
+	}
+
+
+	/**
+	 * @return Configurator
+	 */
+	protected function getConfigurator()
+	{
+		if (!$this->configurator) {
+			$this->configurator = new Configurator($this->getSandboxDir(), getLoader());
+		}
+		return $this->configurator;
 	}
 
 
@@ -332,11 +356,40 @@ class PresenterCase extends TestCase
 	 */
 	protected function getPresenterFactory()
 	{
-		return $this->_presenterFactory;
+		if (!$this->presenterFactory) {
+			$this->presenterFactory = $this->getContainer()->getByType('Nette\Application\IPresenterFactory');
+		}
+		return $this->presenterFactory;
 	}
 
 
 	/**
+	 * @param $name
+	 * @return IPresenter
+	 */
+	protected function getPresenter($name)
+	{
+		if (!is_string($name)) {
+			Assert::fail('Presenter name must be string');
+		}
+
+		$presenter = $this->getPresenterFactory()->createPresenter($name);
+		$presenter->autoCanonicalize = FALSE;
+		return $presenter;
+	}
+
+
+	/**
+	 * @return IPresenter
+	 */
+	protected function getLastPresenter()
+	{
+		return $this->lastPresenter;
+	}
+
+
+	/**
+	 * @param string $presenter
 	 * @param $method
 	 * @param array $params
 	 * @param array $post
@@ -344,10 +397,11 @@ class PresenterCase extends TestCase
 	 * @param array $flags
 	 * @return IResponse
 	 */
-	protected function getResponse($method, array $params, array $post = array(), array $files = array(), array $flags = array())
+	protected function getResponse($presenter, $method, array $params = array(), array $post = array(), array $files = array(), array $flags = array())
 	{
-		$request = new \Nette\Application\Request($this->presenter, $method, $params, $post, $files, $flags);
-		return $this->_presenter->run($request);
+		$this->lastPresenter = $this->getPresenter($presenter);
+		$request = new \Nette\Application\Request($presenter, $method, $params, $post, $files, $flags);
+		return $this->lastPresenter->run($request);
 	}
 
 
@@ -360,6 +414,59 @@ class PresenterCase extends TestCase
 		$html = (string)$response->getSource();
 		$html = strtr($html, $this->HTML401NamedToNumeric);
 		return DomQuery::fromXml($html);
+	}
+
+
+	protected function reloadContainer()
+	{
+		$this->presenterFactory = NULL;
+
+		$container = $this->getContainer();
+		$configurator = $this->getConfigurator();
+
+		$class = $container->parameters['container']['class'] . '_test_' . $this->containerCounter++;
+		\Nette\Utils\LimitedScope::evaluate($configurator->buildContainer($dependencies, $class));
+
+		$this->container = new $class;
+		$this->container->initialize();
+		$this->container->addService('configurator', $configurator);
+	}
+
+
+	protected function prepareTestEnvironment()
+	{
+		if (!is_dir(TEMP_DIR . '/environments')) {
+			mkdir(TEMP_DIR . '/environments');
+		}
+
+		$target = TEMP_DIR . '/environments/' . $this->environmentCounter++;
+		mkdir($target);
+
+		copy(__DIR__ . '/env/sandbox.php', $target . '/sandbox.php');
+		$c = include $target . '/sandbox.php';
+		foreach ($c as $path) {
+			if (!file_exists($path)) {
+				mkdir($path, 0777, true);
+			}
+		}
+		copy(dirname(__DIR__) . '/config/config.neon', $c['configDir'] . '/config.neon');
+		copy(dirname(__DIR__) . '/config/settings.php', $c['configDir'] . '/settings.php');
+		copy(dirname(__DIR__) . '/temp/database.db', $c['tempDir'] . '/database.db');
+
+		$configurator = $this->getConfigurator();
+		$configurator->addParameters($c);
+
+		$parameters = include $c['configDir'] . '/settings.php';
+		foreach ($parameters['modules'] as &$module) {
+			$module['path'] = \Nette\DI\Helpers::expand($module['path'], $c + $this->getContainer()->parameters);
+		}
+		$configurator->addParameters($parameters);
+
+		mkdir($c['tempDir'] . '/cache');
+
+		if ($this->container) {
+			$this->reloadContainer();
+		}
 	}
 
 

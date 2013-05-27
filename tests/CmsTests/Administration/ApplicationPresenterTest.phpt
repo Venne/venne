@@ -11,14 +11,12 @@
 
 namespace CmsTests\Administration;
 
-use CmsModule\Administration\Presenters\DashboardPresenter;
 use Nette\Application\Responses\RedirectResponse;
 use Nette\Application\Responses\TextResponse;
 use Nette\Templating\ITemplate;
 use Tester\Assert;
 use Tester\DomQuery;
 use Tester\TestCase;
-use Venne\Config\Configurator;
 
 require __DIR__ . '/AdministrationCase.php';
 
@@ -28,12 +26,9 @@ require __DIR__ . '/AdministrationCase.php';
 class ApplicationPresenterTest extends AdministrationCase
 {
 
-	protected $presenter = 'Cms:Admin:Application';
-
-
 	public function testBasicTags()
 	{
-		$response = $this->getResponse('GET', array());
+		$response = $this->getResponse('Cms:Admin:Application', 'GET');
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);
@@ -46,7 +41,7 @@ class ApplicationPresenterTest extends AdministrationCase
 
 	public function testActionDatabase()
 	{
-		$response = $this->getResponse('GET', array('action' => 'database'));
+		$response = $this->getResponse('Cms:Admin:Application', 'GET', array('action' => 'database'));
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);
@@ -59,7 +54,7 @@ class ApplicationPresenterTest extends AdministrationCase
 
 	public function testActionAccount()
 	{
-		$response = $this->getResponse('GET', array('action' => 'account'));
+		$response = $this->getResponse('Cms:Admin:Application', 'GET', array('action' => 'account'));
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);
@@ -72,7 +67,7 @@ class ApplicationPresenterTest extends AdministrationCase
 
 	public function testActionAdmin()
 	{
-		$response = $this->getResponse('GET', array('action' => 'admin'));
+		$response = $this->getResponse('Cms:Admin:Application', 'GET', array('action' => 'admin'));
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);

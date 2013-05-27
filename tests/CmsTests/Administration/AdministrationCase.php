@@ -11,17 +11,8 @@
 
 namespace CmsTests\Administration;
 
-use CmsModule\Administration\Presenters\AdministratorPresenter;
 use CmsTests\PresenterCase;
-use Nette\Application\IResponse;
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
-use Nette\DI\Container;
-use Nette\Templating\ITemplate;
-use Tester\Assert;
-use Tester\DomQuery;
-use Tester\TestCase;
-use Venne\Config\Configurator;
+use Nette\Security\User;
 
 require __DIR__ . '/../PresenterCase.php';
 
@@ -31,12 +22,34 @@ require __DIR__ . '/../PresenterCase.php';
 class AdministrationCase extends PresenterCase
 {
 
+	/** @var bool */
+	private $loggedIn = false;
 
-	public function setUp()
+
+	/**
+	 * @param User $user
+	 * @param $name
+	 * @param $password
+	 */
+	private function login(User $user, $name, $password)
 	{
-		parent::setUp();
+		$user->login($name, $password);
+	}
 
-		$this->getPresenter()->user->login('admin', 'admin');
+
+	/**
+	 * @return \Nette\DI\Container|\SystemContainer
+	 */
+	protected function getContainer()
+	{
+		$container = parent::getContainer();
+
+		if (!$this->loggedIn) {
+			$this->login($container->getByType('Nette\Security\User'), 'admin', 'admin');
+			$this->loggedIn = true;
+		}
+
+		return $container;
 	}
 
 

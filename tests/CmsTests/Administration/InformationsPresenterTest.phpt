@@ -11,14 +11,12 @@
 
 namespace CmsTests\Administration;
 
-use CmsModule\Administration\Presenters\DashboardPresenter;
 use Nette\Application\Responses\RedirectResponse;
 use Nette\Application\Responses\TextResponse;
 use Nette\Templating\ITemplate;
 use Tester\Assert;
 use Tester\DomQuery;
 use Tester\TestCase;
-use Venne\Config\Configurator;
 
 require __DIR__ . '/AdministrationCase.php';
 
@@ -28,12 +26,9 @@ require __DIR__ . '/AdministrationCase.php';
 class InformationsPresenterTest extends AdministrationCase
 {
 
-	protected $presenter = 'Cms:Admin:Informations';
-
-
 	public function testBasicTags()
 	{
-		$response = $this->getResponse('GET', array());
+		$response = $this->getResponse('Cms:Admin:Informations', 'GET', array());
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);

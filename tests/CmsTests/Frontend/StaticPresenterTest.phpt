@@ -27,16 +27,13 @@ require __DIR__ . '/FrontendCase.php';
 class StaticPresenterTest extends FrontendCase
 {
 
-	protected $presenter = 'Cms:Static';
-
-
 	public function testMainpage()
 	{
 		/** @var RouteRepository $repository */
 		$repository = $this->getContainer()->getByType('CmsModule\Content\Repositories\RouteRepository');
 		$route = $repository->findOneBy(array('url' => ''));
 
-		$response = $this->getResponse('GET', array('route' => $route));
+		$response = $this->getResponse('Cms:Static', 'GET', array('route' => $route));
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);
@@ -47,13 +44,14 @@ class StaticPresenterTest extends FrontendCase
 		$this->assertXpathContain($dom, 'Text of main page.', '//h1/parent::div');
 	}
 
+
 	public function testSubpage()
 	{
 		/** @var RouteRepository $repository */
 		$repository = $this->getContainer()->getByType('CmsModule\Content\Repositories\RouteRepository');
 		$route = $repository->findOneBy(array('url' => 'subpage'));
 
-		$response = $this->getResponse('GET', array('route' => $route));
+		$response = $this->getResponse('Cms:Static', 'GET', array('route' => $route));
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
 		$dom = $this->getDom($response);

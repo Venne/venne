@@ -11,42 +11,24 @@
 
 namespace CmsTests\Administration;
 
-use CmsModule\Content\Presenters\LoginPresenter;
+use CmsTests\PresenterCase;
 use Nette\Application\Responses\RedirectResponse;
 use Nette\Application\Responses\TextResponse;
 use Nette\Templating\ITemplate;
 use Tester\Assert;
 use Tester\DomQuery;
-use Tester\TestCase;
-use Venne\Config\Configurator;
 
-require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/AdministrationCase.php';
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginPresenterTest extends TestCase
+class LoginPresenterTest extends PresenterCase
 {
-
-
-	/** @var LoginPresenter */
-	private $presenter;
-
-
-	public function setUp()
-	{
-		$container = id(new Configurator(dirname(dirname(__DIR__)), getLoader()))->createContainer();
-		$presenterFactory = $container->getByType('Nette\Application\IPresenterFactory');
-
-		$this->presenter = $presenterFactory->createPresenter('Cms:Admin:Login');
-		$this->presenter->autoCanonicalize = FALSE;
-	}
-
 
 	public function testPresenter()
 	{
-		$request = new \Nette\Application\Request('Cms:Admin:Login', 'GET', array());
-		$response = $this->presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Login', 'GET', array());
 
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
@@ -63,10 +45,9 @@ class LoginPresenterTest extends TestCase
 
 	public function testLogin()
 	{
-		$request = new \Nette\Application\Request('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+		$response = $this->getResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
 			'username' => 'admin', 'password' => 'admin', 'remember' => FALSE, '_submit' => 'Přihlásit se'
 		));
-		$response = $this->presenter->run($request);
 
 		Assert::true($response instanceof RedirectResponse);
 	}
@@ -74,10 +55,9 @@ class LoginPresenterTest extends TestCase
 
 	public function testBadPassword()
 	{
-		$request = new \Nette\Application\Request('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+		$response = $this->getResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
 			'username' => 'admin', 'password' => 'wrong', 'remember' => FALSE, '_submit' => 'Přihlásit se'
 		));
-		$response = $this->presenter->run($request);
 
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);
@@ -95,10 +75,9 @@ class LoginPresenterTest extends TestCase
 
 	public function testBadUsername()
 	{
-		$request = new \Nette\Application\Request('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+		$response = $this->getResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
 			'username' => 'wrong', 'password' => 'wrong', 'remember' => FALSE, '_submit' => 'Přihlásit se'
 		));
-		$response = $this->presenter->run($request);
 
 		Assert::true($response instanceof TextResponse);
 		Assert::true($response->getSource() instanceof ITemplate);

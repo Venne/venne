@@ -11,21 +11,15 @@
 
 namespace CmsTests\Frontend;
 
-use CmsModule\Administration\Presenters\AdministratorPresenter;
 use CmsModule\Module;
 use CmsTests\PresenterCase;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\IResponse;
 use Nette\Application\Responses\RedirectResponse;
 use Nette\Application\Responses\TextResponse;
-use Nette\Config\Helpers;
-use Nette\DI\Container;
 use Nette\Templating\ITemplate;
-use Nette\Utils\Neon;
 use Tester\Assert;
 use Tester\DomQuery;
-use Tester\TestCase;
-use Venne\Config\Configurator;
 use Venne\Module\ModuleManager;
 
 require __DIR__ . '/../PresenterCase.php';
@@ -36,14 +30,8 @@ require __DIR__ . '/../PresenterCase.php';
 class InstallationTest extends PresenterCase
 {
 
-	private $container;
-
-	private $containerSum = 100;
-
-
 	public function setUp()
 	{
-		umask(0000);
 		$c = include __DIR__ . '/sandbox.php';
 		foreach ($c as $path) {
 			if (!file_exists($path)) {
@@ -53,7 +41,7 @@ class InstallationTest extends PresenterCase
 		copy(__DIR__ . '/config.neon.orig', $c['configDir'] . '/config.neon');
 		copy(__DIR__ . '/settings.php.orig', $c['configDir'] . '/settings.php');
 
-		$this->container = id(new Configurator(__DIR__, getLoader()))->createContainer();
+		$this->setSandboxDir(__DIR__);
 	}
 
 
@@ -68,11 +56,7 @@ class InstallationTest extends PresenterCase
 
 	public function firstPage()
 	{
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Administrator');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Administrator', 'GET', array());
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Administrator', 'GET', array());
 
 		Assert::type('Nette\Application\Responses\TextResponse', $response);
 		Assert::type('Nette\Templating\ITemplate', $response->getSource());
@@ -88,24 +72,17 @@ class InstallationTest extends PresenterCase
 		Assert::true($dom->has('input[name="_submit"]'));
 
 
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Administrator');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Administrator', 'POST', array('do' => 'systemAccountForm-submit'), array(
+		$response = $this->getResponse('Cms:Admin:Administrator', 'POST', array('do' => 'systemAccountForm-submit'), array(
 			'name' => 'admin', 'password' => 'admin', '_password' => 'admin', '_submit' => 'ok'
 		));
-		$response = $presenter->run($request);
 
-		Assert::true($presenter['systemAccountForm']->isValid());
+		Assert::true($this->getLastPresenter()->getComponent('systemAccountForm')->isValid());
 		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
 		Assert::equal('http:///admin?', substr($response->url, 0, 14));
 
 		$this->reloadContainer();
 
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Dashboard');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Dashboard', 'GET', array());
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Dashboard', 'GET', array());
 
 		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
 		Assert::equal('http:///admindatabase', $response->url);
@@ -114,48 +91,33 @@ class InstallationTest extends PresenterCase
 
 	public function secondPage()
 	{
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Database');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Database', 'GET', array());
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Database', 'GET', array());
 
 		Assert::type('Nette\Application\Responses\TextResponse', $response);
 		Assert::type('Nette\Templating\ITemplate', $response->getSource());
-		Assert::type('Venne\Forms\Form', $presenter['systemDatabaseForm']);
+		Assert::type('Venne\Forms\Form', $this->getLastPresenter()->getComponent('systemDatabaseForm'));
 		$html = (string)$response->getSource();
 		$dom = DomQuery::fromXml($html);
 		$this->assertCssContain($dom, 'Database settings', 'h1');
 
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Database');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Database', 'POST', array('do' => 'systemDatabaseForm-submit'), array(
+		$response = $this->getResponse('Cms:Admin:Database', 'POST', array('do' => 'systemDatabaseForm-submit'), array(
 			'driver' => 'pdo_sqlite', 'user' => '', 'password' => '', 'path' => '%tempDir%/database.db', 'charset' => 'utf8', '_submit' => 'ok'
 		));
-		$response = $presenter->run($request);
 
-		Assert::true($presenter['systemDatabaseForm']->isValid());
+		Assert::true($this->getLastPresenter()->getComponent('systemDatabaseForm')->isValid());
 		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
 		Assert::equal('http:///admindatabase?', substr($response->url, 0, 22));
 
 		$this->reloadContainer();
 
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Database');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Database', 'GET', array('do' => 'install'));
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Database', 'GET', array('do' => 'install'));
 
 		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
 		Assert::equal('http:///admin', $response->url);
 
 		$this->reloadContainer();
 
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Dashboard');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Dashboard', 'GET', array());
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Dashboard', 'GET', array());
 
 		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
 		Assert::contains('http:///adminlanguage?', $response->url);
@@ -166,37 +128,25 @@ class InstallationTest extends PresenterCase
 
 	public function thirdPage()
 	{
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Language');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Language', 'GET', array('table-navbar-id' => 'navbar-new', 'do' => 'table-navbar-click'));
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Language', 'GET', array('table-navbar-id' => 'navbar-new', 'do' => 'table-navbar-click'));
 
 		Assert::type('Nette\Application\Responses\TextResponse', $response);
 		Assert::type('Nette\Templating\ITemplate', $response->getSource());
 		$dom = $this->getDom($response);
 		Assert::true($dom->has('#frm-table-navbarForm'));
 
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Language');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Language', 'POST', array('table-formName' => 'new', 'do' => 'table-navbarForm-submit'), array(
+		$response = $this->getResponse('Cms:Admin:Language', 'POST', array('table-formName' => 'new', 'do' => 'table-navbarForm-submit'), array(
 			'name' => 'English', 'short' => 'en', 'alias' => 'en', '_submit' => 'Save',
 		));
-		$response = $presenter->run($request);
 
-		Assert::type('Venne\Forms\Form', $presenter['table-navbarForm']);
-		Assert::true($presenter['table-navbarForm']->isValid());
+		Assert::type('Venne\Forms\Form', $this->getLastPresenter()->getComponent('table-navbarForm'));
+		Assert::true($this->getLastPresenter()->getComponent('table-navbarForm')->isValid());
 		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
 		Assert::contains('http:///adminlanguage?', $response->url);
 
 		$this->reloadContainer();
 
-		$presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');
-		$presenter = $presenterFactory->createPresenter('Cms:Admin:Dashboard');
-		$presenter->autoCanonicalize = FALSE;
-		$request = new \Nette\Application\Request('Cms:Admin:Dashboard', 'GET', array());
-		$response = $presenter->run($request);
+		$response = $this->getResponse('Cms:Admin:Dashboard', 'GET', array());
 
 		Assert::type('Nette\Application\Responses\TextResponse', $response);
 		Assert::type('Nette\Templating\ITemplate', $response->getSource());
@@ -206,14 +156,14 @@ class InstallationTest extends PresenterCase
 	private function installModules()
 	{
 		/** @var ModuleManager $moduleManager */
-		$moduleManager = $this->container->getByType('Venne\Module\ModuleManager');
+		$moduleManager = $this->getContainer()->getByType('Venne\Module\ModuleManager');
 		$moduleManager->update();
-		include dirname(dirname(dirname(__DIR__))) . '/Module.php';
+		include_once dirname(dirname(dirname(__DIR__))) . '/Module.php';
 		$moduleManager->register(new Module);
 
 		$c = include __DIR__ . '/sandbox.php';
 		/** @var Configurator $configurator */
-		$configurator = $this->container->configurator;
+		$configurator = $this->getContainer()->configurator;
 		$configurator->addParameters(include $c['configDir'] . '/settings.php');
 
 		$moduleManager->install($moduleManager->createInstance('translator'), true);
@@ -225,24 +175,11 @@ class InstallationTest extends PresenterCase
 
 		$parameters = include $c['configDir'] . '/settings.php';
 		foreach ($parameters['modules'] as &$module) {
-			$module['path'] = \Nette\DI\Helpers::expand($module['path'], $this->container->parameters);
+			$module['path'] = \Nette\DI\Helpers::expand($module['path'], $this->getContainer()->parameters);
 		}
 		$configurator->addParameters($parameters);
 
 		$this->reloadContainer();
-	}
-
-
-	private function reloadContainer($reloadConfigurator = false)
-	{
-		$configurator = $reloadConfigurator ? new Configurator(__DIR__, getLoader()) : $this->container->configurator;
-
-		$class = $this->container->parameters['container']['class'] . $this->containerSum++;
-		\Nette\Utils\LimitedScope::evaluate($configurator->buildContainer($dependencies, $class));
-		$this->container = new $class;
-		//$this->container->parameters = Helpers::merge($parameters, $this->container->parameters);
-		$this->container->initialize();
-		$this->container->addService('configurator', $configurator);
 	}
 
 }
