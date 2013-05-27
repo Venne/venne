@@ -21,7 +21,7 @@ parameters:
 		
 	website:
 		name: Blog
-		title: ""
+		title: "%n %s %t"
 		titleSeparator: |
 		keywords: ""
 		description: ""
