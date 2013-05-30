@@ -39,30 +39,7 @@ parameters:
 	
 php:
 	date.timezone: Europe/Prague
-	
-nette:
-	session:
-		expiration: + 1 year
-		autoStart: false
-		
-	application:
-		debugger: false
-		
-	routing:
-		debugger: false
-		
-	container:
-		debugger: false
-		
-	security:
-		debugger: false
-		
-	xhtml: "1"
-	
-venne:
-	stopwatch:
-		debugger: false
-		
+
 	
 extensions:
 	doctrine: DoctrineModule\DI\DoctrineExtension

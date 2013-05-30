@@ -11,85 +11,64 @@
 
 namespace CmsTests\Administration;
 
-use CmsTests\PresenterCase;
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
-use Nette\Templating\ITemplate;
-use Tester\Assert;
 use Tester\DomQuery;
+use Venne\Tester\TestCase;
 
 require __DIR__ . '/AdministrationCase.php';
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginPresenterTest extends PresenterCase
+class LoginPresenterTest extends TestCase
 {
 
 	public function testPresenter()
 	{
-		$response = $this->getResponse('Cms:Admin:Login', 'GET', array());
-
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-
-		$html = (string)$response->getSource();
-		$dom = DomQuery::fromXml($html);
-
-		Assert::true($dom->has('input[name="username"]'));
-		Assert::true($dom->has('input[name="password"]'));
-		Assert::true($dom->has('input[name="remember"]'));
-		Assert::true($dom->has('input[name="_submit"]'));
+		$this->helper->createResponse('Cms:Admin:Login', 'GET', array())
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->has('input[name="username"]')
+			->has('input[name="password"]')
+			->has('input[name="remember"]')
+			->has('input[name="_submit"]');
 	}
 
 
 	public function testLogin()
 	{
-		$response = $this->getResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+		$this->helper->createResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
 			'username' => 'admin', 'password' => 'admin', 'remember' => FALSE, '_submit' => 'Přihlásit se'
-		));
-
-		Assert::true($response instanceof RedirectResponse);
+		))
+			->type('Nette\Application\Responses\RedirectResponse');
 	}
 
 
 	public function testBadPassword()
 	{
-		$response = $this->getResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+		$this->helper->createResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
 			'username' => 'admin', 'password' => 'wrong', 'remember' => FALSE, '_submit' => 'Přihlásit se'
-		));
-
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-
-		$html = (string)$response->getSource();
-		$dom = DomQuery::fromXml($html);
-
-		Assert::true($dom->has('div[class="alert alert-warning"]'));
-
-		$el = $dom->find('div[class="alert alert-warning"]');
-		Assert::equal(1, count($el));
-		Assert::equal('The password is incorrect.', trim((string)$el[0]));
+		))
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->has('div[class="alert alert-warning"]')
+			->hasCount(1, 'div[class="alert alert-warning"]')
+			->contains('The password is incorrect.', 'div[class="alert alert-warning"]');
 	}
 
 
 	public function testBadUsername()
 	{
-		$response = $this->getResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
+		$this->helper->createResponse('Cms:Admin:Login', 'POST', array('do' => 'signInForm-submit'), array(
 			'username' => 'wrong', 'password' => 'wrong', 'remember' => FALSE, '_submit' => 'Přihlásit se'
-		));
-
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-
-		$html = (string)$response->getSource();
-		$dom = DomQuery::fromXml($html);
-
-		Assert::true($dom->has('div[class="alert alert-warning"]'));
-
-		$el = $dom->find('div[class="alert alert-warning"]');
-		Assert::equal(1, count($el));
-		Assert::equal('The username is incorrect.', trim((string)$el[0]));
+		))
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->has('div[class="alert alert-warning"]')
+			->hasCount(1, 'div[class="alert alert-warning"]')
+			->contains('The username is incorrect.', 'div[class="alert alert-warning"]');
 	}
 }
 

@@ -12,22 +12,16 @@
 namespace CmsTests\Frontend;
 
 use CmsModule\Module;
-use CmsTests\PresenterCase;
 use Doctrine\ORM\EntityManager;
-use Nette\Application\IResponse;
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
-use Nette\Templating\ITemplate;
-use Tester\Assert;
-use Tester\DomQuery;
 use Venne\Module\ModuleManager;
+use Venne\Tester\TestCase;
 
-require __DIR__ . '/../PresenterCase.php';
+require __DIR__ . '/../bootstrap.php';
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class InstallationTest extends PresenterCase
+class InstallationTest extends TestCase
 {
 
 	public function setUp()
@@ -41,7 +35,7 @@ class InstallationTest extends PresenterCase
 		copy(__DIR__ . '/config.neon.orig', $c['configDir'] . '/config.neon');
 		copy(__DIR__ . '/settings.php.orig', $c['configDir'] . '/settings.php');
 
-		$this->setSandboxDir(__DIR__);
+		$this->helper->setSandboxDir(__DIR__);
 	}
 
 
@@ -56,114 +50,93 @@ class InstallationTest extends PresenterCase
 
 	public function firstPage()
 	{
-		$response = $this->getResponse('Cms:Admin:Administrator', 'GET', array());
+		$this->helper->createResponse('Cms:Admin:Administrator', 'GET', array())
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Administrator account', 'h1')
+			->has('input[name="name"]')
+			->has('input[name="password"]')
+			->has('input[name="_password"]')
+			->has('input[name="_submit"]');
 
-		Assert::type('Nette\Application\Responses\TextResponse', $response);
-		Assert::type('Nette\Templating\ITemplate', $response->getSource());
-
-		$html = (string)$response->getSource();
-		$dom = DomQuery::fromXml($html);
-
-		$this->assertCssContain($dom, 'Administrator account', 'h1');
-
-		Assert::true($dom->has('input[name="name"]'));
-		Assert::true($dom->has('input[name="password"]'));
-		Assert::true($dom->has('input[name="_password"]'));
-		Assert::true($dom->has('input[name="_submit"]'));
-
-
-		$response = $this->getResponse('Cms:Admin:Administrator', 'POST', array('do' => 'systemAccountForm-submit'), array(
+		$this->helper->createResponse('Cms:Admin:Administrator', 'POST', array('do' => 'systemAccountForm-submit'), array(
 			'name' => 'admin', 'password' => 'admin', '_password' => 'admin', '_submit' => 'ok'
-		));
+		))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///admin?');
 
-		Assert::true($this->getLastPresenter()->getComponent('systemAccountForm')->isValid());
-		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
-		Assert::equal('http:///admin?', substr($response->url, 0, 14));
+		$this->helper->reloadContainer();
 
-		$this->reloadContainer();
-
-		$response = $this->getResponse('Cms:Admin:Dashboard', 'GET', array());
-
-		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
-		Assert::equal('http:///admindatabase', $response->url);
+		$this->helper->createResponse('Cms:Admin:Dashboard', 'GET', array())
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///admindatabase');
 	}
 
 
 	public function secondPage()
 	{
-		$response = $this->getResponse('Cms:Admin:Database', 'GET', array());
+		$this->helper->createResponse('Cms:Admin:Database', 'GET', array())
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Database settings', 'h1');
 
-		Assert::type('Nette\Application\Responses\TextResponse', $response);
-		Assert::type('Nette\Templating\ITemplate', $response->getSource());
-		Assert::type('Venne\Forms\Form', $this->getLastPresenter()->getComponent('systemDatabaseForm'));
-		$html = (string)$response->getSource();
-		$dom = DomQuery::fromXml($html);
-		$this->assertCssContain($dom, 'Database settings', 'h1');
-
-		$response = $this->getResponse('Cms:Admin:Database', 'POST', array('do' => 'systemDatabaseForm-submit'), array(
+		$this->helper->createResponse('Cms:Admin:Database', 'POST', array('do' => 'systemDatabaseForm-submit'), array(
 			'driver' => 'pdo_sqlite', 'user' => '', 'password' => '', 'path' => '%tempDir%/database.db', 'charset' => 'utf8', '_submit' => 'ok'
-		));
+		))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///admindatabase?');
 
-		Assert::true($this->getLastPresenter()->getComponent('systemDatabaseForm')->isValid());
-		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
-		Assert::equal('http:///admindatabase?', substr($response->url, 0, 22));
+		$this->helper->reloadContainer();
 
-		$this->reloadContainer();
+		$this->helper->createResponse('Cms:Admin:Database', 'GET', array('do' => 'install'))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///admin');
 
-		$response = $this->getResponse('Cms:Admin:Database', 'GET', array('do' => 'install'));
+		$this->helper->reloadContainer();
 
-		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
-		Assert::equal('http:///admin', $response->url);
-
-		$this->reloadContainer();
-
-		$response = $this->getResponse('Cms:Admin:Dashboard', 'GET', array());
-
-		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
-		Assert::contains('http:///adminlanguage?', $response->url);
-		Assert::contains('do=table-navbar-click', $response->url);
-		Assert::contains('table-navbar-id=navbar-new', $response->url);
+		$this->helper->createResponse('Cms:Admin:Dashboard', 'GET', array())
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///adminlanguage?')
+			->redirectContains('do=table-navbar-click')
+			->redirectContains('table-navbar-id=navbar-new');
 	}
 
 
 	public function thirdPage()
 	{
-		$response = $this->getResponse('Cms:Admin:Language', 'GET', array('table-navbar-id' => 'navbar-new', 'do' => 'table-navbar-click'));
+		$this->helper->createResponse('Cms:Admin:Language', 'GET', array('table-navbar-id' => 'navbar-new', 'do' => 'table-navbar-click'))
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->has('#frm-table-navbarForm');
 
-		Assert::type('Nette\Application\Responses\TextResponse', $response);
-		Assert::type('Nette\Templating\ITemplate', $response->getSource());
-		$dom = $this->getDom($response);
-		Assert::true($dom->has('#frm-table-navbarForm'));
-
-		$response = $this->getResponse('Cms:Admin:Language', 'POST', array('table-formName' => 'new', 'do' => 'table-navbarForm-submit'), array(
+		$this->helper->createResponse('Cms:Admin:Language', 'POST', array('table-formName' => 'new', 'do' => 'table-navbarForm-submit'), array(
 			'name' => 'English', 'short' => 'en', 'alias' => 'en', '_submit' => 'Save',
-		));
+		))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///adminlanguage');
 
-		Assert::type('Venne\Forms\Form', $this->getLastPresenter()->getComponent('table-navbarForm'));
-		Assert::true($this->getLastPresenter()->getComponent('table-navbarForm')->isValid());
-		Assert::type('Nette\Application\Responses\RedirectResponse', $response);
-		Assert::contains('http:///adminlanguage?', $response->url);
+		$this->helper->reloadContainer();
 
-		$this->reloadContainer();
-
-		$response = $this->getResponse('Cms:Admin:Dashboard', 'GET', array());
-
-		Assert::type('Nette\Application\Responses\TextResponse', $response);
-		Assert::type('Nette\Templating\ITemplate', $response->getSource());
+		$this->helper->createResponse('Cms:Admin:Dashboard', 'GET', array())
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate');
 	}
 
 
 	private function installModules()
 	{
 		/** @var ModuleManager $moduleManager */
-		$moduleManager = $this->getContainer()->getByType('Venne\Module\ModuleManager');
+		$moduleManager = $this->helper->getContainer()->getByType('Venne\Module\ModuleManager');
 		$moduleManager->update();
 		include_once dirname(dirname(dirname(__DIR__))) . '/Module.php';
 		$moduleManager->register(new Module);
 
 		$c = include __DIR__ . '/sandbox.php';
 		/** @var Configurator $configurator */
-		$configurator = $this->getContainer()->configurator;
+		$configurator = $this->helper->getContainer()->configurator;
 		$configurator->addParameters(include $c['configDir'] . '/settings.php');
 
 		$moduleManager->install($moduleManager->createInstance('translator'), true);
@@ -175,11 +148,11 @@ class InstallationTest extends PresenterCase
 
 		$parameters = include $c['configDir'] . '/settings.php';
 		foreach ($parameters['modules'] as &$module) {
-			$module['path'] = \Nette\DI\Helpers::expand($module['path'], $this->getContainer()->parameters);
+			$module['path'] = \Nette\DI\Helpers::expand($module['path'], $this->helper->getContainer()->parameters);
 		}
 		$configurator->addParameters($parameters);
 
-		$this->reloadContainer();
+		$this->helper->reloadContainer();
 	}
 
 }

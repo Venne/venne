@@ -19,7 +19,7 @@
 		"o5/grido": "@dev"
 	},
 	"require-dev": {
-		"nette/tester": "@dev"
+		"venne/tester": "@dev"
 	},
 	"autoload": {
 		"psr-0": {

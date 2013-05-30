@@ -11,24 +11,14 @@
 
 namespace CmsTests\Frontend;
 
-use CmsModule\Administration\Presenters\AdministratorPresenter;
-use CmsTests\PresenterCase;
-use Nette\Application\IResponse;
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
-use Nette\DI\Container;
-use Nette\Templating\ITemplate;
-use Tester\Assert;
-use Tester\DomQuery;
-use Tester\TestCase;
-use Venne\Config\Configurator;
+use Venne\Tester\TestCase;
 
-require __DIR__ . '/../PresenterCase.php';
+require __DIR__ . '/../bootstrap.php';
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FrontendCase extends PresenterCase
+class FrontendCase extends TestCase
 {
 
 }

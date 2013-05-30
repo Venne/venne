@@ -11,12 +11,8 @@
 
 namespace CmsTests\Administration;
 
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
-use Nette\Templating\ITemplate;
-use Tester\Assert;
+use Nette\Utils\Arrays;
 use Tester\DomQuery;
-use Tester\TestCase;
 
 require __DIR__ . '/AdministrationCase.php';
 
@@ -26,55 +22,172 @@ require __DIR__ . '/AdministrationCase.php';
 class ApplicationPresenterTest extends AdministrationCase
 {
 
-	public function testBasicTags()
+	private function getFormData()
 	{
-		$response = $this->getResponse('Cms:Admin:Application', 'GET');
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-		$dom = $this->getDom($response);
+		return array(
+			'nette' => array(
+				'debugger' => array(
+					'edit' => '',
+					'browser' => '',
+					'email' => '',
+					'strictMode' => NULL,
+				),
+				'application' => array(
+					'catchExceptions' => NULL,
+					'debugger' => FALSE,
+				),
+				'routing' => array(
+					'debugger' => FALSE,
+				),
+				'container' => array(
+					'debugger' => FALSE,
+				),
+				'security' => array(
+					'debugger' => FALSE,
+				),
+				'session' => array(
+					'autoStart' => FALSE,
+					'expiration' => '',
+				),
+				'xhtml' => NULL,
+			),
+			'venne' => array(
+				'session' => array(
+					'savePath' => '',
+				),
+				'stopwatch' => array(
+					'debugger' => FALSE,
+				),
+			),
+			'doctrine' => array(
+				'debugger' => FALSE,
+				'cacheClass' => NULL,
+			),
+		);
+	}
 
-		$this->assertCssContain($dom, 'Application settings', 'h1');
-		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertXpathContain($dom, 'Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+
+	private function getFormSaveData()
+	{
+		return array(
+			'nette' => array(
+				'debugger' => array(
+					'edit' => 'pepe',
+					'browser' => '',
+					'email' => '',
+					'strictMode' => NULL,
+				),
+				'application' => array(
+					'catchExceptions' => NULL,
+					'debugger' => FALSE,
+				),
+				'routing' => array(
+					'debugger' => FALSE,
+				),
+				'container' => array(
+					'debugger' => FALSE,
+				),
+				'security' => array(
+					'debugger' => FALSE,
+				),
+				'session' => array(
+					'autoStart' => FALSE,
+					'expiration' => '',
+				),
+				'xhtml' => NULL,
+			),
+			'venne' => array(
+				'session' => array(
+					'savePath' => '',
+				),
+				'stopwatch' => array(
+					'debugger' => FALSE,
+				),
+			),
+			'doctrine' => array(
+				'debugger' => FALSE,
+				'cacheClass' => NULL,
+			),
+		);
+	}
+
+
+	public function testActionDefault()
+	{
+		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET');
+		$response
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Application settings', 'h1')
+			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
+			->xpathContains('Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+		$response
+			->getPresenter()
+			->hasComponent('applicationForm')
+			->getForm('applicationForm')
+			->values($this->getFormData())
+			->valuesInRender($this->getFormData());
+	}
+
+
+	public function testActionDefaultSave()
+	{
+		$this->helper->prepareTestEnvironment();
+
+		$this->helper->createResponse('Cms:Admin:Application', 'POST', array('do' => 'applicationForm-submit'), $this->getFormSaveData() + array('_submit' => 'Save'))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///adminapplication?');
+
+		$this->helper->reloadContainer();
+
+		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET', array());
+		$response
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate');
+		$response
+			->getPresenter()
+			->hasComponent('applicationForm')
+			->getForm('applicationForm')
+			->valid()
+			->values($this->getFormSaveData())
+			->valuesInRender($this->getFormSaveData());
 	}
 
 
 	public function testActionDatabase()
 	{
-		$response = $this->getResponse('Cms:Admin:Application', 'GET', array('action' => 'database'));
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-		$dom = $this->getDom($response);
-
-		$this->assertCssContain($dom, 'Application settings', 'h1');
-		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertXpathContain($dom, 'Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+		$this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'database'))
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Application settings', 'h1')
+			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
+			->xpathContains('Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
 	}
 
 
 	public function testActionAccount()
 	{
-		$response = $this->getResponse('Cms:Admin:Application', 'GET', array('action' => 'account'));
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-		$dom = $this->getDom($response);
-
-		$this->assertCssContain($dom, 'Application settings', 'h1');
-		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertXpathContain($dom, 'Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+		$this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'account'))
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Application settings', 'h1')
+			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
+			->xpathContains('Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
 	}
 
 
 	public function testActionAdmin()
 	{
-		$response = $this->getResponse('Cms:Admin:Application', 'GET', array('action' => 'admin'));
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-		$dom = $this->getDom($response);
-
-		$this->assertCssContain($dom, 'Application settings', 'h1');
-		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertXpathContain($dom, 'Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+		$this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'admin'))
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Application settings', 'h1')
+			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
+			->xpathContains('Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
 	}
 
 }

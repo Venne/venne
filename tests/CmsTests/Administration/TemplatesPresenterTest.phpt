@@ -11,12 +11,7 @@
 
 namespace CmsTests\Administration;
 
-use Nette\Application\Responses\RedirectResponse;
-use Nette\Application\Responses\TextResponse;
-use Nette\Templating\ITemplate;
-use Tester\Assert;
 use Tester\DomQuery;
-use Tester\TestCase;
 
 require __DIR__ . '/AdministrationCase.php';
 
@@ -28,14 +23,13 @@ class TemplatesPresenterTest extends AdministrationCase
 
 	public function testBasicTags()
 	{
-		$response = $this->getResponse('Cms:Admin:Templates', 'GET', array());
-		Assert::true($response instanceof TextResponse);
-		Assert::true($response->getSource() instanceof ITemplate);
-		$dom = $this->getDom($response);
-
-		$this->assertCssContain($dom, 'Templates', 'h1');
-		$this->assertXpathContain($dom, 'Dashboard', '//div[@id="snippet--header"]/ul/li/a');
-		$this->assertXpathContain($dom, 'Templates', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+		$this->helper->createResponse('Cms:Admin:Templates', 'GET')
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate')
+			->getDom()
+			->contains('Templates', 'h1')
+			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
+			->xpathContains('Templates', '//div[@id="snippet--header"]/ul/li[@class="active"]');
 	}
 
 }

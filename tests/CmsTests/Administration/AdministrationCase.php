@@ -11,15 +11,15 @@
 
 namespace CmsTests\Administration;
 
-use CmsTests\PresenterCase;
 use Nette\Security\User;
+use Venne\Tester\TestCase;
 
-require __DIR__ . '/../PresenterCase.php';
+require __DIR__ . '/../bootstrap.php';
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdministrationCase extends PresenterCase
+class AdministrationCase extends TestCase
 {
 
 	/** @var bool */
@@ -40,16 +40,16 @@ class AdministrationCase extends PresenterCase
 	/**
 	 * @return \Nette\DI\Container|\SystemContainer
 	 */
-	protected function getContainer()
+	public function setUp()
 	{
-		$container = parent::getContainer();
+		parent::setUp();
+
+		$container = $this->helper->getContainer();
 
 		if (!$this->loggedIn) {
 			$this->login($container->getByType('Nette\Security\User'), 'admin', 'admin');
 			$this->loggedIn = true;
 		}
-
-		return $container;
 	}
 
 
