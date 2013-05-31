@@ -82,7 +82,7 @@ class SystemApplicationFormFactory extends FormFactory
 
 		/* debugger */
 		$debugger->setCurrentGroup($group = $form->addGroup("Debugger"));
-		$debugger->addSelect("strictMode", "Strict mode")->setItems(array("yes", "no"), FALSE);
+		$debugger->addSelect("strictMode", "Strict mode")->setItems(array(TRUE => "yes", FALSE => "no"));
 		$debugger->addText("edit", "Editor");
 		$debugger->addText("browser", "Browser");
 		$debugger->addText("email", "E-mail for logs")

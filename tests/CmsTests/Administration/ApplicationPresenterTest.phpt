@@ -22,98 +22,11 @@ require __DIR__ . '/AdministrationCase.php';
 class ApplicationPresenterTest extends AdministrationCase
 {
 
-	private function getFormData()
-	{
-		return array(
-			'nette' => array(
-				'debugger' => array(
-					'edit' => '',
-					'browser' => '',
-					'email' => '',
-					'strictMode' => NULL,
-				),
-				'application' => array(
-					'catchExceptions' => NULL,
-					'debugger' => FALSE,
-				),
-				'routing' => array(
-					'debugger' => FALSE,
-				),
-				'container' => array(
-					'debugger' => FALSE,
-				),
-				'security' => array(
-					'debugger' => FALSE,
-				),
-				'session' => array(
-					'autoStart' => FALSE,
-					'expiration' => '',
-				),
-				'xhtml' => NULL,
-			),
-			'venne' => array(
-				'session' => array(
-					'savePath' => '',
-				),
-				'stopwatch' => array(
-					'debugger' => FALSE,
-				),
-			),
-			'doctrine' => array(
-				'debugger' => FALSE,
-				'cacheClass' => NULL,
-			),
-		);
-	}
-
-
-	private function getFormSaveData()
-	{
-		return array(
-			'nette' => array(
-				'debugger' => array(
-					'edit' => 'pepe',
-					'browser' => '',
-					'email' => '',
-					'strictMode' => NULL,
-				),
-				'application' => array(
-					'catchExceptions' => NULL,
-					'debugger' => FALSE,
-				),
-				'routing' => array(
-					'debugger' => FALSE,
-				),
-				'container' => array(
-					'debugger' => FALSE,
-				),
-				'security' => array(
-					'debugger' => FALSE,
-				),
-				'session' => array(
-					'autoStart' => FALSE,
-					'expiration' => '',
-				),
-				'xhtml' => NULL,
-			),
-			'venne' => array(
-				'session' => array(
-					'savePath' => '',
-				),
-				'stopwatch' => array(
-					'debugger' => FALSE,
-				),
-			),
-			'doctrine' => array(
-				'debugger' => FALSE,
-				'cacheClass' => NULL,
-			),
-		);
-	}
-
 
 	public function testActionDefault()
 	{
+		$data = include __DIR__ . '/data/Application.default.php';
+
 		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET');
 		$response
 			->type('Nette\Application\Responses\TextResponse')
@@ -126,16 +39,13 @@ class ApplicationPresenterTest extends AdministrationCase
 			->getPresenter()
 			->hasComponent('applicationForm')
 			->getForm('applicationForm')
-			->values($this->getFormData())
-			->valuesInRender($this->getFormData());
-	}
+			->values($data)
+			->valuesInRender($data);
 
-
-	public function testActionDefaultSave()
-	{
+		$data = include __DIR__ . '/data/Application.default.save.php';
 		$this->helper->prepareTestEnvironment();
 
-		$this->helper->createResponse('Cms:Admin:Application', 'POST', array('do' => 'applicationForm-submit'), $this->getFormSaveData() + array('_submit' => 'Save'))
+		$this->helper->createResponse('Cms:Admin:Application', 'POST', array('do' => 'applicationForm-submit'), $data + array('_submit' => 'Save'))
 			->type('Nette\Application\Responses\RedirectResponse')
 			->redirectContains('http:///adminapplication?');
 
@@ -150,32 +60,94 @@ class ApplicationPresenterTest extends AdministrationCase
 			->hasComponent('applicationForm')
 			->getForm('applicationForm')
 			->valid()
-			->values($this->getFormSaveData())
-			->valuesInRender($this->getFormSaveData());
+			->values($data)
+			->valuesInRender($data);
 	}
 
 
 	public function testActionDatabase()
 	{
-		$this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'database'))
+		$data = include __DIR__ . '/data/Application.database.php';
+
+		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'database'));
+		$response
 			->type('Nette\Application\Responses\TextResponse')
 			->getTemplate()->type('Nette\Templating\ITemplate')
 			->getDom()
 			->contains('Application settings', 'h1')
 			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
 			->xpathContains('Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+
+		$response
+			->getPresenter()
+			->hasComponent('databaseForm')
+			->getForm('databaseForm')
+			->values($data)
+			->valuesInRender($data);
+
+		$data = include __DIR__ . '/data/Application.database.save.php';
+		$this->helper->prepareTestEnvironment();
+
+		$this->helper->createResponse('Cms:Admin:Application', 'POST', array('action' => 'database', 'do' => 'databaseForm-submit'), $data + array('_submit' => 'Save'))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///adminapplication/database?');
+
+		$this->helper->reloadContainer();
+
+		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'database'));
+		$response
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate');
+		$response
+			->getPresenter()
+			->hasComponent('databaseForm')
+			->getForm('databaseForm')
+			->valid()
+			->values($data)
+			->valuesInRender($data);
 	}
 
 
 	public function testActionAccount()
 	{
-		$this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'account'))
+		$data = include __DIR__ . '/data/Application.account.php';
+
+		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'account'));
+		$response
 			->type('Nette\Application\Responses\TextResponse')
 			->getTemplate()->type('Nette\Templating\ITemplate')
 			->getDom()
 			->contains('Application settings', 'h1')
 			->xpathContains('Dashboard', '//div[@id="snippet--header"]/ul/li/a')
 			->xpathContains('Application settings', '//div[@id="snippet--header"]/ul/li[@class="active"]');
+
+		$response
+			->getPresenter()
+			->hasComponent('accountForm')
+			->getForm('accountForm')
+			->values($data)
+			->valuesInRender($data);
+
+		$data = include __DIR__ . '/data/Application.account.save.php';
+		$this->helper->prepareTestEnvironment();
+
+		$this->helper->createResponse('Cms:Admin:Application', 'POST', array('action' => 'account', 'do' => 'accountForm-submit'), $data + array('_submit' => 'Save'))
+			->type('Nette\Application\Responses\RedirectResponse')
+			->redirectContains('http:///adminapplication/account?');
+
+		$this->helper->reloadContainer();
+		$data['_password'] = '';
+
+		$response = $this->helper->createResponse('Cms:Admin:Application', 'GET', array('action' => 'account'));
+		$response
+			->type('Nette\Application\Responses\TextResponse')
+			->getTemplate()->type('Nette\Templating\ITemplate');
+		$response
+			->getPresenter()
+			->hasComponent('accountForm')
+			->getForm('accountForm')
+			->values($data)
+			->valuesInRender($data);
 	}
 
 
