@@ -10,7 +10,7 @@
 
 {block toolbar-items}
 
-	{var $nullLinkParams=>\Venne\Application\UI\Helpers::nullLinkParams($presenter)}
+	{var $nullLinkParams = \Venne\Application\UI\Helpers::nullLinkParams($presenter)}
 	<?php unset($nullLinkParams['key']); ?>
 	<?php unset($nullLinkParams['contentLang']); ?>
 
@@ -35,7 +35,7 @@
 	<li class="dropdown pull-right">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{=implode(", ", is_array($entity->languages) ? $entity->languages : $entity->languages->toArray())} <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
-			{var mainEntity=>($entity->translationFor ?$entity->translationFor: $entity)}
+			{var $mainEntity = ($entity->translationFor ?$entity->translationFor: $entity)}
 			<li><a class="ajax" href="{link this key=>$mainEntity->id}">{=implode(", ", is_array($mainEntity->languages) ? $mainEntity->languages : $mainEntity->languages->toArray())}</a></li>
 			{foreach $mainEntity->translations as $translation}
 				<li><a class="ajax" href="{link this key=>$translation->id}">{=implode(", ", is_array($translation->languages) ? $translation->languages : $translation->languages->toArray())}</a></li>

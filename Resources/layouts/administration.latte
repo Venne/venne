@@ -77,9 +77,9 @@
 					{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 						<ul class="nav">
 						{if $presenter->mode == $presenter::MODE_NORMAL}
-							{var pages=>$presenter->getContext()->cms->administrationManager->getAdministrationNavigation()}
+							{var $pages = $presenter->getContext()->cms->administrationManager->getAdministrationNavigation()}
 							{foreach $pages as $category=>$items}
-								{var ok=>false}
+								{var $ok = false}
 								{capture $nav}
 								<li class="dropdown">
 									<a class="dropdown-toggle" href="javaScript:;" data-toggle="dropdown">{_$category}</a>
@@ -87,7 +87,7 @@
 									<ul class="dropdown-menu">
 										{foreach $items as $link=>$item}
 											{if $presenter->isAuthorized(':' . $link)}
-											{var ok=>true}
+											{var $ok = true}
 											<li>
 												<a class="ajax" href="{plink :$link}">{_$item['name']}{if isset($item["description"]) && $item["description"]}<span>{_$item["description"]}</span>{/if}</a>
 											</li>
@@ -184,7 +184,7 @@
 			<div class="row-fluid">
 
 				{if $presenter->user->isLoggedIn() && $presenter->context->doctrine->createCheckConnection() && !isset($hideMenuItems)}
-				{var _panel=>true}
+				{var $_panel = true}
 				<div id="panel" class="span4" style="width: 320px; margin-top: 3px; margin-left: 0; position: fixed;">
 					{control panel}
 				</div>

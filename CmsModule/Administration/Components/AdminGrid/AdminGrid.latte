@@ -7,10 +7,10 @@
 	<li class="active">{_Root}</li>
 	{/if}
 
-	{var pControl=>$control}
+	{var $pControl = $control}
 	{while $pControl->floor}
 		{if $pControl->floor}
-			{var c=>$pControl->floors[$pControl->floor]}
+			{var $c = $pControl->floors[$pControl->floor]}
 
 			{if $c->floor}
 				<li><a class="ajax" href="#">{$pControl->getRepository()->find($control->floorId)}</a> <span class="divider">/</span></li>
@@ -18,7 +18,7 @@
 				<li class="active">{$pControl->getRepository()->find($control->floorId)}</li>
 			{/if}
 		{/if}
-		{var pControl=>$c}
+		{var $pControl = $c}
 	{/while}
 </ul>
 {/if}

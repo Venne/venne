@@ -1,6 +1,6 @@
 {form actionForm}
 <table class="table table-striped table-bordered table-condensed" n:snippet="table">
-	{var $_form=>$control['actionForm']}
+	{var $_form = $control['actionForm']}
     <thead>
 
 	{if $showNavbar}
@@ -14,7 +14,7 @@
 			<th></th>
 		{/if}
 		{foreach $columns as $key=>$column}
-			{if $column->getFilter()}{var $filter=>true}{/if}
+			{if $column->getFilter()}{var $filter = true}{/if}
             <th{if $column->width} style="width: {!$column->width};"{/if}>
 				{if $column->isSortable()}<a class="ajax" n:href="sort! column=>$key">{/if}{_$column->title}{if $column->isSortable()}{if isset($sort[$key])} <abbr>{$sort[$key] === 'ASC' ? '↓' : '↑' }</abbr>{/if}</a>{/if}
             </th>
@@ -22,9 +22,9 @@
         <th>{_Actions}</th>
     </tr>
 	{if isset($filter)}
-		{var $___form=>$_form}
-		{var $_form=>$_form['filters']}
-		{var $form=>$_form}
+		{var $___form = $_form}
+		{var $_form = $_form['filters']}
+		{var $form = $_form}
 		<tr class="table-filters">
 			{if count($globalActions) > 0}
 				<th></th>
@@ -34,14 +34,14 @@
 					{if $column->getFilter()}{input $key class=>'input-block-level'}{/if}
 				</th>
 			{/foreach}
-		{var $_form=>$___form}
-		{var $form=>$___form}
+		{var $_form = $___form}
+		{var $form = $___form}
 			<th>{input _filters class=>'btn btn-block ajax'}{*input reset2 class=>'btn'*}</th>
 		</tr>
 	{/if}
     </thead>
     <tbody n:snippet="table-body">
-		{var $_form=>$control['actionForm']}
+		{var $_form = $control['actionForm']}
 		{foreach $control->getItems() as $item}
         <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
 			{if count($globalActions) > 0}
@@ -51,7 +51,7 @@
 			{/if}
 			{foreach $columns as $key=>$column}
                 <td>
-					{var callback=>$column->callback}
+					{var $callback = $column->callback}
 				{if $callback}
 					{=$callback($item)}
 					{else}
@@ -73,7 +73,7 @@
 
 
     <tfoot n:snippet="table-foot">
-		{var $_form=>$control['actionForm']}
+		{var $_form = $control['actionForm']}
         <tr>
             <td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
 				{control vp}
@@ -99,7 +99,7 @@
 
 {snippet form}
 	{if $control->editForm}
-		{var form=>$control[$control->editForm]}
+		{var $form = $control[$control->editForm]}
     <div class="modal{if $form->type} {$form->type}{/if} hide" id="editForm">
         <div class="modal-header">
             <a class="close" onClick="$('#editForm').modal('hide')">×</a>
@@ -120,7 +120,7 @@
         });
     </script>
 		{elseif $control->createForm}
-		{var form=>$control[$control->createForm]}
+		{var $form = $control[$control->createForm]}
     <div class="modal{if $form->type} {$form->type}{/if} hide" id="createForm"}>
         <div class="modal-header">
             <a class="close" onClick="$('#createForm').modal('hide')">×</a>

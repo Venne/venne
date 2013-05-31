@@ -15,7 +15,7 @@
 
 {block breadcrumb}
 	{include #parent}
-	{var entity=>$presenter->key ? $dirRepository->find($presenter->key) : NULL}
+	{var $entity = $presenter->key ? $dirRepository->find($presenter->key) : NULL}
 	<li{if !$entity} class="active"{/if}><span class="divider">/</span> {if $entity}<a class="ajax" n:href="this key=>NULL, do=>changeDir">{/if}{include #header}{if $entity}</a>{/if}</li>
 	{if $entity}{include #breadcrumb-item, entity=>$entity}{/if}
 {/block}

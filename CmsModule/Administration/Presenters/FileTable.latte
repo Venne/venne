@@ -7,11 +7,11 @@
 		<li class="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
 			<div href="#" class="thumbnail">
 				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
-					{var type=>'folder'}
+					{var $type = 'folder'}
 				{else}
-					{var type=>'text-plain'}
+					{var $type = 'text-plain'}
 				{/if}
-				{var ext=>substr($item->getName(), strrpos($item->getName(), '.') + 1)}
+				{var $ext = substr($item->getName(), strrpos($item->getName(), '.') + 1)}
 				<a class="noAjax" href="{if $type=='folder'}{=$control->presenter->link('changeDir!', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
 					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
 						<img n:src="$item->getPath(), size=>'64x64', format=>8" alt="" />
@@ -28,7 +28,7 @@
 
 {snippet form}
 	{if $control->editForm}
-		{var form=>$control[$control->editForm]}
+		{var $form = $control[$control->editForm]}
     <div class="modal{if $form->type} {$form->type}{/if} hide" id="editForm">
         <div class="modal-header">
             <a class="close" onClick="$('#editForm').modal('hide')">×</a>
@@ -49,7 +49,7 @@
         });
     </script>
 		{elseif $control->createForm}
-		{var form=>$control[$control->createForm]}
+		{var $form = $control[$control->createForm]}
     <div class="modal{if $form->type} {$form->type}{/if} hide" id="createForm">
         <div class="modal-header">
             <a class="close" onClick="$('#createForm').modal('hide')">×</a>

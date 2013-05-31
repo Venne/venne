@@ -3,11 +3,11 @@
 		<div class="container">
 			<ul class="nav">
 
-    			{var $c=>$control}
+				{var $c = $control}
 
                 {block #item}
 				{foreach $c->getComponents() as $component}
-					{if count($component->getComponents()) > 0}{var d=>true}{else}{var d=>false}{/if}
+					{if count($component->getComponents()) > 0}{var $d = true}{else}{var $d = false}{/if}
 
 				    <li{if $d} class="dropdown"{/if}>
 				    	<a{if $d} class="dropdown-toggle" data-toggle="dropdown"{/if} class="ajax" {if $d}href="#"{else}n:href="click! $component->getId()"{/if}>

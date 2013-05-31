@@ -16,7 +16,7 @@
 
 <div class="media">
 	<a class="pull-left" href="#">
-		{var $user=$presenter->user->identity}
+		{var $user = $presenter->user->identity}
 		{if $user instanceof \CmsModule\Security\Entities\UserEntity && $user->avatar}
 			<img class="media-object img-polaroid img-rounded" n:src="$user->avatar->getFileUrl(true), size=>'96x96'"
 				 alt="{$user}">

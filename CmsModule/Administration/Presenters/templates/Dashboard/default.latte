@@ -19,7 +19,7 @@
 {if $log->page}
 <a n:href=":Cms:Admin:Content:edit key=>$log->page->id">{_Page}: {$log->page} ({$log->page->mainRoute->url})</a>
 {elseif $log->target}
-	{var entityClass=>new \Nette\Reflection\ClassType($log->target)}
+	{var $entityClass = new \Nette\Reflection\ClassType($log->target)}
 	{if $log->target === 'CmsModule\Security\Entities\UserEntity'}
 		{_User}
 	{elseif $log->target === 'Venne\\Forms\\Form'}
@@ -38,7 +38,7 @@
 {define #dashboard-body}
 	<span class="muted">{$log->created|date: "%d.%m.%Y"}{if $log->user} | {$log->user}{/if}:</span>
 {if $log->target}
-	{var entityClass=>new \Nette\Reflection\ClassType($log->target)}
+	{var $entityClass = new \Nette\Reflection\ClassType($log->target)}
 {/if}
 
 {if $log->message}
@@ -63,7 +63,7 @@
 
 			<div class="media">
 				<a class="pull-left" href="#">
-					{var $user=$presenter->user->identity}
+					{var $user = $presenter->user->identity}
 					{if $user instanceof \CmsModule\Security\Entities\UserEntity && $user->avatar}
 					<img class="media-object img-polaroid img-rounded" n:src="$user->avatar->getFileUrl(true), size=>'96x96'" alt="{$user}">
 					{/if}
@@ -78,7 +78,7 @@
 					<dl class="dl-horizontal">
 						<dt>{_Registered}</dt><dd>{$user->created|date: "%d.%m.%Y"}</dd>
 						<dt>{_E-mail}</dt><dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
-						{var $lastLog=>$logRepository->findOneBy(array('user'=>$user->id, 'target' => 'CmsModule\Security\Entities\UserEntity', 'action'=> \CmsModule\Content\Entities\LogEntity::ACTION_OTHER), array('created'=>'DESC'))}
+						{var $lastLog = $logRepository->findOneBy(array('user' => $user->id, 'target' => 'CmsModule\Security\Entities\UserEntity', 'action' => \CmsModule\Content\Entities\LogEntity::ACTION_OTHER), array('created' => 'DESC'))}
 						{if $lastLog}
 						<dt>{_'Last login'}</dt><dd>{$lastLog->created|date: "%d.%m.%Y"}</dd>
 						{/if}
@@ -92,9 +92,9 @@
 			<h2>{_'Last events'}</h2>
 
 			<ul class="media-list">
-				{var logs=>$logRepository->findBy(array(), array('created'=>'DESC'), 20)}
+				{var $logs = $logRepository->findBy(array(), array('created' => 'DESC'), 20)}
 				{for $i = 0 ; $i < count($logs) ; $i++}
-					{var log=>$logs[$i]}
+					{var $log = $logs[$i]}
 					<li class="media">
 						<a class="pull-left" href="#">
 							<img class="media-object" src="{include #dashboard-icon log=>$log}">
@@ -109,15 +109,15 @@
 								{include #dashboard-body log=>$log}
 
 								{if isset($logs[$i + 1])}
-									{var next=>$log}
-									{var next2=$logs[++$i]}
-									{var j=>1}
+									{var $next = $log}
+									{var $next2 = $logs[++$i]}
+									{var $j = 1}
 									{while ($next->target === $next2->target && $next->targetKey === $next2->targetKey && $next->type === $next2->type && $next->user === $next2->user && $next->page === $next2->page && $next->action === $next2->action && $next->message === $next2->message)}
-										{var j=>$j+1}
+										{var $j = $j+1}
 										{breakIf !isset($logs[$i + 1])}
-										{var next2=$logs[++$i]}
+										{var $next2 = $logs[++$i]}
 									{/while}
-									{var i=>$i-1}
+									{var $i = $i-1}
 								{/if}
 
 								{if $j > 1}
@@ -126,20 +126,20 @@
 							</p>
 
 							{if isset($logs[$i + 1])}
-								{var next=$logs[++$i]}
+								{var $next = $logs[++$i]}
 								{while ($next->target === $log->target && $next->targetKey === $log->targetKey && $next->type === $log->type) || ($log->page && $log->page === $next->page)}
 									<p>
 										{include #dashboard-body log=>$next}
 
 										{if isset($logs[$i + 1])}
-										{var next2=$logs[++$i]}
-										{var j=>1}
+										{var $next2 = $logs[++$i]}
+										{var $j = 1}
 										{while ($next->target === $next2->target && $next->targetKey === $next2->targetKey && $next->type === $next2->type && $next->user === $next2->user && $next->page === $next2->page && $next->action === $next2->action && $next->message === $next2->message)}
-											{var j=>$j+1}
+											{var $j = $j+1}
 											{breakIf !isset($logs[$i + 1])}
-											{var next2=$logs[++$i]}
+											{var $next2 = $logs[++$i]}
 										{/while}
-										{var i=>$i-1}
+										{var $i = $i-1}
 										{/if}
 
 										{if $j > 1}
@@ -148,9 +148,9 @@
 
 									</p>
 									{breakIf !isset($logs[$i + 1])}
-									{var next=$logs[++$i]}
+									{var $next = $logs[++$i]}
 								{/while}
-								{var i=>$i-1}
+								{var $i = $i-1}
 							{/if}
 						</div>
 					</li>

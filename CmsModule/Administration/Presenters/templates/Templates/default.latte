@@ -29,7 +29,7 @@
 {/if}
 
 {foreach $presenter->context->parameters['modules'] as $module=>$items}
-	{var items=>$templateManager->getLayoutsByModule($module)}
+	{var $items = $templateManager->getLayoutsByModule($module)}
 {continueIf !count($items)}
 
 <h2>{$module}</h2>
