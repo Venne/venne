@@ -130,7 +130,7 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon-user icon-white"></span> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class="nav-header">{_'Actions'}</li>
-								<li n:if="$presenter->isAuthorized(':Cms:Admin:Users:edit')"><a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax{/if}" href="{if $presenter->user->identity instanceof \CmsModule\Entities\UserEntity}{link :Cms:Admin:Users:edit id=>$presenter->user->identity->id, mode=>NULL}{else}{link :Cms:Admin:Application:account mode=>NULL}{/if}"><i class="icon-user icon-white"></i> {_'Account settings'}</a></li>
+								<li n:if="$presenter->isAuthorized(':Cms:Admin:Account:')"><a class="{if $presenter->mode == $presenter::MODE_NORMAL}ajax{/if}" href="{link :Cms:Admin:Account:}"><i class="icon-user icon-white"></i> {_'User card'}</a></li>
 								<li><a href="{link logout! mode=>NULL}"><i class="icon-off icon-white"></i> {_'Log out'}</a></li>
 							</ul>
 							</li>

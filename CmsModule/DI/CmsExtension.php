@@ -71,6 +71,10 @@ class CmsExtension extends CompilerExtension
 			}
 		}
 
+		// security
+		$container->getDefinition('nette.userStorage')
+			->setClass('CmsModule\Security\UserStorage', array('@session', '@cms.loginRepository', '@cms.userRepository', '@doctrine.checkConnectionFactory'));
+
 		// Application
 		$application = $container->getDefinition('application');
 		$application->addSetup('$service->errorPresenter = ?', $container->parameters['website']['errorPresenter']);

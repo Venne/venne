@@ -41,19 +41,17 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $created;
 
 
-
 	/**
 	 * @param $user
 	 * @param $sessionId
 	 */
-	public function __construct($user, $sessionId)
+	public function __construct($sessionId, $user = NULL)
 	{
 		$this->user = $user;
 		$this->sessionId = $sessionId;
 		$this->created = new \DateTime;
 		$this->reload = false;
 	}
-
 
 
 	/**
@@ -65,7 +63,6 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-
 	/**
 	 * @return mixed
 	 */
@@ -73,7 +70,6 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	{
 		return $this->sessionId;
 	}
-
 
 
 	/**
@@ -85,7 +81,6 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-
 	/**
 	 * @return mixed
 	 */
@@ -95,12 +90,10 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-
 	public function setCreated($created)
 	{
 		$this->created = $created;
 	}
-
 
 
 	public function getCreated()
@@ -109,12 +102,10 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-
 	public function setReload($reload)
 	{
 		$this->reload = $reload;
 	}
-
 
 
 	public function getReload()

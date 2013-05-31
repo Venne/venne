@@ -1,0 +1,16 @@
+{block header}
+	{_'Edit'}
+{/block}
+
+{block toolbar-items}
+	{include head.latte}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><span class="divider">/</span> <a class="ajax" n:href="default">{_'Account'}</a></li>
+	<li class="active"><span class="divider">/</span> {include #header}</li>
+{/block}
+
+{block content}
+{control accountForm}

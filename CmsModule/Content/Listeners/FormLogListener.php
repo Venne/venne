@@ -14,6 +14,7 @@ namespace CmsModule\Content\Listeners;
 use CmsModule\Content\Entities\LogEntity;
 use CmsModule\Content\Repositories\LogRepository;
 use CmsModule\Forms\ILoggableForm;
+use CmsModule\Security\Entities\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
 use Nette\Callback;
 use Nette\Security\User;
@@ -55,16 +56,11 @@ class FormLogListener
 
 		$presenter = $form->presenter;
 
-		$logEntity = new LogEntity($this->getUser(), 'Venne\\Forms\\Form', NULL, LogEntity::ACTION_OTHER);
+		$logEntity = new LogEntity($this->user instanceof UserEntity ? $this->user : NULL, 'Venne\\Forms\\Form', NULL, LogEntity::ACTION_OTHER);
 		$logEntity->setType($presenter->link('this'));
 		$logEntity->setMessage('Configuration has been updated');
 
 		$this->logRepository->save($logEntity);
 	}
 
-
-	private function getUser()
-	{
-		return $this->userRepository->findOneBy(array('email' => $this->user->identity->id));
-	}
 }

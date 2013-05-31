@@ -11,9 +11,8 @@
 
 namespace CmsModule\Security\Entities;
 
-use Venne;
-use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Content\Entities\FileEntity;
+use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Entities\IdentifiedEntity;
 use Nette\Security\IIdentity;
 

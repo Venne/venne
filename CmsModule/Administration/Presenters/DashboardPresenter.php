@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Repositories\LogRepository;
+use CmsModule\Security\Entities\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
 
 /**
@@ -52,7 +53,7 @@ class DashboardPresenter extends BasePresenter
 	 */
 	public function actionDefault()
 	{
-		if ($this->user->isLoggedIn() && strpos($this->user->identity->id, '@') === FALSE) {
+		if ($this->user->isLoggedIn() && !$this->user->identity instanceof UserEntity) {
 			$this->flashMessage('You are logged as superadministrator. It can be potencialy dangerous.', 'warning', TRUE);
 		}
 	}

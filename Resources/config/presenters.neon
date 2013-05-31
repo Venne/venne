@@ -35,7 +35,7 @@ factories:
 			category: 'Security'
 			name: 'User manager'
 			description: 'Add, edit users and their roles'
-			priority: 55
+			priority: 60
 		]]
 
 	cms.admin.rolesPresenter:
@@ -45,6 +45,16 @@ factories:
 			category: 'Security'
 			name: 'Role manager'
 			description: 'Manage roles and permissions'
+			priority: 55
+		]]
+
+	cms.admin.accountPresenter:
+		class: CmsModule\Administration\Presenters\AccountPresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Account:'
+			category: 'Security'
+			name: 'User account'
+			description: 'Manage your user profile'
 			priority: 50
 		]]
 

@@ -69,7 +69,7 @@ class Authenticator extends Venne\Security\Authenticator
 					throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 				}
 
-				return new \Nette\Security\Identity($username, $user->getRoles());
+				return new \CmsModule\Security\Identity($username, $user->getRoles());
 			}
 		}
 	}
