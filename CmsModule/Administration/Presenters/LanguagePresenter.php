@@ -83,7 +83,7 @@ class LanguagePresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$_this = $this;
 		$repository = $this->languageRepository;

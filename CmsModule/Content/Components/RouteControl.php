@@ -43,7 +43,7 @@ class RouteControl extends SectionControl
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$admin = new AdminGrid($this->routeRepository);
 

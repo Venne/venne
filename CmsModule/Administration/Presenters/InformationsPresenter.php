@@ -51,7 +51,7 @@ class InformationsPresenter extends BasePresenter
 	}
 
 
-	public function createComponentWebsiteForm()
+	protected function createComponentWebsiteForm()
 	{
 		$form = $this->form->createForm();
 		$form->onSuccess[] = $this->formSuccess;

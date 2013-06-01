@@ -259,7 +259,7 @@ class ContentPresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$adminGrid = new AdminGrid($this->pageRepository);
 
@@ -331,7 +331,7 @@ class ContentPresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable2()
+	protected function createComponentTable2()
 	{
 		$presenter = $this;
 
@@ -415,7 +415,7 @@ class ContentPresenter extends BasePresenter
 	}
 
 
-	public function createComponentForm()
+	protected function createComponentForm()
 	{
 		$contentType = $this->contentManager->getContentType($this->getParameter("type"));
 		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
@@ -441,7 +441,7 @@ class ContentPresenter extends BasePresenter
 	}
 
 
-	public function createComponentFormTranslate()
+	protected function createComponentFormTranslate()
 	{
 		$pageEntity = $this->pageRepository->find($this->getParameter("key"));
 		$contentType = $this->contentManager->getContentType(get_class($pageEntity));
@@ -456,7 +456,7 @@ class ContentPresenter extends BasePresenter
 	}
 
 
-	public function createComponentFormEdit()
+	protected function createComponentFormEdit()
 	{
 		$repository = $this->pageRepository;
 		$entity = $repository->find($this->getParameter("key"));

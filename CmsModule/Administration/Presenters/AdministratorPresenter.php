@@ -118,7 +118,7 @@ class AdministratorPresenter extends BasePresenter
 	}
 
 
-	public function createComponentSystemAccountForm($name)
+	protected function createComponentSystemAccountForm($name)
 	{
 		$form = $this->accountForm->invoke();
 		$form->onSuccess[] = $this->formSuccess;

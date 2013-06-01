@@ -98,7 +98,7 @@ class UsersPresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$admin = new AdminGrid($this->userRepository);
 

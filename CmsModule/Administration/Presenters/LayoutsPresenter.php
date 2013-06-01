@@ -152,7 +152,7 @@ class LayoutsPresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$admin = new AdminGrid($this->layoutRepository);
 
@@ -198,7 +198,7 @@ class LayoutsPresenter extends BasePresenter
 	}
 
 
-	public function createComponentElementTable()
+	protected function createComponentElementTable()
 	{
 		$admin = new AdminGrid($this->elementRepository);
 

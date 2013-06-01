@@ -86,7 +86,7 @@ class RolesPresenter extends BasePresenter
 	}
 
 
-	public function createComponentTable()
+	protected function createComponentTable()
 	{
 		$admin = new AdminGrid($this->roleRepository);
 

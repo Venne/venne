@@ -98,7 +98,7 @@ class PanelPresenter extends BasePresenter
 	}
 
 
-	public function createComponent($name)
+	protected function createComponent($name)
 	{
 		if (strpos($name, \CmsModule\Content\ElementManager::ELEMENT_PREFIX) === 0) {
 			$name = substr($name, strlen(\CmsModule\Content\ElementManager::ELEMENT_PREFIX));

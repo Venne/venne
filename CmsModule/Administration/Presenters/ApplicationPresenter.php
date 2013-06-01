@@ -95,14 +95,14 @@ class ApplicationPresenter extends BasePresenter
 	}
 
 
-	public function createComponentSystemForm()
+	protected function createComponentSystemForm()
 	{
 		$form = $this->systemForm->invoke();
 		return $form;
 	}
 
 
-	public function createComponentApplicationForm()
+	protected function createComponentApplicationForm()
 	{
 		$form = $this->applicationForm->invoke();
 		$form->onSuccess[] = function ($form) {
@@ -113,7 +113,7 @@ class ApplicationPresenter extends BasePresenter
 	}
 
 
-	public function createComponentDatabaseForm()
+	protected function createComponentDatabaseForm()
 	{
 		$form = $this->databaseForm->invoke();
 		$form->onSuccess[] = function ($form) {
@@ -124,7 +124,7 @@ class ApplicationPresenter extends BasePresenter
 	}
 
 
-	public function createComponentAccountForm()
+	protected function createComponentAccountForm()
 	{
 		$form = $this->accountForm->invoke();
 		$form->onSuccess[] = function ($form) {

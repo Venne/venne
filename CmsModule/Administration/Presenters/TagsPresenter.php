@@ -39,7 +39,7 @@ class TagsPresenter extends BasePresenter {
 	}
 
 
-	public function createComponentForm()
+	protected function createComponentForm()
 	{
 		$form = new \Venne\Application\UI\Form();
 		$form->setMethod("GET");
@@ -51,7 +51,7 @@ class TagsPresenter extends BasePresenter {
 	}
 
 
-	public function createComponentEditForm()
+	protected function createComponentEditForm()
 	{
 		$form = $this->context->cms->createModuleTagsForm();
 		$form->setService(str_replace(".", "\.", $this->key), $this->type);

@@ -60,7 +60,7 @@ class CachePresenter extends BasePresenter
 	}
 
 
-	public function createComponentForm()
+	protected function createComponentForm()
 	{
 		$form = new Form;
 		$form->setRenderer($this->renderer);

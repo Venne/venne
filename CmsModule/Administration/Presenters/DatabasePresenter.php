@@ -33,7 +33,7 @@ class DatabasePresenter extends BasePresenter
 	}
 
 
-	public function createComponentSystemDatabaseForm()
+	protected function createComponentSystemDatabaseForm()
 	{
 		/** @var $form \CmsModule\Forms\SystemDatabaseForm */
 		$form = $this->databaseForm->invoke();
