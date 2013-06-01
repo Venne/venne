@@ -502,7 +502,9 @@ class ContentPresenter extends BasePresenter
 
 	public function renderEdit()
 	{
-		$this->template->entity = $this->pageRepository->find($this->key);
+		if (!$this->template->entity = $this->pageRepository->find($this->key)) {
+			throw new BadRequestException;
+		}
 		$this->template->contentType = $this->contentManager->getContentType(get_class($this->template->entity));
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
