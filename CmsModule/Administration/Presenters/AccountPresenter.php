@@ -15,10 +15,13 @@ use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Components\Table\Form;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\UserFormFactory;
+use CmsModule\Security\Entities\LoginEntity;
 use CmsModule\Security\Entities\UserEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
 use Grido\DataSources\Doctrine;
+use Nette\Http\Session;
+use Nette\Utils\Html;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -40,6 +43,9 @@ class AccountPresenter extends BasePresenter
 
 	/** @var UserFormFactory */
 	protected $userFormFactory;
+
+	/** @var Session */
+	protected $session;
 
 
 	/**
@@ -79,6 +85,15 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
+	 * @param Session $session
+	 */
+	public function injectSession(Session $session)
+	{
+		$this->session = $session;
+	}
+
+
+	/**
 	 * @secured(privilege="show")
 	 */
 	public function actionDefault()
@@ -104,6 +119,7 @@ class AccountPresenter extends BasePresenter
 
 	protected function createComponentTable()
 	{
+		$session = $this->session;
 		$admin = new AdminGrid($this->loginRepository);
 
 		// columns
@@ -114,21 +130,26 @@ class AccountPresenter extends BasePresenter
 			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user IS NULL')));
 		}
 		$table->setTranslator($this->context->translator->translator);
+		$table->addColumnDate('current', 'Current')
+			->setCustomRender(function (LoginEntity $entity) use ($session) {
+				$el = Html::el('span');
+				$el->class[] = 'icon ' . ($session->id == $entity->getSessionId() ? 'icon-ok' : 'icon-remove');
+				return $el;
+			})
+			->getCellPrototype()->width = '10%';
 		$table->addColumnDate('created', 'Date')
 			->setSortable()
-			->getCellPrototype()->width = '60%';
-		$table->addColumn('sessionId', 'Session ID')
 			->getCellPrototype()->width = '40%';
+		$table->addColumn('sessionId', 'Session ID')
+			->getCellPrototype()->width = '50%';
 
 		// actions
-		if ($this->isAuthorized('remove')) {
-			$table->addAction('delete', 'Delete')
-				->setConfirm(function ($entity) {
-					return "Really delete session '{$entity->sessionId}'?";
-				})
-				->getElementPrototype()->class[] = 'ajax';
-			$admin->connectActionAsDelete($table->getAction('delete'));
-		}
+		$table->addAction('delete', 'Delete')
+			->setConfirm(function ($entity) {
+				return "Really delete session '{$entity->sessionId}'?";
+			})
+			->getElementPrototype()->class[] = 'ajax';
+		$admin->connectActionAsDelete($table->getAction('delete'));
 
 		return $admin;
 	}
