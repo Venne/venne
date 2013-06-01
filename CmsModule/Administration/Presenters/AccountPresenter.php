@@ -79,6 +79,14 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
+	 * @secured(privilege="show")
+	 */
+	public function actionDefault()
+	{
+	}
+
+
+	/**
 	 * @secured
 	 */
 	public function actionEdit()
@@ -89,7 +97,7 @@ class AccountPresenter extends BasePresenter
 	/**
 	 * @secured
 	 */
-	public function actionFullEdit()
+	public function actionAdvanced()
 	{
 	}
 
@@ -130,7 +138,7 @@ class AccountPresenter extends BasePresenter
 	{
 		if ($this->user->identity instanceof UserEntity) {
 			$form = $this->userFormFactory->invoke($this->user->identity);
-			if (!$this->isAuthorized('fullEdit')) {
+			if (!$this->isAuthorized('advanced')) {
 				$form['email']->setDisabled();
 				$form['key']->setDisabled();
 				$form['enable']->setDisabled();

@@ -1,2 +1,2 @@
-<li{if $presenter->action == 'default'} class="active"{/if}><a class="ajax" href="{link default}">{_'About user'}</a></li>
-<li{if $presenter->action == 'edit'} class="active"{/if}><a class="ajax" href="{link edit}">{_'Edit'}</a></li>
+<li n:if="$presenter->isAuthorized('default')"{if $presenter->action == 'default'} class="active"{/if}><a class="ajax" href="{link default}">{_'About user'}</a></li>
+<li n:if="$presenter->isAuthorized('edit')"{if $presenter->action == 'edit'} class="active"{/if}><a class="ajax" href="{link edit}">{_'Edit'}</a></li>
