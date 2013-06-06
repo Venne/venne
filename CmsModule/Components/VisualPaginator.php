@@ -11,10 +11,9 @@
 
 namespace CmsModule\Components;
 
-use Venne;
+use CmsModule\Content\Presenters\PagePresenter;
 use Nette\Utils\Paginator;
 use Venne\Application\UI\Control;
-use CmsModule\Content\Presenters\PagePresenter;
 
 /**
  * Visual paginator control.

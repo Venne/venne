@@ -11,7 +11,6 @@
 
 namespace CmsModule\Components\Navbar;
 
-use Venne;
 use Venne\Application\UI\Control;
 
 /**

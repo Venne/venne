@@ -11,7 +11,6 @@
 
 namespace CmsModule\Components;
 
-use Venne;
 use Venne\Application\UI\Control;
 
 /**
@@ -19,7 +18,6 @@ use Venne\Application\UI\Control;
  */
 class BrowserControl extends Control
 {
-
 
 	/** @var callable */
 	protected $loadItems;

@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Elements;
 
-use Venne;
 use Nette\Object;
 use Nette\Utils\Strings;
 

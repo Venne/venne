@@ -15,18 +15,17 @@ use CmsModule\Content\Entities\IloggableEntity;
 use CmsModule\Content\Entities\LogEntity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
 use Nette\DI\Container;
-use Nette\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class LogListener implements EventSubscriber
 {
+
 	/** @var Container|\SystemContainer */
 	protected $container;
 

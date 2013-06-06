@@ -11,16 +11,17 @@
 
 namespace CmsModule\Macros;
 
-use Venne;
+use Nette\Latte\Compiler;
 use Nette\Latte\MacroNode;
+use Nette\Latte\Macros\MacroSet;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class HeadMacro extends \Nette\Latte\Macros\MacroSet
+class HeadMacro extends MacroSet
 {
 
-	public static function install(\Nette\Latte\Compiler $compiler)
+	public static function install(Compiler $compiler)
 	{
 		$me = new static($compiler);
 		$me->addMacro('head', array($me, "headBegin"), array($me, "headEnd"));
@@ -30,12 +31,10 @@ class HeadMacro extends \Nette\Latte\Macros\MacroSet
 	}
 
 
-
 	public function headBegin(MacroNode $node, $writer)
 	{
 		return $writer->write('ob_start();');
 	}
-
 
 
 	public function headEnd(MacroNode $node, $writer)
@@ -44,15 +43,13 @@ class HeadMacro extends \Nette\Latte\Macros\MacroSet
 	}
 
 
-
 	public function bodyBegin(MacroNode $node, $writer)
 	{
 		return $writer->write('ob_start();');
 	}
 
 
-
-	public function bodyEnd(\Nette\Latte\MacroNode $node, $writer)
+	public function bodyEnd(MacroNode $node, $writer)
 	{
 		return $writer->write('$_bodyMacroData = ob_get_clean();?><head>
 <?php $_renderEventsArgs = new \CmsModule\Events\RenderArgs; $_renderEventsArgs->setPresenter($presenter); ?>
@@ -69,18 +66,15 @@ class HeadMacro extends \Nette\Latte\Macros\MacroSet
 	}
 
 
-
-	public function contentBegin(\Nette\Latte\MacroNode $node, $writer)
+	public function contentBegin(MacroNode $node, $writer)
 	{
 		return $writer->write('Nette\Latte\Macros\UIMacros::callBlock' . "(\$_l, 'content', " . '$template->getParameters())');
 	}
 
 
-
-	public function extensionsBegin(\Nette\Latte\MacroNode $node, $writer)
+	public function extensionsBegin(MacroNode $node, $writer)
 	{
 		return $writer->write('$presenter->context->eventManager->dispatchEvent(\Venne\ContentExtension\Events::onContentExtensionRender);');
 	}
-
 }
 

@@ -11,11 +11,11 @@
 
 namespace CmsModule\Content\Forms;
 
-use Venne;
-use Venne\Forms\FormFactory;
-use Venne\Forms\Form;
-use Venne\Module\Helpers;
 use FormsModule\ControlExtensions\ControlExtension;
+use Venne\Forms\Form;
+use Venne\Forms\FormFactory;
+use Venne\Module\Helpers;
+use Venne\Module\TemplateManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -29,7 +29,7 @@ class LayouteditFormFactory extends FormFactory
 
 	const TYPE_COMPONENT = 'component';
 
-	/** @var Venne\Module\TemplateManager */
+	/** @var TemplateManager */
 	protected $templateManager;
 
 	/** @var string */
@@ -53,7 +53,7 @@ class LayouteditFormFactory extends FormFactory
 	 * @param $appDir
 	 * @param $modules
 	 */
-	public function __construct(Venne\Module\TemplateManager $templateManager, $appDir, $modules, Helpers $moduleHelpers)
+	public function __construct(TemplateManager $templateManager, $appDir, $modules, Helpers $moduleHelpers)
 	{
 		$this->templateManager = $templateManager;
 		$this->appDir = $appDir;

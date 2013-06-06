@@ -11,7 +11,6 @@
 
 namespace CmsModule\Security;
 
-use CmsModule\Security\Entities\LoginEntity;
 use CmsModule\Security\Entities\UserEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
@@ -104,6 +103,4 @@ class UserStorage extends \Nette\Http\UserStorage
 
 		return $ret;
 	}
-
-
 }

@@ -16,4 +16,5 @@ namespace CmsModule\Security;
  */
 class Identity extends \Nette\Security\Identity
 {
+
 }

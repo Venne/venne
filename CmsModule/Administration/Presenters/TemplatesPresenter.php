@@ -11,9 +11,11 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
-use CmsModule\Content\Forms\LayoutFormFactory;
 use CmsModule\Content\Forms\LayouteditFormFactory;
+use CmsModule\Content\Forms\LayoutFormFactory;
+use Venne\Module\Helpers;
+use Venne\Module\TemplateManager;
+use Venne\Utils\File;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -26,7 +28,7 @@ class TemplatesPresenter extends BasePresenter
 	/** @persistent */
 	public $key;
 
-	/** @var Venne\Module\TemplateManager */
+	/** @var TemplateManager */
 	protected $templateManager;
 
 	/** @var array */
@@ -38,14 +40,14 @@ class TemplatesPresenter extends BasePresenter
 	/** @var LayouteditFormFactory */
 	protected $layouteditFormFactory;
 
-	/** @var Venne\Module\Helpers */
+	/** @var Helpers */
 	protected $moduleHelpers;
 
 
 	/**
-	 * @param \Venne\Module\TemplateManager $templateManager
+	 * @param TemplateManager $templateManager
 	 */
-	public function injectTemplateManager(Venne\Module\TemplateManager $templateManager)
+	public function injectTemplateManager(TemplateManager $templateManager)
 	{
 		$this->templateManager = $templateManager;
 	}
@@ -64,15 +66,12 @@ class TemplatesPresenter extends BasePresenter
 
 
 	/**
-	 * @param \Venne\Module\Helpers $moduleHelpers
+	 * @param Helpers $moduleHelpers
 	 */
-	public function injectModulesHelper(Venne\Module\Helpers $moduleHelpers)
+	public function injectModulesHelper(Helpers $moduleHelpers)
 	{
 		$this->moduleHelpers = $moduleHelpers;
 	}
-
-
-
 
 
 	/**
@@ -182,11 +181,11 @@ class TemplatesPresenter extends BasePresenter
 
 		unlink($path);
 
-		if(substr($path, -14) === '/@layout.latte') {
-			\Venne\Utils\File::rmdir(dirname($path), TRUE);
+		if (substr($path, -14) === '/@layout.latte') {
+			File::rmdir(dirname($path), TRUE);
 
 			$this->flashMessage('Layout has been removed.', 'success');
-		}else{
+		} else {
 			$this->flashMessage('Template has been removed.', 'success');
 		}
 

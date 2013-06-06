@@ -11,9 +11,6 @@
 
 namespace CmsModule\Components\Navbar;
 
-use Venne;
-use Nette\Object;
-use Nette\Utils\Html;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

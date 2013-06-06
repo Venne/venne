@@ -11,11 +11,11 @@
 
 namespace CmsModule\Content\Forms\Controls;
 
+use CmsModule\Content\Entities\FileEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Nette;
 use Nette\Utils\Html;
 use Venne\Tools\Objects;
-use CmsModule\Content\Entities\FileEntity;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

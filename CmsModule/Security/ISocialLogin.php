@@ -11,7 +11,7 @@
 
 namespace CmsModule\Security;
 
-use Venne;
+use CmsModule\Security\Entities\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -34,9 +34,5 @@ interface ISocialLogin extends \Nette\Security\IAuthenticator
 	public function getLoginUrl();
 
 
-	/**
-	 * @param Entities\UserEntity $userEntity
-	 * @return bool
-	 */
-	public function connectWithUser(\CmsModule\Security\Entities\UserEntity $userEntity);
+	public function connectWithUser(UserEntity $userEntity);
 }

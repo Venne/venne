@@ -11,16 +11,15 @@
 
 namespace CmsModule\Forms;
 
-use Venne;
-use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
+use DoctrineModule\SqlException;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class RoleFormFactory extends FormFactory
 {
-
 
 	/**
 	 * @param Form $form
@@ -34,7 +33,7 @@ class RoleFormFactory extends FormFactory
 	}
 
 
-	public function handleCatchError(Form $form, \DoctrineModule\SqlException $e)
+	public function handleCatchError(Form $form, SqlException $e)
 	{
 		if ($e->getCode() == '23000') {
 			$form->addError("Role is not unique");

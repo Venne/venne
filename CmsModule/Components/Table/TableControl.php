@@ -11,9 +11,8 @@
 
 namespace CmsModule\Components\Table;
 
-use Venne;
-use Venne\Application\UI\Control;
 use CmsModule\Components\Navbar\NavbarControl;
+use Venne\Application\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

@@ -11,16 +11,14 @@
 
 namespace CmsModule\Content;
 
-use Venne;
-use Venne\Forms\Form;
 use CmsModule\Security\ISocialLogin;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 interface IRegistrationFormFactory
 {
-
 
 	/**
 	 * @param Form $form

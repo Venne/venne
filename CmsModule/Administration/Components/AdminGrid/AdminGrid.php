@@ -19,6 +19,7 @@ use DoctrineModule\Repositories\BaseRepository;
 use Grido\DataSources\Doctrine;
 use Nette\Callback;
 use Venne\Application\UI\Control;
+use Venne\Forms\Form as VForm;
 use Venne\Forms\FormFactory;
 
 /**
@@ -26,6 +27,7 @@ use Venne\Forms\FormFactory;
  */
 class AdminGrid extends Control
 {
+
 	/**
 	 * @var string
 	 * @persistent
@@ -98,7 +100,7 @@ class AdminGrid extends Control
 
 
 	/**
-	 * @param \DoctrineModule\Repositories\BaseRepository $repository
+	 * @param BaseRepository $repository
 	 */
 	public function setRepository($repository)
 	{
@@ -107,7 +109,7 @@ class AdminGrid extends Control
 
 
 	/**
-	 * @return \DoctrineModule\Repositories\BaseRepository
+	 * @return BaseRepository
 	 */
 	public function getRepository()
 	{
@@ -143,8 +145,9 @@ class AdminGrid extends Control
 
 
 	/**
-	 * @param FormFactory $formFactory
+	 * @param Form $form
 	 * @param Section $section
+	 * @return $this
 	 */
 	public function connectFormWithNavbar(Form $form, Section $section)
 	{
@@ -218,7 +221,7 @@ class AdminGrid extends Control
 
 
 	/**
-	 * @return \CmsModule\Administration\Components\AdminGrid\AdminGrid
+	 * @return AdminGrid
 	 */
 	public function getParentFloor()
 	{
@@ -235,7 +238,7 @@ class AdminGrid extends Control
 	}
 
 
-	public function createForm(\Venne\Forms\FormFactory $formFactory, $title, $entityFactory = NULL, $type = NULL)
+	public function createForm(FormFactory $formFactory, $title, $entityFactory = NULL, $type = NULL)
 	{
 		return new Form($formFactory, $title, $entityFactory, $type);
 	}
@@ -366,7 +369,7 @@ class AdminGrid extends Control
 	}
 
 
-	public function navbarFormSuccess(\Venne\Forms\Form $form)
+	public function navbarFormSuccess(VForm $form)
 	{
 		$this->invalidateControl('navbarForm');
 
@@ -383,7 +386,7 @@ class AdminGrid extends Control
 	}
 
 
-	public function actionFormSuccess(\Venne\Forms\Form $form)
+	public function actionFormSuccess(VForm $form)
 	{
 		$this->invalidateControl('actionForm');
 
@@ -401,13 +404,13 @@ class AdminGrid extends Control
 	}
 
 
-	public function navbarFormError(\Venne\Forms\Form $form)
+	public function navbarFormError()
 	{
 		$this->invalidateControl('navbarForm');
 	}
 
 
-	public function actionFormError(\Venne\Forms\Form $form)
+	public function actionFormError()
 	{
 		$this->invalidateControl('actionForm');
 	}

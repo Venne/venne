@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content;
 
-use Venne;
+use CmsModule\Content\Elements\BaseElement;
 use Nette\Object;
 use Venne\Widget\WidgetManager;
 
@@ -27,12 +27,19 @@ class ElementManager extends Object
 	protected $widgetManager;
 
 
+	/**
+	 * @param WidgetManager $widgetManager
+	 */
 	public function __construct(WidgetManager $widgetManager)
 	{
 		$this->widgetManager = $widgetManager;
 	}
 
 
+	/**
+	 * @param $element
+	 * @return BaseElement
+	 */
 	public function createInstance($element)
 	{
 		return $this->widgetManager->getWidget(self::ELEMENT_PREFIX . $element)->invoke();

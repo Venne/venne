@@ -11,16 +11,14 @@
 
 namespace CmsModule\Content\Repositories;
 
-use Venne;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\PageEntity;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class DirRepository extends BaseRepository
 {
-
 
 	public function save($entity, $withoutFlush = self::FLUSH)
 	{

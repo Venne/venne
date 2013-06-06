@@ -11,18 +11,15 @@
 
 namespace CmsModule\Administration;
 
-use Venne;
-use Nette\Object;
-use Nette\DI\Container;
 use Nette\Callback;
-use CmsModule\Content\IContentType;
+use Nette\DI\Container;
+use Nette\Object;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class AdministrationManager extends Object
 {
-
 
 	/** @var Container */
 	protected $context;

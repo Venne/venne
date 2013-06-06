@@ -11,10 +11,11 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
-use Nette\Caching\IStorage;
-use Nette\Application\BadRequestException;
 use CmsModule\Forms\SystemAccountFormFactory;
+use Nette\Application\BadRequestException;
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
+use Venne\Security\Authenticator;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -118,27 +119,26 @@ class AdministratorPresenter extends BasePresenter
 	}
 
 
-	protected function createComponentSystemAccountForm($name)
-	{
-		$form = $this->accountForm->invoke();
-		$form->onSuccess[] = $this->formSuccess;
-		return $form;
-	}
-
-
 	public function formSuccess($form)
 	{
 		$user = $this->getUser();
 		$values = $form->getValues();
 
 		// login
-		$user->setAuthenticator(new \Venne\Security\Authenticator($values['name'], $values['password']));
+		$user->setAuthenticator(new Authenticator($values['name'], $values['password']));
 		$user->login($values['name'], $values['password']);
 
-		/** @var $cache \Nette\Caching\Cache */
-		$cache = new \Nette\Caching\Cache($this->cacheStorage, 'Nette.Configurator');
+		$cache = new Cache($this->cacheStorage, 'Nette.Configurator');
 		$cache->clean();
 
 		$this->redirect(":Cms:Admin:{$this->administration['defaultPresenter']}:");
+	}
+
+
+	protected function createComponentSystemAccountForm()
+	{
+		$form = $this->accountForm->invoke();
+		$form->onSuccess[] = $this->formSuccess;
+		return $form;
 	}
 }

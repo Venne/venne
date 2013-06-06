@@ -11,7 +11,6 @@
 
 namespace CmsModule\Security\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,8 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\RoleRepository")
  * @ORM\Table(name="role")
  */
-class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
-
+class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity
+{
 
 	/**
 	 * @ORM\Column(type="string", unique=true, length=32)
@@ -49,12 +48,10 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	protected $users;
 
 
-
 	public function __toString()
 	{
 		return $this->name;
 	}
-
 
 
 	public function __construct()
@@ -63,7 +60,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 		$this->users = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
 	}
-
 
 
 	/**
@@ -75,7 +71,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	/**
 	 * @param string $name
 	 */
@@ -83,7 +78,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	{
 		$this->name = $name;
 	}
-
 
 
 	/**
@@ -95,7 +89,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	/**
 	 * @param RoleEntity $parent
 	 */
@@ -105,7 +98,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	/**
 	 * @return \Doctrine\Common\Collections\ArrayCollection
 	 */
@@ -113,7 +105,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	{
 		return $this->children;
 	}
-
 
 
 	/**
@@ -134,7 +125,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	/**
 	 * @param $users
 	 */
@@ -144,7 +134,6 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	}
 
 
-
 	/**
 	 * @return UserEntity[]
 	 */
@@ -152,6 +141,4 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity {
 	{
 		return $this->users;
 	}
-
-
 }

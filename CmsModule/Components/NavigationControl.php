@@ -11,8 +11,8 @@
 
 namespace CmsModule\Components;
 
-use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Content\Control;
+use CmsModule\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

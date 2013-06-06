@@ -12,10 +12,10 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
-use CmsModule\Security\Repositories\UserRepository;
 use CmsModule\Components\Table\Form;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
+use CmsModule\Security\Repositories\UserRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,7 +24,6 @@ use CmsModule\Forms\UserSocialFormFactory;
  */
 class UsersPresenter extends BasePresenter
 {
-
 
 	/** @persistent */
 	public $page;
@@ -127,8 +126,8 @@ class UsersPresenter extends BasePresenter
 			$table->addAction('socialLogins', 'Social Logins')
 				->getElementPrototype()->class[] = 'ajax';
 
-			$form = $admin->createForm($this->form, 'User', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
-			$socialForm = $admin->createForm($this->socialForm, 'Social Logins', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
+			$form = $admin->createForm($this->form, 'User', NULL, Form::TYPE_LARGE);
+			$socialForm = $admin->createForm($this->socialForm, 'Social Logins', NULL, Form::TYPE_LARGE);
 
 			$admin->connectFormWithAction($form, $table->getAction('edit'));
 			$admin->connectFormWithAction($socialForm, $table->getAction('socialLogins'));

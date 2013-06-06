@@ -26,6 +26,7 @@ class CallbackAction extends Href
 
 	const TYPE_CALLBACK = 'CmsModule\Components\Grido\Actions\CallbackAction';
 
+
 	/**
 	 * @param $item
 	 * @throws \Nette\Application\BadRequestException
@@ -34,6 +35,7 @@ class CallbackAction extends Href
 	{
 		$this->onClick($this, $item);
 	}
+
 
 	/**
 	 * Return element.
@@ -71,6 +73,7 @@ class CallbackAction extends Href
 
 		return $el;
 	}
+
 
 	/**
 	 * @param mixed $item

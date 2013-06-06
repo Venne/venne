@@ -11,18 +11,16 @@
 
 namespace CmsModule\Content\Macros;
 
-use Venne;
-use Nette\Latte\MacroNode;
-use Nette\Latte\Compiler;
-use Nette\Latte\CompileException;
 use DoctrineModule\Repositories\BaseRepository;
+use Nette\Latte\CompileException;
+use Nette\Latte\Compiler;
+use Nette\Latte\MacroNode;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class MediaMacro extends \Nette\Latte\Macros\MacroSet
 {
-
 
 	/** @var BaseRepository */
 	protected static $fileRepository;
@@ -42,8 +40,7 @@ class MediaMacro extends \Nette\Latte\Macros\MacroSet
 
 		// file
 		$me->addMacro('file', array($me, 'macroFile'));
-		$me->addMacro('fhref', NULL, NULL, function(MacroNode $node, $writer) use ($me)
-		{
+		$me->addMacro('fhref', NULL, NULL, function (MacroNode $node, $writer) use ($me) {
 			return ' ?> href="<?php ' . $me->macroFile($node, $writer) . ' ?>"<?php ';
 		});
 
@@ -51,12 +48,10 @@ class MediaMacro extends \Nette\Latte\Macros\MacroSet
 		// image
 		$me->addMacro('img', array($me, 'macroImage'));
 		$me->addMacro('image', array($me, 'macroImage'));
-		$me->addMacro('ihref', NULL, NULL, function(MacroNode $node, $writer) use ($me)
-		{
+		$me->addMacro('ihref', NULL, NULL, function (MacroNode $node, $writer) use ($me) {
 			return ' ?> href="<?php ' . $me->macroImage($node, $writer) . ' ?>"<?php ';
 		});
-		$me->addMacro('src', NULL, NULL, function(MacroNode $node, $writer) use ($me)
-		{
+		$me->addMacro('src', NULL, NULL, function (MacroNode $node, $writer) use ($me) {
 			return ' ?> src="<?php ' . $me->macroImage($node, $writer) . ' ?>"<?php ';
 		});
 

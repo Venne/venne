@@ -11,13 +11,11 @@
 
 namespace CmsModule\Content\Presenters;
 
-use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class StaticPresenter extends PagePresenter
 {
-
 
 }

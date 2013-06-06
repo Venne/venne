@@ -11,9 +11,8 @@
 
 namespace CmsModule\DI;
 
-use Venne;
-use Venne\Config\CompilerExtension;
 use Nette\Application\Routers\Route;
+use Venne\Config\CompilerExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,6 +43,9 @@ class CmsExtension extends CompilerExtension
 			'defaultPresenter' => 'Homepage',
 			'errorPresenter' => 'Error',
 		),
+		'mediaDir' => NULL,
+		'mediaUrl' => NULL,
+		'protectedMediaDir' => NULL,
 	);
 
 
@@ -155,6 +157,16 @@ class CmsExtension extends CompilerExtension
 				new \Nette\DI\Statement('CmsModule\Panels\Stopwatch')
 			));
 		}
+
+		// listeners
+		$container->addDefinition($this->prefix('fileListener'))
+			->setClass('CmsModule\Content\Listeners\FileListener', array(
+				'@container',
+				$config['mediaDir'] ?: $container->parameters['publicDir'] . '/media',
+				$config['protectedMediaDir'] ?: $container->parameters['dataDir'] . '/media',
+				$config['mediaUrl'] ?: '/public/media',
+			))
+			->addTag('listener');
 	}
 
 
@@ -187,7 +199,6 @@ class CmsExtension extends CompilerExtension
 
 	protected function registerAdministrationPages()
 	{
-		/** @var $container \Nette\DI\ContainerBuilder */
 		$container = $this->getContainerBuilder();
 		$manager = $container->getDefinition('cms.administrationManager');
 
@@ -204,8 +215,6 @@ class CmsExtension extends CompilerExtension
 		$config = $container->getDefinition('venne.widgetManager');
 
 		foreach ($container->findByTag('element') as $factory => $meta) {
-			$definition = $container->getDefinition($factory);
-
 			if (!is_string($meta)) {
 				throw new \Nette\InvalidArgumentException("Tag element require name. Provide it in configuration. (tags: [element: name])");
 			}

@@ -69,7 +69,6 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	 */
 	protected $roleEntities;
 
-
 	/**
 	 * @ORM\OneToMany(targetEntity="\CmsModule\Security\Entities\LoginEntity", mappedBy="user")
 	 */
@@ -80,12 +79,10 @@ class UserEntity extends IdentifiedEntity implements \DoctrineModule\Entities\IE
 	 */
 	protected $socialLogins;
 
-
 	/**
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $socialType;
-
 
 	/**
 	 * @ORM\Column(type="string", nullable=true)

@@ -11,11 +11,9 @@
 
 namespace CmsModule\Content\Routes;
 
-use Nette\Object;
+use CmsModule\Content\Entities\RouteEntity;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\Routers\Route;
-use CmsModule\Content\Entities\RouteEntity;
-use CmsModule\Content\ContentManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

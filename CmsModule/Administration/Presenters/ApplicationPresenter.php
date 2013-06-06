@@ -11,12 +11,12 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
-use Nette\Callback;
-use CmsModule\Forms\SystemApplicationFormFactory;
-use CmsModule\Forms\SystemDatabaseFormFactory;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemAdministrationFormFactory;
+use CmsModule\Forms\SystemApplicationFormFactory;
+use CmsModule\Forms\SystemDatabaseFormFactory;
+use Nette\Callback;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -105,7 +105,7 @@ class ApplicationPresenter extends BasePresenter
 	protected function createComponentApplicationForm()
 	{
 		$form = $this->applicationForm->invoke();
-		$form->onSuccess[] = function ($form) {
+		$form->onSuccess[] = function (Form $form) {
 			$form->getPresenter()->flashMessage("Application settings has been updated", "success");
 			$form->getPresenter()->redirect("this");
 		};
@@ -116,7 +116,7 @@ class ApplicationPresenter extends BasePresenter
 	protected function createComponentDatabaseForm()
 	{
 		$form = $this->databaseForm->invoke();
-		$form->onSuccess[] = function ($form) {
+		$form->onSuccess[] = function (Form $form) {
 			$form->getPresenter()->flashMessage("Database settings has been updated", "success");
 			$form->getPresenter()->redirect("this");
 		};
@@ -127,7 +127,7 @@ class ApplicationPresenter extends BasePresenter
 	protected function createComponentAccountForm()
 	{
 		$form = $this->accountForm->invoke();
-		$form->onSuccess[] = function ($form) {
+		$form->onSuccess[] = function (Form $form) {
 			$form->getPresenter()->flashMessage("Account settings has been updated", "success");
 			$form->getPresenter()->redirect("this");
 		};

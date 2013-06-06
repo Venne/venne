@@ -11,16 +11,15 @@
 
 namespace CmsModule\Components\Table\Columns;
 
-use Venne;
 use CmsModule\Components\Table\TableControl;
 use Nette\ComponentModel\Component;
-use Nette\ComponentModel\IContainer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class DateColumn extends BaseColumn
 {
+
 	public function __construct(TableControl $table, $name, $title)
 	{
 		parent::__construct($table, $name, $title);

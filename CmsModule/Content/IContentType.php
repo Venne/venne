@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,15 +21,11 @@ interface IContentType
 	public function __construct($name, $entityName);
 
 
-
 	public function getName();
-
 
 
 	public function getEntityName();
 
 
-
 	public function getSections();
-
 }

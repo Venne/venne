@@ -12,16 +12,17 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
-use CmsModule\Content\Entities\LayoutEntity;
-use CmsModule\Content\Repositories\ElementRepository;
-use CmsModule\Content\Repositories\LayoutRepository;
-use CmsModule\Content\Forms\LayoutFormFactory;
 use CmsModule\Content\ElementManager;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
 use CmsModule\Content\Entities\ElementEntity;
+use CmsModule\Content\Entities\LayoutEntity;
+use CmsModule\Content\Forms\LayoutFormFactory;
 use CmsModule\Content\LayoutManager;
+use CmsModule\Content\Repositories\ElementRepository;
+use CmsModule\Content\Repositories\LayoutRepository;
 use Grido\Components\Filters\Filter;
 use Grido\DataSources\Doctrine;
+use Venne\Module\Helpers;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,7 +38,7 @@ class LayoutsPresenter extends BasePresenter
 	/** @var LayoutManager */
 	protected $layoutManager;
 
-	/** @var \Venne\Module\Helpers */
+	/** @var Helpers */
 	protected $moduleHelpers;
 
 	/** @var LayoutRepository */
@@ -56,7 +57,7 @@ class LayoutsPresenter extends BasePresenter
 	protected $currentLayout;
 
 
-	public function __construct(LayoutRepository $layoutRepository, ElementRepository $elementRepository, \Venne\Module\Helpers $moduleHelpers)
+	public function __construct(LayoutRepository $layoutRepository, ElementRepository $elementRepository, Helpers $moduleHelpers)
 	{
 		$this->layoutRepository = $layoutRepository;
 		$this->elementRepository = $elementRepository;

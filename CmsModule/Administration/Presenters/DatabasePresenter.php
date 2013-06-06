@@ -11,9 +11,12 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
-use CmsModule\Module\Installers\CmsInstaller;
 use CmsModule\Forms\SystemDatabaseFormFactory;
+use CmsModule\Module\Installers\CmsInstaller;
+use Doctrine\ORM\Tools\SchemaTool;
+use Nette\Caching\Storages\MemoryStorage;
+use Nette\Loaders\RobotLoader;
+use Nette\Reflection\ClassType;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -35,7 +38,6 @@ class DatabasePresenter extends BasePresenter
 
 	protected function createComponentSystemDatabaseForm()
 	{
-		/** @var $form \CmsModule\Forms\SystemDatabaseForm */
 		$form = $this->databaseForm->invoke();
 		$form->onSuccess[] = $this->save;
 		return $form;
@@ -54,16 +56,16 @@ class DatabasePresenter extends BasePresenter
 		if ($this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {
 			/** @var $em \Doctrine\ORM\EntityManager */
 			$em = $this->context->entityManager;
-			$tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+			$tool = new SchemaTool($em);
 
-			$robotLoader = new \Nette\Loaders\RobotLoader();
-			$robotLoader->setCacheStorage(new \Nette\Caching\Storages\MemoryStorage());
+			$robotLoader = new RobotLoader();
+			$robotLoader->setCacheStorage(new MemoryStorage);
 			$robotLoader->addDirectory($this->context->parameters['modules']['cms']['path'] . '/CmsModule');
 			$robotLoader->register();
 
 			$classes = array();
 			foreach ($robotLoader->getIndexedClasses() as $item => $a) {
-				$ref = \Nette\Reflection\ClassType::from($item);
+				$ref = ClassType::from($item);
 				if ($ref->hasAnnotation('ORM\Entity')) {
 					$classes[] = $em->getClassMetadata('\\' . $item);
 				}

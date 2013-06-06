@@ -11,9 +11,8 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -116,7 +115,6 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @ORM\Column(type="boolean")
 	 */
 	protected $published = TRUE;
-
 
 	/***************** Meta *******************/
 

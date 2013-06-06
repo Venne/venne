@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Elements;
 
-use Venne;
 use CmsModule\Content\Elements\Entities\TextEntity;
 use Venne\Forms\FormFactory;
 

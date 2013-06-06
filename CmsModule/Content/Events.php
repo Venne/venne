@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,11 +18,13 @@ use Venne;
 class Events
 {
 
-
 	const onContentExtensionCreate = 'onContentExtensionCreate';
-	const onContentExtensionSave = 'onContentExtensionSave';
-	const onContentExtensionLoad = 'onContentExtensionLoad';
-	const onContentExtensionRender = 'onContentExtensionRender';
-	const onContentExtensionRemove = 'onContentExtensionRemove';
 
+	const onContentExtensionSave = 'onContentExtensionSave';
+
+	const onContentExtensionLoad = 'onContentExtensionLoad';
+
+	const onContentExtensionRender = 'onContentExtensionRender';
+
+	const onContentExtensionRemove = 'onContentExtensionRemove';
 }

@@ -11,13 +11,15 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use Nette\Forms\Form;
+use Nette\Latte\Compiler;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class AboutPresenter extends BasePresenter {
+class AboutPresenter extends BasePresenter
+{
 
 }

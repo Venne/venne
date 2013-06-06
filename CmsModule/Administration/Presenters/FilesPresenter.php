@@ -11,12 +11,16 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Components\Table\Form;
+use CmsModule\Components\Table\TableControl;
+use CmsModule\Content\Entities\DirEntity;
+use CmsModule\Content\Entities\FileEntity;
+use CmsModule\Content\Forms\DirFormFactory;
+use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Repositories\DirRepository;
 use CmsModule\Content\Repositories\FileRepository;
-use CmsModule\Components\Table\TableControl;
+use Doctrine\ORM\QueryBuilder;
 use DoctrineModule\Repositories\BaseRepository;
-use CmsModule\Content\Forms\FileFormFactory;
-use CmsModule\Content\Forms\DirFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,6 +29,7 @@ use CmsModule\Content\Forms\DirFormFactory;
  */
 class FilesPresenter extends BasePresenter
 {
+
 	/** @persistent */
 	public $key;
 
@@ -149,7 +154,7 @@ class FilesPresenter extends BasePresenter
 		$table->setRepository($this->dirRepository);
 
 		$dql = function ($parent) {
-			return function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
+			return function (QueryBuilder $dql) use ($parent) {
 				$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 				if ($parent === NULL) {
 					return $dql->andWhere('a.parent IS NULL');
@@ -159,7 +164,7 @@ class FilesPresenter extends BasePresenter
 		};
 
 		// navbar
-		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function ($button) use ($_this, $dirRepository, $dql) {
+		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function () use ($_this, $dirRepository, $dql) {
 			$parent = $dirRepository->find($_this->key)->getParent();
 
 			if (!$_this->getPresenter()->isAjax()) {
@@ -185,7 +190,7 @@ class FilesPresenter extends BasePresenter
 
 		$parent = $this->key;
 
-		$table->setDql(function (\Doctrine\ORM\QueryBuilder $dql) use ($parent) {
+		$table->setDql(function (QueryBuilder $dql) use ($parent) {
 			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 			if ($parent === NULL) {
 				return $dql->andWhere('a.parent IS NULL');
@@ -207,20 +212,20 @@ class FilesPresenter extends BasePresenter
 		$_this = $this;
 		$dirRepository = $this->dirRepository;
 
-		$table = new \CmsModule\Components\Table\TableControl;
+		$table = new TableControl;
 		$table->setTemplateConfigurator($this->templateConfigurator);
 
 		// forms
 		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($dirRepository, $_this) {
-			$entity = new \CmsModule\Content\Entities\FileEntity();
+			$entity = new FileEntity;
 			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
 			return $entity;
-		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
+		}, Form::TYPE_LARGE);
 		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
-			$entity = new \CmsModule\Content\Entities\DirEntity();
+			$entity = new DirEntity;
 			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
 			return $entity;
-		}, \CmsModule\Components\Table\Form::TYPE_LARGE);
+		}, Form::TYPE_LARGE);
 
 		if ($this->isAuthorized('create')) {
 			$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');

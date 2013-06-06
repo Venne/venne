@@ -11,12 +11,11 @@
 
 namespace CmsModule\Content\Forms;
 
-use Nette\Forms\Controls\SelectBox;
-use Venne;
-use Venne\Forms\Form;
+use CmsModule\Content\Entities\PageEntity;
 use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Repositories\BaseRepository;
-use CmsModule\Content\Entities\PageEntity;
+use Nette\Forms\Controls\SelectBox;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

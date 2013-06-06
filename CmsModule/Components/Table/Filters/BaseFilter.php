@@ -11,12 +11,11 @@
 
 namespace CmsModule\Components\Table\Filters;
 
-use Venne;
 use CmsModule\Components\Table\IColumn;
 use CmsModule\Components\Table\IFilter;
-use Nette\ComponentModel\Component;
 use Doctrine\ORM\QueryBuilder;
-use Nette\ComponentModel\IContainer;
+use Nette\ComponentModel\Component;
+use Venne\Forms\Container;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -39,7 +38,7 @@ class BaseFilter extends Component implements IFilter
 	}
 
 
-	public function getControl(Venne\Forms\Container $form)
+	public function getControl(Container $form)
 	{
 		$form->addText($this->column->name);
 	}

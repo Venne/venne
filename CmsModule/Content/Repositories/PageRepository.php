@@ -11,17 +11,15 @@
 
 namespace CmsModule\Content\Repositories;
 
-use Venne;
-use Nette\InvalidArgumentException;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\PageEntity;
+use DoctrineModule\Repositories\BaseRepository;
+use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class PageRepository extends BaseRepository
 {
-
 
 	public function createNewByEntityName($entityName)
 	{

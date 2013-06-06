@@ -12,12 +12,13 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
-use CmsModule\Security\Repositories\RoleRepository;
-use Nette\Callback;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Components\Table\Form;
-use CmsModule\Forms\RoleFormFactory;
 use CmsModule\Forms\PermissionsFormFactory;
+use CmsModule\Forms\RoleFormFactory;
+use CmsModule\Security\Entities\RoleEntity;
+use CmsModule\Security\Repositories\RoleRepository;
+use DoctrineModule\Repositories\BaseRepository;
+use Nette\Callback;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -103,7 +104,7 @@ class RolesPresenter extends BasePresenter
 			->setSortable()
 			->getCellPrototype()->width = '60%';
 		$table->getColumn('parent')
-			->setCustomRender(function (\CmsModule\Security\Entities\RoleEntity $entity) {
+			->setCustomRender(function (RoleEntity $entity) {
 				$entities = array();
 				$en = $entity;
 				while (($en = $en->getParent())) {
@@ -122,7 +123,7 @@ class RolesPresenter extends BasePresenter
 				->getElementPrototype()->class[] = 'ajax';
 
 			$form = $admin->createForm($this->roleForm, 'Role');
-			$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
+			$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_LARGE);
 
 			$admin->connectFormWithAction($form, $table->getAction('edit'));
 			$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'));

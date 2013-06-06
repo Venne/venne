@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
 use CmsModule\Content\Elements\Helpers;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Entities\IdentifiedEntity;

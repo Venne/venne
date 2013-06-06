@@ -11,13 +11,12 @@
 
 namespace CmsModule\Commands;
 
-use Venne;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use CmsModule\Services\ConfigBuilder;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to execute DQL queries in a given EntityManager.
@@ -27,6 +26,7 @@ class AccountCommand extends Command
 
 	/** @var ConfigBuilder */
 	protected $config;
+
 
 	function __construct(ConfigBuilder $config)
 	{
@@ -45,10 +45,11 @@ class AccountCommand extends Command
 			->setName('cms:account')
 			->setDescription('Setup administrator account.')
 			->setDefinition(array(
-			new InputArgument('login', InputArgument::REQUIRED, 'Administrator name.'),
-			new InputArgument('password', InputArgument::REQUIRED, 'Password.')
-		));
+				new InputArgument('login', InputArgument::REQUIRED, 'Administrator name.'),
+				new InputArgument('password', InputArgument::REQUIRED, 'Password.')
+			));
 	}
+
 
 	/**
 	 * @see Console\Command\Command

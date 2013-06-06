@@ -11,16 +11,15 @@
 
 namespace CmsModule\Security;
 
-use Venne;
+use DoctrineModule\Repositories\BaseRepository;
+use Nette\Callback;
+use Nette\Http\Session;
+use Nette\Http\SessionSection;
 use Nette\Object;
 use Nette\Reflection\ClassType;
 use Nette\Security\Permission;
 use Nette\Security\User;
-use Nette\Callback;
 use Venne\Application\PresenterFactory;
-use Nette\Http\SessionSection;
-use Nette\Http\Session;
-use DoctrineModule\Repositories\BaseRepository;
 use Venne\Security\IControlVerifierReader;
 
 /**
@@ -28,7 +27,6 @@ use Venne\Security\IControlVerifierReader;
  */
 class AuthorizatorFactory extends Object
 {
-
 
 	const SESSION_SECTION = 'Venne.Security.Authorizator';
 
@@ -56,7 +54,7 @@ class AuthorizatorFactory extends Object
 	 * @param BaseRepository $roleRepository
 	 * @param Session $session
 	 */
-	public function __construct(PresenterFactory $presenterFactory, BaseRepository $roleRepository, \Nette\Http\Session $session, Callback $checkConnection)
+	public function __construct(PresenterFactory $presenterFactory, BaseRepository $roleRepository, Session $session, Callback $checkConnection)
 	{
 		$this->presenterFactory = $presenterFactory;
 		$this->roleRepository = $roleRepository;
@@ -156,7 +154,7 @@ class AuthorizatorFactory extends Object
 	protected function setPermissionsByRole(Permission $permission, $role)
 	{
 		if ($role == "admin") {
-			$permission->allow("admin", \Nette\Security\Permission::ALL);
+			$permission->allow("admin", Permission::ALL);
 			return $permission;
 		}
 

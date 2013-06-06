@@ -12,6 +12,7 @@
 namespace CmsModule\Presenters;
 
 use CmsModule\Content\Repositories\PageRepository;
+use Nette\Diagnostics\Debugger;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,7 +45,7 @@ class ErrorPresenter extends FrontPresenter
 		}
 
 		$code = $exception->getCode();
-		\Nette\Diagnostics\Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
+		Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
 
 		if (in_array($code, array(403, 404, 405, 410, 500))) {
 			$page = $this->pageRepository->findOneBy(array('tag' => "error_$code", 'published' => TRUE));

@@ -11,21 +11,20 @@
 
 namespace CmsModule\Security\Repositories;
 
-use Venne;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Entities\UserEntity;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RoleRepository extends BaseRepository {
-
+class RoleRepository extends BaseRepository
+{
 
 	public function save($entity, $withoutFlush = self::FLUSH)
 	{
 		$en = $entity;
-		while(($en = $en->getParent())){
-			if($en ==$entity) {
+		while (($en = $en->getParent())) {
+			if ($en == $entity) {
 				throw new \Nette\InvalidArgumentException('Cyclic recursion detected. Please set else parent.');
 			}
 		}

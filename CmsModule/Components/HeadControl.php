@@ -11,7 +11,6 @@
 
 namespace CmsModule\Components;
 
-use Venne;
 use CmsModule\Content\Control;
 
 /**

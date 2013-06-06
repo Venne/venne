@@ -11,10 +11,9 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
-use Nette\Callback;
 use CmsModule\Forms\WebsiteFormFactory;
 use Nette\Application\ForbiddenRequestException;
+use Nette\Callback;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,7 +22,6 @@ use Nette\Application\ForbiddenRequestException;
  */
 class InformationsPresenter extends BasePresenter
 {
-
 
 	/** @var WebsiteFormFactory */
 	protected $form;

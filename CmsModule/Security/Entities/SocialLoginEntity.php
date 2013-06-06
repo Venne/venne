@@ -11,7 +11,6 @@
 
 namespace CmsModule\Security\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -23,7 +22,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class SocialLoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
-
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="UserEntity", inversedBy="socialLogins")

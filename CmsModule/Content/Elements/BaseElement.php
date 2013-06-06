@@ -11,18 +11,16 @@
 
 namespace CmsModule\Content\Elements;
 
+use CmsModule\Content\Control;
+use CmsModule\Content\Elements\Forms\BasicFormFactory;
+use CmsModule\Content\Elements\Forms\ClearFormFactory;
 use CmsModule\Content\Entities\ElementEntity;
 use CmsModule\Content\Entities\LanguageEntity;
-use Venne;
-use CmsModule\Content\Control;
-use CmsModule\Content\IElement;
 use CmsModule\Content\Entities\LayoutEntity;
-use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
-use CmsModule\Content\Elements\Forms\ClearFormFactory;
-use CmsModule\Content\Elements\Forms\BasicFormFactory;
+use CmsModule\Content\Entities\RouteEntity;
+use CmsModule\Content\IElement;
 use Doctrine\ORM\EntityManager;
-use DoctrineModule\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

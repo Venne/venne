@@ -11,7 +11,6 @@
 
 namespace CmsModule\Security\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
-
 
 	const USER_ADMIN = NULL;
 
@@ -112,5 +110,4 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	{
 		return $this->reload;
 	}
-
 }

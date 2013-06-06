@@ -12,15 +12,13 @@
 namespace CmsModule\Components\Table;
 
 use Doctrine\ORM\QueryBuilder;
-use Venne;
-use Nette\ComponentModel\IContainer;
+use Venne\Forms\Container;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 interface IFilter
 {
-
 
 	/**
 	 * @param Column $column
@@ -29,16 +27,16 @@ interface IFilter
 
 
 	/**
-	 * @param \Venne\Forms\Container $form
+	 * @param Container $form
 	 * @return mixed
 	 */
-	public function getControl(Venne\Forms\Container $form);
+	public function getControl(Container $form);
 
 
 	/**
-	 * @param \Doctrine\ORM\QueryBuilder $dql
+	 * @param QueryBuilder $dql
 	 * @param $value
-	 * @return \Doctrine\ORM\QueryBuilder
+	 * @return QueryBuilder
 	 */
 	public function setDql(QueryBuilder $dql, $value);
 }

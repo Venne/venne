@@ -11,15 +11,14 @@
 
 namespace CmsModule\Security\Repositories;
 
-use Venne;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Entities\UserEntity;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class UserRepository extends BaseRepository {
-
+class UserRepository extends BaseRepository
+{
 
 	/**
 	 * Check if user is unique.
@@ -41,5 +40,4 @@ class UserRepository extends BaseRepository {
 		}
 		return true;
 	}
-
 }

@@ -11,10 +11,11 @@
 
 namespace CmsModule\Components;
 
-use Venne;
-use Venne\Application\UI\Control;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Entities\PageEntity;
+use Nette\Http\SessionSection;
+use Venne\Application\UI\Control;
+use Venne\Module\TemplateManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,10 +23,10 @@ use CmsModule\Content\Entities\PageEntity;
 class PanelControl extends Control
 {
 
-	/** @var \Nette\Http\SessionSection */
+	/** @var SessionSection */
 	protected $session;
 
-	/** @var Venne\Module\TemplateManager */
+	/** @var TemplateManager */
 	protected $templateManager;
 
 	/** @var ContentManager */
@@ -33,11 +34,11 @@ class PanelControl extends Control
 
 
 	/**
-	 * @param \Venne\Module\TemplateManager $templateManager
-	 * @param \Nette\Http\SessionSection $session
-	 * @param \CmsModule\Content\ContentManager $contentManager
+	 * @param TemplateManager $templateManager
+	 * @param SessionSection $session
+	 * @param ContentManager $contentManager
 	 */
-	public function __construct(Venne\Module\TemplateManager $templateManager, \Nette\Http\SessionSection $session, ContentManager $contentManager)
+	public function __construct(TemplateManager $templateManager, SessionSection $session, ContentManager $contentManager)
 	{
 		parent::__construct();
 

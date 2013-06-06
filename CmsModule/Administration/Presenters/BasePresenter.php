@@ -11,14 +11,14 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use CmsModule\Presenters\AdminPresenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class BasePresenter extends \CmsModule\Presenters\AdminPresenter
+class BasePresenter extends AdminPresenter
 {
 
 	public function startup()

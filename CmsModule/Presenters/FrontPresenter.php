@@ -11,14 +11,11 @@
 
 namespace CmsModule\Presenters;
 
-use Venne;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 abstract class FrontPresenter extends BasePresenter
 {
-
 
 	protected function checkLanguage()
 	{

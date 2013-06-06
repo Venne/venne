@@ -11,27 +11,27 @@
 
 namespace CmsModule\Macros;
 
-use Venne;
+use Nette\Latte\Compiler;
+use Nette\Latte\MacroNode;
+use Nette\Latte\Macros\MacroSet;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ConfirmMacro extends \Nette\Latte\Macros\MacroSet {
+class ConfirmMacro extends MacroSet
+{
 
-
-	public static function filter(\Nette\Latte\MacroNode $node, $writer)
+	public static function filter(MacroNode $node, $writer)
 	{
 		$content = $node->args;
 		return $writer->write('echo " data-confirm=\"' . $content . '\"" ');
 	}
 
 
-
-	public static function install(\Nette\Latte\Compiler $compiler)
+	public static function install(Compiler $compiler)
 	{
 		$me = new static($compiler);
 		$me->addMacro('confirm', NULL, NULL, array($me, "filter"));
 	}
-
 }
 

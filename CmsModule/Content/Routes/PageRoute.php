@@ -11,20 +11,19 @@
 
 namespace CmsModule\Content\Routes;
 
+use CmsModule\Content\Entities\PageEntity;
+use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\RouteRepository;
-use Nette\Callback;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\Routers\Route;
-use CmsModule\Content\Entities\RouteEntity;
-use CmsModule\Content\Entities\PageEntity;
+use Nette\Callback;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class PageRoute extends Route
 {
-
 
 	const DEFAULT_MODULE = 'Cms';
 
@@ -67,16 +66,16 @@ class PageRoute extends Route
 		$this->defaultLanguage = $defaultLanguage;
 
 		parent::__construct($prefix . '<url .+>[/<module qwertzuiop>/<presenter qwertzuiop>]' . (count($this->languages) > 1 && strpos($prefix, '<lang>') === FALSE ? '?lang=<lang>' : ''), $parameters + array(
-			'presenter' => self::DEFAULT_PRESENTER,
-			'module' => self::DEFAULT_MODULE,
-			'action' => self::DEFAULT_ACTION,
-			'lang' => NULL,
-			'url' => array(
-				self::VALUE => '',
-				self::FILTER_IN => NULL,
-				self::FILTER_OUT => NULL,
-			)
-		), $oneWay ? Route::ONE_WAY : NULL);
+				'presenter' => self::DEFAULT_PRESENTER,
+				'module' => self::DEFAULT_MODULE,
+				'action' => self::DEFAULT_ACTION,
+				'lang' => NULL,
+				'url' => array(
+					self::VALUE => '',
+					self::FILTER_IN => NULL,
+					self::FILTER_OUT => NULL,
+				)
+			), $oneWay ? Route::ONE_WAY : NULL);
 	}
 
 

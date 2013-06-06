@@ -11,21 +11,20 @@
 
 namespace CmsModule\Security;
 
-use Venne;
 use DoctrineModule\Repositories\BaseRepository;
+use Nette\Callback;
 use Nette\Security\AuthenticationException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Authenticator extends Venne\Security\Authenticator
+class Authenticator extends \Venne\Security\Authenticator
 {
-
 
 	/** @var BaseRepository */
 	protected $userRepository;
 
-	/** @var \Nette\DI\NestedAccessor|\SystemContainer_doctrine */
+	/** @var Callback */
 	protected $checkConnection;
 
 
@@ -49,7 +48,7 @@ class Authenticator extends Venne\Security\Authenticator
 	 *
 	 * @param  array
 	 * @return \Nette\Security\Identity
-	 * @throws \Nette\Security\AuthenticationException
+	 * @throws AuthenticationException
 	 */
 	public function authenticate(array $credentials)
 	{
@@ -69,7 +68,7 @@ class Authenticator extends Venne\Security\Authenticator
 					throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 				}
 
-				return new \CmsModule\Security\Identity($username, $user->getRoles());
+				return new Identity($username, $user->getRoles());
 			}
 		}
 	}

@@ -11,10 +11,10 @@
 
 namespace CmsModule\Content;
 
-use Venne;
+use CmsModule\Content\Forms\Controls\ContentEditor;
 use Nette\Object;
-use Venne\Forms\IControlExtension;
 use Venne\Forms\Form;
+use Venne\Forms\IControlExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -45,6 +45,6 @@ class ControlExtension extends Object implements IControlExtension
 	public function addContentEditor($form, $name, $label = NULL, $cols = 40, $rows = 10)
 	{
 		$evm = $form->getMapper()->entityManager->getEventManager();
-		return $form[$name] = new \CmsModule\Content\Forms\Controls\ContentEditor($evm, $label, $cols, $rows);
+		return $form[$name] = new ContentEditor($evm, $label, $cols, $rows);
 	}
 }

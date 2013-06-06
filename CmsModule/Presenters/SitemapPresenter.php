@@ -11,14 +11,14 @@
 
 namespace CmsModule\Presenters;
 
-use Venne;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
+use Venne\Application\UI\Presenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SitemapPresenter extends \Venne\Application\UI\Presenter
+class SitemapPresenter extends Presenter
 {
 
 	/** @persistent */

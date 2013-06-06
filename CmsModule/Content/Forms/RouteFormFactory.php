@@ -11,9 +11,8 @@
 
 namespace CmsModule\Content\Forms;
 
-use Venne;
-use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

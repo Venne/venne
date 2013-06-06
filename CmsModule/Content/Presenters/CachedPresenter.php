@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Presenters;
 
-use Venne;
 use Nette\Application\UI\Presenter;
 
 /**

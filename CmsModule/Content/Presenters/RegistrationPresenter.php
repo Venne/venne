@@ -11,10 +11,9 @@
 
 namespace CmsModule\Content\Presenters;
 
-use Venne;
+use CmsModule\Content\Entities\RegistrationPageEntity;
 use CmsModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManager;
-use CmsModule\Content\Entities\RegistrationPageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

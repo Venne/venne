@@ -11,16 +11,14 @@
 
 namespace CmsModule\Forms;
 
-use Venne;
-use Venne\Forms\FormFactory;
 use Venne\Forms\Form;
+use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class LoginFormFactory extends FormFactory
 {
-
 
 	/** @var string */
 	protected $redirect = 'this';

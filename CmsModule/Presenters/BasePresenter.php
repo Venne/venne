@@ -11,13 +11,13 @@
 
 namespace CmsModule\Presenters;
 
-use Venne;
 use CmsModule\Panels\Stopwatch;
+use Venne\Application\UI\Presenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-abstract class BasePresenter extends \Venne\Application\UI\Presenter
+abstract class BasePresenter extends Presenter
 {
 
 	/** @persistent */
@@ -85,7 +85,7 @@ abstract class BasePresenter extends \Venne\Application\UI\Presenter
 
 
 	/**
-	 * @param  Nette\Application\IResponse  optional catched exception
+	 * @param  \Nette\Application\IResponse optional catched exception
 	 * @return void
 	 */
 	public function shutdown($response)

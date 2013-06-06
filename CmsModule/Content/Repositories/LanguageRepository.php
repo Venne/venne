@@ -11,17 +11,15 @@
 
 namespace CmsModule\Content\Repositories;
 
-use Venne;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Services\ConfigBuilder;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class LanguageRepository extends BaseRepository
 {
-
 
 	/** @var ConfigBuilder */
 	protected $configBuilder;

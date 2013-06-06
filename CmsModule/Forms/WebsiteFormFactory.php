@@ -11,10 +11,9 @@
 
 namespace CmsModule\Forms;
 
-use Venne;
-use Venne\Forms\FormFactory;
-use Venne\Forms\Form;
 use FormsModule\Mappers\ConfigMapper;
+use Venne\Forms\Form;
+use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,7 +23,6 @@ class WebsiteFormFactory extends FormFactory
 
 	/** @var ConfigMapper */
 	protected $mapper;
-
 
 	/** @var ScannerService */
 	protected $scannerService;

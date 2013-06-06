@@ -11,17 +11,15 @@
 
 namespace CmsModule\Events;
 
-use Venne;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ContentHelperEvents {
+class ContentHelperEvents
+{
 
 	const onContentRender = 'onContentRender';
-	
-	const onContentSave = 'onContentSave';
-	
-	const onContentLoad = 'onContentLoad';
 
+	const onContentSave = 'onContentSave';
+
+	const onContentLoad = 'onContentLoad';
 }

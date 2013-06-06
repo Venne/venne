@@ -11,10 +11,9 @@
 
 namespace CmsModule\Content\Elements\Forms;
 
-use Venne;
-use Venne\Forms\FormFactory;
-use Venne\Forms\Form;
 use CmsModule\Content\Repositories\PageRepository;
+use Venne\Forms\Form;
+use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

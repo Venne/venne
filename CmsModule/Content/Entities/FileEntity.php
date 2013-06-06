@@ -11,11 +11,10 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
-use Nette\Utils\Finder;
 use Nette\Http\FileUpload;
 use Nette\InvalidArgumentException;
+use Nette\Utils\Finder;
 use Nette\Utils\Strings;
 
 /**

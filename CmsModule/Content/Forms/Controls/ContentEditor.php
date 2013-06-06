@@ -11,16 +11,16 @@
 
 namespace CmsModule\Content\Forms\Controls;
 
-use Venne;
-use Doctrine\Common\EventManager;
 use CmsModule\Content\Forms\Controls\Events\ContentEditorArgs;
 use CmsModule\Content\Forms\Controls\Events\ContentEditorEvents;
+use Doctrine\Common\EventManager;
 
 /**
  * @author     Josef Kříž
  */
 class ContentEditor extends \Nette\Forms\Controls\TextArea
 {
+
 	/** @var EventManager */
 	protected $eventManager;
 

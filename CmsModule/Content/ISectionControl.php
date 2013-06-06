@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 use CmsModule\Content\Entities\PageEntity;
 
 /**
@@ -19,15 +18,15 @@ use CmsModule\Content\Entities\PageEntity;
  */
 interface ISectionControl
 {
+
 	/**
-	 * @param \CmsModule\Content\Entities\PageEntity $entity
+	 * @param PageEntity $entity
 	 */
 	public function setEntity(PageEntity $entity);
 
+
 	/**
-	 * @return \CmsModule\Content\Entities\PageEntity
+	 * @return mixed
 	 */
 	public function getEntity();
-
-
 }

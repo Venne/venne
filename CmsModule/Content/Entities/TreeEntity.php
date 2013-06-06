@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
-
 
 	/**
 	 * @var TreeEntity
@@ -37,7 +35,6 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="previous")
 	 */
 	protected $next;
-
 
 	/** @ORM\Column(type="integer") */
 	protected $position;

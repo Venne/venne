@@ -11,16 +11,16 @@
 
 namespace CmsModule\Forms;
 
-use Venne;
-use Venne\Forms\Form;
-use DoctrineModule\Forms\FormFactory;
 use CmsModule\Content\Forms\ControlExtensions\ControlExtension;
+use DoctrineModule\Forms\FormFactory;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class UserFormFactory extends FormFactory
 {
+
 	/**
 	 * @return array
 	 */

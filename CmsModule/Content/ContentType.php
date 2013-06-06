@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 use Nette\Object;
 
 /**

@@ -11,16 +11,14 @@
 
 namespace CmsModule\Content\Elements\Forms;
 
-use Venne;
-use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class TextareaFormFactory extends FormFactory
 {
-
 
 	/**
 	 * @param Form $form

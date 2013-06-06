@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Components;
 
+use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Repositories\PageRepository;
 use Nette\Callback;
 use Nette\Object;
@@ -28,46 +29,47 @@ class ContentTableFactory extends Object
 	protected $pageRepository;
 
 
+	/**
+	 * @param PageRepository $pageRepository
+	 */
 	public function __construct(PageRepository $pageRepository)
 	{
 		$this->pageRepository = $pageRepository;
 	}
 
 
+	/**
+	 * @return AdminGrid
+	 */
 	public function create()
 	{
-		$table = new \CmsModule\Components\Table\TableControl;
+		$_this = $this;
+		$adminGrid = new AdminGrid($this->pageRepository);
 
-		$table->setRepository($this->pageRepository);
-		$table->setDql(function (\Doctrine\ORM\QueryBuilder $builder) {
-			$builder->andWhere('a.translationFor IS NULL AND a.virtualParent IS NULL');
-		});
+		$table = $adminGrid->getTable();
 
-		// columns
 		$table->addColumn('name', 'Name')
-			->setWidth('50%')
-			->setSortable(TRUE)
-			->setFilter();
-		$table->addColumn('url', 'URL')
-			->setWidth('25%')
-			->setCallback(function ($entity) {
-				return $entity->mainRoute->url;
-			});
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('name')->getCellPrototype()->width = '50%';
+		$table->addColumn('mainRoute', 'URL')
+			->setSortable()
+			->setFilter()->setSuggestion();
+		$table->getColumn('mainRoute')->getCellPrototype()->width = '25%';
 		$table->addColumn('languages', 'Languages')
-			->setWidth('25%')
-			->setCallback(function ($entity) {
-				$ret = implode(", ", $entity->languages->toArray());
+			->setCustomRender(function ($entity) {
+				$ret = implode(', ', $entity->languages->toArray());
 				foreach ($entity->translations as $translation) {
-					$ret .= ', ' . implode(", ", $translation->languages->toArray());
+					$ret .= ', ' . implode(', ', $translation->languages->toArray());
 				}
 				return $ret;
-			});
+			})
+			->getCellPrototype()->width = '25%';
 
-		$_this = $this;
-		$table->onAttached[] = function ($table) use ($_this) {
+		$adminGrid->onAttached[] = function (AdminGrid $table) use ($_this) {
 			$_this->onAttached($table);
 		};
 
-		return $table;
+		return $adminGrid;
 	}
 }

@@ -11,9 +11,8 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
-use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Content\Entities\PageEntity;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

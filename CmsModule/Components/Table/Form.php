@@ -11,8 +11,6 @@
 
 namespace CmsModule\Components\Table;
 
-use Venne;
-use Nette\ComponentModel\IContainer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

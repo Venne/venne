@@ -11,9 +11,8 @@
 
 namespace CmsModule\Services;
 
-use Venne;
-use Nette\Object;
 use Nette\Config\Adapters\NeonAdapter;
+use Nette\Object;
 use Nette\OutOfRangeException;
 
 /**
@@ -21,7 +20,6 @@ use Nette\OutOfRangeException;
  */
 class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \IteratorAggregate
 {
-
 
 	/** @var array */
 	protected $data;
@@ -39,7 +37,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	protected $adapter;
 
 
-
 	/**
 	 * @param string $fileName
 	 */
@@ -51,7 +48,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	}
 
 
-
 	/**
 	 * Load data
 	 */
@@ -59,7 +55,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	{
 		$this->data = \Nette\ArrayHash::from($this->adapter->load($this->fileName), true);
 	}
-
 
 
 	/**
@@ -70,7 +65,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		file_put_contents($this->fileName, $this->adapter->dump((array)$this->data));
 		$this->load();
 	}
-
 
 
 	/* ------------------------------ Interfaces -------------------------------- */
@@ -87,7 +81,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	}
 
 
-
 	/**
 	 * Returns an iterator over all items.
 	 *
@@ -97,7 +90,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	{
 		return new \ArrayIterator($this->data);
 	}
-
 
 
 	/**
@@ -110,7 +102,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	{
 		return $index >= 0 && $index < count($this->data);
 	}
-
 
 
 	/**
@@ -126,7 +117,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		}
 		return $this->data[$index];
 	}
-
 
 
 	/**
@@ -146,7 +136,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	}
 
 
-
 	/**
 	 * Removes the element from this list.
 	 *
@@ -160,6 +149,5 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		}
 		array_splice($this->data, $index, 1);
 	}
-
 }
 

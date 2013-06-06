@@ -20,7 +20,6 @@ use CmsModule\Content\Repositories\PageRepository;
 class BreadcrumbControl extends Control
 {
 
-
 	/** @var string */
 	protected $routePrefix;
 

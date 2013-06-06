@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

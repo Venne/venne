@@ -1,0 +1,9 @@
+{
+	"require": {
+		"components/bootstrap": "2.3.1"
+	},
+	"config": {
+		"vendor-dir": "assets",
+		"component-dir": "assertPublic"
+	}
+}

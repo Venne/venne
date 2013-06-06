@@ -11,11 +11,9 @@
 
 namespace CmsModule\Helpers;
 
-use Venne;
-use Nette;
-use Nette\Object;
-use Venne\Templating\BaseHelper;
 use Nette\DI\Container;
+use Nette\Image;
+use Venne\Templating\BaseHelper;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,21 +21,18 @@ use Nette\DI\Container;
 class ResizeHelper extends BaseHelper
 {
 
-
 	/** @var Container */
 	protected $container;
 
 
-
 	/**
-	 * @param Container $container 
+	 * @param Container $container
 	 */
 	public function __construct(Container $container)
 	{
 		parent::__construct();
 		$this->container = $container;
 	}
-
 
 
 	/**
@@ -72,7 +67,7 @@ class ResizeHelper extends BaseHelper
 
 		// resize
 		try {
-			$image = \Nette\Image::fromFile($filePath);
+			$image = Image::fromFile($filePath);
 
 			// Transparency
 			$image->alphaBlending(FALSE);
@@ -99,24 +94,22 @@ class ResizeHelper extends BaseHelper
 				}
 			}
 		} catch (\Exception $e) {
-			
 		}
 
 		return $file;
 	}
 
 
-
 	/**
 	 * Get thumb name.
-	 * 
+	 *
 	 * @param type $fileName
 	 * @param type $width
 	 * @param type $height
 	 * @param type $mtime
 	 * @param type $flags
 	 * @param type $crop
-	 * @return string 
+	 * @return string
 	 */
 	private static function getThumbName($fileName, $width, $height, $mtime, $flags, $crop)
 	{
@@ -130,6 +123,5 @@ class ResizeHelper extends BaseHelper
 
 		return $fileName;
 	}
-
 }
 

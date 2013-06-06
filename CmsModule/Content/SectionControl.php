@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 use CmsModule\Content\Entities\PageEntity;
 
 /**
@@ -25,20 +24,19 @@ class SectionControl extends \Venne\Application\UI\Control implements ISectionCo
 
 
 	/**
-	 * @param \CmsModule\Content\Entities\PageEntity $entity
+	 * @param PageEntity $entity
 	 */
 	public function setEntity(PageEntity $entity)
 	{
 		$this->entity = $entity;
 	}
 
+
 	/**
-	 * @return \CmsModule\Content\Entities\PageEntity
+	 * @return PageEntity
 	 */
 	public function getEntity()
 	{
 		return $this->entity;
 	}
-
-
 }

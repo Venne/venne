@@ -11,13 +11,10 @@
 
 namespace CmsModule\Content\Forms\ControlExtensions;
 
-use Venne;
-use Nette\Object;
-use Venne\Forms\IControlExtension;
-use Venne\Forms\Form;
-use DoctrineModule\Forms\Controls\ManyToMany;
-use DoctrineModule\Forms\Controls\ManyToOne;
 use DoctrineModule\Forms\Mappers\EntityMapper;
+use Nette\Object;
+use Venne\Forms\Form;
+use Venne\Forms\IControlExtension;
 
 /**
  * @author     Josef Kříž

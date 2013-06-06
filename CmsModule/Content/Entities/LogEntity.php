@@ -11,10 +11,9 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
-use Nette\DateTime;
-use Doctrine\ORM\Mapping as ORM;
 use CmsModule\Security\Entities\UserEntity;
+use Doctrine\ORM\Mapping as ORM;
+use Nette\DateTime;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

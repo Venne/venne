@@ -11,10 +11,10 @@
 
 namespace CmsModule\Content\Forms;
 
-use Venne;
-use Venne\Forms\Form;
 use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Forms\Mappers\EntityMapper;
+use Venne\Forms\Form;
+use Venne\Module\TemplateManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,14 +22,14 @@ use DoctrineModule\Forms\Mappers\EntityMapper;
 class LayoutFormFactory extends FormFactory
 {
 
-	/** @var Venne\Module\TemplateManager */
+	/** @var TemplateManager */
 	protected $templateManager;
 
 	/** @var array */
 	protected $modules;
 
 
-	public function __construct(EntityMapper $mapper, Venne\Module\TemplateManager $templateManager, $modules)
+	public function __construct(EntityMapper $mapper, TemplateManager $templateManager, $modules)
 	{
 		parent::__construct($mapper);
 
@@ -48,5 +48,4 @@ class LayoutFormFactory extends FormFactory
 
 		$form->addSaveButton('Save');
 	}
-
 }

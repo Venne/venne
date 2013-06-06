@@ -11,14 +11,13 @@
 
 namespace CmsModule\Events;
 
-use Venne;
+use Doctrine\Common\EventArgs;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ContentHelperArgs extends \Doctrine\Common\EventArgs
+class ContentHelperArgs extends EventArgs
 {
-
 
 	/** @var string */
 	protected $text;
@@ -30,12 +29,8 @@ class ContentHelperArgs extends \Doctrine\Common\EventArgs
 	}
 
 
-
 	public function setText($text)
 	{
 		$this->text = $text;
 	}
-
-
-
 }

@@ -11,14 +11,12 @@
 
 namespace CmsModule\Content\Elements;
 
-use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class EditorElement extends TextElement
 {
-
 
 	public function render()
 	{

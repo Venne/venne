@@ -11,18 +11,16 @@
 
 namespace CmsModule\Components;
 
-use Venne;
 use CmsModule\Content\Control;
-use Nette\Forms\Form;
 use CmsModule\Forms\LoginFormFactory;
 use CmsModule\Security\SecurityManager;
+use Nette\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class LoginControl extends Control
 {
-
 
 	/** @var LoginFormFactory */
 	protected $loginFormFactory;

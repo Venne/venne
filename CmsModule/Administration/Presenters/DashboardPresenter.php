@@ -64,11 +64,4 @@ class DashboardPresenter extends BasePresenter
 		$this->template->logRepository = $this->logRepository;
 		$this->template->userRepository = $this->userRepository;
 	}
-
-
-	protected function createComponentLog()
-	{
-		$log = new \CmsModule\Administration\Components\LogControl;
-		return $log;
-	}
 }

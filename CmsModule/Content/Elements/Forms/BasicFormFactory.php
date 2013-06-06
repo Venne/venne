@@ -12,17 +12,15 @@
 namespace CmsModule\Content\Elements\Forms;
 
 use CmsModule\Content\Entities\ElementEntity;
-use Venne;
-use Venne\Forms\Form;
-use DoctrineModule\Forms\FormFactory;
 use CmsModule\Content\Repositories\PageRepository;
+use DoctrineModule\Forms\FormFactory;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class BasicFormFactory extends FormFactory
 {
-
 
 	/**
 	 * @param Form $form

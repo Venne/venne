@@ -11,9 +11,8 @@
 
 namespace CmsModule\Components;
 
-use Venne;
-use Nette\ComponentModel\Component;
 use CmsModule\Content\Control;
+use Nette\ComponentModel\Component;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

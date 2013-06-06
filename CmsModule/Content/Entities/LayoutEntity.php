@@ -11,9 +11,8 @@
 
 namespace CmsModule\Content\Entities;
 
-use Venne;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,7 +21,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class LayoutEntity extends \DoctrineModule\Entities\NamedEntity
 {
-
 
 	/**
 	 * @var string

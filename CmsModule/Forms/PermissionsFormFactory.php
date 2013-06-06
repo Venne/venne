@@ -11,14 +11,13 @@
 
 namespace CmsModule\Forms;
 
-use Venne;
-use Venne\Forms\FormFactory;
-use Venne\Forms\Form;
-use DoctrineModule\Forms\Mappers\EntityMapper;
-use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Administration\AdministrationManager;
+use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\Repositories\RoleRepository;
+use DoctrineModule\Forms\Mappers\EntityMapper;
 use Nette\Application\PresenterFactory;
+use Venne\Forms\Form;
+use Venne\Forms\FormFactory;
 use Venne\Security\IControlVerifierReader;
 
 /**

@@ -11,7 +11,6 @@
 
 namespace CmsModule\Security\Entities;
 
-use Venne;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PermissionEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
-
 
 	/**
 	 * @ORM\Column(type="string")

@@ -31,6 +31,7 @@ class ContentEditorArgs extends \Doctrine\Common\EventArgs
 		$this->value = $value;
 	}
 
+
 	/**
 	 * @return string
 	 */

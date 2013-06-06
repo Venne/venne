@@ -12,6 +12,9 @@
 namespace CmsModule\Administration\Presenters;
 
 use Nette\Application\BadRequestException;
+use Nette\Application\Responses\TextResponse;
+use Nette\DateTime;
+use Nette\Utils\Finder;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -43,7 +46,7 @@ class LogsPresenter extends BasePresenter
 			throw new BadRequestException;
 		}
 		if (preg_match("#^exception-([0-9a-zA-Z\-]+)\.html$#D", $name)) {
-			$this->sendResponse(new \Nette\Application\Responses\TextResponse(file_get_contents($this->logDir . '/' . $name)));
+			$this->sendResponse(new TextResponse(file_get_contents($this->logDir . '/' . $name)));
 		} else {
 			// prevent directory traversal
 			throw new BadRequestException;
@@ -97,11 +100,11 @@ class LogsPresenter extends BasePresenter
 	{
 		$ret = array();
 
-		foreach (\Nette\Utils\Finder::findFiles("exception*")->in($this->logDir) as $file) {
+		foreach (Finder::findFiles("exception*")->in($this->logDir) as $file) {
 			$data = explode("-", $file->getFileName());
 
 			$date = "{$data[1]}-{$data[2]}-{$data[3]} {$data[4]}:{$data[5]}:{$data[6]}";
-			$info = array("date" => \Nette\DateTime::from($date), "hash" => $data[7], "link" => $file->getFileName());
+			$info = array("date" => DateTime::from($date), "hash" => $data[7], "link" => $file->getFileName());
 
 			$ret[$date] = $info;
 		}

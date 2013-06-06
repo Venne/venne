@@ -62,5 +62,4 @@ class FormLogListener
 
 		$this->logRepository->save($logEntity);
 	}
-
 }

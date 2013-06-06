@@ -11,7 +11,6 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
 use Nette\Callback;
 
 /**
@@ -22,13 +21,11 @@ use Nette\Callback;
 class EnvironmentsPresenter extends BasePresenter
 {
 
-
 	/** @persistent */
 	public $key;
 
 	/** @var array */
 	protected $environments;
-
 
 
 	function __construct($environments)
@@ -37,10 +34,8 @@ class EnvironmentsPresenter extends BasePresenter
 	}
 
 
-
 	public function renderDefault()
 	{
 		$this->template->modes = $this->environments;
 	}
-
 }

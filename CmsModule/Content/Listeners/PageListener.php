@@ -12,8 +12,8 @@
 namespace CmsModule\Content\Listeners;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Events;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\FileStorage;
 

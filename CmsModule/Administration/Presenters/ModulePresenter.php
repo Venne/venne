@@ -11,7 +11,6 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
 use Nette\InvalidArgumentException;
 use Venne\Module\ModuleManager;
 
@@ -22,7 +21,6 @@ use Venne\Module\ModuleManager;
  */
 class ModulePresenter extends BasePresenter
 {
-
 
 	/** @var ModuleManager */
 	protected $moduleManager;

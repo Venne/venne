@@ -11,16 +11,16 @@
 
 namespace CmsModule\Security;
 
-use Venne;
-use Nette\Object;
+use DoctrineModule\Entities\IEntity;
 use Nette\DI\Container;
+use Nette\InvalidArgumentException;
+use Nette\Object;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class SecurityManager extends Object
 {
-
 
 	/** @var Container */
 	protected $content;
@@ -34,7 +34,7 @@ class SecurityManager extends Object
 	/** @var array */
 	protected $typesByName = array();
 
-	/** @var \Venne\Security\ISocialLogin[] */
+	/** @var ISocialLogin[] */
 	protected $socialLogins = array();
 
 
@@ -51,18 +51,18 @@ class SecurityManager extends Object
 	 * @param $name
 	 * @param $entity
 	 * @param $formFactoryName
-	 * @throws \Nette\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function addUserType($name, $entity, $formFactoryName)
 	{
 		$entity = $this->normalizeEntityName($entity);
 
 		if (isset($this->typesByName[$name])) {
-			throw new \Nette\InvalidArgumentException("User type name '{$name}' is already installed.");
+			throw new InvalidArgumentException("User type name '{$name}' is already installed.");
 		}
 
 		if (isset($this->typesByEntity[$entity])) {
-			throw new \Nette\InvalidArgumentException("User type entity '{$entity}' is already installed.");
+			throw new InvalidArgumentException("User type entity '{$entity}' is already installed.");
 		}
 
 		$this->types[$entity] = $name;
@@ -74,12 +74,12 @@ class SecurityManager extends Object
 	/**
 	 * @param $name
 	 * @param ISocialLogin $socialLogin
-	 * @throws \Nette\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function addSocialLogin($name, $socialLoginFactoryName)
 	{
 		if (isset($this->socialLogins[$name])) {
-			throw new \Nette\InvalidArgumentException("Social login name '{$name}' is already installed.");
+			throw new InvalidArgumentException("Social login name '{$name}' is already installed.");
 		}
 
 		$this->socialLogins[$name] = $socialLoginFactoryName;
@@ -98,14 +98,14 @@ class SecurityManager extends Object
 	/**
 	 * @param $entity
 	 * @return mixed
-	 * @throws \Nette\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function getFormFactoryByEntity($entity)
 	{
 		$entity = $this->normalizeEntityName($entity);
 
 		if (!isset($this->typesByEntity[$entity])) {
-			throw new \Nette\InvalidArgumentException("Form factory for entity '{$entity}' has not been registered.");
+			throw new InvalidArgumentException("Form factory for entity '{$entity}' has not been registered.");
 		}
 
 		$name = $this->typesByEntity[$entity];
@@ -117,12 +117,12 @@ class SecurityManager extends Object
 	/**
 	 * @param $name
 	 * @return mixed
-	 * @throws \Nette\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function getFormFactoryByName($name)
 	{
 		if (!isset($this->typesByName[$name])) {
-			throw new \Nette\InvalidArgumentException("Form factory for name '{$name}' has not been registered.");
+			throw new InvalidArgumentException("Form factory for name '{$name}' has not been registered.");
 		}
 
 		$name = $this->typesByName[$name];
@@ -133,13 +133,13 @@ class SecurityManager extends Object
 
 	/**
 	 * @param $name
-	 * @return \Venne\Security\ISocialLogin
-	 * @throws \Nette\InvalidArgumentException
+	 * @return ISocialLogin
+	 * @throws InvalidArgumentException
 	 */
 	public function getSocialLoginByName($name)
 	{
 		if (!isset($this->socialLogins[$name])) {
-			throw new \Nette\InvalidArgumentException("Social login name '{$name}' has not been registered.");
+			throw new InvalidArgumentException("Social login name '{$name}' has not been registered.");
 		}
 
 		return $this->content->getService($this->socialLogins[$name]);
@@ -147,7 +147,7 @@ class SecurityManager extends Object
 
 
 	/**
-	 * @return array|\Venne\Security\ISocialLogin[]
+	 * @return array|ISocialLogin[]
 	 */
 	public function getSocialLogins()
 	{
@@ -159,7 +159,7 @@ class SecurityManager extends Object
 
 	protected function normalizeEntityName($entity)
 	{
-		if ($entity instanceof \DoctrineModule\Entities\IEntity) {
+		if ($entity instanceof IEntity) {
 			$entity = get_class($entity);
 		}
 

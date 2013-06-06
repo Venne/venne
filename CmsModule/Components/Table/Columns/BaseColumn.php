@@ -11,12 +11,10 @@
 
 namespace CmsModule\Components\Table\Columns;
 
-use Venne;
-use CmsModule\Components\Table\IColumn;
 use CmsModule\Components\Table\Filters\BaseFilter;
+use CmsModule\Components\Table\IColumn;
 use CmsModule\Components\Table\TableControl;
 use Nette\ComponentModel\Component;
-use Nette\ComponentModel\IContainer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

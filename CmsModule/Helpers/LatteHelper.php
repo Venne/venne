@@ -11,11 +11,9 @@
 
 namespace CmsModule\Helpers;
 
-use Venne;
-use Nette;
-use Nette\Object;
+use Nette\Application\Application;
 use Venne\Templating\BaseHelper;
-use ITemplateConfigurator;
+use Venne\Templating\ITemplateConfigurator;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,25 +21,23 @@ use ITemplateConfigurator;
 class LatteHelper extends BaseHelper
 {
 
-
 	/** @var ITemplateConfigurator */
 	protected $templateConfigurator;
 
-	/** @var \Nette\Application\Application */
+	/** @var Application */
 	protected $application;
 
 
-
 	/**
-	 * @param \Nette\Application\Application $application
+	 * @param Application $application
+	 * @param ITemplateConfigurator $templateConfigurator
 	 */
-	public function __construct(\Nette\Application\Application $application, \Venne\Templating\ITemplateConfigurator $templateConfigurator)
+	public function __construct(Application $application, ITemplateConfigurator $templateConfigurator)
 	{
 		parent::__construct();
 		$this->application = $application;
 		$this->templateConfigurator = $templateConfigurator;
 	}
-
 
 
 	/**
@@ -54,6 +50,5 @@ class LatteHelper extends BaseHelper
 		$template->setSource($text);
 		return $template->__toString();
 	}
-
 }
 

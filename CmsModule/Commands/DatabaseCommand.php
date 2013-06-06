@@ -11,13 +11,12 @@
 
 namespace CmsModule\Commands;
 
-use Venne;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use CmsModule\Services\ConfigBuilder;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to execute DQL queries in a given EntityManager.
@@ -65,6 +64,7 @@ class DatabaseCommand extends Command
 		}
 	}
 
+
 	/**
 	 * @see Console\Command\Command
 	 */
@@ -80,5 +80,4 @@ class DatabaseCommand extends Command
 
 		$this->config->save();
 	}
-
 }

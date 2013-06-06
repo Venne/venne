@@ -14,16 +14,19 @@ namespace CmsModule\Administration\Presenters;
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Components\ContentTableFactory;
 use CmsModule\Content\Components\RouteControl;
+use CmsModule\Content\ContentManager;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\PageEntity;
+use CmsModule\Content\Forms\BasicFormFactory;
+use CmsModule\Content\ISectionControl;
 use CmsModule\Content\Repositories\LanguageRepository;
-use Gedmo\Translatable\TranslatableListener;
 use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Repositories\BaseRepository;
-use CmsModule\Content\ContentManager;
-use CmsModule\Content\Forms\BasicFormFactory;
-use Grido\DataSources\Doctrine;
+use Gedmo\Translatable\TranslatableListener;
 use Nette\Application\BadRequestException;
+use Nette\Application\UI\InvalidLinkException;
+use Nette\InvalidArgumentException;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -32,7 +35,6 @@ use Nette\Application\BadRequestException;
  */
 class ContentPresenter extends BasePresenter
 {
-
 
 	/** @persistent */
 	public $key;
@@ -94,8 +96,8 @@ class ContentPresenter extends BasePresenter
 		parent::startup();
 
 		if ($this->contentLang) {
-			foreach ($this->context->entityManager->getEventManager()->getListeners() as $event => $listeners) {
-				foreach ($listeners as $hash => $listener) {
+			foreach ($this->context->entityManager->getEventManager()->getListeners() as $listeners) {
+				foreach ($listeners as $listener) {
 					if ($listener instanceof TranslatableListener) {
 						$listener->setTranslatableLocale($this->contentLang);
 						$listener->setTranslationFallback(TRUE);
@@ -261,28 +263,9 @@ class ContentPresenter extends BasePresenter
 
 	protected function createComponentTable()
 	{
-		$adminGrid = new AdminGrid($this->pageRepository);
-
 		$_this = $this;
+		$adminGrid = $this->contentTableFactory->create();
 		$table = $adminGrid->getTable();
-
-		$table->addColumn('name', 'Name')
-			->setSortable()
-			->setFilter()->setSuggestion();
-		$table->getColumn('name')->getCellPrototype()->width = '50%';
-		$table->addColumn('mainRoute', 'URL')
-			->setSortable()
-			->setFilter()->setSuggestion();
-		$table->getColumn('mainRoute')->getCellPrototype()->width = '25%';
-		$table->addColumn('languages', 'Languages')
-			->setCustomRender(function ($entity) {
-				$ret = implode(", ", $entity->languages->toArray());
-				foreach ($entity->translations as $translation) {
-					$ret .= ', ' . implode(", ", $translation->languages->toArray());
-				}
-				return $ret;
-			})
-			->getCellPrototype()->width = '25%';
 
 		$table->addAction('on', 'On')
 			->setCustomRender(function ($entity, $element) {
@@ -469,7 +452,7 @@ class ContentPresenter extends BasePresenter
 		} else {
 			if ($this->section) {
 				if (!$contentType->hasSection($this->section)) {
-					throw new \Nette\Application\UI\InvalidLinkException("Section '$this->section' not exists");
+					throw new InvalidLinkException("Section '$this->section' not exists");
 				}
 				$formFactory = $contentType->sections[$this->section]->getFormFactory();
 			} else {
@@ -479,18 +462,18 @@ class ContentPresenter extends BasePresenter
 			$form = $formFactory->invoke($entity);
 		}
 
-		if ($form instanceof \CmsModule\Content\ISectionControl) {
+		if ($form instanceof ISectionControl) {
 			$form->setEntity($entity);
-		} else if ($form instanceof \Venne\Forms\Form) {
+		} else if ($form instanceof Form) {
 			$form->onSuccess[] = $this->formEditSuccess;
 		} else {
-			throw new \Nette\InvalidArgumentException("Control must be instance of '\Venne\Forms\Form' OR 'CmsModule\Content\ISectionControl'. " . get_class($form) . " is given");
+			throw new InvalidArgumentException("Control must be instance of 'Venne\Forms\Form' OR 'CmsModule\Content\ISectionControl'. " . get_class($form) . " is given");
 		}
 		return $form;
 	}
 
 
-	public function formEditSuccess($form)
+	public function formEditSuccess()
 	{
 		$this->flashMessage("Page has been updated");
 

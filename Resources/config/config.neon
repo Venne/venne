@@ -91,10 +91,6 @@ services:
 		class: CmsModule\Content\Listeners\PageListener
 		tags: [listener]
 
-	cms.fileListener:
-		class: CmsModule\Content\Listeners\FileListener
-		tags: [listener]
-
 	cms.logListener:
 		class: CmsModule\Content\Listeners\LogListener
 		tags: [listener]

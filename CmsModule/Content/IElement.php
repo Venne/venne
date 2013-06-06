@@ -12,8 +12,8 @@
 namespace CmsModule\Content;
 
 use CmsModule\Content\Entities\LanguageEntity;
-use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Entities\PageEntity;
+use CmsModule\Content\Entities\RouteEntity;
 use Nette\Application\UI\IRenderable;
 
 /**
@@ -21,7 +21,6 @@ use Nette\Application\UI\IRenderable;
  */
 interface IElement extends IRenderable
 {
-
 
 	/**
 	 * @abstract

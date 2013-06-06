@@ -11,8 +11,6 @@
 
 namespace CmsModule\Presenters;
 
-use Venne;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -21,6 +19,7 @@ abstract class AdminPresenter extends BasePresenter
 
 	/** @persistent */
 	public $compact = false;
+
 
 	public function startup()
 	{
@@ -42,18 +41,14 @@ abstract class AdminPresenter extends BasePresenter
 			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
 				$this->flashMessage("You have been logged out due to inactivity. Please login again.", 'info');
 			}
-		}
-
-		// check database
+		} // check database
 		elseif (!$this->context->createCheckConnection()) {
 			if ($this->getName() != "Cms:Admin:Database") {
 				$this->redirect(":Cms:Admin:Database:");
 			}
 			$this->template->hideMenuItems = true;
 			$this->flashMessage("Database connection not found. Please fix it.", "warning", true);
-		}
-
-		// check languages
+		} // check languages
 		elseif ($this->context->schemaManager->tablesExist('user') && count($this->context->parameters['website']['languages']) == 0) {
 			if ($this->getName() != 'Cms:Admin:Language') {
 				$this->redirect(':Cms:Admin:Language:', array('table-navbar-id' => 'navbar-new', 'do' => 'table-navbar-click'));

@@ -11,8 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */

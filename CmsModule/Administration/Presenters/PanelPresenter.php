@@ -11,10 +11,10 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Content\ElementManager;
 use CmsModule\Content\Entities\LanguageEntity;
-use Venne;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Content\Entities\RouteEntity;
+use DoctrineModule\Repositories\BaseRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,7 +23,6 @@ use CmsModule\Content\Entities\RouteEntity;
  */
 class PanelPresenter extends BasePresenter
 {
-
 
 	/** @persistent */
 	public $elementName;
@@ -100,8 +99,8 @@ class PanelPresenter extends BasePresenter
 
 	protected function createComponent($name)
 	{
-		if (strpos($name, \CmsModule\Content\ElementManager::ELEMENT_PREFIX) === 0) {
-			$name = substr($name, strlen(\CmsModule\Content\ElementManager::ELEMENT_PREFIX));
+		if (strpos($name, ElementManager::ELEMENT_PREFIX) === 0) {
+			$name = substr($name, strlen(ElementManager::ELEMENT_PREFIX));
 			$name = explode('_', $name);
 			$id = end($name);
 			unset($name[count($name) - 1]);

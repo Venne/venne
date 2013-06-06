@@ -11,11 +11,11 @@
 
 namespace CmsModule\Content\Entities;
 
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\UnitOfWork;
 use Nette\InvalidArgumentException;
-use DateTime;
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

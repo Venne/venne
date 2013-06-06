@@ -11,13 +11,14 @@
 
 namespace CmsModule\Module\Installers;
 
-use Venne;
-use Nette\Object;
-use Nette\DI\Container;
-use Venne\Module\IModule;
-use Venne\Module\IInstaller;
 use CmsModule\Content\Entities\LayoutEntity;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+use Nette\DI\Container;
+use Nette\Object;
+use Venne\Module\IInstaller;
+use Venne\Module\IModule;
+use Venne\Module\TemplateManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -28,7 +29,7 @@ class CmsInstaller extends Object implements IInstaller
 	/** @var Container */
 	protected $context;
 
-	/** @var Venne\Module\TemplateManager */
+	/** @var TemplateManager */
 	protected $templateManager;
 
 	/** @var EntityManager */
@@ -36,11 +37,11 @@ class CmsInstaller extends Object implements IInstaller
 
 
 	/**
-	 * @param \Nette\DI\Container $context
-	 * @param \Venne\Module\TemplateManager $templateManager
-	 * @param \Doctrine\ORM\EntityManager $entityManager
+	 * @param Container $context
+	 * @param TemplateManager $templateManager
+	 * @param EntityManager $entityManager
 	 */
-	public function __construct(Container $context, Venne\Module\TemplateManager $templateManager, EntityManager $entityManager)
+	public function __construct(Container $context, TemplateManager $templateManager, EntityManager $entityManager)
 	{
 		$this->context = $context;
 		$this->templateManager = $templateManager;
@@ -49,7 +50,7 @@ class CmsInstaller extends Object implements IInstaller
 
 
 	/**
-	 * @param \Venne\Module\IModule $module
+	 * @param IModule $module
 	 */
 	public function install(IModule $module)
 	{
@@ -60,7 +61,7 @@ class CmsInstaller extends Object implements IInstaller
 		$layouts = $this->templateManager->getLayoutsByModule($module->getName());
 		$repository = $this->getTemplateRepository();
 
-		foreach ($layouts as $path => $name) {
+		foreach ($layouts as $name) {
 			$origName = $name;
 			$name = explode('/', $name);
 			$name = $name[0] . ' - ' . $name[count($name) - 2] . ' - default';
@@ -75,7 +76,7 @@ class CmsInstaller extends Object implements IInstaller
 
 
 	/**
-	 * @param \Venne\Module\IModule $module
+	 * @param IModule $module
 	 */
 	public function uninstall(IModule $module)
 	{
@@ -87,9 +88,6 @@ class CmsInstaller extends Object implements IInstaller
 		$repository = $this->getTemplateRepository();
 
 		foreach ($layouts as $path => $name) {
-			$name = explode('/', $name);
-			$name = $name[0] . ' - ' . $name[count($name) - 2] . ' - default';
-
 			foreach ($repository->findBy(array('file' => $path)) as $entity) {
 				$repository->delete($entity);
 			}
@@ -98,7 +96,7 @@ class CmsInstaller extends Object implements IInstaller
 
 
 	/**
-	 * @param \Venne\Module\IModule $module
+	 * @param IModule $module
 	 * @param $from
 	 * @param $to
 	 */
@@ -108,7 +106,7 @@ class CmsInstaller extends Object implements IInstaller
 
 
 	/**
-	 * @param \Venne\Module\IModule $module
+	 * @param IModule $module
 	 * @param $from
 	 * @param $to
 	 */
@@ -118,7 +116,7 @@ class CmsInstaller extends Object implements IInstaller
 
 
 	/**
-	 * @return \Doctrine\ORM\EntityRepository
+	 * @return EntityRepository
 	 */
 	protected function getTemplateRepository()
 	{

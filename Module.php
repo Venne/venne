@@ -11,7 +11,6 @@
 
 namespace CmsModule;
 
-use Venne;
 use Venne\Module\ComposerModule;
 
 /**

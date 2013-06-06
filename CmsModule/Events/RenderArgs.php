@@ -11,30 +11,30 @@
 
 namespace CmsModule\Events;
 
-use Nette;
+use Doctrine\Common\EventArgs;
+use Nette\Application\IPresenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RenderArgs extends \Doctrine\Common\EventArgs
+class RenderArgs extends EventArgs
 {
 
-
-	/** @var \Nette\Application\UI\Presenter */
+	/** @var IPresenter */
 	private $presenter;
 
 
 	/**
-	 * @param \Nette\Application\UI\Presenter $presenter
+	 * @param IPresenter $presenter
 	 */
-	public function setPresenter($presenter)
+	public function setPresenter(IPresenter $presenter)
 	{
 		$this->presenter = $presenter;
 	}
 
 
 	/**
-	 * @return \Nette\Application\UI\Presenter
+	 * @return IPresenter
 	 */
 	public function getPresenter()
 	{

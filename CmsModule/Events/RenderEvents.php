@@ -11,13 +11,11 @@
 
 namespace CmsModule\Events;
 
-use Venne;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RenderEvents {
-
+class RenderEvents
+{
 
 	const onHeadBegin = 'onHeadBegin';
 
@@ -26,5 +24,4 @@ class RenderEvents {
 	const onBodyBegin = 'onBodyBegin';
 
 	const onBodyEnd = 'onBodyEnd';
-
 }

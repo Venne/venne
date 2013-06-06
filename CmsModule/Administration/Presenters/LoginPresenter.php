@@ -11,15 +11,14 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
 use CmsModule\Forms\LoginFormFactory;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class LoginPresenter extends BasePresenter
 {
-
 
 	/** @persistent */
 	public $backlink;
@@ -50,9 +49,9 @@ class LoginPresenter extends BasePresenter
 	/**
 	 * Sign in form component factory.
 	 *
-	 * @return \Venne\Application\UI\Form
+	 * @return Form
 	 */
-	protected function createComponentSignInForm($name)
+	protected function createComponentSignInForm()
 	{
 		$form = $this->form->invoke();
 		return $form;

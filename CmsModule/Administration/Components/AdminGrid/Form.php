@@ -11,12 +11,14 @@
 
 namespace CmsModule\Administration\Components\AdminGrid;
 
-use Venne;
+use CmsModule\Components\Table\TableControl;
+use Nette\ComponentModel\Component;
+use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Form extends \Nette\ComponentModel\Component
+class Form extends Component
 {
 
 	const TYPE_NORMAL = '';
@@ -32,7 +34,7 @@ class Form extends \Nette\ComponentModel\Component
 	/** @var array */
 	public $onCreate;
 
-	/** @var \Venne\Forms\FormFactory */
+	/** @var FormFactory */
 	protected $factory;
 
 	/** @var callable */
@@ -46,12 +48,12 @@ class Form extends \Nette\ComponentModel\Component
 
 
 	/**
-	 * @param \Venne\Forms\FormFactory $factory
+	 * @param FormFactory $factory
 	 * @param string $title
 	 * @param callable $entityFactory
 	 * @param null $type
 	 */
-	public function __construct(\Venne\Forms\FormFactory $factory, $title, $entityFactory = NULL, $type = NULL)
+	public function __construct(FormFactory $factory, $title, $entityFactory = NULL, $type = NULL)
 	{
 		parent::__construct();
 
@@ -65,7 +67,7 @@ class Form extends \Nette\ComponentModel\Component
 	/**
 	 * Returns table.
 	 * @param  bool   throw exception if form doesn't exist?
-	 * @return \CmsModule\Components\Table\TableControl
+	 * @return TableControl
 	 */
 	public function getTable($need = TRUE)
 	{
@@ -74,16 +76,16 @@ class Form extends \Nette\ComponentModel\Component
 
 
 	/**
-	 * @param \Venne\Forms\FormFactory $factory
+	 * @param FormFactory $factory
 	 */
-	public function setFactory($factory)
+	public function setFactory(FormFactory $factory)
 	{
 		$this->factory = $factory;
 	}
 
 
 	/**
-	 * @return \Venne\Forms\FormFactory
+	 * @return FormFactory
 	 */
 	public function getFactory()
 	{

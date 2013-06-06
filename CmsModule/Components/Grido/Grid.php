@@ -46,5 +46,4 @@ class Grid extends \Grido\Grid
 		}
 		return $action;
 	}
-
 }

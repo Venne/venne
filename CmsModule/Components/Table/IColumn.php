@@ -11,17 +11,14 @@
 
 namespace CmsModule\Components\Table;
 
-use Venne;
 use CmsModule\Components\Table\TableControl;
 use Nette\ComponentModel\Component;
-use Nette\ComponentModel\IContainer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 interface IColumn
 {
-
 
 	public function __construct(TableControl $table, $name, $title);
 

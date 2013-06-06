@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 use Nette\Object;
 
 /**
@@ -26,11 +25,13 @@ class ContentTypeSection extends Object
 	/** @var \Nette\Callback */
 	protected $formFactory;
 
+
 	public function __construct($name, $formFactory)
 	{
 		$this->name = $name;
 		$this->formFactory = $formFactory;
 	}
+
 
 	/**
 	 * @return \Nette\Callback
@@ -40,6 +41,7 @@ class ContentTypeSection extends Object
 		return $this->formFactory;
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -47,6 +49,4 @@ class ContentTypeSection extends Object
 	{
 		return $this->name;
 	}
-
-
 }

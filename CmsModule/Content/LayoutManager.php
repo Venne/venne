@@ -11,11 +11,10 @@
 
 namespace CmsModule\Content;
 
-use Venne;
-use Nette\Object;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\InvalidArgumentException;
 use Nette\Latte\MacroTokenizer;
+use Nette\Object;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,6 +26,9 @@ class LayoutManager extends Object
 	protected $layoutRepository;
 
 
+	/**
+	 * @param BaseRepository $layoutRepository
+	 */
 	public function __construct(BaseRepository $layoutRepository)
 	{
 		$this->layoutRepository = $layoutRepository;
@@ -35,6 +37,7 @@ class LayoutManager extends Object
 
 	/**
 	 * @param $file
+	 * @return array
 	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function getElementsByFile($file)

@@ -11,15 +11,14 @@
 
 namespace CmsModule\Components;
 
-use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Control;
+use CmsModule\Content\Repositories\LanguageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class LanguageswitchControl extends Control
 {
-
 
 	/** @var LanguageRepository */
 	protected $languageRepository;

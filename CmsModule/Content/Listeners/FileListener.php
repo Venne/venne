@@ -11,11 +11,12 @@
 
 namespace CmsModule\Content\Listeners;
 
+use CmsModule\Content\Entities\BaseFileEntity;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
-use CmsModule\Content\Entities\BaseFileEntity;
+use Doctrine\ORM\Events;
+use Nette\DI\Container;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -34,15 +35,16 @@ class FileListener implements EventSubscriber
 
 
 	/**
+	 * @param Container $container
 	 * @param $publicDir
-	 * @param $publicUrl
 	 * @param $protectedDir
+	 * @param $publicUrl
 	 */
-	function __construct(\Nette\DI\Container $container)
+	public function __construct(Container $container, $publicDir, $protectedDir, $publicUrl)
 	{
-		$this->publicDir = $container->parameters['wwwDir'] . '/public/media';
-		$this->publicUrl = $container->parameters['basePath'] . '/public/media';
-		$this->protectedDir = $container->parameters['dataDir'] . '/media';
+		$this->publicDir = $publicDir;
+		$this->protectedDir = $protectedDir;
+		$this->publicUrl = $container->parameters['basePath'] . $publicUrl;
 	}
 
 
@@ -58,6 +60,7 @@ class FileListener implements EventSubscriber
 			Events::preFlush,
 		);
 	}
+
 
 	/**
 	 * preFlush event.

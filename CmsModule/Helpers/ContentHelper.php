@@ -11,13 +11,10 @@
 
 namespace CmsModule\Helpers;
 
-use Venne;
-use Nette;
-use Nette\Object;
-use Venne\Templating\BaseHelper;
-use Doctrine\Common\EventManager;
-use CmsModule\Content\Forms\Controls\Events\ContentEditorEvents;
 use CmsModule\Content\Forms\Controls\Events\ContentEditorArgs;
+use CmsModule\Content\Forms\Controls\Events\ContentEditorEvents;
+use Doctrine\Common\EventManager;
+use Venne\Templating\BaseHelper;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,21 +22,18 @@ use CmsModule\Content\Forms\Controls\Events\ContentEditorArgs;
 class ContentHelper extends BaseHelper
 {
 
-
 	/** @var EventManager */
 	protected $eventManager;
 
 
-
 	/**
-	 * @param EventManager $eventManager 
+	 * @param EventManager $eventManager
 	 */
 	public function __construct(EventManager $eventManager)
 	{
 		parent::__construct();
 		$this->eventManager = $eventManager;
 	}
-
 
 
 	/**
@@ -55,6 +49,5 @@ class ContentHelper extends BaseHelper
 
 		return $args->getValue();
 	}
-
 }
 

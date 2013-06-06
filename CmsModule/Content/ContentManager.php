@@ -11,18 +11,16 @@
 
 namespace CmsModule\Content;
 
-use Venne;
-use Nette\Object;
-use Nette\DI\Container;
-use Nette\Callback;
 use CmsModule\Content\IContentType;
+use Nette\Callback;
+use Nette\DI\Container;
+use Nette\Object;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class ContentManager extends Object
 {
-
 
 	/** @var Container */
 	protected $context;
@@ -34,22 +32,19 @@ class ContentManager extends Object
 	protected $administrationPages = array();
 
 
-
 	public function __construct(Container $context)
 	{
 		$this->context = $context;
 	}
 
 
-
-	public function addContentType($type, $name, \CmsModule\Content\ContentType $contentType)
+	public function addContentType($type, $name, ContentType $contentType)
 	{
 		$this->contentTypes[$type] = array(
 			'name' => $name,
 			'factory' => $contentType
 		);
 	}
-
 
 
 	public function addAdministrationPage($name, $description, $category, $link, Callback $administrationPageFactory)
@@ -61,7 +56,6 @@ class ContentManager extends Object
 			'factory' => $administrationPageFactory
 		);
 	}
-
 
 
 	/**
@@ -81,10 +75,9 @@ class ContentManager extends Object
 	}
 
 
-
 	/**
 	 * Has content type.
-	 * 
+	 *
 	 * @param string $link
 	 * @return IContentType
 	 */
@@ -94,10 +87,9 @@ class ContentManager extends Object
 	}
 
 
-
 	/**
 	 * Get content type.
-	 * 
+	 *
 	 * @param string $link
 	 * @return IContentType
 	 */
@@ -107,11 +99,10 @@ class ContentManager extends Object
 	}
 
 
-
 	/**
 	 * Get Administration pages as array
-	 * 
-	 * @return array 
+	 *
+	 * @return array
 	 */
 	public function getAdministrationPages()
 	{
@@ -123,6 +114,5 @@ class ContentManager extends Object
 
 		return $ret;
 	}
-
 }
 

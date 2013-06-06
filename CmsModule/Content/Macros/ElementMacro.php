@@ -12,13 +12,12 @@
 namespace CmsModule\Content\Macros;
 
 use CmsModule\Content\Elements\Helpers;
-use Venne;
-use Nette\Utils\Strings;
-use Nette\Latte\MacroNode;
-use Nette\Latte\PhpWriter;
-use Nette\Latte\Compiler;
 use Nette\Latte\CompileException;
+use Nette\Latte\Compiler;
+use Nette\Latte\MacroNode;
 use Nette\Latte\Macros\MacroSet;
+use Nette\Latte\PhpWriter;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

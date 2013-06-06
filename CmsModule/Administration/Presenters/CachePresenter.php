@@ -11,11 +11,11 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Venne;
+use Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer;
+use Nette\Application\ForbiddenRequestException;
+use Nette\InvalidArgumentException;
 use Venne\Caching\CacheManager;
 use Venne\Forms\Form;
-use Nette\Application\ForbiddenRequestException;
-use Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -80,7 +80,7 @@ class CachePresenter extends BasePresenter
 
 		// permissions
 		if (!$this->isAuthorized('edit')) {
-			$form->onAttached[] = function ($form) {
+			$form->onAttached[] = function (Form $form) {
 				if ($form->isSubmitted()) {
 					throw new ForbiddenRequestException;
 				}
@@ -106,7 +106,7 @@ class CachePresenter extends BasePresenter
 		} elseif ($values['section'] === 'namespace') {
 			try {
 				$this->cacheManager->cleanNamespace($values['namespace']);
-			} catch (\Nette\InvalidArgumentException $e) {
+			} catch (InvalidArgumentException $e) {
 				$this->flashMessage($e->getMessage(), 'warning');
 				return;
 			}

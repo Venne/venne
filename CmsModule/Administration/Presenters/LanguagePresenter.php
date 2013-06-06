@@ -13,9 +13,9 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Repositories\LanguageRepository;
-use Nette\Application\UI\Form;
-use DoctrineModule\Repositories\BaseRepository;
 use CmsModule\Forms\LanguageFormFactory;
+use DoctrineModule\Repositories\BaseRepository;
+use Nette\Application\UI\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,7 +24,6 @@ use CmsModule\Forms\LanguageFormFactory;
  */
 class LanguagePresenter extends BasePresenter
 {
-
 
 	/** @var LanguageRepository */
 	protected $languageRepository;

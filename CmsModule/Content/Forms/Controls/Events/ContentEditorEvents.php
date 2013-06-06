@@ -11,17 +11,16 @@
 
 namespace CmsModule\Content\Forms\Controls\Events;
 
-use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ContentEditorEvents {
+class ContentEditorEvents
+{
 
 	const onContentEditorLoad = 'onContentEditorLoad';
 
 	const onContentEditorSave = 'onContentEditorSave';
 
 	const onContentEditorRender = 'onContentEditorRender';
-
 }

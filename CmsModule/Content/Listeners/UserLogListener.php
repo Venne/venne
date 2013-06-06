@@ -22,7 +22,6 @@ use Nette\Security\User;
 class UserLogListener
 {
 
-
 	/** @var Container|\SystemContainer */
 	protected $container;
 

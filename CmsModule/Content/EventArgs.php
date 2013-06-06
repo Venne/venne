@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content;
 
-use Venne;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,11 +18,9 @@ use Venne;
 class EventArgs extends \Doctrine\Common\EventArgs
 {
 
-
 	/** @var PageForm */
 	public $form;
 
 	/** @var PageEntity */
 	public $page;
-
 }
