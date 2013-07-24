@@ -11,11 +11,19 @@
 
 namespace CmsModule\Content\Listeners;
 
+use CmsModule\Content\Entities\LanguageEntity;
+use CmsModule\Content\Entities\RouteEntity;
+use CmsModule\Content\Repositories\LanguageRepository;
+use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Nette\Caching\Cache;
-use Nette\Caching\Storages\FileStorage;
+use Nette\Caching\IStorage;
+use Nette\DI\Container;
+use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -26,20 +34,51 @@ class PageListener implements EventSubscriber
 	/** @var Cache */
 	protected $cache;
 
+	/** @var LanguageEntity */
+	protected $locale;
+
+	/** @var Container */
+	protected $container;
+
+	/** @var LanguageEntity */
+	protected $languageEntity;
+
 	/** @var array */
 	protected $entities = array(
 		'CmsModule\Content\Entities\PageEntity' => TRUE,
 		'CmsModule\Content\Entities\RouteEntity' => TRUE,
 		'CmsModule\Content\Entities\ElementEntity' => TRUE,
+		'CmsModule\Pages\Tags\TagEntity' => TRUE,
 	);
 
 
 	/**
-	 * @param FileStorage $storage
+	 * @param LanguageEntity $locale
 	 */
-	function __construct(FileStorage $storage)
+	public function setLocale($locale = NULL)
+	{
+		$this->locale = $locale;
+		$this->languageEntity = NULL;
+	}
+
+
+	/**
+	 * @param IStorage $storage
+	 * @param Container $container
+	 */
+	public function __construct(IStorage $storage, Container $container)
 	{
 		$this->cache = new Cache($storage);
+		$this->container = $container;
+	}
+
+
+	/**
+	 * @return LanguageRepository
+	 */
+	protected function getLanguageRepository()
+	{
+		return $this->container->getByType('CmsModule\Content\Repositories\LanguageRepository');
 	}
 
 
@@ -50,7 +89,126 @@ class PageListener implements EventSubscriber
 	 */
 	public function getSubscribedEvents()
 	{
-		return array(Events::onFlush);
+		return array(
+			Events::onFlush,
+			Events::loadClassMetadata,
+			Events::postLoad,
+		);
+	}
+
+
+	/**
+	 * @param LifecycleEventArgs $args
+	 */
+	public function postLoad(LifecycleEventArgs $args)
+	{
+		if (($e = $this->getLanguageEntity()) && ($entity = $args->getEntity()) instanceof RouteEntity) {
+			$entity->setLocale($e);
+		}
+	}
+
+
+	/**
+	 * @return LanguageEntity
+	 */
+	private function getLanguageEntity()
+	{
+		if (!$this->languageEntity) {
+			$this->languageEntity = $this->locale instanceof LanguageEntity ? $this->locale : $this->getLanguageRepository()->findOneBy(array('alias' => $this->locale));
+		}
+		return $this->languageEntity;
+	}
+
+
+	private $_l = FALSE;
+
+
+	/**
+	 * @param LoadClassMetadataEventArgs $args
+	 */
+	public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+	{
+		$meta = $args->getClassMetadata();
+
+		if ($this->_l) {
+			if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
+				if ($meta->associationMappings['extendedMainRoute']['targetEntity'] === 'CmsModule\Blank') {
+					$meta->associationMappings['extendedMainRoute']['targetEntity'] = $this->_l;
+				}
+			} elseif (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
+				if ($meta->associationMappings['extendedPage']['targetEntity'] === 'CmsModule\Blank') {
+					$meta->associationMappings['extendedPage']['targetEntity'] = $this->_l;
+				}
+			}
+			return;
+		}
+
+		if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
+			$em = $args->getEntityManager();
+			$mainRouteEntityName = $this->getMainRouteByPage($meta->name);
+
+			$this->_l = $meta->name;
+			$routeMeta = $em->getClassMetadata($mainRouteEntityName);
+			$this->_l = FALSE;
+
+			$meta->associationMappings['extendedMainRoute']['targetEntity'] = $mainRouteEntityName;
+			$routeMeta->associationMappings['extendedPage']['targetEntity'] = $meta->name;
+		} else if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
+			$em = $args->getEntityManager();
+			$pageEntityName = $this->getPageByRoute($meta->name);
+
+			$this->_l = $meta->name;
+			$pageMeta = $em->getClassMetadata($pageEntityName);
+			$this->_l = FALSE;
+
+			$meta->associationMappings['extendedPage']['targetEntity'] = $pageEntityName;
+
+			$r = $this->getMainRouteByPage($pageEntityName);
+
+			if ($r === $meta->name) {
+				$pageMeta->associationMappings['extendedMainRoute']['targetEntity'] = $meta->name;
+			}
+		}
+	}
+
+
+	/**
+	 * @param $class
+	 * @return string
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	private function getMainRouteByPage($class)
+	{
+		if (($ret = $class::getMainRouteName()) === NULL) {
+			throw new InvalidArgumentException("Entity '{$class}' must implemented method 'getMainRouteName'.");
+		}
+		if (!class_exists($ret)) {
+			throw new InvalidArgumentException("Class '{$ret}' does not exist.");
+		}
+		if (!is_subclass_of($ret, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
+			throw new InvalidArgumentException("Method 'getMainRouteName' on '{$class}' must return subclass of 'CmsModule\Content\Entities\ExtendedRouteEntity'. '{$ret}' is given.");
+		}
+		return $ret;
+	}
+
+
+	/**
+	 * @param $class
+	 * @return string
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	private function getPageByRoute($class)
+	{
+		if (($ret = $class::getPageName()) === NULL) {
+			throw new InvalidArgumentException("Entity '{$class}' must implemented method 'getPageName'.");
+		}
+		if (!class_exists($ret)) {
+			throw new InvalidArgumentException("Class '{$ret}' does not exist.");
+		}
+		if (!is_subclass_of($ret, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
+			throw new InvalidArgumentException("Method 'getPageName' on '{$class}' must return subclass of 'CmsModule\Content\Entities\ExtendedPageEntity'. '{$ret}' is given.");
+		}
+		return $ret;
 	}
 
 

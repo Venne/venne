@@ -143,7 +143,6 @@ class InstallationTest extends TestCase
 		$moduleManager->install($moduleManager->createInstance('assets'), true);
 		$moduleManager->install($moduleManager->createInstance('forms'), true);
 		$moduleManager->install($moduleManager->createInstance('doctrine'), true);
-		$moduleManager->install($moduleManager->createInstance('gedmo'), true);
 		$moduleManager->install($moduleManager->createInstance('cms'), true);
 
 		$parameters = include $c['configDir'] . '/settings.php';

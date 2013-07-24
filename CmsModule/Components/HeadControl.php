@@ -65,12 +65,10 @@ class HeadControl extends Control
 	}
 
 
-	public function render()
+	public function renderDefault()
 	{
 		$this->template->js = $this->presenter->getContext()->getService('assets.assetManager')->getJavascripts();
 		$this->template->css = $this->presenter->getContext()->getService('assets.assetManager')->getStylesheets();
-
-		$this->template->render();
 	}
 
 

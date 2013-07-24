@@ -12,6 +12,10 @@
 namespace CmsModule\Content;
 
 use CmsModule\Content\Elements\BaseElement;
+use CmsModule\Content\Entities\LanguageEntity;
+use CmsModule\Content\Entities\LayoutEntity;
+use CmsModule\Content\Entities\PageEntity;
+use CmsModule\Content\Entities\RouteEntity;
 use Nette\Object;
 use Venne\Widget\WidgetManager;
 
@@ -38,6 +42,11 @@ class ElementManager extends Object
 
 	/**
 	 * @param $element
+	 * @param $name
+	 * @param LayoutEntity $layout
+	 * @param PageEntity $page
+	 * @param RouteEntity $route
+	 * @param LanguageEntity $language
 	 * @return BaseElement
 	 */
 	public function createInstance($element)

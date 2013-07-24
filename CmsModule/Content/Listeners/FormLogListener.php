@@ -14,7 +14,7 @@ namespace CmsModule\Content\Listeners;
 use CmsModule\Content\Entities\LogEntity;
 use CmsModule\Content\Repositories\LogRepository;
 use CmsModule\Forms\ILoggableForm;
-use CmsModule\Security\Entities\UserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
 use Nette\Callback;
 use Nette\Security\User;

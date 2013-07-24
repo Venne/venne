@@ -1,0 +1,85 @@
+{**
+ * My Application layout template.
+ *
+ * @copyright  Copyright (c) 2010 John Doe
+ * @package    MyApplication
+ *
+ * @param string   $basePath web base path
+ * @param string   $robots   tell robots how to index the content of a page (optional)
+ * @param array    $flashes  flash messages
+ *}
+
+<!DOCTYPE html>
+<html>
+{head}
+	{* jquery *}
+	{js @jquery2.0Module/jquery.min.js}
+	{js @jquery2.0Module/jquery-migrate.min.js}
+	{js @cmsModule/holder/holder.js}
+
+	{* ajax *}
+	{js @cmsModule/ajax/nette.ajax.js}
+
+	{* bootstrap *}
+	{js @bootstrap2Module/js/bootstrap.min.js}
+	{css @bootstrap2Module/css/bootstrap.min.css}
+
+	{* typeahead.js *}
+	{js @cmsModule/typeahead.js/typeahead.js}
+	{js @cmsModule/typeahead.js/hogan-2.0.0.js}
+	{css @cmsModule/typeahead.js/typeahead.js-bootstrap.css}
+
+	{* application *}
+	{js @cmsModule/js/application.js}
+	{css @cmsModule/css/application.css}
+
+	{block #head}{/block}
+{/head}
+
+{body}
+
+<div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="brand" href="{link Route special=>'main'}">{$presenter['head']->websiteName}</a>
+			<div class="nav-collapse">
+			{control search}
+			{control login}
+			{if count($presenter->context->parameters['website']['languages']) > 1}
+				{control languageswitch}
+			{/if}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container" style="padding-top: 60px;">
+
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<div class="container">
+						{control navigation 0, 2, false}
+					</div>
+				</div>
+			</div>
+			{control breadcrumb}
+		</div>
+	</div>
+
+	<div class="row">
+		{include #layout}
+	</div>
+
+	<hr />
+
+	<footer>
+		<p>&copy; Company 2013</p>
+		<p><a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a></p>
+	</footer>
+
+</div>
+
+{/body}
+</html>

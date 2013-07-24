@@ -11,46 +11,27 @@
 
 namespace CmsModule\Content\Entities;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\UnitOfWork;
-use Nette\InvalidArgumentException;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @ORM\Table(name="page", indexes={@ORM\Index(name="tag_idx", columns={"tag"})})
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"base" = "PageEntity"})
+ * @ORM\Table(name="page", indexes={
+ * @ORM\Index(name="special_idx", columns={"special"}),
+ * @ORM\Index(name="class_idx", columns={"class"}),
+ * })
+ * 
+ * @property RouteEntity $mainRoute
+ * @property ArrayCollection|RouteEntity[] $routes
+ * @property string $special
  */
-abstract class PageEntity extends TreeEntity implements IloggableEntity
+class PageEntity extends TreeEntity implements IloggableEntity
 {
 
 	const CACHE = 'Cms.PageEntity';
-
-	const TAG_ERROR_403 = 'error_403';
-
-	const TAG_ERROR_404 = 'error_404';
-
-	const TAG_ERROR_405 = 'error_405';
-
-	const TAG_ERROR_500 = 'error_500';
-
-	/** @var array */
-	protected static $tags = array(
-		self::TAG_ERROR_404 => 'Not Found page',
-		self::TAG_ERROR_403 => 'Forbidden page',
-		self::TAG_ERROR_405 => 'Method Not Allowed',
-		self::TAG_ERROR_500 => 'Internal Server Error page',
-	);
-
-	/**
-	 * @var string
-	 * @ORM\Column(type="string")
-	 */
-	protected $name;
 
 	/**
 	 * @var ArrayCollection|RouteEntity[]
@@ -66,27 +47,16 @@ abstract class PageEntity extends TreeEntity implements IloggableEntity
 	protected $mainRoute;
 
 	/**
-	 * @var ArrayCollection|LanguageEntity[]
-	 * @ORM\ManyToMany(targetEntity="\CmsModule\Content\Entities\LanguageEntity", inversedBy="pages")
-	 * @ORM\JoinTable(name="pageLanguageLink",
-	 *       joinColumns={@ORM\JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")},
-	 *       inverseJoinColumns={@ORM\JoinColumn(name="language_id", referencedColumnName="id", onDelete="CASCADE")}
-	 *       )
+	 * @var LanguageEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LanguageEntity")
 	 */
-	protected $languages;
+	protected $language;
 
 	/**
-	 * @var PageEntity
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="translations")
-	 * @ORM\JoinColumn(name="translationFor", referencedColumnName="id", onDelete="CASCADE")
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\DirEntity", cascade={"all"})
+	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
-	protected $translationFor;
-
-	/**
-	 * @var ArrayCollection|PageEntity[]
-	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="translationFor")
-	 */
-	protected $translations;
+	protected $dir;
 
 	/**
 	 * @var \DateTime
@@ -101,49 +71,45 @@ abstract class PageEntity extends TreeEntity implements IloggableEntity
 	protected $updated;
 
 	/**
-	 * @var
+	 * @var string
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $navigationTitleRaw;
 
 	/**
-	 * @var
-	 * @ORM\Column(type="boolean")
-	 */
-	protected $navigationShow;
-
-	/**
-	 * @var
-	 * @ORM\Column(type="string", nullable=true, unique=true)
-	 */
-	protected $tag;
-
-	/**
 	 * @var bool
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $published = FALSE;
+	protected $navigationShow = TRUE;
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string", nullable=true, unique=true)
+	 */
+	protected $special;
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	protected $class;
 
 
 	/**
-	 * @param $type
+	 * @param ExtendedPageEntity $page
 	 */
-	public function __construct()
+	public function __construct(ExtendedPageEntity $page)
 	{
 		parent::__construct();
 
-		$this->name = "";
-		$this->languages = new ArrayCollection;
-		$this->translations = new ArrayCollection;
 		$this->routes = new ArrayCollection;
-		$this->created = new \Nette\DateTime;
-		$this->updated = new \Nette\DateTime;
+		$this->created = new \DateTime;
+		$this->updated = new \DateTime;
+		$this->class = get_class($page);
 
-		$this->mainRoute = new RouteEntity;
-		$this->routes[] = $this->mainRoute;
-		$this->mainRoute->page = $this;
-
-		$this->navigationShow = TRUE;
+		$this->dir = new DirEntity;
+		$this->dir->setInvisible(TRUE);
+		$this->dir->setName(Strings::webalize(get_class($this)) . Strings::random());
 	}
 
 
@@ -152,35 +118,7 @@ abstract class PageEntity extends TreeEntity implements IloggableEntity
 	 */
 	public function __toString()
 	{
-		return $this->name;
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
-
-
-	/**
-	 * @param $name
-	 */
-	public function setName($name)
-	{
-		if ($this->name === $name) {
-			return;
-		}
-
-		if ($this->mainRoute->getTitle() === $this->name) {
-			$this->mainRoute->setTitle($name);
-		} else if (!$this->mainRoute->getTitle()) {
-			$this->mainRoute->setTitle($name);
-		}
-
-		$this->name = $name;
+		return $this->getMainRoute()->getName() . ' (' . $this->getMainRoute()->getUrl() . ')';
 	}
 
 
@@ -204,10 +142,6 @@ abstract class PageEntity extends TreeEntity implements IloggableEntity
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
 	{
-		if ($this->tag) {
-			return;
-		}
-
 		parent::setParent($parent, $setPrevious, $previous);
 
 		$this->mainRoute->parent = $this->parent && $this->parent->mainRoute ? $this->parent->mainRoute : NULL;
@@ -239,112 +173,33 @@ abstract class PageEntity extends TreeEntity implements IloggableEntity
 
 
 	/**
-	 * @return ArrayCollection|LanguageEntity[]
+	 * @return LanguageEntity
 	 */
-	public function getLanguages()
+	public function getLanguage()
 	{
-		return $this->languages;
+		return $this->language;
 	}
 
 
 	/**
-	 * @param $languages
+	 * @param LanguageEntity $language
 	 */
-	public function setLanguages($languages)
+	public function setLanguage(LanguageEntity $language = NULL)
 	{
-		$this->languages = $languages;
-	}
+		$this->language = $language;
 
-
-	/**
-	 * @return PageEntity|NULL
-	 */
-	public function getTranslationFor()
-	{
-		return $this->translationFor;
-	}
-
-
-	/**
-	 * @param $translationFor
-	 */
-	public function setTranslationFor($translationFor)
-	{
-		$this->parent = NULL;
-		$this->previous = NULL;
-		$this->translationFor = $translationFor;
-	}
-
-
-	/**
-	 * @return ArrayCollection|PageEntity[]
-	 */
-	public function getTranslations()
-	{
-		return $this->translations;
-	}
-
-
-	/**
-	 * @param $translations
-	 */
-	public function setTranslations($translations)
-	{
-		$this->translations = $translations;
-	}
-
-
-	/**
-	 * Check if page is in language alias.
-	 *
-	 * @param string $alias
-	 * @return bool
-	 */
-	public function isInLanguageAlias($alias)
-	{
-		foreach ($this->languages as $language) {
-			if ($language->alias == $alias) {
-				return TRUE;
-			}
+		foreach ($this->routes as $route) {
+			$route->setLanguage($language);
 		}
-		return FALSE;
 	}
 
 
 	/**
-	 * Return the same page in other language alias.
-	 *
-	 * @param string $alias
-	 * @return \CmsModule\Content\Entities\PageEntity
+	 * @return DirEntity
 	 */
-	public function getPageWithLanguageAlias($alias)
+	public function getDir()
 	{
-		if ($this->isInLanguageAlias($alias)) {
-			return $this;
-		}
-
-		if (!$this->translationFor) {
-			foreach ($this->translations as $page) {
-				if ($page->isInLanguageAlias($alias)) {
-					return $page;
-				}
-			}
-		} else {
-			if ($this->translationFor->isInLanguageAlias($alias)) {
-				return $this->translationFor;
-			}
-
-			foreach ($this->translationFor->translations as $page) {
-				if ($page === $this) {
-					continue;
-				}
-
-				if ($page->isInLanguageAlias($alias)) {
-					return $page;
-				}
-			}
-		}
-		return NULL;
+		return $this->dir;
 	}
 
 
@@ -479,65 +334,34 @@ abstract class PageEntity extends TreeEntity implements IloggableEntity
 	 */
 	public function getNavigationTitle()
 	{
-		return $this->navigationTitleRaw !== NULL ? $this->navigationTitleRaw : $this->name;
+		return $this->navigationTitleRaw !== NULL ? $this->navigationTitleRaw : $this->getMainRoute()->name;
 	}
 
 
 	/**
-	 * @param string $tag
+	 * @param mixed $special
 	 */
-	public function setTag($tag)
+	public function setSpecial($special)
 	{
-		$tag = !$tag ? NULL : $tag;
+		$this->special = $special;
+	}
 
-		if (!isset(self::$tags[$tag]) && $tag !== NULL) {
-			throw new InvalidArgumentException('Tag must be one of ' . join(', ', self::$tags) . ' or NULL.');
-		}
 
-		if ($tag === NULL) {
-			$root = $this->getRoot();
-			if ($root !== $this) {
-				$this->setParent($root);
-			}
-		}
-
-		$this->tag = $tag;
+	/**
+	 * @return mixed
+	 */
+	public function getSpecial()
+	{
+		return $this->special;
 	}
 
 
 	/**
 	 * @return string
 	 */
-	public function getTag()
+	public function getClass()
 	{
-		return $this->tag;
-	}
-
-
-	/**
-	 * @param boolean $published
-	 */
-	public function setPublished($published)
-	{
-		$this->published = $published;
-	}
-
-
-	/**
-	 * @return boolean
-	 */
-	public function getPublished()
-	{
-		return $this->published;
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public static function getTags()
-	{
-		return self::$tags;
+		return $this->class;
 	}
 
 

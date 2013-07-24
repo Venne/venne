@@ -82,11 +82,9 @@ class LoginControl extends Control
 	}
 
 
-	public function render()
+	public function renderDefault()
 	{
 		$this->template->socialLogins = $this->securityManager->getSocialLogins();
-
-		$this->template->render();
 	}
 
 

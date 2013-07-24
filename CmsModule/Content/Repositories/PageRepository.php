@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Repositories;
 
+use CmsModule\Content\Entities\ExtendedPageEntity;
 use CmsModule\Content\Entities\PageEntity;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\InvalidArgumentException;
@@ -23,21 +24,26 @@ class PageRepository extends BaseRepository
 
 	public function createNewByEntityName($entityName)
 	{
-		$class = '\\' . $entityName;
-		$entity = new $class;
-
-		if (!$entity instanceof PageEntity) {
-			throw new \Nette\InvalidArgumentException('Entity must be instance of CmsModule\Content\Entities\PageEntity.');
-		}
-
-		// set default language
-		$entity->languages->add($this->getEntityManager()->getRepository('CmsModule\Content\Entities\LanguageEntity')->findOneBy(array(), array('id' => 'ASC'), 1));
+		$entity = $this->createNewRawByEntityName($entityName);
 
 		// set to root as last entity
 		$root = $this->findOneBy(array('parent' => NULL, 'previous' => NULL));
 		if ($root) {
 			$last = $this->findBy(array('parent' => $root->id), array('position' => 'DESC'), 1);
-			$entity->setParent($root, true, isset($last[0]) ? $last[0] : NULL);
+			$entity->page->setParent($root, true, isset($last[0]) ? $last[0] : NULL);
+		}
+
+		return $entity;
+	}
+
+
+	protected function createNewRawByEntityName($entityName)
+	{
+		$class = '\\' . $entityName;
+		$entity = new $class;
+
+		if (!$entity instanceof ExtendedPageEntity) {
+			throw new \Nette\InvalidArgumentException("Entity must be instance of CmsModule\Content\Entities\ExtendedPageEntity. '" . get_class($entity) . "' given.");
 		}
 
 		return $entity;
@@ -46,7 +52,7 @@ class PageRepository extends BaseRepository
 
 	public function save($entity, $withoutFlush = self::FLUSH)
 	{
-		$parent = $entity;
+		$parent = $entity instanceof ExtendedPageEntity ? $entity->getPage() : $entity;
 		while (($parent = $parent->parent) !== NULL) {
 			if ($entity->id === $parent->id) {
 				throw new \Nette\InvalidArgumentException('Cyclic association detected!');
@@ -55,24 +61,6 @@ class PageRepository extends BaseRepository
 
 		if (!$this->isUnique($entity)) {
 			throw new \Nette\InvalidArgumentException('Entity is not unique!');
-		}
-
-		// check languages
-		if ($entity->translationFor) {
-			$translations = $entity->translationFor->getTranslations();
-			$translations[] = $entity->translationFor;
-
-			foreach ($translations as $translation) {
-				if ($translation->getId() === $entity->getId()) {
-					continue;
-				}
-
-				foreach ($entity->getLanguages() as $language) {
-					if ($translation->isInLanguageAlias($language->alias)) {
-						throw new \Nette\InvalidArgumentException("Language '{$language->name} is already used.'");
-					}
-				}
-			}
 		}
 
 		return parent::save($entity, $withoutFlush);
@@ -94,26 +82,26 @@ class PageRepository extends BaseRepository
 	/**
 	 * Check if page URL is unique.
 	 *
-	 * @param \CmsModule\Entities\PageEntity $page
+	 * @param \CmsModule\Content\Entities\PageEntity $page
 	 * @return bool
 	 */
-	public function isUnique(PageEntity $page)
+	public function isUnique($page)
 	{
+		$page = $page instanceof ExtendedPageEntity ? $page->getPage() : $page;
+
 		$routeRepository = $this->getRouteRepository();
 
 		foreach ($page->getRoutes() as $pageRoute) {
 			foreach ($routeRepository->findBy(array('url' => $pageRoute->getUrl())) as $route) {
 				if ($pageRoute->id !== $route->id) {
-					foreach ($page->getLanguages() as $lang) {
-						if ($route->getPage() && $route->getPage()->isInLanguageAlias($lang->alias)) {
-							return false;
-						}
+					if (!$route->page->language || $route->page->language->id === $pageRoute->page->language->id) {
+						return FALSE;
 					}
 				}
 			}
 		}
 
-		return true;
+		return TRUE;
 	}
 
 

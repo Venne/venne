@@ -1,0 +1,17 @@
+{extends ../@layout.latte}
+
+{block #layout}
+<div class="span12">
+	<h1>{block #title}{$presenter->route->name|firstUpper}{/block}</h1>
+
+	{control flashMessage}
+	{block #contentTop}{/block}
+	{include #content}
+	{block #contentBottom}{/block}
+
+	<hr />
+
+	<small class="muted">
+		{control itemInfo $presenter->route}
+	</small>
+</div>

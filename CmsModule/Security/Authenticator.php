@@ -58,7 +58,7 @@ class Authenticator extends \Venne\Security\Authenticator
 			list($username, $password) = $credentials;
 
 			if ($this->checkConnection->invoke()) {
-				$user = $this->userRepository->findOneBy(array('email' => $username, 'enable' => 1));
+				$user = $this->userRepository->findOneBy(array('email' => $username, 'published' => 1));
 
 				if (!$user) {
 					throw $ex;

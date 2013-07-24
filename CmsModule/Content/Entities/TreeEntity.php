@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,7 +38,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $next;
 
 	/** @ORM\Column(type="integer") */
-	protected $position;
+	protected $position = 1;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="parent", cascade={"persist", "remove", "detach"}, fetch="EXTRA_LAZY")
@@ -45,25 +46,13 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $children;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="virtualParent", cascade={"persist"})
-	 */
-	protected $virtualChildren;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="virtualChildren")
-	 * @ORM\JoinColumn(onDelete="CASCADE")
-	 */
-	protected $virtualParent;
-
 
 	/**
 	 * @param $type
 	 */
 	public function __construct()
 	{
-		$this->position = 1;
-		$this->children = new \Doctrine\Common\Collections\ArrayCollection;
+		$this->children = new ArrayCollection;
 	}
 
 
@@ -102,7 +91,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		}
 
 		if ($this->parent) {
-			foreach ($this->parent->children as $key => $item) {
+			foreach ($this->parent->getChildren() as $key => $item) {
 				if ($item->id === $this->id) {
 					$this->parent->children->remove($key);
 					break;
@@ -164,7 +153,7 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
 	{
-		if ($parent == $this->parent && !$setPrevious) {
+		if ($parent == $this->getParent() && !$setPrevious) {
 			return;
 		}
 
@@ -294,30 +283,6 @@ class TreeEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getPosition()
 	{
 		return $this->position;
-	}
-
-
-	public function setVirtualChildren($virtualChildren)
-	{
-		$this->virtualChildren = $virtualChildren;
-	}
-
-
-	public function getVirtualChildren()
-	{
-		return $this->virtualChildren;
-	}
-
-
-	public function setVirtualParent(PageEntity $virtualParent = NULL)
-	{
-		$this->virtualParent = $virtualParent;
-	}
-
-
-	public function getVirtualParent()
-	{
-		return $this->virtualParent;
 	}
 }
 

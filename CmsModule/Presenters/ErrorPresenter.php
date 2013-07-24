@@ -47,12 +47,15 @@ class ErrorPresenter extends FrontPresenter
 		$code = $exception->getCode();
 		Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
 
-		if (in_array($code, array(403, 404, 405, 410, 500))) {
-			$page = $this->pageRepository->findOneBy(array('tag' => "error_$code", 'published' => TRUE));
+		if (in_array($code, array(403, 404, 500))) {
+			$page = $this->pageRepository->findOneBy(array('special' => $code));
 
-			if ($page && $page->mainRoute->published) {
-				$params = $page->mainRoute->params + array('route' => $page->mainRoute);
-				$this->forward(':' . $page->mainRoute->type, $params);
+			if ($page) {
+				$route = $this->getEntityManager()
+					->getRepository($page->mainRoute->class)
+					->findOneBy(array('route' => $page->mainRoute->id));
+
+				$this->forward(':Cms:Pages:Text:Text:default', array('route' => $route));
 			}
 		}
 	}

@@ -17,15 +17,15 @@
 <div class="media">
 	<a class="pull-left" href="#">
 		{var $user = $presenter->user->identity}
-		{if $user instanceof \CmsModule\Security\Entities\UserEntity && $user->avatar}
-			<img class="media-object img-polaroid img-rounded" n:src="$user->avatar->getFileUrl(true), size=>'96x96'"
+		{if $user instanceof \CmsModule\Pages\Users\UserEntity && $user->route->photo}
+			<img class="media-object img-polaroid img-rounded" n:src="$user->route->photo->getFileUrl(true), size=>'96x96'"
 				 alt="{$user}">
 		{/if}
 	</a>
 
 	<div class="media-body">
 		<h4 class="media-heading">
-			{if $user instanceof \CmsModule\Security\Entities\UserEntity}{$user}{else}Administrator{/if}
+			{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
 		</h4>
 
 		{if $user}

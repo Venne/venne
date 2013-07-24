@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content\Entities;
 
-use CmsModule\Security\Entities\UserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\DateTime;
 
@@ -32,8 +32,8 @@ class LogEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	const ACTION_OTHER = 'other';
 
 	/**
-	 * @var \CmsModule\Security\Entities\UserEntity
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Security\Entities\UserEntity")
+	 * @var \CmsModule\Pages\Users\UserEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Pages\Users\UserEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
@@ -83,7 +83,7 @@ class LogEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param \CmsModule\Security\Entities\UserEntity $user
+	 * @param \CmsModule\Pages\Users\UserEntity $user
 	 */
 	public function __construct($user, $target, $targetKey, $action, $type = NULL)
 	{
@@ -223,7 +223,7 @@ class LogEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param \CmsModule\Security\Entities\UserEntity $user
+	 * @param \CmsModule\Pages\Users\UserEntity $user
 	 */
 	public function setUser($user)
 	{
@@ -232,7 +232,7 @@ class LogEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @return \CmsModule\Security\Entities\UserEntity
+	 * @return \CmsModule\Pages\Users\UserEntity
 	 */
 	public function getUser()
 	{

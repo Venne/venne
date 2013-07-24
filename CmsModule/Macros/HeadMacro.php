@@ -24,8 +24,8 @@ class HeadMacro extends MacroSet
 	public static function install(Compiler $compiler)
 	{
 		$me = new static($compiler);
-		$me->addMacro('head', array($me, "headBegin"), array($me, "headEnd"));
-		$me->addMacro('body', array($me, "bodyBegin"), array($me, "bodyEnd"));
+		$me->addMacro('head', array($me, 'headBegin'), array($me, 'headEnd'));
+		$me->addMacro('body', array($me, 'bodyBegin'), array($me, 'bodyEnd'));
 		$me->addMacro('content', array($me, 'contentBegin'));
 		$me->addMacro('extensions', array($me, 'extensionsBegin'));
 	}

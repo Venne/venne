@@ -6,23 +6,22 @@ return array(
 			'status' => 'installed',
 			'action' => '',
 			'class' => 'FormsModule\\Module',
-			'version' => '2.0.0',
+			'version' => '2.1.0',
 			'path' => '%libsDir%/venne/forms-module',
 			'autoload' => array(
 				'psr-0' => array(
 					'FormsModule' => '',
 				),
-				'files' => array(),
 			),
 			'require' => array(
-				'assets' => '2.0.x',
+				'assets' => '2.1.x',
 			),
 		),
 		'translator' => array(
 			'status' => 'installed',
 			'action' => '',
 			'class' => 'TranslatorModule\\Module',
-			'version' => '2.0.0',
+			'version' => '2.1.0',
 			'path' => '%libsDir%/venne/translator-module',
 			'autoload' => array(
 				'psr-0' => array(
@@ -35,7 +34,7 @@ return array(
 			'status' => 'installed',
 			'action' => '',
 			'class' => 'AssetsModule\\Module',
-			'version' => '2.0.0',
+			'version' => '2.1.0',
 			'path' => '%libsDir%/venne/assets-module',
 			'autoload' => array(
 				'psr-0' => array(
@@ -48,16 +47,15 @@ return array(
 			'status' => 'installed',
 			'action' => '',
 			'class' => 'DoctrineModule\\Module',
-			'version' => '2.0.0',
+			'version' => '2.1.0',
 			'path' => '%libsDir%/venne/doctrine-module',
 			'autoload' => array(
 				'psr-0' => array(
 					'DoctrineModule' => '',
 				),
-				'files' => array(),
 			),
 			'require' => array(
-				'forms' => '2.0.x',
+				'forms' => '2.1.x',
 			),
 		),
 		'cms' => array(
@@ -78,18 +76,32 @@ return array(
 				'translator' => '2.0.x',
 			),
 		),
-		'gedmo' => array(
+		'jquery2.0' => array(
 			'status' => 'installed',
 			'action' => '',
-			'class' => 'GedmoModule\\Module',
+			'class' => 'JQueryModule\\Module',
 			'version' => '2.0.0',
-			'path' => '%libsDir%/venne/gedmo-module',
-			'autoload' => array(
-				'files' => array(),
-			),
-			'require' => array(
-				'doctrine' => '2.0.x',
-			),
+			'path' => '%libsDir%/venne/jquery2.0-module',
+			'autoload' => array(),
+			'require' => array(),
+		),
+		'jqueryui1.10' => array(
+			'status' => 'installed',
+			'action' => '',
+			'class' => 'JQueryui1_10Module\\Module',
+			'version' => '1.10.0',
+			'path' => '%libsDir%/venne/jqueryui1.10-module',
+			'autoload' => array(),
+			'require' => array(),
+		),
+		'bootstrap2' => array(
+			'status' => 'installed',
+			'action' => '',
+			'class' => 'Bootstrap2Module\\Module',
+			'version' => '2.3.0',
+			'path' => '%libsDir%/venne/bootstrap2-module',
+			'autoload' => array(),
+			'require' => array(),
 		),
 	),
 );

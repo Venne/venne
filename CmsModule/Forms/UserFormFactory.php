@@ -12,6 +12,7 @@
 namespace CmsModule\Forms;
 
 use CmsModule\Content\Forms\ControlExtensions\ControlExtension;
+use Doctrine\DBAL\DBALException;
 use DoctrineModule\Forms\FormFactory;
 use Venne\Forms\Form;
 
@@ -37,37 +38,45 @@ class UserFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
+		$group = $form->addGroup();
+		$form->addCheckbox('published', 'Enable');
+		$form->addText('email', 'E-mail')
+			->addRule(Form::EMAIL, 'Enter email');
+		$form->addText('name', 'Name');
+		$form->addTextArea('notation', 'Notation', 40, 3)
+			->getControlPrototype()->attrs['class'] = 'input-block-level';
+
+		$route = $form->addOne('route');
+		$route->setCurrentGroup($group);
+		$route->addFileEntityInput('photo', 'Avatar');
+
+		$form->addCheckbox('key_new', 'Block by key')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
+		$form->addGroup()->setOption('id', 'setKey');
+		$form->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
+
 		$form->addGroup();
-		$form->addCheckbox("enable", "Enable")->setDefaultValue(TRUE);
-		$form->addText("email", "E-mail")
-			->addRule(Form::EMAIL, "Enter email");
-
-		$form->addText("key", "Authentization key")->setOption("description", "If is set user cannot log in.");
-
-		$form->addCheckbox("password_new", "Set password")->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
+		$form->addCheckbox('password_new', 'Set password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
 		$form->addGroup()->setOption('id', 'setPasswd');
-		$form->addPassword("password", "Password")
-			->setOption("description", "minimal length is 5 char")
+		$form->addPassword('password', 'Password')
+			->setOption('description', 'minimal length is 5 char')
 			->addConditionOn($form['password_new'], Form::FILLED)
 			->addRule(Form::FILLED, 'Enter password')
 			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
-		$form->addPassword("password_confirm", "Confirm password")
+		$form->addPassword('password_confirm', 'Confirm password')
 			->addConditionOn($form['password_new'], Form::FILLED)
 			->addRule(Form::EQUAL, 'Invalid re password', $form['password']);
-		$form->addGroup();
-		$form->addFileEntityInput('avatar', 'Avatar');
 
-		$form->addGroup("Next informations");
-		$form->addManyToMany("roleEntities", 'Roles');
+		$form->addGroup('Next informations');
+		$form->addManyToMany('roleEntities', 'Roles');
 
 		$form->addSaveButton('Save');
 	}
 
 
-	public function handleCatchError(Form $form, \DoctrineModule\SqlException $e)
+	public function handleCatchError(Form $form, $e)
 	{
-		if ($e->getCode() == '23000') {
-			$form->addError("User is not unique");
+		if ($e instanceof DBALException && $e->getCode() == '23000') {
+			$form->addError('User is not unique');
 			return TRUE;
 		}
 	}
@@ -87,6 +96,9 @@ class UserFormFactory extends FormFactory
 	{
 		if ($form['password_new']->value) {
 			$form->data->setPassword($form['password']->value);
+		}
+		if (!$form['key_new']->value) {
+			$form->data->setKey(NULL);
 		}
 
 		parent::handleSave($form);

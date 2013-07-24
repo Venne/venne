@@ -1,0 +1,17 @@
+services:
+	cms.pages.redirectPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Redirect\PageEntity')
+		setup:
+			- addSection('Redirection', @cms.pages.redirect.redirectFormFactory)
+		tags: [contentType: [name: 'redirect']]
+
+	cms.pages.redirect.redirectFormFactory:
+		class: CmsModule\Pages\Redirect\RedirectFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.redirect.routePresenter:
+		class: CmsModule\Pages\Redirect\RoutePresenter
+		tags: [presenter]

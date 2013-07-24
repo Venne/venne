@@ -13,12 +13,24 @@ namespace CmsModule\Security\Repositories;
 
 use CmsModule\Entities\UserEntity;
 use DoctrineModule\Repositories\BaseRepository;
+use Nette;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class UserRepository extends BaseRepository
 {
+
+	public function createNew($arguments = array())
+	{
+		if (!count($arguments)) {
+			$arguments = array($this->getEntityManager()
+				->getRepository('CmsModule\Content\Entities\PageEntity')
+				->findOneBy(array('special' => 'users')));
+		}
+		return parent::createNew($arguments);
+	}
+
 
 	/**
 	 * Check if user is unique.

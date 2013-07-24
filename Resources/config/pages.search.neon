@@ -1,0 +1,22 @@
+services:
+	cms.pages.searchPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Search\PageEntity')
+		setup:
+			- addSection('Settings', @cms.pages.search.formFactory)
+		tags: [contentType: [name: 'search page']]
+
+	cms.pages.search.formFactory:
+		class: CmsModule\Pages\Search\FormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+	cms.pages.search.frontFormFactory:
+		class: CmsModule\Pages\Search\FrontFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+factories:
+	cms.pages.search.routePresenter:
+		class: CmsModule\Pages\Search\RoutePresenter
+		tags: [presenter]

@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Entities;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,29 +21,16 @@ use Doctrine\ORM\Mapping as ORM;
 class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
-	/** @ORM\Column(type="string", unique=true, length=32) */
-	protected $name;
+	const CACHE = 'Cms.LanguageEntity';
 
 	/** @ORM\Column(type="string", unique=true, length=32) */
-	protected $short;
+	protected $name = '';
 
 	/** @ORM\Column(type="string", unique=true, length=32) */
-	protected $alias;
+	protected $short = '';
 
-	/**
-	 * @var PageEntity[]|ArrayCollection|array
-	 * @ORM\ManyToMany(targetEntity="PageEntity", mappedBy="languages")
-	 */
-	protected $pages;
-
-
-	public function __construct()
-	{
-		$this->name = "";
-		$this->short = "";
-		$this->alias = "";
-		$this->pages = new ArrayCollection;
-	}
+	/** @ORM\Column(type="string", unique=true, length=32) */
+	protected $alias = '';
 
 
 	public function __toString()
@@ -86,20 +72,5 @@ class LanguageEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function setAlias($alias)
 	{
 		$this->alias = $alias;
-	}
-
-
-	public function setPages($pages)
-	{
-		$this->pages = $pages;
-	}
-
-
-	/**
-	 * @return array|PageEntity[]|\Doctrine\Common\Collections\ArrayCollection
-	 */
-	public function getPages()
-	{
-		return $this->pages;
 	}
 }

@@ -1,0 +1,30 @@
+{extends ../@layout.latte}
+
+{block #layout}
+<div class="span8">
+	<h1>{block #title}{$presenter->route->name|firstUpper}{/block}</h1>
+
+	{control flashMessage}
+	{block #contentTop}{/block}
+	{include #content}
+	{block #contentBottom}{/block}
+
+	<hr />
+
+	<small class="muted">
+		{control itemInfo $presenter->route}
+	</small>
+</div>
+
+<div class="span4">
+	<div class="well container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				{block #panel}
+				<h2><a href="{plink this special=>'tags'}">{_Tags}</a></h2>
+				{control tagCloud}
+				{/block}
+			</div>
+		</div>
+	</div>
+</div>

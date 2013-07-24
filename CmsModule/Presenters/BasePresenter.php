@@ -12,6 +12,7 @@
 namespace CmsModule\Presenters;
 
 use CmsModule\Panels\Stopwatch;
+use Doctrine\ORM\EntityManager;
 use Venne\Application\UI\Presenter;
 
 /**
@@ -30,11 +31,32 @@ abstract class BasePresenter extends Presenter
 	/** @persistent */
 	public $mode;
 
+	/** @var EntityManager */
+	private $entityManager;
+
 
 	public function __construct()
 	{
 		Stopwatch::start();
 		parent::__construct();
+	}
+
+
+	/**
+	 * @param EntityManager $entityManager
+	 */
+	public function injectEntityManager(EntityManager $entityManager)
+	{
+		$this->entityManager = $entityManager;
+	}
+
+
+	/**
+	 * @return EntityManager
+	 */
+	public function getEntityManager()
+	{
+		return $this->entityManager;
 	}
 
 

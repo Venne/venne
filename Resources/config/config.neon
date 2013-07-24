@@ -46,7 +46,7 @@ services:
 
 	cms.elementRepository:
 		class: CmsModule\Content\Repositories\ElementRepository
-		factory: @entityManager::getRepository('CmsModule\Content\Entities\ElementEntity')
+		factory: @entityManager::getRepository('CmsModule\Content\Elements\ElementEntity')
 		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
 
 	cms.languageRepository:
@@ -66,7 +66,7 @@ services:
 
 	cms.userRepository:
 		class: CmsModule\Security\Repositories\UserRepository
-		factory: @entityManager::getRepository('CmsModule\Security\Entities\UserEntity')
+		factory: @entityManager::getRepository('CmsModule\Pages\Users\UserEntity')
 
 	cms.permissionRepository:
 		class: CmsModule\Security\Repositories\PermissionRepository
@@ -105,30 +105,6 @@ services:
 		class: CmsModule\Helpers\ContentHelper
 		tags: [helper: content]
 
-	cms.staticContent:
-		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\StaticPageEntity')
-		setup:
-			- addSection('Content', @cms.staticFormFactory)
-		tags: [contentType: [name: 'static page']]
-
-	cms.redirectContent:
-		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\RedirectPageEntity')
-		setup:
-			- addSection('Redirection', @cms.redirectFormFactory)
-		tags: [contentType: [name: 'redirect']]
-
-	cms.registrationContent:
-		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\RegistrationPageEntity')
-		setup:
-			- addSection('Registration form', @cms.registrationFormFactory)
-		tags: [contentType: [name: 'registration']]
-
-	cms.loginContent:
-		class: CmsModule\Content\ContentType('CmsModule\Content\Entities\LoginPageEntity')
-		setup:
-			- addSection('Login page', @cms.loginPageFormFactory)
-		tags: [contentType: [name: 'login page']]
-
 factories:
 
 	areaMacro:
@@ -162,3 +138,12 @@ includes:
 	- presenters.neon
 	- components.neon
 	- commands.neon
+	- pages.text.neon
+	- pages.users.neon
+	- pages.redirect.neon
+	- pages.registration.neon
+	- pages.tags.neon
+	- pages.login.neon
+	- pages.errors.neon
+	- pages.menu.neon
+	- pages.search.neon

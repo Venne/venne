@@ -1,0 +1,15 @@
+{if $route instanceof CmsModule\Content\Entities\ExtendedRouteEntity}{var $route = $route->route}{/if}
+
+{cache [$hideAuthor, $hideTags, $hideDates, $route->id, $presenter->lang], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
+
+{if !$hideAuthor && $route->author} &nbsp; · &nbsp; <span class="icon icon-user"></span> <a href="{plink Route route=>$route->author}">{$route->author}</a>{/if}
+{if !$hideTags && count($route->tags)} &nbsp; · &nbsp; <strong><span class="icon icon-tag"></span> {_Tags}:</strong>
+	{foreach $route->tags as $tag}
+		<a href="{plink this route=>$tag}">{$tag}</a>{sep}, {/sep}
+	{/foreach}
+{/if}
+{if !$hideDates && isset($route->created) && $route->created} &nbsp; · &nbsp; <span class="icon icon-calendar"></span> {$route->created|date: "%d.%m.%Y"}{/if}
+{if !$hideDates && isset($route->updated) && $route->updated} &nbsp; · &nbsp; <strong>{_updated}:</strong> {$route->updated|date: "%d.%m.%Y"}{/if}
+&nbsp; · &nbsp;
+
+{/cache}

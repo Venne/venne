@@ -11,7 +11,11 @@
 
 namespace CmsModule\Content\Forms;
 
+use CmsModule\Content\Entities\RouteEntity;
+use CmsModule\Pages\Tags\TagRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use DoctrineModule\Forms\FormFactory;
+use FormsModule\ControlExtensions\ControlExtension;
 use Venne\Forms\Form;
 
 /**
@@ -19,6 +23,14 @@ use Venne\Forms\Form;
  */
 class RouteFormFactory extends FormFactory
 {
+
+	protected function getControlExtensions()
+	{
+		return array_merge(parent::getControlExtensions(), array(
+			new ControlExtension,
+		));
+	}
+
 
 	/**
 	 * @param Form $form
@@ -30,10 +42,10 @@ class RouteFormFactory extends FormFactory
 		$form->addText('title', 'Title');
 		$form->addText('keywords', 'Keywords');
 		$form->addText('description', 'Description');
-		$form->addText('author', 'Author');
-		$form->addSelect('robots', 'Robots')->setItems(\CmsModule\Content\Entities\RouteEntity::getRobotsValues(), FALSE);
-		$form->addSelect('changefreq', 'Change frequency')->setItems(\CmsModule\Content\Entities\RouteEntity::getChangefreqValues(), FALSE)->setPrompt('-------');
-		$form->addSelect('priority', 'Priority')->setItems(\CmsModule\Content\Entities\RouteEntity::getPriorityValues(), FALSE)->setPrompt('-------');
+		$form->addManyToOne('author', 'Author');
+		$form->addSelect('robots', 'Robots')->setItems(RouteEntity::getRobotsValues(), FALSE);
+		$form->addSelect('changefreq', 'Change frequency')->setItems(RouteEntity::getChangefreqValues(), FALSE)->setPrompt('-------');
+		$form->addSelect('priority', 'Priority')->setItems(RouteEntity::getPriorityValues(), FALSE)->setPrompt('-------');
 
 		// layout
 		$form->setCurrentGroup($form->addGroup());
@@ -58,7 +70,53 @@ class RouteFormFactory extends FormFactory
 		$form->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-cache_' . $form->data->id));
 		$form->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');
 
+		$form->addGroup('Dates');
+		$form->addDateTime('created', 'Created')->setDisabled(TRUE);
+		$form->addDateTime('updated', 'Updated')->setDisabled(TRUE);
+		$form->addDateTime('released', 'Released');
+		$form->addDateTime('expired', 'Expired');
+
+		$form->addGroup('Tags');
+		$form->addTags('contentTags');
+
 		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
+	}
+
+
+
+	public function handleSave(Form $form)
+	{
+		$repository = $this->getTagRepository();
+		$collection = new ArrayCollection;
+		foreach ($form['contentTags']->getValue() as $key => $tag) {
+			if (($entity = $repository->findOneBy(array('name' => $tag))) === NULL) {
+				$entity = $repository->createNew();
+				$entity->setName($tag);
+			}
+			$collection[$key] = $entity;
+		}
+		$form->data->setTags($collection);
+
+		parent::handleSave($form);
+	}
+
+
+	public function handleLoad(Form $form)
+	{
+		$tags = array();
+		foreach ($form->data->getTags() as $tag) {
+			$tags[] = $tag->getName();
+		}
+		$form['contentTags']->setValue($tags);
+	}
+
+
+	/**
+	 * @return TagRepository
+	 */
+	private function getTagRepository()
+	{
+		return $this->mapper->getEntityManager()->getRepository('CmsModule\Pages\Tags\TagEntity');
 	}
 }

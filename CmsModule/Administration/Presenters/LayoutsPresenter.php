@@ -13,8 +13,8 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\ElementManager;
+use CmsModule\Content\Elements\ElementEntity;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
-use CmsModule\Content\Entities\ElementEntity;
 use CmsModule\Content\Entities\LayoutEntity;
 use CmsModule\Content\Forms\LayoutFormFactory;
 use CmsModule\Content\LayoutManager;

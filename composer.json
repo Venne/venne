@@ -2,7 +2,7 @@
 	"name": "venne/cms-module",
 	"description": "CMS module with administration",
 	"keywords": ["cms", "nette", "venne", "module"],
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"authors": [
 		{
 			"name": "Josef Kříž",
@@ -11,10 +11,12 @@
 	],
 	"require": {
 		"php": ">=5.3.2",
-		"venne/doctrine-module": "2.0.x-dev",
-		"venne/assets-module": "2.0.x-dev",
-		"venne/translator-module": "2.0.x-dev",
-		"venne/gedmo-module": "2.0.x-dev",
+		"venne/doctrine-module": "2.1.x-dev",
+		"venne/assets-module": "2.1.x-dev",
+		"venne/translator-module": "2.1.x-dev",
+		"venne/bootstrap2-module": "*",
+		"venne/jquery2.0-module": "*",
+		"venne/jqueryui1.10-module": "*",
 		"kdyby/bootstrap-form-renderer": "v1.1.0",
 		"o5/grido": "@dev"
 	},
@@ -28,7 +30,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "2.0.x-dev"
+			"dev-master": "2.1.x-dev"
 		},
 		"venne": {
 			"configuration": {

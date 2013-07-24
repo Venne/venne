@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content\Elements\Forms;
 
-use CmsModule\Content\Entities\ElementEntity;
+use CmsModule\Content\Elements\ElementEntity;
 use CmsModule\Content\Repositories\PageRepository;
 use DoctrineModule\Forms\FormFactory;
 use Venne\Forms\Form;
@@ -27,29 +27,31 @@ class BasicFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addGroup();
-		$form->addSelect('langMode', 'Language mode', ElementEntity::getLangModes())
+		$element = $form->addOne('element');
+
+		$element->setCurrentGroup($form->addGroup());
+		$element->addSelect('langMode', 'Language mode', ElementEntity::getLangModes())
 			->addCondition($form::EQUAL, ElementEntity::LANGMODE_SPLIT)->toggle('form-group-language');
 
-		$form->addGroup()->setOption('id', 'form-group-language');
-		$form->addManyToOne('language', 'Language');
+		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-language'));
+		$element->addManyToOne('language', 'Language');
 
-		$form->addGroup();
-		$mode = $form->addSelect('mode', 'Share data with', ElementEntity::getModes());
+		$element->setCurrentGroup($form->addGroup());
+		$mode = $element->addSelect('mode', 'Share data with', ElementEntity::getModes());
 		$mode
 			->addCondition($form::IS_IN, array(1, 2))->toggle('form-group-page')
 			->endCondition()
 			->addCondition($form::EQUAL, 2)->toggle('form-group-route');
 
-		$form->addManyToOne('layout', 'Layout');
+		$element->addManyToOne('layout', 'Layout');
 
-		$form->addGroup()->setOption('id', 'form-group-page');
-		$page = $form->addManyToOne('page', 'Page');
+		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-page'));
+		$page = $element->addManyToOne('page', 'Page');
 		$page
 			->addConditionOn($mode, $form::IS_IN, array(1, 2))->addRule($form::FILLED);
 
-		$form->addGroup()->setOption('id', 'form-group-route');
-		$form->addManyToOne('route', 'Route')
+		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-route'));
+		$element->addManyToOne('route', 'Route')
 			->setDependOn($page, 'page')
 			->addConditionOn($mode, $form::EQUAL, 2)->addRule($form::FILLED);
 

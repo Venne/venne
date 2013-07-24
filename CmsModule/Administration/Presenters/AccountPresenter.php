@@ -15,7 +15,7 @@ use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Security\Entities\LoginEntity;
-use CmsModule\Security\Entities\UserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
 use Grido\DataSources\Doctrine;

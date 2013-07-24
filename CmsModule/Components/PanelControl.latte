@@ -1,3 +1,4 @@
+{cache $control->getKey()}
 <div class="container-fluid" n:snippet="tabs">
     <ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
         <li{if $control->tab == 0} class="active"{/if}><a class="ajax" n:href="tab! tab=>0">{_'Pages'}</a></li>
@@ -48,10 +49,8 @@
                 <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <span class="caret"></span></button>
                 <ul class="dropdown-menu">
 					{if $control->tab == 0}
-						{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
-                            <li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{_$name}</a>
-                            </li>
-						{/foreach}
+						{var $items = $presenter->context->cms->contentManager->getContentTypes(TRUE)}
+						{include #tree items=>$items}
 						{elseif $control->tab == 2}
                         <li><a class="ajax"
                                href="{plink :Cms:Admin:Files:default do=>dir, id=>navbar-directory}">New
@@ -59,7 +58,7 @@
                         <li><a class="ajax"
                                href="{plink :Cms:Admin:Files:default do=>dir, id=>navbar-upload}">Upload
                             file</a></li>
-						{/if}
+					{/if}
                 </ul>
 			{/if}
             </div>
@@ -69,3 +68,20 @@
 
     </div>
 </div>
+
+{define #tree}
+	{foreach $items as $link=>$name}
+		<li{if is_array($name)} class="dropdown-submenu"{/if}>
+			{if is_array($name)}
+				<a class="ajax" href="#">{_$link}</a>
+				<ul class="dropdown-menu">
+				{include #tree items=>$name}
+				</ul>
+			{else}
+				<a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{_$name}</a>
+			{/if}
+		</li>
+	{/foreach}
+{/define}
+
+{/cache}

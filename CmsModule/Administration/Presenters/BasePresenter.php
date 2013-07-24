@@ -11,7 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use CmsModule\Presenters\AdminPresenter;
+use CmsModule\Administration\AdminPresenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,23 +21,4 @@ use CmsModule\Presenters\AdminPresenter;
 class BasePresenter extends AdminPresenter
 {
 
-	public function startup()
-	{
-		parent::startup();
-
-		if ($this->getParameter('do') === NULL && $this->isAjax()) {
-			$this->invalidateControl('navigation');
-			$this->invalidateControl('content');
-			$this->invalidateControl('header');
-			$this->invalidateControl('toolbar');
-		}
-	}
-
-
-	public function handleLogout()
-	{
-		$this->user->logout(TRUE);
-		$this->flashMessage('Logout success');
-		$this->redirect('this');
-	}
 }

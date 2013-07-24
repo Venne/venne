@@ -1,0 +1,17 @@
+services:
+	cms.pages.menuPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Menu\PageEntity')
+		setup:
+			- addSection('Content', @cms.pages.menu.menuFormFactory)
+		tags: [contentType: [name: 'menu page']]
+
+	cms.pages.menu.menuFormFactory:
+		class: CmsModule\Pages\Menu\MenuFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.menu.routePresenter:
+		class: CmsModule\Pages\Menu\RoutePresenter
+		tags: [presenter]

@@ -138,7 +138,7 @@ class PanelPresenter extends BasePresenter
 				$layout = $this->route->layout;
 			}
 
-			$pos = strpos($layout, "/");
+			$pos = strpos($layout, '/');
 			$module = lcfirst(substr($layout, 1, $pos - 1));
 
 			if ($module === 'app') {
@@ -146,7 +146,7 @@ class PanelPresenter extends BasePresenter
 			} else if (!isset($this->context->parameters['modules'][$module]['path'])) {
 				$this->_layoutPath = FALSE;
 			} else {
-				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . "/layouts/" . substr($layout, $pos + 1);
+				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . '/layouts/' . substr($layout, $pos + 1);
 			}
 		}
 

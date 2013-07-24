@@ -11,18 +11,16 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Components\ContentTableFactory;
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Entities\LanguageEntity;
-use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Forms\BasicFormFactory;
 use CmsModule\Content\ISectionControl;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Pages\Users\UserEntity;
 use DoctrineModule\Repositories\BaseRepository;
-use Gedmo\Translatable\TranslatableListener;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\InvalidArgumentException;
@@ -36,14 +34,13 @@ use Venne\Forms\Form;
 class ContentPresenter extends BasePresenter
 {
 
+	const PREVIEW_SESSION = 'venne.content.preview';
+
 	/** @persistent */
 	public $key;
 
 	/** @persistent */
 	public $type;
-
-	/** @persistent */
-	public $contentLang;
 
 	/** @persistent */
 	public $section;
@@ -96,20 +93,7 @@ class ContentPresenter extends BasePresenter
 		parent::startup();
 
 		if ($this->contentLang) {
-			foreach ($this->context->entityManager->getEventManager()->getListeners() as $listeners) {
-				foreach ($listeners as $listener) {
-					if ($listener instanceof TranslatableListener) {
-						$listener->setTranslatableLocale($this->contentLang);
-						$listener->setTranslationFallback(TRUE);
-						$break = TRUE;
-						break;
-					}
-				}
-				if (isset($break)) {
-					break;
-				}
-			}
-			$this->languageEntity = $this->languageRepository->find($this->contentLang);
+			$this->languageEntity = $this->languageRepository->findOneBy(array('alias' => $this->contentLang));
 		} else {
 			$this->languageEntity = $this->languageRepository->findOneBy(array('short' => $this->context->parameters['website']['defaultLanguage']));
 		}
@@ -141,20 +125,29 @@ class ContentPresenter extends BasePresenter
 
 
 	/**
-	 * @secured(privilege="edit")
+	 * @secured
 	 */
-	public function handlePublish()
+	public function handlePreview($id)
 	{
-		$this->handleOn($this->key);
-	}
+		if ($id) {
+			if (!$entity = $this->pageRepository->find($id)) {
+				throw new BadRequestException;
+			}
+			$route = $entity->mainRoute;
+		} else {
+			$route = $this->getPageEntity()->page->getMainRoute();
+		}
 
+		if (!$route->published) {
+			$session = $this->getSession(self::PREVIEW_SESSION);
+			$session->setExpiration('+ 2 minutes');
+			if (!isset($session->routes)) {
+				$session->routes = array();
+			}
+			$session->routes[$route->id] = TRUE;
+		}
 
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function handleHide()
-	{
-		$this->handleOff($this->key);
+		$this->redirect(':Cms:Pages:Text:Text:', array('route' => $route));
 	}
 
 
@@ -182,34 +175,15 @@ class ContentPresenter extends BasePresenter
 	/**
 	 * @secured(privilege="edit")
 	 */
-	public function handleOn($id)
+	public function handlePublish($id = NULL)
 	{
+		$id = $id ? : $this->key;
+
 		if (!$entity = $this->pageRepository->find($id)) {
 			throw new BadRequestException;
 		}
 
-		$entity->published = TRUE;
-		$this->pageRepository->save($entity);
-
-		if (!$this->isAjax()) {
-			$this->redirect('this');
-		}
-
-		$this->invalidateControl('content');
-		$this->payload->url = $this->link('this');
-	}
-
-
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function handleOff($id)
-	{
-		if (!$entity = $this->pageRepository->find($id)) {
-			throw new BadRequestException;
-		}
-
-		$entity->published = FALSE;
+		$entity->mainRoute->published = !$entity->mainRoute->published;
 		$this->pageRepository->save($entity);
 
 		if (!$this->isAjax()) {
@@ -267,28 +241,21 @@ class ContentPresenter extends BasePresenter
 		$adminGrid = $this->contentTableFactory->create();
 		$table = $adminGrid->getTable();
 
-		$table->addAction('on', 'On')
+		$table->addAction('publish', 'published')
 			->setCustomRender(function ($entity, $element) {
-				if ((bool)$entity->published) {
-					$element->class[] = 'disabled';
+				if ((bool)$entity->mainRoute->published) {
+					$element->class[] = 'btn-primary';
 				};
 				return $element;
 			})
 			->setCustomHref(function ($entity) use ($_this) {
-				return $_this->link('on!', array($entity->id));
+				return $_this->link('publish!', array($entity->id));
 			})
 			->getElementPrototype()->class[] = 'ajax';
-		$table->addAction('off', 'Off')
-			->setCustomRender(function ($entity, $element) {
-				if (!(bool)$entity->published) {
-					$element->class[] = 'disabled';
-				};
-				return $element;
-			})
+		$table->addAction('preview', 'Preview')
 			->setCustomHref(function ($entity) use ($_this) {
-				return $_this->link('off!', array($entity->id));
-			})
-			->getElementPrototype()->class[] = 'ajax';
+				return $_this->link('preview!', array($entity->id));
+			});
 		$table->addAction('edit', 'Edit')
 			->setCustomHref(function ($entity) use ($_this) {
 				return $_this->link('edit', array('key' => $entity->id));
@@ -296,7 +263,7 @@ class ContentPresenter extends BasePresenter
 			->getElementPrototype()->class[] = 'ajax';
 		$table->addAction('setAsRoot', 'Set as root')
 			->setCustomRender(function ($entity, $element) {
-				if ($entity->parent === NULL || $entity->tag) {
+				if ($entity->parent === NULL) {
 					$element->class[] = 'disabled';
 				};
 				return $element;
@@ -310,139 +277,55 @@ class ContentPresenter extends BasePresenter
 
 		$adminGrid->connectActionAsDelete($table->getAction('remove'));
 
+		$table->getAction('remove')->onClick[] = function () use ($_this) {
+			$_this['panel']->invalidateControl('content');
+		};
+
 		return $adminGrid;
-	}
-
-
-	protected function createComponentTable2()
-	{
-		$presenter = $this;
-
-		$table = $this->contentTableFactory->create();
-
-		// actions
-		$repository = $this->pageRepository;
-		if ($this->isAuthorized('edit')) {
-			$action = $table->addAction('on', 'On');
-			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
-				$entity->published = TRUE;
-				$repository->save($entity);
-
-				if (!$presenter->isAjax()) {
-					$presenter->redirect('this');
-				}
-
-				$presenter->invalidateControl('content');
-				$presenter['panel']->invalidateControl('content');
-				$presenter->payload->url = $presenter->link('this');
-			};
-			$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
-				$button->setDisabled($entity->published);
-			};
-
-			$action = $table->addAction('off', 'Off');
-			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
-				$entity->published = FALSE;
-				$repository->save($entity);
-
-				if (!$presenter->isAjax()) {
-					$presenter->redirect('this');
-				}
-
-				$presenter->invalidateControl('content');
-				$presenter['panel']->invalidateControl('content');
-				$presenter->payload->url = $presenter->link('this');
-			};
-			$action->onRender[] = function ($button, $entity) use ($presenter, $repository) {
-				$button->setDisabled(!$entity->published);
-			};
-
-			$table->addAction('edit', 'Edit')->onClick[] = function ($button, $entity) use ($presenter) {
-				if (!$presenter->isAjax()) {
-					$presenter->redirect('edit', array('key' => $entity->id));
-				}
-				$presenter->invalidateControl('content');
-				$presenter->payload->url = $presenter->link('edit', array('key' => $entity->id));
-				$presenter->setView('edit');
-				$presenter->changeAction('edit');
-				$presenter->key = $entity->id;
-			};
-			$action = $table->addAction('setAsRoot', 'Set as root');
-			$action->onRender[] = function ($button, $entity) {
-				$button->setDisabled($entity->parent === NULL || $entity->tag);
-			};
-			$action->onClick[] = function ($button, $entity) use ($presenter, $repository) {
-				$main = $entity->getRoot();
-				$entity->setAsRoot();
-				$repository->save($main);
-
-				if (!$presenter->isAjax()) {
-					$presenter->redirect('this');
-				}
-				$presenter->invalidateControl('content');
-				$presenter['panel']->invalidateControl('content');
-				$presenter->payload->url = $presenter->link('this');
-			};
-		}
-
-		if ($this->isAuthorized('remove')) {
-			$table->addActionDelete('delete', 'Delete')->onSuccess[] = function () use ($presenter) {
-				$presenter['panel']->invalidateControl('content');
-			};
-
-			// global actions
-			$table->setGlobalAction($table['delete']);
-		}
-
-		return $table;
 	}
 
 
 	protected function createComponentForm()
 	{
-		$contentType = $this->contentManager->getContentType($this->getParameter("type"));
+		$contentType = $this->contentManager->getContentType($this->getParameter('type'));
 		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
+
+		if ($this->user->identity instanceof UserEntity) {
+			$entity->getExtendedMainRoute()->route->author = $this->user->identity;
+		}
 
 		$form = $this->contentFormFactory->invoke($entity);
 		$form->onSuccess[] = $this->formSuccess;
+		$form->onError[] = $this->formError;
 		return $form;
 	}
 
 
 	public function formSuccess($form)
 	{
-		$this->flashMessage("Page has been created");
+		$this->flashMessage('Page has been created');
 
 		if (!$this->isAjax()) {
-			$this->redirect('edit', array('type' => NULL, 'key' => $form->data->id));
+			$this->redirect('edit', array('type' => NULL, 'key' => $form->data->page->id));
 		}
 		$this->invalidateControl('content');
-		$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->id));
+		$this['panel']->invalidateControl('content');
+		$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->page->id));
 		$this->setView('edit');
 		$this->changeAction('edit');
-		$this->key = $form->data->id;
+		$this->key = $form->data->page->id;
 	}
 
 
-	protected function createComponentFormTranslate()
+	public function formError()
 	{
-		$pageEntity = $this->pageRepository->find($this->getParameter("key"));
-		$contentType = $this->contentManager->getContentType(get_class($pageEntity));
-
-		/** @var $entity \CmsModule\Content\Entities\PageEntity */
-		$entity = $this->pageRepository->createNewByEntityName($contentType->getEntityName());
-		$entity->setTranslationFor($pageEntity);
-
-		$form = $this->contentFormFactory->invoke($entity);
-		$form->onSuccess[] = $this->formSuccess;
-		return $form;
+		$this->invalidateControl('content');
 	}
 
 
 	protected function createComponentFormEdit()
 	{
-		$repository = $this->pageRepository;
-		$entity = $repository->find($this->getParameter("key"));
+		$entity = $this->getPageEntity();
 		$contentType = $this->contentManager->getContentType(get_class($entity));
 
 		if ((!$this->section && count($contentType->sections) == 0) || $this->section == 'basic') {
@@ -466,6 +349,7 @@ class ContentPresenter extends BasePresenter
 			$form->setEntity($entity);
 		} else if ($form instanceof Form) {
 			$form->onSuccess[] = $this->formEditSuccess;
+			$form->onError[] = $this->formError;
 		} else {
 			throw new InvalidArgumentException("Control must be instance of 'Venne\Forms\Form' OR 'CmsModule\Content\ISectionControl'. " . get_class($form) . " is given");
 		}
@@ -475,28 +359,36 @@ class ContentPresenter extends BasePresenter
 
 	public function formEditSuccess()
 	{
-		$this->flashMessage("Page has been updated");
+		$this->flashMessage('Page has been updated');
 
 		if (!$this->isAjax()) {
-			$this->redirect("this");
+			$this->redirect('this');
 		}
+		$this->invalidateControl('content');
+	}
+
+
+	public function getPageEntity()
+	{
+		if (!$entity = $this->pageRepository->find($this->key)) {
+			throw new BadRequestException;
+		}
+
+		if (!$entity = $this->context->entityManager->getRepository($entity->class)->findOneBy(array('page' => $entity->id))) {
+			throw new BadRequestException;
+		}
+
+		return $entity;
 	}
 
 
 	public function renderEdit()
 	{
-		if (!$this->template->entity = $this->pageRepository->find($this->key)) {
-			throw new BadRequestException;
-		}
+		$this->template->entity = $this->getPageEntity();
+		$this->template->entity->page->mainRoute->locale = $this->languageEntity;
 		$this->template->contentType = $this->contentManager->getContentType(get_class($this->template->entity));
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
 		$this->template->languageRepository = $this->languageRepository;
-	}
-
-
-	public function renderTranslate()
-	{
-		$this->template->entity = $this->pageRepository->find($this->key);
 	}
 }

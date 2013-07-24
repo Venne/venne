@@ -51,7 +51,7 @@ class RouteControl extends SectionControl
 		$table = $admin->getTable();
 		$table->setModel(new Doctrine($this->routeRepository->createQueryBuilder('a')
 				->andWhere('a.page = :page')
-				->setParameter('page', $this->entity->id)
+				->setParameter('page', $this->entity->page->id)
 		));
 		$table->setTranslator($this->presenter->context->translator->translator);
 		$table->addColumn('title', 'Title')
@@ -72,7 +72,7 @@ class RouteControl extends SectionControl
 
 		$form = $admin->createForm($this->routeFormFactory, 'Route', NULL, \CmsModule\Components\Table\Form::TYPE_LARGE);
 
-		$admin->connectFormWithAction($form, $table->getAction('edit'));
+		$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
 
 
 		return $admin;

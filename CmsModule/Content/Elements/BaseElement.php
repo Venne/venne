@@ -14,13 +14,13 @@ namespace CmsModule\Content\Elements;
 use CmsModule\Content\Control;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
 use CmsModule\Content\Elements\Forms\ClearFormFactory;
-use CmsModule\Content\Entities\ElementEntity;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\LayoutEntity;
 use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\IElement;
 use Doctrine\ORM\EntityManager;
+use Nette\NotImplementedException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -54,6 +54,12 @@ abstract class BaseElement extends Control implements IElement
 
 	/** @var BasicFormFactory */
 	protected $_basicFormFactory;
+
+	/** @var ElementEntity */
+	private $element;
+
+	/** @var ExtendedElementEntity */
+	private $extendedElementEntity;
 
 
 	/**
@@ -125,16 +131,16 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	protected function getEntityName()
 	{
-		throw new \Nette\NotImplementedException("Please set entity name in the inherited class.");
+		throw new NotImplementedException("Please set entity name in the inherited class.");
 	}
 
 
 	/**
 	 * @return \DoctrineModule\Repositories\BaseRepository
 	 */
-	protected function getRepository()
+	protected function getElementRepository()
 	{
-		return $this->entityManager->getRepository('CmsModule\\Content\\Entities\\ElementEntity');
+		return $this->entityManager->getRepository('CmsModule\\Content\\Elements\\ElementEntity');
 	}
 
 
@@ -144,73 +150,90 @@ abstract class BaseElement extends Control implements IElement
 	protected function createEntity()
 	{
 		$class = '\\' . $this->getEntityName();
-		$ret = new $class;
-		$ret->setDefaults($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity, $this->languageEntity);
+		$ret = new $class($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity, $this->languageEntity);
 		return $ret;
 	}
 
 
 	/**
-	 * @return \CmsModule\Content\Entities\ElementEntity
+	 * @return ElementEntity
 	 */
-	public function getEntity()
+	public function getElement()
 	{
-		$data = array(
-			ElementEntity::LANGMODE_SPLIT => array(
-				'langMode' => ElementEntity::LANGMODE_SPLIT,
-				'language' => $this->languageEntity->id,
-			),
-			ElementEntity::LANGMODE_SHARE => array(
-				'langMode' => ElementEntity::LANGMODE_SHARE,
-			),
-		);
+		if (!$this->element) {
+			$data = array(
+				ElementEntity::LANGMODE_SPLIT => array(
+					'langMode' => ElementEntity::LANGMODE_SPLIT,
+					'language' => $this->languageEntity->id,
+				),
+				ElementEntity::LANGMODE_SHARE => array(
+					'langMode' => ElementEntity::LANGMODE_SHARE,
+				),
+			);
 
-		foreach ($data as $i) {
-			$ret = $this->getRepository()->findOneBy(array(
-				'name' => $this->name,
-				'layout' => $this->layoutEntity->id,
-				'mode' => ElementEntity::MODE_LAYOUT,
-			) + $i);
-
-			if ($ret) {
-				return $ret;
-			}
-
-			if ($this->pageEntity) {
-				$ret = $this->getRepository()->findOneBy(array(
+			foreach ($data as $i) {
+				$this->element = $this->getElementRepository()->findOneBy(array(
 					'name' => $this->name,
 					'layout' => $this->layoutEntity->id,
-					'page' => $this->pageEntity->id,
-					'mode' => ElementEntity::MODE_PAGE,
+					'mode' => ElementEntity::MODE_LAYOUT,
 				) + $i);
 
-				if ($ret) {
-					return $ret;
+				if ($this->element) {
+					break;
+				}
+
+				if ($this->pageEntity) {
+					$this->element = $this->getElementRepository()->findOneBy(array(
+						'name' => $this->name,
+						'layout' => $this->layoutEntity->id,
+						'page' => $this->pageEntity->id,
+						'mode' => ElementEntity::MODE_PAGE,
+					) + $i);
+
+					if ($this->element) {
+						break;
+					}
+				}
+
+				if ($this->pageEntity && $this->routeEntity) {
+					$this->element = $this->getElementRepository()->findOneBy(array(
+						'name' => $this->name,
+						'layout' => $this->layoutEntity->id,
+						'page' => $this->pageEntity->id,
+						'route' => $this->routeEntity->id,
+						'mode' => ElementEntity::MODE_ROUTE,
+					) + $i);
+
+					if ($this->element) {
+						break;
+					}
 				}
 			}
 
-			if ($this->pageEntity && $this->routeEntity) {
-				$ret = $this->getRepository()->findOneBy(array(
-					'name' => $this->name,
-					'layout' => $this->layoutEntity->id,
-					'page' => $this->pageEntity->id,
-					'route' => $this->routeEntity->id,
-					'mode' => \CmsModule\Content\Entities\ElementEntity::MODE_ROUTE,
-				) + $i);
-
-				if ($ret) {
-					return $ret;
+			if (!$this->element) {
+				$ret = $this->createEntity();
+				if (($entity = $this->getElementRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id)))) {
+					$ret->setMode($entity->mode);
 				}
+				$this->entityManager->persist($ret);
+				$this->entityManager->flush($ret);
+				$this->element = $ret;
 			}
 		}
+		return $this->element;
+	}
 
-		$ret = $this->createEntity();
-		if (($entity = $this->getRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id)))) {
-			$ret->setMode($entity->mode);
+
+	/**
+	 * @return ExtendedElementEntity
+	 */
+	public function getExtendedElement()
+	{
+		if (!$this->extendedElementEntity) {
+			$element = $this->getElement();
+			$this->extendedElementEntity = $this->entityManager->getRepository($element->getClass())->findOneBy(array('element' => $element->id));
 		}
-		$this->entityManager->persist($ret);
-		$this->entityManager->flush($ret);
-		return $ret;
+		return $this->extendedElementEntity;
 	}
 
 
@@ -233,14 +256,14 @@ abstract class BaseElement extends Control implements IElement
 
 	protected function createComponentClearForm()
 	{
-		$form = $this->_clearFormFactory->invoke($this->getEntity());
+		$form = $this->_clearFormFactory->invoke($this->getExtendedElement());
 		return $form;
 	}
 
 
 	protected function createComponentBasicForm()
 	{
-		$form = $this->_basicFormFactory->invoke($this->createEntity());
+		$form = $this->_basicFormFactory->invoke($this->getExtendedElement());
 		return $form;
 	}
 }

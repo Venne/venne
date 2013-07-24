@@ -12,7 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Repositories\LogRepository;
-use CmsModule\Security\Entities\UserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
 
 /**

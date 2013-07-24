@@ -28,6 +28,10 @@ use Venne\Forms\FormFactory;
 class AdminGrid extends Control
 {
 
+	const MODE_MODAL = 'modal';
+
+	const MODE_PLACE = 'place';
+
 	/**
 	 * @var string
 	 * @persistent
@@ -51,6 +55,12 @@ class AdminGrid extends Control
 	 * @persistent
 	 */
 	public $floorId;
+
+	/**
+	 * @var string
+	 * @persistent
+	 */
+	public $mode = self::MODE_MODAL;
 
 	/** @var array */
 	public $onAttached;
@@ -140,6 +150,8 @@ class AdminGrid extends Control
 		$this->invalidateControl('table');
 		$this->invalidateControl('navbar');
 		$this->invalidateControl('breadcrumb');
+		$this->invalidateControl('navbarFormContainer');
+		$this->invalidateControl('actionFormContainer');
 		$this->presenter->payload->url = $this->link('this');
 	}
 
@@ -149,28 +161,36 @@ class AdminGrid extends Control
 	 * @param Section $section
 	 * @return $this
 	 */
-	public function connectFormWithNavbar(Form $form, Section $section)
+	public function connectFormWithNavbar(Form $form, Section $section, $mode = self::MODE_MODAL)
 	{
 		$this->navbarForms[$section->getName()] = $form;
 
 		$_this = $this;
-		$section->onClick[] = function ($section) use ($_this) {
+		$section->onClick[] = function ($section) use ($_this, $mode) {
+			$_this->mode = $mode;
 			$_this->id = NULL;
 			$_this->invalidateControl('navbarFormContainer');
+			if ($_this->mode === $this::MODE_PLACE) {
+				$_this->invalidateControl('table');
+			}
 			$_this->setFormName($section->getName());
 		};
 		return $this;
 	}
 
 
-	public function connectFormWithAction(Form $form, CallbackAction $action)
+	public function connectFormWithAction(Form $form, CallbackAction $action, $mode = self::MODE_MODAL)
 	{
 		$this->actionForms[$action->getName()] = $form;
 
 		$_this = $this;
-		$action->onClick[] = function ($action, $id) use ($_this) {
+		$action->onClick[] = function ($action, $id) use ($_this, $mode) {
+			$_this->mode = $mode;
 			$_this->id = $id;
 			$_this->invalidateControl('actionFormContainer');
+			if ($_this->mode === $this::MODE_PLACE) {
+				$_this->invalidateControl('table');
+			}
 			$_this->setFormName($action->getName());
 		};
 		return $this;
@@ -352,6 +372,14 @@ class AdminGrid extends Control
 		$form->onSuccess[] = $this->navbarFormSuccess;
 		$form->onError[] = $this->navbarFormError;
 
+		if ($this->mode == self::MODE_PLACE) {
+			$form->addSubmit('_cancel', 'Cancel')
+				->setValidationScope(FALSE)
+				->onClick[] = function () {
+				$this->redirect('this', array('formName' => NULL, 'mode'=>NULL));
+			};
+		}
+
 		return $form;
 	}
 
@@ -364,6 +392,14 @@ class AdminGrid extends Control
 		$form = $form->getFactory()->invoke($entity);
 		$form->onSuccess[] = $this->actionFormSuccess;
 		$form->onError[] = $this->actionFormError;
+
+		if ($this->mode == self::MODE_PLACE) {
+			$form->addSubmit('_cancel', 'Cancel')
+				->setValidationScope(FALSE)
+				->onClick[] = function () {
+				$this->redirect('this', array('formName' => NULL, 'mode'=>NULL));
+			};
+		}
 
 		return $form;
 	}
@@ -381,7 +417,7 @@ class AdminGrid extends Control
 			}
 
 			$this->invalidateControl('table');
-			$this->presenter->payload->url = $this->link('this', array('formName' => NULL));
+			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'mode'=>NULL));
 		}
 	}
 
@@ -399,7 +435,7 @@ class AdminGrid extends Control
 			}
 
 			$this->invalidateControl('table');
-			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL));
+			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL, 'mode'=>NULL));
 		}
 	}
 

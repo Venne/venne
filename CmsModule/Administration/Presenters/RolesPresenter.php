@@ -126,7 +126,7 @@ class RolesPresenter extends BasePresenter
 			$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_LARGE);
 
 			$admin->connectFormWithAction($form, $table->getAction('edit'));
-			$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'));
+			$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'), $admin::MODE_PLACE);
 
 			// Toolbar
 			$toolbar = $admin->getNavbar();

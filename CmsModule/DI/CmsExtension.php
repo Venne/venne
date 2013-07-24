@@ -116,9 +116,12 @@ class CmsExtension extends CompilerExtension
 
 		// Administration
 		$container->addDefinition($this->prefix("adminRoute"))
-			->setClass("Nette\Application\Routers\Route", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/]<presenter>[/<action>[/<id>]]',
+			->setClass("CmsModule\Administration\Routes\Route", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/]<presenter>[/<action>[/<id>]]',
 				array('module' => 'Cms:Admin', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default',)
 			))
+			->addSetup('injectLanguageRepository', array('@cms.languageRepository'))
+			->addSetup('injectPageListener', array('@cms.pageListener'))
+			->addSetup('injectDefaultLanguage', array('%website.defaultLanguage%'))
 			->addTag("route", array("priority" => 100000));
 
 		// installation

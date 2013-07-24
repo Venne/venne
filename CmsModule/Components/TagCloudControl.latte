@@ -1,0 +1,11 @@
+{cache tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE]}
+<div>
+	{var $tags = $control->getTags()}
+	{var $max = max(array_keys($tags))}
+	{foreach $control->getTags() as $count=>$items}
+		{foreach $items as $entity}
+			<a href="{plink this route=>$entity}" style="font-size: {=30 * ($count/$max)}px">{$entity}</a>
+		{/foreach}
+	{/foreach}
+</div>
+{/cache}

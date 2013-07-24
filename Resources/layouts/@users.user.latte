@@ -1,0 +1,11 @@
+{define #page-content}
+
+	{control item $presenter->extendedRoute}
+	<hr />
+
+	<h2>{_Contents}</h2>
+	{control vp}
+	{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult()}
+	{control vp}
+
+{/define}

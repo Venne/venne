@@ -12,7 +12,6 @@
 namespace CmsModule\Content;
 
 use CmsModule\Content\Entities\LanguageEntity;
-use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use Nette\Application\UI\IRenderable;
 

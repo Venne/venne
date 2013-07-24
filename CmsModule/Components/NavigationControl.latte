@@ -1,4 +1,4 @@
-{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE]}
+{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
 
 {var $root = $control->getRoot()}
 
@@ -8,9 +8,9 @@
 	{var $j = 0}
 	{foreach $items as $item}
 
-		{var $entity = $item->getPageWithLanguageAlias($presenter->lang)}
+		{var $entity = $item}
 		{continueIf $entity===NULL}
-		{continueIf !$entity->published || !$entity->mainRoute->published}
+		{continueIf !$entity->mainRoute->published}
 
 		{var $active = $control->isActive($entity)}
 		{var $link = $control->getLink($entity)}
@@ -26,7 +26,7 @@
 {if $j==0}
 <ul {if !$first}class="dropdown-menu"{else}class="nav"{/if}>
 		{if $first && $showMain && $root->navigationShow}
-            {include #item active=>$presenter->route->url === '', children=>array(), link=>$presenter->link('this', array('route'=>$root->mainRoute)), entity=>$root->getPageWithLanguageAlias($presenter->lang), item=>$root}
+            {include #item active=>$presenter->route->url === '', children=>array(), link=>$presenter->link('Route', array('route'=>$root->mainRoute)), entity=>$root, item=>$root}
 		{/if}
 {/if}
 

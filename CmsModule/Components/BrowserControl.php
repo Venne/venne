@@ -35,7 +35,7 @@ class BrowserControl extends Control
 	/**
 	 * @param callable $loadItems
 	 */
-	function __construct($loadItems, $setParent)
+	public function __construct($loadItems, $setParent)
 	{
 		parent::__construct();
 
@@ -46,9 +46,6 @@ class BrowserControl extends Control
 
 	public function render()
 	{
-		$this->getPresenter()->getContext()->assets->assetManager->addJavaScript("@cmsModule/dynatree/jquery.dynatree.js");
-		$this->getPresenter()->getContext()->assets->assetManager->addStylesheet("@cmsModule/dynatree/skin-bootstrap/ui.dynatree.css");
-
 		$this->template->render();
 	}
 

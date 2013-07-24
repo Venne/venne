@@ -24,7 +24,7 @@ class SocialLoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="UserEntity", inversedBy="socialLogins")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Pages\Users\UserEntity", inversedBy="socialLogins")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;

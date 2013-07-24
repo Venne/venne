@@ -11,7 +11,7 @@
 
 namespace CmsModule\Security;
 
-use CmsModule\Security\Entities\UserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
 use Doctrine\DBAL\DBALException;
@@ -37,6 +37,12 @@ class UserStorage extends \Nette\Http\UserStorage
 	/** @var UserRepository */
 	private $userRepository;
 
+	/** @var UserEntity */
+	private $identities = array();
+
+	/** @var array */
+	private $logins = array();
+
 
 	public function  __construct(Session $sessionHandler, LoginRepository $loginRepository, UserRepository $userRepository, $checkConnection)
 	{
@@ -60,14 +66,21 @@ class UserStorage extends \Nette\Http\UserStorage
 			throw new InvalidArgumentException('Database connection not found');
 		}
 
-		$identity = $this->userRepository->findOneBy(array('email' => $identity->id, 'enable' => 1));
-		return $identity;
+		if (!isset($this->identities[$identity->id])) {
+			$this->identities[$identity->id] = $this->userRepository->findOneBy(array('email' => $identity->id, 'published' => 1));
+		}
+
+		return $this->identities[$identity->id];
 	}
 
 
 	public function setAuthenticated($state)
 	{
 		parent::setAuthenticated($state);
+
+		if ($state === FALSE) {
+			return;
+		}
 
 		if (($identity = $this->getIdentity()) instanceof UserEntity) {
 			$loginEntity = $this->loginRepository->createNew(array($this->session->id, $identity));
@@ -90,12 +103,21 @@ class UserStorage extends \Nette\Http\UserStorage
 		}
 
 		if ($identity instanceof UserEntity) {
-			return (bool)$this->loginRepository->findOneBy(array('user' => $identity->id, 'sessionId' => $this->session->id));
+			if (!isset($this->logins[$this->session->id][$identity->id])) {
+				$this->logins[$this->session->id][$identity->id] = (bool)$this->loginRepository->findOneBy(array('user' => $identity->id, 'sessionId' => $this->session->id));
+			}
+
+			return $this->logins[$this->session->id][$identity->id];
 		} else if ($this->checkConnection->invoke()) {
 			try {
-				if (!$this->loginRepository->findOneBy(array('user' => NULL, 'sessionId' => $this->session->id))) {
-					$this->setAuthenticated(TRUE);
+				if (!isset($this->logins[$this->session->id][-1])) {
+					$this->logins[$this->session->id][-1] = (bool)$this->loginRepository->findOneBy(array('user' => NULL, 'sessionId' => $this->session->id));
+
+					if (!$this->logins[$this->session->id][-1]) {
+						$this->setAuthenticated(TRUE);
+					}
 				}
+
 				return TRUE;
 			} catch (DBALException $e) {
 			}

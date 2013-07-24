@@ -11,8 +11,11 @@
 
 namespace CmsModule\Content\Entities;
 
+use CmsModule\Pages\Tags\TagEntity;
+use CmsModule\Pages\Users\UserEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,6 +24,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Index(name="type_idx", columns={"type"}),
  * @ORM\Index(name="url_idx", columns={"url"}),
  * })
+ *
+ * @property string $type
+ * @property array $params
  */
 class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
@@ -33,6 +39,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	const CACHE_MODE_STATIC = 'static';
 
+	/** @var array */
 	protected static $robotsValues = array(
 		'index, follow',
 		'noindex, follow',
@@ -40,6 +47,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		'noindex, nofollow',
 	);
 
+	/** @var array */
 	protected static $changefreqValues = array(
 		'always',
 		'hourly',
@@ -50,62 +58,72 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		'never',
 	);
 
+	/** @var array */
 	protected static $cacheModes = array(
 		self::CACHE_MODE_TIME,
 		self::CACHE_MODE_STATIC,
 	);
 
+	/** @var array */
 	protected static $priorityValues = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 	/**
 	 * @ORM\Column(type="string")
 	 */
-	protected $type;
+	protected $type = '';
 
 	/**
 	 * @ORM\Column(type="string")
 	 */
-	protected $url;
+	protected $url = '';
+
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $localUrl = '';
 
 	/** @ORM\Column(type="string") */
-	protected $localUrl;
-
-	/** @ORM\Column(type="string") */
-	protected $params;
+	protected $params = '[]';
 
 	/** @ORM\Column(type="integer") */
-	protected $paramCounter;
+	protected $paramCounter = 0;
 
 	/**
 	 * @var PageEntity
-	 * @ORM\ManyToOne(targetEntity="PageEntity", inversedBy="routes")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="routes")
 	 * @ORM\JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $page;
 
 	/**
+	 * @var LanguageEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LanguageEntity")
+	 */
+	protected $language;
+
+	/**
 	 * @var RouteEntity
-	 * @ORM\ManyToOne(targetEntity="RouteEntity", inversedBy="children")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", inversedBy="children")
 	 * @ORM\JoinColumn(name="route_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
 	 * @var RouteEntity[]
-	 * @ORM\OneToMany(targetEntity="RouteEntity", mappedBy="parent", fetch="EXTRA_LAZY")
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\RouteEntity", mappedBy="parent", fetch="EXTRA_LAZY")
 	 */
 	protected $children;
 
 	/**
 	 * @var LayoutEntity
-	 * @ORM\ManyToOne(targetEntity="LayoutEntity", inversedBy="routes", cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LayoutEntity", inversedBy="routes", cascade={"persist"})
 	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
 	protected $layout;
 
 	/**
 	 * @var LayoutEntity
-	 * @ORM\ManyToOne(targetEntity="LayoutEntity", cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\LayoutEntity", cascade={"persist"})
 	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
 	protected $childrenLayout;
@@ -114,24 +132,87 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @var bool
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $published = TRUE;
+	protected $published = FALSE;
+
+	/**
+	 * @var TagEntity[]
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Pages\Tags\TagEntity", inversedBy="routes", cascade={"persist", "remove"})
+	 * @ORM\JoinTable(name="routes_tags")
+	 **/
+	protected $tags;
+
+	/**
+	 * @var FileEntity
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\FileEntity", cascade={"all"}, orphanRemoval=true)
+	 * @ORM\JoinColumn(onDelete="SET NULL")
+	 */
+	protected $photo;
+
+	/**
+	 * @ORM\Column(type="text")
+	 */
+	protected $text = '';
+
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime")
+	 */
+	protected $created;
+
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	protected $updated;
+
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	protected $expired;
+
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime", nullable=true)
+	 */
+	protected $released;
 
 	/***************** Meta *******************/
 
-	/** @ORM\Column(type="string") */
-	protected $title;
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $name = '';
 
-	/** @ORM\Column(type="string") */
-	protected $keywords;
+	/**
+	 * @ORM\Column(type="text")
+	 */
+	protected $notation = '';
 
-	/** @ORM\Column(type="string") */
-	protected $description;
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $title = '';
 
-	/** @ORM\Column(type="string") */
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $keywords = '';
+
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $description = '';
+
+	/**
+	 * @var \CmsModule\Pages\Users\UserEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Pages\Users\UserEntity", inversedBy="routes")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
+	 */
 	protected $author;
 
 	/** @ORM\Column(type="string") */
-	protected $robots;
+	protected $robots = '';
 
 	/** @ORM\Column(type="string", nullable=true) */
 	protected $changefreq;
@@ -140,16 +221,33 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $priority;
 
 	/** @ORM\Column(type="boolean") */
-	protected $copyLayoutFromParent;
+	protected $copyLayoutFromParent = TRUE;
 
 	/** @ORM\Column(type="string", nullable=true) */
 	protected $cacheMode;
 
 	/** @ORM\Column(type="boolean") */
-	protected $copyCacheModeFromParent;
+	protected $copyCacheModeFromParent = TRUE;
 
 	/** @ORM\Column(type="boolean") */
-	protected $copyLayoutToChildren;
+	protected $copyLayoutToChildren = TRUE;
+
+	/**
+	 * @var RouteTranslationEntity[]
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\RouteTranslationEntity", mappedBy="object", indexBy="language", cascade={"persist"}, fetch="EXTRA_LAZY")
+	 */
+	protected $translations;
+
+	/**
+	 * @var LanguageEntity
+	 */
+	protected $locale;
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	protected $class;
 
 
 	/**
@@ -157,31 +255,25 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function __toString()
 	{
-		return $this->url;
+		return $this->getTranslatedValue('url');
 	}
 
 
 	/**
+	 * @param PageEntity $page
 	 * @param $type
 	 */
-	public function __construct()
+	public function __construct(PageEntity $page, $type)
 	{
-		$this->type = '';
-		$this->url = '';
-		$this->localUrl = '';
-		$this->params = json_encode(array());
-		$this->paramCounter = 0;
+		$this->page = $page;
+		$this->language = $page->language;
+		$this->setParent($page->mainRoute);
+		$this->class = $type;
 		$this->children = new ArrayCollection;
+		$this->tags = new ArrayCollection;
+		$this->translations = new ArrayCollection;
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
-		$this->copyLayoutFromParent = TRUE;
-		$this->copyCacheModeFromParent = TRUE;
-		$this->copyLayoutToChildren = TRUE;
-
-		$this->title = '';
-		$this->keywords = '';
-		$this->description = '';
-		$this->author = '';
-		$this->robots = '';
+		$this->created = new \DateTime;
 	}
 
 
@@ -190,7 +282,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function getUrl()
 	{
-		return $this->url;
+		return $this->getTranslatedValue('url');
 	}
 
 
@@ -199,7 +291,13 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function getLocalUrl()
 	{
-		return $this->localUrl;
+		return $this->getTranslatedValue('localUrl');
+	}
+
+
+	public function generateDate()
+	{
+		$this->updated = new \DateTime;
 	}
 
 
@@ -208,18 +306,14 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function generateUrl($recursively = TRUE)
 	{
-		if ($this->parent !== NULL && method_exists($this->parent, "__load")) {
-			$this->parent->__load();
-		}
-
-		if ($this->parent) {
-			$this->url = trim($this->parent->url . '/' . $this->localUrl, '/');
+		if (!$this->getParent()) {
+			$this->setTranslatedValue('url', '');
 		} else {
-			$this->url = '';
+			$this->setTranslatedValue('url', trim($this->getParent()->getUrl() . '/' . $this->getTranslatedValue('localUrl'), '/'));
 		}
 
 		if ($recursively) {
-			foreach ($this->children as $children) {
+			foreach ($this->getChildren() as $children) {
 				$children->generateUrl();
 			}
 		}
@@ -231,24 +325,20 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function generateLayouts($recursively = TRUE)
 	{
-		if ($this->parent !== NULL && method_exists($this->parent, "__load")) {
-			$this->parent->__load();
+		if ($this->getCopyLayoutFromParent()) {
+			$this->layout = $this->getParent() ? ($this->parent->copyLayoutToChildren ? $this->parent->layout : $this->parent->childrenLayout) : NULL;
 		}
 
-		if ($this->copyLayoutFromParent) {
-			$this->layout = $this->parent ? ($this->parent->copyLayoutToChildren ? $this->parent->layout : $this->parent->childrenLayout) : NULL;
-		}
-
-		if ($this->copyLayoutToChildren) {
+		if ($this->getCopyLayoutToChildren()) {
 			$this->childrenLayout = $this->layout;
 		}
 
-		if ($this->copyCacheModeFromParent) {
-			$this->cacheMode = $this->parent ? $this->parent->cacheMode : self::DEFAULT_CACHE_MODE;
+		if ($this->getCopyCacheModeFromParent()) {
+			$this->cacheMode = $this->getParent() ? $this->parent->cacheMode : self::DEFAULT_CACHE_MODE;
 		}
 
 		if ($recursively) {
-			foreach ($this->children as $children) {
+			foreach ($this->getChildren() as $children) {
 				$children->generateLayouts();
 			}
 		}
@@ -257,11 +347,14 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @param $localUrl
+	 * @param bool $recursively
+	 * @return $this
 	 */
 	public function setLocalUrl($localUrl, $recursively = TRUE)
 	{
-		$this->localUrl = $localUrl;
+		$this->setTranslatedValue('localUrl', $localUrl);
 		$this->generateUrl($recursively);
+		return $this;
 	}
 
 
@@ -293,6 +386,83 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
+	 * @param mixed $text
+	 */
+	public function setText($text)
+	{
+		if ($this->text == $text) {
+			return;
+		}
+
+		$this->setTranslatedValue('text', $text);
+		$this->generateDate();
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getText()
+	{
+		return $this->getTranslatedValue('text');
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getCreated()
+	{
+		return $this->created;
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getUpdated()
+	{
+		return $this->updated;
+	}
+
+
+	/**
+	 * @param \DateTime $expired
+	 */
+	public function setExpired($expired)
+	{
+		$this->expired = $expired;
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getExpired()
+	{
+		return $this->expired;
+	}
+
+
+	/**
+	 * @param \DateTime $released
+	 */
+	public function setReleased($released)
+	{
+		$this->released = $released;
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getReleased()
+	{
+		return $this->released;
+	}
+
+
+	/**
 	 * @return mixed
 	 */
 	public function getType()
@@ -320,11 +490,11 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param $parent
+	 * @param RouteEntity $parent
 	 */
 	public function setParent(RouteEntity $parent = NULL)
 	{
-		if ($this->parent == $parent) {
+		if ($this->getParent() == $parent) {
 			return;
 		}
 
@@ -352,7 +522,28 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function getChildren()
 	{
+		if ($this->children === NULL) {
+			$this->children = new ArrayCollection;
+		}
 		return $this->children;
+	}
+
+
+	/**
+	 * @param LanguageEntity $language
+	 */
+	public function setLanguage($language)
+	{
+		$this->language = $language;
+	}
+
+
+	/**
+	 * @return LanguageEntity
+	 */
+	public function getLanguage()
+	{
+		return $this->language;
 	}
 
 
@@ -362,13 +553,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
-	public function setPage($page)
-	{
-		$this->page = $page;
-	}
-
-
-	public function setAuthor($author)
+	public function setAuthor(UserEntity $author = NULL)
 	{
 		$this->author = $author;
 	}
@@ -380,22 +565,60 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param $name
+	 * @return $this
+	 */
+	public function setName($name)
+	{
+		$this->setTranslatedValue('name', $name);
+		return $this;
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getName()
+	{
+		return $this->getTranslatedValue('name');
+	}
+
+
+	/**
+	 * @param mixed $notation
+	 */
+	public function setNotation($notation)
+	{
+		$this->setTranslatedValue('notation', $notation);
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getNotation()
+	{
+		return $this->getTranslatedValue('notation');
+	}
+
+
 	public function setKeywords($keywords)
 	{
-		$this->keywords = $keywords;
+		$this->setTranslatedValue('keywords', $keywords);
 	}
 
 
 	public function getKeywords()
 	{
-		return $this->keywords;
+		return $this->getTranslatedValue('keywords');
 	}
 
 
 	public function setRobots($robots)
 	{
 		if (array_search($robots, self::$robotsValues) === FALSE) {
-			throw new \Nette\InvalidArgumentException;
+			throw new InvalidArgumentException("Variable must be one of [" . join(', ', self::$robotsValues) . "]. {$robots} is given.");
 		}
 
 		$this->robots = $robots;
@@ -408,15 +631,20 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param $title
+	 * @return $this
+	 */
 	public function setTitle($title)
 	{
-		$this->title = $title;
+		$this->setTranslatedValue('title', $title);
+		return $this;
 	}
 
 
 	public function getTitle()
 	{
-		return $this->title;
+		return $this->getTranslatedValue('title');
 	}
 
 
@@ -511,7 +739,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function setChangefreq($changefreq)
 	{
 		if ($changefreq !== NULL && array_search($changefreq, self::$changefreqValues) === FALSE) {
-			throw new \Nette\InvalidArgumentException;
+			throw new InvalidArgumentException("Variable must be one of [" . join(', ', self::$changefreqValues) . "]. {$changefreq} is given.");
 		}
 
 		$this->changefreq = $changefreq;
@@ -529,7 +757,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$priority = (int)$priority;
 
 		if (!is_integer($priority) || $priority < 0 || $priority > 10) {
-			throw new \Nette\InvalidArgumentException;
+			throw new InvalidArgumentException("Priority must be between 0 and 10");
 		}
 
 		$this->priority = $priority;
@@ -572,11 +800,13 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param boolean $published
+	 * @param $published
+	 * @return $this
 	 */
 	public function setPublished($published)
 	{
 		$this->published = $published;
+		return $this;
 	}
 
 
@@ -586,6 +816,92 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getPublished()
 	{
 		return $this->published;
+	}
+
+
+	/**
+	 * @param mixed $tags
+	 */
+	public function setTags($tags)
+	{
+		$this->tags = $tags;
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getTags()
+	{
+		return $this->tags;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return $this->class;
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\FileEntity $photo
+	 */
+	public function setPhoto($photo)
+	{
+		$this->photo = $photo;
+
+		if ($this->photo) {
+			$this->photo->setParent($this->page->getDir());
+			$this->photo->setInvisible(TRUE);
+		}
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\FileEntity
+	 */
+	public function getPhoto()
+	{
+		return $this->photo;
+	}
+
+
+	/**
+	 * @param RouteTranslationEntity[] $translations
+	 */
+	public function setTranslations($translations)
+	{
+		$this->translations = $translations;
+	}
+
+
+	/**
+	 * @return RouteTranslationEntity[]
+	 */
+	public function getTranslations()
+	{
+		return $this->translations;
+	}
+
+
+	/**
+	 * @param LanguageEntity $locale
+	 */
+	public function setLocale(LanguageEntity $locale = NULL)
+	{
+		$this->locale = $locale;
+	}
+
+
+	/**
+	 * @return LanguageEntity
+	 */
+	public function getLocale()
+	{
+		return $this->locale;
 	}
 
 
@@ -610,5 +926,73 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public static function getCacheModes()
 	{
 		return self::$cacheModes;
+	}
+
+
+	/**
+	 * @param $field
+	 * @param LanguageEntity $language
+	 * @return mixed
+	 */
+	protected function getTranslatedValue($field, LanguageEntity $language = NULL)
+	{
+		$language = $language ? : $this->locale;
+
+		if ($language && $this->translations[$language->id]) {
+			if (($ret = $this->translations[$language->id]->{$field}) !== NULL) {
+				return $ret;
+			}
+		}
+
+		return $this->{$field};
+	}
+
+
+	/**
+	 * @param $field
+	 * @param $value
+	 * @param LanguageEntity $language
+	 */
+	protected function setTranslatedValue($field, $value, LanguageEntity $language = NULL)
+	{
+		$language = $language ? : $this->locale;
+
+		if ($language) {
+			if (!isset($this->translations[$language->id])) {
+				if ($value === NULL || $this->{$field} === $value) {
+					return;
+				}
+
+				$this->translations[$language->id] = new RouteTranslationEntity($this, $language);
+			}
+			$this->translations[$language->id]->{$field} = $value ? : NULL;
+		} else {
+			$this->{$field} = $value;
+		}
+	}
+
+
+	/**
+	 * @param $name
+	 * @param $value
+	 * @throws \RuntimeException
+	 */
+	public function setValueForAllTranslations($name, $value)
+	{
+		$method = 'set' . ucfirst($name);
+
+		$reflection = new \ReflectionMethod($this, $method);
+		if (!$reflection->isPublic()) {
+			throw new \RuntimeException("The called method is not public.");
+		}
+
+		$locale = $this->locale;
+		$this->locale = NULL;
+		call_user_func(array($this, $method), $value);
+		foreach ($this->translations as $translation) {
+			$this->locale = $translation->getLanguage();
+			call_user_func(array($this, $method), $value);
+		}
+		$this->locale = $locale;
 	}
 }

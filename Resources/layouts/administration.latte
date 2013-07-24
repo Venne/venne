@@ -11,10 +11,10 @@
 	{head}
 
 		{* jquery *}
-		{js @CmsModule/jquery/js/jquery-1.9.1.min.js}
-		{js @CmsModule/jquery/js/jquery-migrate-1.1.1.min.js}
-		{js @CmsModule/jquery/js/jquery-ui-1.10.1.custom.min.js}
-		{css @CmsModule/jquery/css/ui-lightness/jquery-ui-1.10.1.custom.css, media=>'screen, projection, tv'}
+		{js @jquery2.0Module/jquery.min.js}
+		{js @jquery2.0Module/jquery-migrate.min.js}
+		{js @jqueryui1.10Module/jquery-ui.min.js}
+		{css @jqueryui1.10Module/themes/base/jquery-ui.css, media=>'screen, projection, tv'}
 
 		{* jquery plugins *}
 		{js @CmsModule/admin/js/jquery.contextMenu.js}
@@ -27,13 +27,14 @@
 
 		{js @CmsModule/iframe-post-form/jquery.iframe-post-form.js}
 		{js @CmsModule/typing/jquery.typing-0.2.0.min.js}
+		{js @CmsModule/holder/holder.js}
 
 		{* nette *}
 		{js @CmsModule/admin/js/netteForms.js}
 
 		{* bootstrap *}
-		{js @CmsModule/bootstrap/js/bootstrap.min.js}
-		{css @CmsModule/bootstrap/css/bootstrap.min.css}
+		{js @bootstrap2Module/js/bootstrap.min.js}
+		{css @bootstrap2Module/css/bootstrap.min.css}
 
 		{* ajax *}
 		{js @CmsModule/ajax/nette.ajax.js}
@@ -43,8 +44,8 @@
 		{js @FormsModule/jquery-tags-input/jquery.tagsinput.min.js}
 		{css @FormsModule/jquery-tags-input/jquery.tagsinput.css}
 
-		{css @FormsModule/datepicker/css/datepicker.css}
-		{js @FormsModule/datepicker/js/bootstrap-datepicker.js}
+		{css @FormsModule/datetimepicker/css/bootstrap-datetimepicker.min.css}
+		{js @FormsModule/datetimepicker/js/bootstrap-datetimepicker.min.js}
 
 		{js @FormsModule/textWithSelect/textWithSelect.js}
 
@@ -61,12 +62,16 @@
 		{js @CmsModule/grido/js/jquery.grido.js}
 		{css @CmsModule/grido/css/grido.css}
 
+	{* dynatree *}
+	{js @CmsModule/dynatree/jquery.dynatree.js}
+	{css @CmsModule/dynatree/skin-bootstrap/ui.dynatree.css}
+
 	{/head}
 
 	{body}
 
 		{* Top navigation *}
-		<div class="navbar navbar-fixed-top navbar-inverse navigation" n:snippet="navigation">
+		<div class="navbar navbar-fixed-top navbar-inverse navigation">
 			<div class="navbar-inner">
 				<div class="container-fluid">
 
@@ -101,6 +106,7 @@
 						{/if}
 						</ul>
 
+						<div n:snippet="navigation">
 						{if $presenter->mode == $presenter::MODE_EDIT}
 							<ul class="nav">
 								<li>
@@ -171,6 +177,7 @@
 								</ul>
 							</li>
 						</ul>
+						</div>
 					{/if}
 
 					</div>

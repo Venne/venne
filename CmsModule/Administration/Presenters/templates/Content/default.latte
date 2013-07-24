@@ -11,6 +11,7 @@
 {/block}
 
 {block #content}
+
 {if $presenter->isAuthorized('create')}
 <div class="navbar">
 	<div class="navbar-inner">
@@ -19,11 +20,7 @@
 
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-					{foreach $presenter->context->cms->contentManager->getContentTypes() as $link=>$name}
-						<li><a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{$name}</a></li>
-					{/foreach}
-					</ul>
+					{include #tree items=>$presenter->context->cms->contentManager->getContentTypes(TRUE)}
 				</li>
 
 			</ul>
@@ -31,5 +28,20 @@
 	</div>
 </div>
 {/if}
+
+{define #tree}
+<ul class="dropdown-menu">
+{foreach $items as $link=>$name}
+	<li{if is_array($name)} class="dropdown-submenu"{/if}>
+		{if is_array($name)}
+			<a class="ajax" href="#">{_$link}</a>
+			{include #tree items=>$name}
+		{else}
+			<a class="ajax" href="{plink :Cms:Admin:Content:create type=>$link}">{_$name}</a>
+		{/if}
+	</li>
+{/foreach}
+</ul>
+{/define}
 
 {control table}

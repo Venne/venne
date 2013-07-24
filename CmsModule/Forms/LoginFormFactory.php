@@ -41,7 +41,7 @@ class LoginFormFactory extends FormFactory
 		$form->addText('username', 'Login')->setRequired('Please provide a username.');
 		$form->addPassword('password', 'Password')->setRequired('Please provide a password.');
 		$form->addCheckbox('remember', 'Remember me on this computer');
-		$form->addSaveButton("Sign in")->getControlPrototype()->class[] = 'btn-primary';
+		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
 	}
 
 
@@ -62,7 +62,7 @@ class LoginFormFactory extends FormFactory
 				$form->presenter->redirect($this->redirect . ':');
 			}
 		} catch (\Nette\Security\AuthenticationException $e) {
-			$form->getPresenter()->flashMessage($e->getMessage(), "warning");
+			$form->getPresenter()->flashMessage($e->getMessage(), 'warning');
 		}
 	}
 }

@@ -12,6 +12,7 @@
 namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
+use CmsModule\Content\Entities\RedirectPageEntity;
 use CmsModule\Content\Repositories\PageRepository;
 
 /**
@@ -39,8 +40,7 @@ class NavigationControl extends Control
 	public function getRoot()
 	{
 		return $this->pageRepository->createQueryBuilder('a')
-			->andWhere('a.parent IS NULL AND a.previous IS NULL AND a.virtualParent IS NULL')
-			->andWhere('a.translationFor IS NULL')
+			->andWhere('a.parent IS NULL AND a.previous IS NULL')
 			->getQuery()->getSingleResult();
 	}
 
@@ -56,19 +56,19 @@ class NavigationControl extends Control
 
 	public function getLink(\CmsModule\Content\Entities\PageEntity $entity)
 	{
-		if ($entity instanceof \PagesModule\Entities\RedirectEntity) {
+		if ($entity instanceof RedirectPageEntity) {
 			if ($entity->page) {
-				return $this->presenter->link('this', array('route' => $entity->page->mainRoute));
+				return $this->presenter->link('Route', array('route' => $entity->page->mainRoute));
 			} else {
 				return $this->template->basePath . '/' . $entity->redirectUrl;
 			}
 		} else {
-			return $this->presenter->link('this', array('route' => $entity->mainRoute));
+			return $this->presenter->link('Route', array('route' => $entity->mainRoute));
 		}
 	}
 
 
-	public function render($startDepth = NULL, $maxDepth = NULL, $followActive = NULL, $showMain = FALSE)
+	public function renderDefault($startDepth = NULL, $maxDepth = NULL, $followActive = NULL, $showMain = FALSE)
 	{
 		$cacheKey = array(
 			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $showMain, $this->getPresenter()->lang
@@ -79,7 +79,5 @@ class NavigationControl extends Control
 		$this->template->followActive = $followActive ? : FALSE;
 		$this->template->showMain = $showMain;
 		$this->template->cacheKey = implode('|', $cacheKey);
-
-		$this->template->render();
 	}
 }

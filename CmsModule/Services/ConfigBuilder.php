@@ -33,7 +33,7 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 	/** @var string */
 	protected $fileName;
 
-	/** @var Nette\Config\Adapters\NeonAdapter */
+	/** @var NeonAdapter */
 	protected $adapter;
 
 

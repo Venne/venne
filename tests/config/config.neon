@@ -6,10 +6,16 @@ parameters:
 		charset: utf8
 		driverOptions:
 			1002: SET NAMES utf8
-
+			
 		proxyDir: %tempDir%/proxy
 		proxyNamespace: proxy
 		path: %tempDir%/database.db
+		user: ""
+		password: ""
+		host: ""
+		port: ""
+		dbname: ""
+		memory: false
 		
 	administration:
 		login:
@@ -21,7 +27,7 @@ parameters:
 		
 	website:
 		name: Blog
-		title: "%n %s %t"
+		title: %n %s %t
 		titleSeparator: |
 		keywords: ""
 		description: ""
@@ -39,7 +45,6 @@ parameters:
 	
 php:
 	date.timezone: Europe/Prague
-
 	
 extensions:
 	doctrine: DoctrineModule\DI\DoctrineExtension

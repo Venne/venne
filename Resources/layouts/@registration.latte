@@ -1,0 +1,7 @@
+{define #page-content}
+
+	{if !$presenter->user->isLoggedIn() && !isset($hideForm)}
+		{control form}
+	{/if}
+
+{/define}

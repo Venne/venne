@@ -1,0 +1,17 @@
+services:
+	cms.pages.registrationPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Registration\PageEntity')
+		setup:
+			- addSection('Registration form', @cms.pages.registration.registrationFormFactory)
+		tags: [contentType: [name: 'authentication.registration']]
+
+	cms.pages.registration.registrationFormFactory:
+		class: CmsModule\Pages\Registration\RegistrationFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.registration.routePresenter:
+		class: CmsModule\Pages\Registration\RoutePresenter
+		tags: [presenter]

@@ -119,6 +119,42 @@ class ModulePresenter extends BasePresenter
 	/**
 	 * @secured(privilege="edit")
 	 */
+	public function handleUpgrade($name, $confirm = false)
+	{
+		$module = $this->moduleManager->createInstance($name);
+
+		try {
+			$problem = $this->moduleManager->testUpgrade($module);
+		} catch (InvalidArgumentException $e) {
+			$this->flashMessage($e->getMessage(), 'warning');
+			$this->redirect('this');
+		}
+
+		if (!$confirm && count($problem->getSolutions()) > 0) {
+			$this->template->solutions = $problem->getSolutions();
+			$this->template->solutionAction = 'upgrade';
+			$this->template->solutionModule = $name;
+			return;
+		}
+
+		try {
+			foreach ($problem->getSolutions() as $job) {
+				$this->moduleManager->doAction($job->getAction(), $job->getModule());
+				$this->flashMessage("Module '{$job->getModule()->getName()}' has been installed.", 'success');
+			}
+			$this->moduleManager->upgrade($module);
+			$this->flashMessage("Module '{$name}' has been upgraded.", 'success');
+		} catch (InvalidArgumentException $e) {
+			$this->flashMessage($e->getMessage(), 'warning');
+		}
+
+		$this->redirect('this');
+	}
+
+
+	/**
+	 * @secured(privilege="edit")
+	 */
 	public function handleUninstall($name, $confirm = false)
 	{
 		$module = $this->moduleManager->createInstance($name);

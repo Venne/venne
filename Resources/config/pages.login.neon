@@ -1,0 +1,17 @@
+services:
+	cms.pages.loginContent:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Login\PageEntity')
+		setup:
+			- addSection('Login page', @cms.pages.login.loginPageFormFactory)
+		tags: [contentType: [name: 'authentication.login page']]
+
+	cms.pages.login.loginPageFormFactory:
+		class: CmsModule\Pages\Login\LoginFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.login.routePresenter:
+		class: CmsModule\Pages\Login\RoutePresenter
+		tags: [presenter]

@@ -24,7 +24,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @var string
 	 * @ORM\Column(type="string")
 	 */
-	protected $name;
+	protected $name = '';
 
 	/**
 	 * @var string
@@ -43,7 +43,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 * @var bool
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $invisible;
+	protected $invisible = FALSE;
 
 	/** @var string */
 	protected $publicDir;
@@ -56,13 +56,6 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/** @var string */
 	protected $_oldPath;
-
-
-	public function __construct()
-	{
-		$this->invisible = false;
-		$this->name = '';
-	}
 
 
 	/**

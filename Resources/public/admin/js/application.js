@@ -21,11 +21,11 @@ jQuery.extend({
 
 $(function () {
 
-	$('#create-new').live("click", function () {
+	$('#create-new').on("click", function () {
 		$(this).next().click();
 	});
 
-	$('#button-fullscreen').live('click', function (event){
+	$('#button-fullscreen').on('click', function (event){
 		if ($('#panel').data('state') != 'closed') {
 			event.preventDefault();
 			$('#panel').animate({
@@ -46,32 +46,8 @@ $(function () {
 	});
 
 
-	var dateInputOptions = {
-		datetime:{
-			dateFormat:'d.m.yy',
-			timeFormat:'h:mm'
-		},
-		'datetime-local':{
-			dateFormat:'d.m.yy',
-			timeFormat:'h:mm'
-		},
-		date:{
-			dateFormat:'d.m.yy'
-		},
-		month:{
-			dateFormat:'MM yy'
-		},
-		week:{
-			dateFormat:"w. 'týden' yy"
-		},
-		time:{
-			timeFormat:'h:mm'
-		}
-	};
-
 	// Jquery plugins
 	$('select[multiple]').multiSelect();
-	$('input[data-dateinput-type]').datepicker();
 	$('select[data-venne-form-textwithselect]').textWithSelect();
 
 
@@ -113,17 +89,34 @@ $(function () {
 		}
 	});
 	$.nette.ext('formsDateInputBind', {
+		init:function () {
+			this.init($('body'));
+		},
 		success:function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
 
+			var _this = this;
 			for (var i in payload.snippets) {
-				$('#' + i + ' input[data-dateinput-type]').each(function () {
-					$(this).datepicker();
+				$('#' + i).each(function () {
+					_this.init($(this));
 				});
 			}
 		}
+	}, {
+		init: function(target) {
+				target.find(this.selector).each(function(){
+					var e = $(this);
+					e.wrap('<div class="input-append" />')
+						.after('<span class="add-on"><i data-date-icon="icon-calendar" data-time-icon="icon-time" class="icon-calendar"></i></span>')
+						.parent('div')
+						.datetimepicker({
+							format: 'yyyy-MM-dd hh:mm:ss'
+						});
+				});
+		},
+		selector: 'input[type=date], input[type=datetime]'
 	});
 	$.nette.ext('formsTextWithSelectInputBind', {
 		success:function (payload) {
@@ -182,10 +175,16 @@ $(function () {
 	});
 	$.nette.ext('formsFileUpload', {
 		init: function () {
-			this.init();
+			this.init('body');
 		},
-		success: function (payload) {
-			this.init();
+		success:function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			for (var i in payload.snippets) {
+				this.init('#' + i);
+			}
 		}
 	}, {
 		init: function (target) {
@@ -204,7 +203,7 @@ $(function () {
 					}
 				});
 			}
-			$('input[type="file"]').each(function () {
+			$(target).find('input[type="file"]').each(function () {
 				var fileInput = $(this);
 				$(this).after('<div class="input-append">'
 					+ '<div class="uneditable-input input-xlarge text" id="' + $(this).attr('id') + '_fake" type="text"></div>'

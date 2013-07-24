@@ -12,4 +12,11 @@
 
 {block content}
 
-<h2>Version {=\Venne\Framework::VERSION}</h2>
+<h2>Versions</h2>
+
+<dd>Venne:FRAMEWORK</dd><dd>{=\Venne\Framework::VERSION}</dd>
+<dd>Venne:CMS</dd><dd>{=$presenter->context->parameters['modules']['cms']['version']}</dd>
+
+<h2>Author</h2>
+
+Josef Kříž <pre>pepakriz@gmail.com</pre>

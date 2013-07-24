@@ -43,7 +43,7 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $permissions;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="UserEntity", mappedBy="roleEntities")
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Pages\Users\UserEntity", mappedBy="roleEntities")
 	 */
 	protected $users;
 

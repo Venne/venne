@@ -1,0 +1,33 @@
+.tt-suggestion {
+	min-width: 336px;
+	padding: 3px 20px;
+	font-size: 16px;
+	font-weight: normal;
+	line-height: 24px;
+}
+
+.tt-suggestion.tt-is-under-cursor {
+	color: #fff;
+	background-color: #0097cf;
+}
+
+.tt-suggestion p {
+	margin: 0;
+}
+
+.tt-suggestion p.tt-suggestion-name {
+	margin-right: 60px;
+	font-weight: bold;
+	white-space: nowrap !important;
+}
+
+.tt-suggestion p.tt-suggestion-description {
+	margin-right: 60px;
+	font-size: 12px;
+	white-space: nowrap !important;
+}
+
+.tt-suggestion-photo {
+	float: right;
+	margin: 0 0 0 10px;
+}

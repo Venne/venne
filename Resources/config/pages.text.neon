@@ -1,0 +1,50 @@
+services:
+	cms.pages.textPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Text\PageEntity')
+		setup:
+			- addSection('Content', @cms.pages.text.textFormFactory)
+		tags: [contentType: [name: 'static page']]
+
+	cms.pages.text.textFormFactory:
+		class: CmsModule\Pages\Text\TextFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.text.routePresenter:
+		class: CmsModule\Pages\Text\RoutePresenter
+		tags: [presenter]
+
+	cms.pages.text.textElement:
+		class: CmsModule\Pages\Text\TextElement\TextElement
+		setup:
+			- injectSetupForm(@cms.pages.text.textareaElement.textFormFactory)
+		tags: [element: text]
+
+	cms.pages.text.textareaElement:
+		class: CmsModule\Pages\Text\TextElement\TextElement
+		setup:
+			- injectSetupForm(@cms.pages.text.editorElement.textareaFormFactory)
+		tags: [element: textarea]
+
+	cms.pages.text.editorElement:
+		class: CmsModule\Pages\Text\EditorElement\EditorElement
+		setup:
+			- injectSetupForm(@cms.pages.text.editorElement.editorFormFactory)
+		tags: [element: editor]
+
+	cms.pages.text.textareaElement.textFormFactory:
+		class: CmsModule\Pages\Text\TextElement\TextFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+
+	cms.pages.text.editorElement.textareaFormFactory:
+		class: CmsModule\Pages\Text\EditorElement\TextareaFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+
+	cms.pages.text.editorElement.editorFormFactory:
+		class: CmsModule\Pages\Text\EditorElement\EditorFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)

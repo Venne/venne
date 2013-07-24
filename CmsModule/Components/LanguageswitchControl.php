@@ -38,10 +38,8 @@ class LanguageswitchControl extends Control
 	}
 
 
-	public function render()
+	public function renderDefault()
 	{
 		$this->template->language = $this->getPresenter()->lang;
-
-		$this->template->render();
 	}
 }

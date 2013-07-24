@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Repositories;
 
-use CmsModule\Content\Entities\PageEntity;
 use DoctrineModule\Repositories\BaseRepository;
 
 /**

@@ -48,6 +48,15 @@ class PanelControl extends Control
 	}
 
 
+	public function getKey()
+	{
+		return array(
+			$this->getTab(),
+			$this->session->state[$this->getTab()],
+		);
+	}
+
+
 	public function render()
 	{
 		$this->template->render();
@@ -210,18 +219,17 @@ class PanelControl extends Control
 
 		$dql = $repository->createQueryBuilder('a');
 		if ($parent) {
-			$dql = $dql->andWhere('a.parent = ?1 AND a.tag IS NULL')->setParameter(1, $parent);
+			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
 		} else {
-			$dql = $dql->andWhere('(a.parent IS NULL OR a.tag IS NOT NULL) AND a.virtualParent IS NULL');
+			$dql = $dql->andWhere('a.parent IS NULL');
 		}
 		$dql
-			->andWhere('a.translationFor IS NULL')
 			->orderBy('a.position');
 
 		$types = $this->contentManager->getContentTypes();
 		foreach ($dql->getQuery()->getResult() as $page) {
-			$type = $this->presenter->template->translate($types[get_class($page)]);
-			$item = array("title" => $page->name . ' <small class="muted">' . $type . '</small>', 'key' => $page->id);
+			$type = $this->presenter->template->translate($types[$page->class]);
+			$item = array('title' => $page->mainRoute->name . ' <small class="muted">' . $type . '</small>', 'key' => $page->id);
 
 			if (count($page->children) > 0) {
 				$item['isLazy'] = TRUE;

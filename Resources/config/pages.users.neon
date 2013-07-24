@@ -1,0 +1,22 @@
+services:
+	cms.pages.userPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Users\PageEntity')
+		setup:
+			- addSection('Settings', @cms.pages.users.userFormFactory)
+		tags: [contentType: [name: 'website lists.site users']]
+
+
+	cms.pages.users.userFormFactory:
+		class: CmsModule\Pages\Users\UserFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.users.usersPresenter:
+		class: CmsModule\Pages\Users\UsersPresenter
+		tags: [presenter]
+
+	cms.pages.users.userPresenter:
+		class: CmsModule\Pages\Users\UserPresenter
+		tags: [presenter]

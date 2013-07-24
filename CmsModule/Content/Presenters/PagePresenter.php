@@ -11,15 +11,34 @@
 
 namespace CmsModule\Content\Presenters;
 
+use CmsModule\Administration\Presenters\ContentPresenter;
+use CmsModule\Content\ElementManager;
+use CmsModule\Content\Entities\ExtendedPageEntity;
+use CmsModule\Content\Entities\ExtendedRouteEntity;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
-use Gedmo\Translatable\TranslatableListener;
+use CmsModule\Content\Repositories\LanguageRepository;
+use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Content\Repositories\RouteRepository;
+use CmsModule\Panels\Stopwatch;
+use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Caching\Cache;
+use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @property-read EntityManager $entityManager
+ * @property-read ElementManager $elementManager
+ * @property-read RouteRepository $routeRepository
+ * @property-read PageRepository $pageRepository
+ * @property-read LanguageRepository $languageRepository
+ * @property-read PageEntity $page
+ * @property-read RouteEntity $route
+ * @property-read ExtendedPageEntity $extendedPage
+ * @property-read ExtendedRouteEntity $extendedRoute
  */
 class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 {
@@ -29,14 +48,20 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	/** @persistent */
 	public $backlink;
 
-	/** @var PageEntity */
-	public $page;
-
 	/**
 	 * @persistent
 	 * @var RouteEntity
 	 */
 	public $route;
+
+	/** @var ExtendedRouteEntity */
+	private $extendedRoute;
+
+	/** @var PageEntity */
+	private $page;
+
+	/** @var ExtendedPageEntity */
+	private $extendedPage;
 
 	/** @var LanguageEntity */
 	private $language;
@@ -47,8 +72,23 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	/** @var \Nette\Caching\Cache */
 	protected $_templateCache;
 
-	/** @var Venne\Module\Helpers */
+	/** @var \Venne\Module\Helpers */
 	protected $moduleHelpers;
+
+	/** @var EntityManager */
+	private $entityManager;
+
+	/** @var RouteRepository */
+	private $routeRepository;
+
+	/** @var PageRepository */
+	private $pageRepository;
+
+	/** @var LanguageRepository */
+	private $languageRepository;
+
+	/** @var ElementManager */
+	private $elementManager;
 
 
 	public function injectTemplateCache(\Nette\Caching\IStorage $cache)
@@ -67,27 +107,155 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 
 	/**
+	 * @param PageRepository $pageRepository
+	 */
+	public function injectPageRepository(PageRepository $pageRepository)
+	{
+		$this->pageRepository = $pageRepository;
+	}
+
+
+	/**
+	 * @param LanguageRepository $languageRepository
+	 */
+	public function injectLanguageRepository(LanguageRepository $languageRepository)
+	{
+		$this->languageRepository = $languageRepository;
+	}
+
+
+	/**
+	 * @param RouteRepository $routeRepository
+	 */
+	public function injectRouteRepository(RouteRepository $routeRepository)
+	{
+		$this->routeRepository = $routeRepository;
+	}
+
+
+	/**
+	 * @param EntityManager $entityManager
+	 */
+	public function injectEntityManager(EntityManager $entityManager)
+	{
+		$this->entityManager = $entityManager;
+	}
+
+
+	/**
+	 * @param ElementManager $elementManager
+	 */
+	public function injectElementManager(ElementManager $elementManager)
+	{
+		$this->elementManager = $elementManager;
+	}
+
+
+	/**
+	 * @return PageRepository
+	 */
+	public function getPageRepository()
+	{
+		return $this->pageRepository;
+	}
+
+
+	/**
+	 * @return LanguageRepository
+	 */
+	public function getLanguageRepository()
+	{
+		return $this->languageRepository;
+	}
+
+
+	/**
+	 * @return RouteRepository
+	 */
+	public function getRouteRepository()
+	{
+		return $this->routeRepository;
+	}
+
+
+	/**
+	 * @return ElementManager
+	 */
+	public function getElementManager()
+	{
+		return $this->elementManager;
+	}
+
+
+	/**
+	 * @return EntityManager
+	 */
+	public function getEntityManager()
+	{
+		return $this->entityManager;
+	}
+
+
+	/**
 	 * @return void
 	 */
 	public function startup()
 	{
-		parent::startup();
-
 		if (!$this->route) {
-			throw new \Nette\Application\BadRequestException;
+			throw new BadRequestException;
 		}
-		$this->page = $this->route->getPage();
-		foreach ($this->context->eventManager->getListeners() as $event => $listeners) {
-			foreach ($listeners as $hash => $listener) {
-				if ($listener instanceof TranslatableListener) {
-					$langId = (string)$this->context->cms->languageRepository->findOneBy(array('short' => $this->lang))->id;
-					$listener->setTranslatableLocale($langId);
-					$listener->setTranslationFallback(TRUE);
-					break;
-				}
+
+		if (!$this->route instanceof ExtendedRouteEntity) {
+			throw new InvalidArgumentException("Route must be instance of 'CmsModule\Content\Entities\ExtendedRouteEntity'. '" . get_class($this->route) . "' is given.");
+		}
+
+		if (!$this->route->route->published || ($this->route->route->released && $this->route->route->released > new \DateTime)) {
+			$session = $this->getSession(ContentPresenter::PREVIEW_SESSION);
+
+			if (!isset($session->routes[$this->route->route->id])) {
+				throw new BadRequestException;
+			} else {
+				$this->flashMessage('This page is unpublished.', 'info');
 			}
 		}
-		$this->context->entityManager->refresh($this->page);
+
+		parent::startup();
+
+		$this->extendedRoute = $this->route;
+		$this->route = $this->route->route;
+	}
+
+
+	/**
+	 * @return PageEntity
+	 */
+	public function getPage()
+	{
+		if (!$this->page) {
+			$this->page = $this->route->page;
+		}
+		return $this->page;
+	}
+
+
+	/**
+	 * @return ExtendedPageEntity
+	 */
+	public function getExtendedPage()
+	{
+		if (!$this->extendedPage) {
+			$this->extendedPage = $this->extendedRoute->extendedPage;
+		}
+		return $this->extendedPage;
+	}
+
+
+	/**
+	 * @return ExtendedRouteEntity
+	 */
+	public function getExtendedRoute()
+	{
+		return $this->extendedRoute;
 	}
 
 
@@ -97,7 +265,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function getLanguage()
 	{
 		if (!$this->language) {
-			$this->language = $this->context->cms->languageRepository->findOneBy(array('alias' => $this->lang));
+			$this->language = $this->languageRepository->findOneBy(array('alias' => $this->lang));
 		}
 		return $this->language;
 	}
@@ -110,22 +278,21 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function handleChangeLanguage($alias)
 	{
-		if ($this->page->isInLanguageAlias($alias)) {
-			$this->redirect('this', array('lang' => $alias));
+		if (!$this->getPage()->getLanguage()) {
+			$this->route->locale = $this->languageRepository->findOneBy(array('alias' => $alias));
+			$this->redirect('this', array('route' => $this->route, 'lang' => $alias));
 		}
 
-		if (!$page = $this->page->getPageWithLanguageAlias($alias)) {
-			$page = $this->page;
-			do {
-				if ($p = $page->getPageWithLanguageAlias($alias)) {
-					$this->redirect('this', array('route' => $p->mainRoute, 'lang' => $alias));
-				}
-				$page = $page->parent;
-			} while ($page);
-			throw new BadRequestException;
-		}
-
-		$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
+		$page = $this->getPage()->parent;
+		do {
+			$page->mainRoute->locale = $alias;
+			$this->entityManager->refresh($page->mainRoute);
+			if (!$page->getLanguage() || $page->getLanguage() == $alias) {
+				$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
+			}
+			$page = $page->parent;
+		} while ($page);
+		throw new BadRequestException;
 	}
 
 
@@ -187,8 +354,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			$id = end($name);
 			unset($name[count($name) - 1]);
 			$name = implode('_', $name);
-			/** @var $component \CmsModule\Content\IElement */
-			$component = $this->context->cms->elementManager->createInstance($id);
+			$component = $this->elementManager->createInstance($id);
 			$component->setRoute($this->route);
 			$component->setName($name);
 			$component->setLanguage($this->getLanguage());
@@ -243,13 +409,17 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		}
 
 		parent::beforeRender();
+	}
 
-		$this->template->entity = $this->page;
-		$this->template->route = $this->route;
-		$this['head']->setTitle($this->route->title);
-		$this['head']->setRobots($this->route->robots);
-		$this['head']->setKeywords($this->route->keywords);
-		$this['head']->setDescription($this->route->description);
-		$this['head']->setAuthor($this->route->author);
+
+	protected function createComponentHead()
+	{
+		$head = $this->getWidgetManager()->getWidget('head')->invoke();
+		$head->setTitle($this->route->title);
+		$head->setRobots($this->route->robots);
+		$head->setKeywords($this->route->keywords);
+		$head->setDescription($this->route->description);
+		$head->setAuthor($this->route->author);
+		return $head;
 	}
 }

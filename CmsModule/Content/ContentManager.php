@@ -63,12 +63,32 @@ class ContentManager extends Object
 	 *
 	 * @return ContentType[]
 	 */
-	public function getContentTypes()
+	public function getContentTypes($tree = FALSE)
 	{
 		$ret = array();
 
 		foreach ($this->contentTypes as $type => $item) {
-			$ret[$type] = $item['name'];
+			if($tree && ($p = strpos($item['name'], '.')) !== FALSE) {
+				$name = $item['name'];
+				$r = &$ret;
+
+				while(($p = strpos($name, '.')) !== FALSE) {
+					$key = substr($name, 0, $p);
+					$name = substr($name, $p + 1);
+
+					if (!isset($r[$key])) {
+						$r[$key] = array();
+					}
+
+					$r = &$r[$key];
+				}
+
+				$r[$type] = $name;
+
+			} else {
+				$ret[$type] = $item['name'];
+			}
+
 		}
 
 		return $ret;

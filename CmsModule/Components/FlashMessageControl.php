@@ -20,16 +20,15 @@ use Nette\ComponentModel\Component;
 class FlashMessageControl extends Control
 {
 
-	public function render($global = FALSE)
+	public function renderDefault($global = FALSE)
 	{
 		$this->template->flashes = $this->getFlashes($global);
-		$this->template->render();
 	}
 
 
 	protected function getFlashes($global = FALSE)
 	{
-		$component = $this;
+		$component = $this->presenter;
 
 		$ret = $this->getFlashesByControl($component);
 

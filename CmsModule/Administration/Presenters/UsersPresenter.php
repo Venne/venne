@@ -13,8 +13,11 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Components\Table\Form;
+use CmsModule\Content\Entities\UserPageEntity;
+use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
+use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
 
 /**
@@ -31,19 +34,34 @@ class UsersPresenter extends BasePresenter
 	/** @var UserRepository */
 	protected $userRepository;
 
+	/** @var PageRepository */
+	protected $pageRepository;
+
 	/** @var UserFormFactory */
 	protected $form;
 
 	/** @var UserSocialFormFactory */
 	protected $socialForm;
 
+	/** @var UserPageEntity */
+	protected $extendedPage;
+
 
 	/**
-	 * @param \CmsModule\Security\Repositories\UserRepository $userRepository
+	 * @param UserRepository $userRepository
 	 */
 	public function injectUserRepository(UserRepository $userRepository)
 	{
 		$this->userRepository = $userRepository;
+	}
+
+
+	/**
+	 * @param PageRepository $pageRepository
+	 */
+	public function injectPageRepository(PageRepository $pageRepository)
+	{
+		$this->pageRepository = $pageRepository;
 	}
 
 
@@ -65,11 +83,24 @@ class UsersPresenter extends BasePresenter
 	}
 
 
+	public function startup()
+	{
+		parent::startup();
+
+		if (($page = $this->pageRepository->findOneBy(array('special' => 'users'))) === NULL) {
+			$this->flashMessage('User page does not exist.', 'warning');
+		} else {
+			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
+		}
+	}
+
+
 	/**
 	 * @secured(privilege="show")
 	 */
 	public function actionDefault()
 	{
+		$this->template->extendedPage = $this->extendedPage;
 	}
 
 
@@ -126,7 +157,10 @@ class UsersPresenter extends BasePresenter
 			$table->addAction('socialLogins', 'Social Logins')
 				->getElementPrototype()->class[] = 'ajax';
 
-			$form = $admin->createForm($this->form, 'User', NULL, Form::TYPE_LARGE);
+			$extendedPage = $this->extendedPage;
+			$form = $admin->createForm($this->form, 'User', function () use ($extendedPage) {
+				return new UserEntity($extendedPage);
+			}, Form::TYPE_LARGE);
 			$socialForm = $admin->createForm($this->socialForm, 'Social Logins', NULL, Form::TYPE_LARGE);
 
 			$admin->connectFormWithAction($form, $table->getAction('edit'));

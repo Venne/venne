@@ -1,3 +1,5 @@
+{cache [$presenter->lang, $presenter->route->id], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
+
 {var $languages = $control->getItems()}
 
 <ul class="nav pull-right">
@@ -12,3 +14,5 @@
 
 	</li>
 </ul>
+
+{/cache}

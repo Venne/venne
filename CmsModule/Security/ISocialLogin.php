@@ -11,7 +11,7 @@
 
 namespace CmsModule\Security;
 
-use CmsModule\Security\Entities\UserEntity;
+use CmsModule\Pages\Users\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

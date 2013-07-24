@@ -101,47 +101,7 @@ services:
 	cms.basicFormFactory:
 		class: CmsModule\Content\Elements\Forms\BasicFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
-
-	cms.textFormFactory:
-		class: CmsModule\Content\Elements\Forms\TextFormFactory
-		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
-
-	cms.textareaFormFactory:
-		class: CmsModule\Content\Elements\Forms\TextareaFormFactory
-		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
-
-	cms.editorFormFactory:
-		class: CmsModule\Content\Elements\Forms\EditorFormFactory
-		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
-
-
-	cms.staticFormFactory:
-		class: CmsModule\Content\Forms\StaticFormFactory
-		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
-		tags: [component]
-
-	cms.loginPageFormFactory:
-		class: CmsModule\Content\Forms\LoginFormFactory
-		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
-		tags: [component]
-
-	cms.redirectFormFactory:
-		class: CmsModule\Content\Forms\RedirectFormFactory
-		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
-		tags: [component]
-
-	cms.registrationFormFactory:
-		class: CmsModule\Content\Forms\RegistrationFormFactory
-		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
-		tags: [component]
 
 	cms.registrationFrontFormFactory:
 		class: CmsModule\Content\Forms\RegistrationFrontFormFactory
@@ -154,10 +114,14 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
+	cms.tagFormFactory:
+		class: CmsModule\Forms\TagFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 	cms.securityManager:
 		setup:
-			- addUserType(basic user, \CmsModule\Security\Entities\UserEntity, cms.registrationFrontFormFactory)
+			- addUserType(basic user, \CmsModule\Pages\Users\UserEntity, cms.registrationFrontFormFactory)
 
 
 factories:
@@ -212,9 +176,33 @@ factories:
 		class: CmsModule\Components\BreadcrumbControl(%website.routePrefix%)
 		tags: [widget: breadcrumb]
 
+	cms.tagCloudControl:
+		class: CmsModule\Components\TagCloudControl
+		tags: [widget: tagCloud]
+
+	cms.authorControl:
+		class: CmsModule\Components\AuthorControl
+		tags: [widget: author]
+
+	cms.itemControl:
+		class: CmsModule\Components\ItemControl
+		tags: [widget: item]
+
+	cms.itemInfoControl:
+		class: CmsModule\Components\ItemInfoControl
+		tags: [widget: itemInfo]
+
+	cms.itemListControl:
+		class: CmsModule\Components\ItemListControl
+		tags: [widget: itemList]
+
 	cms.flashMessageControl:
 		class: CmsModule\Components\FlashMessageControl
 		tags: [widget: flashMessage]
+
+	cms.searchControl:
+		class: CmsModule\Components\SearchControl
+		tags: [widget: search]
 
 	cms.loginControl:
 		class: CmsModule\Components\LoginControl
@@ -226,21 +214,3 @@ factories:
 	cms.languageswitchControl:
 		class: CmsModule\Components\LanguageswitchControl
 		tags: [widget: languageswitch]
-
-	cms.textElement:
-		class: CmsModule\Content\Elements\TextElement
-		setup:
-			- injectSetupForm(@cms.textFormFactory)
-		tags: [element: text]
-
-	cms.textareaElement:
-		class: CmsModule\Content\Elements\TextElement
-		setup:
-			- injectSetupForm(@cms.textareaFormFactory)
-		tags: [element: textarea]
-
-	cms.editorElement:
-		class: CmsModule\Content\Elements\EditorElement
-		setup:
-			- injectSetupForm(@cms.editorFormFactory)
-		tags: [element: editor]

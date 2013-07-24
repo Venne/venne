@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content;
 
-use CmsModule\Content\Entities\PageEntity;
+use CmsModule\Content\Entities\ExtendedPageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,21 +19,21 @@ use CmsModule\Content\Entities\PageEntity;
 class SectionControl extends \Venne\Application\UI\Control implements ISectionControl
 {
 
-	/** @var PageEntity */
+	/** @var ExtendedPageEntity */
 	protected $entity;
 
 
 	/**
-	 * @param PageEntity $entity
+	 * @param ExtendedPageEntity $entity
 	 */
-	public function setEntity(PageEntity $entity)
+	public function setEntity(ExtendedPageEntity $entity)
 	{
 		$this->entity = $entity;
 	}
 
 
 	/**
-	 * @return PageEntity
+	 * @return ExtendedPageEntity
 	 */
 	public function getEntity()
 	{

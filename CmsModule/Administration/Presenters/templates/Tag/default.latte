@@ -1,0 +1,17 @@
+{block header}
+	{_'Tags'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active"><span class="divider">/</span> {include #header}</li>
+{/block}
+
+{block content}
+
+{if $extendedPage}
+{control table}
+{/if}

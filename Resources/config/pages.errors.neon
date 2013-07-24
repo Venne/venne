@@ -1,0 +1,18 @@
+services:
+	cms.pages.error404Page:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Errors\Error404PageEntity')
+		setup:
+			- addSection('Content', @cms.pages.text.textFormFactory)
+		tags: [contentType: [name: 'error pages.not found page']]
+
+	cms.pages.error403Page:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Errors\Error403PageEntity')
+		setup:
+			- addSection('Content', @cms.pages.text.textFormFactory)
+		tags: [contentType: [name: 'error pages.forbidden page']]
+
+	cms.pages.error500Page:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Errors\Error500PageEntity')
+		setup:
+			- addSection('Content', @cms.pages.text.textFormFactory)
+		tags: [contentType: [name: 'error pages.internal server error']]

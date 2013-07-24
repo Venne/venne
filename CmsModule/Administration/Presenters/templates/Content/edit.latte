@@ -1,5 +1,5 @@
 {block header}
-	{$entity->name}
+	{$entity->page->mainRoute->name}
 {/block}
 
 {block breadcrumb}
@@ -21,41 +21,27 @@
 	<li{if 'basic' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">{_'Basic setup'}</a></li>
 	<li{if 'routes' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}">{_'Routes'}</a></li>
 
+	<li class="pull-right"><a n:href="preview!" target="_blank"><span class="icon icon-eye-open icon-white"></span> {_preview}</a></li>
 
 	<li class="dropdown pull-right">
-		{if $entity->published}
-			<a n:href="hide!"><span class="icon icon-arrow-down icon-white"></span> Hide</a>
+		{if $entity->page->mainRoute->published}
+			<a n:href="publish!"><span class="icon icon-arrow-down icon-white"></span> Hide</a>
 		{else}
 			<a n:href="publish!"><span class="icon icon-globe icon-white"></span> Publish</a>
 		{/if}
 	</li>
 
-{if count($presenter->context->parameters['website']['languages']) > 1}
-<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+	{if !$entity->page->language}
 	<li class="dropdown pull-right">
-		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{=implode(", ", is_array($entity->languages) ? $entity->languages : $entity->languages->toArray())} <b class="caret"></b></a>
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{$presenter->languageEntity} <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
-			{var $mainEntity = ($entity->translationFor ?$entity->translationFor: $entity)}
-			<li><a class="ajax" href="{link this key=>$mainEntity->id}">{=implode(", ", is_array($mainEntity->languages) ? $mainEntity->languages : $mainEntity->languages->toArray())}</a></li>
-			{foreach $mainEntity->translations as $translation}
-				<li><a class="ajax" href="{link this key=>$translation->id}">{=implode(", ", is_array($translation->languages) ? $translation->languages : $translation->languages->toArray())}</a></li>
+			{foreach $languageRepository->findAll() as $language}
+				<li><a class="ajax" href="{link this contentLang=>($language->alias !== $languageRepository->findOneBy(array('short' => $presenter->context->parameters['website']['defaultLanguage']))->alias ? $language->alias : NULL)}">{$language}</a></li>
 			{/foreach}
-			<li class="divider"></li>
-			<li><a class="ajax" href="{link translate}">{_'New translation'}</a></li>
-			{if $entity->translationFor}<li><a href="{link delete! id=>$entity->id, key=>$mainEntity->id}">{_'Remove this language'}</a></li>{/if}
 		</ul>
 	</li>
-{/if}
-	{if count($entity->languages) > 1}
-		<li class="dropdown pull-right">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="#">{$presenter->languageEntity} <b class="caret"></b></a>
-			<ul class="dropdown-menu pull-right">
-				{foreach $entity->languages as $language}
-					<li><a class="ajax" href="{link this contentLang=>($language->id !== $languageRepository->findOneBy(array('short' => $presenter->context->parameters['website']['defaultLanguage']))->id ? $language->id : NULL)}">{$language}</a></li>
-				{/foreach}
-			</ul>
-		</li>
 	{/if}
+
 {/block}
 
 {block content}

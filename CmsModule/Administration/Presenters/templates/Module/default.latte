@@ -102,11 +102,12 @@
             <td>
 				{$module->getVersion()}
             </td>
-            <td class="table-td-action">
+            <td class="table-td-action" style="white-space:nowrap;">
 				<div n:if="$presenter->isAuthorized('edit')" class="btn-group pull-right">
 					<a class="ajax btn btn-small{if $presenter->moduleManager->getStatus($module) != 'installed'} btn-success{/if}"{if $presenter->moduleManager->getStatus($module) == 'installed'} disabled="disabled"{/if} n:href="install! $name"><span class="icon icon-refresh icon-white"></span> {_Install}</a>
 					<a class="ajax btn btn-small{if $presenter->moduleManager->getStatus($module) == 'installed'} btn-danger{/if}"{if $presenter->moduleManager->getStatus($module) != 'installed'} disabled="disabled"{/if} n:href="uninstall! $name"><span class="icon icon-off icon-white"></span> {_Uninstall}</a>
 				</div>
+				<a style="margin-right: 4px;" class="pull-left ajax btn btn-small{if $presenter->moduleManager->getStatus($module) == 'installed' && $module->getVersion() != $presenter->context->parameters['modules'][$name]['version']} btn-success{else}" disabled="disabled{/if}" n:href="upgrade! $name"><span class="icon icon-arrow-up icon-white"></span> {_Upgrade}</a>
             </td>
         </tr>
 		{/if}

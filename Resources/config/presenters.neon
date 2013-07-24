@@ -103,7 +103,7 @@ factories:
 			category: 'Content'
 			name: 'Manage pages'
 			description: 'Manage existing pages and content'
-			priority: 120
+			priority: 125
 		]]
 
 	cms.admin.layoutsPresenter:
@@ -113,7 +113,7 @@ factories:
 			category: 'Content'
 			name: 'Manage layouts'
 			description: 'Manage layouts, edit blocks,...'
-			priority: 110
+			priority: 115
 		]]
 
 	cms.admin.templatesPresenter:
@@ -123,7 +123,7 @@ factories:
 			category: 'Content'
 			name: 'Manage templates'
 			description: 'Manage layouts, edit blocks,...'
-			priority: 100
+			priority: 105
 		]]
 
 	cms.admin.filesPresenter:
@@ -133,7 +133,17 @@ factories:
 			category: 'Content'
 			name: 'Manage files'
 			description: 'Manage files and directories'
-			priority: 105
+			priority: 110
+		]]
+
+	cms.admin.tagPresenter:
+		class: CmsModule\Administration\Presenters\TagPresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Tag:'
+			category: 'Content'
+			name: 'Manage tags'
+			description: 'Manage tags of CMS content...'
+			priority: 100
 		]]
 
 	cms.filePresenter:
@@ -168,22 +178,6 @@ factories:
 
 	cms.cachedPresenter:
 		class: CmsModule\Content\Presenters\CachedPresenter
-		tags: [presenter]
-
-	cms.staticPresenter:
-		class: CmsModule\Content\Presenters\StaticPresenter
-		tags: [presenter]
-
-	cms.redirectPresenter:
-		class: CmsModule\Content\Presenters\RedirectPresenter
-		tags: [presenter]
-
-	cms.registrationPresenter:
-		class: CmsModule\Content\Presenters\RegistrationPresenter
-		tags: [presenter]
-
-	cms.loginPresenter:
-		class: CmsModule\Content\Presenters\LoginPresenter
 		tags: [presenter]
 
 	cms.errorPresenter:

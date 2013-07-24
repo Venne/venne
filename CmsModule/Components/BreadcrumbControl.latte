@@ -1,4 +1,4 @@
-{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE]}
+{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
 
 {var $item = $presenter->route}
 {var $currentUrl = $presenter->route->url}
@@ -9,7 +9,7 @@
 		{include #item item=>$item->parent, active=>false}
 	{/if}
 
-	{var $entity = $item->page->getPageWithLanguageAlias($presenter->lang)}
+	{var $entity = $item->page}
 	{var $url = $item->url}
 
 	{var $link = $presenter->link('this', array('route' => $item))}

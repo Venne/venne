@@ -11,9 +11,9 @@
 
 namespace CmsModule\Components;
 
+use CmsModule\Content\Control;
 use CmsModule\Content\Presenters\PagePresenter;
 use Nette\Utils\Paginator;
-use Venne\Application\UI\Control;
 
 /**
  * Visual paginator control.
@@ -32,7 +32,7 @@ class VisualPaginator extends Control
 
 
 	/**
-	 * @return Nette\Paginator
+	 * @return Paginator
 	 */
 	public function getPaginator()
 	{
@@ -48,7 +48,7 @@ class VisualPaginator extends Control
 	 *
 	 * @return void
 	 */
-	public function render()
+	public function renderDefault()
 	{
 		$paginator = $this->getPaginator();
 		$page = $paginator->page;
@@ -67,8 +67,6 @@ class VisualPaginator extends Control
 
 		$this->template->steps = $steps;
 		$this->template->paginator = $paginator;
-
-		$this->template->render();
 	}
 
 

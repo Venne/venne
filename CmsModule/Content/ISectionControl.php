@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content;
 
-use CmsModule\Content\Entities\PageEntity;
+use CmsModule\Content\Entities\ExtendedPageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,9 +20,9 @@ interface ISectionControl
 {
 
 	/**
-	 * @param PageEntity $entity
+	 * @param ExtendedPageEntity $entity
 	 */
-	public function setEntity(PageEntity $entity);
+	public function setEntity(ExtendedPageEntity $entity);
 
 
 	/**

@@ -24,7 +24,7 @@ class LoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	const USER_ADMIN = NULL;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="UserEntity", inversedBy="logins")
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Pages\Users\UserEntity", inversedBy="logins")
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;

@@ -10,7 +10,7 @@
 {if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_CREATED}{path @cmsModule/admin/icons/add-item.png}{/if}
 {if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_REMOVED}{path @cmsModule/admin/icons/shut-down.png}{/if}
 
-{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_OTHER && $log->target === 'CmsModule\Security\Entities\UserEntity'}{path @cmsModule/admin/icons/agent.png}{/if}
+{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_OTHER && $log->target === 'CmsModule\Pages\Users\UserEntity'}{path @cmsModule/admin/icons/agent.png}{/if}
 {if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_OTHER && $log->target === 'Venne\\Forms\\Form'}{path @cmsModule/admin/icons/configuration.png}{/if}
 {/define}
 
@@ -19,12 +19,11 @@
 {if $log->page}
 <a n:href=":Cms:Admin:Content:edit key=>$log->page->id">{_Page}: {$log->page} ({$log->page->mainRoute->url})</a>
 {elseif $log->target}
-	{var $entityClass = new \Nette\Reflection\ClassType($log->target)}
-	{if $log->target === 'CmsModule\Security\Entities\UserEntity'}
+	{if $log->target === 'CmsModule\Pages\Users\UserEntity'}
 		{_User}
 	{elseif $log->target === 'Venne\\Forms\\Form'}
 		<a href="{$log->type}">{_Form}</a>
-	{elseif $entityClass->isSubclassOf('CmsModule\\Content\\Entities\\PageEntity')}
+	{elseif is_subclass_of($log->target, 'CmsModule\\Content\\Entities\\PageEntity')}
 		{_Page}
 	{/if}
 {else}
@@ -37,15 +36,12 @@
 
 {define #dashboard-body}
 	<span class="muted">{$log->created|date: "%d.%m.%Y"}{if $log->user} | {$log->user}{/if}:</span>
-{if $log->target}
-	{var $entityClass = new \Nette\Reflection\ClassType($log->target)}
-{/if}
 
 {if $log->message}
 	{_$log->message}
 {else}
 	{if $log->target}
-		{if $entityClass->isSubclassOf('CmsModule\\Content\\Entities\\PageEntity')}
+		{if is_subclass_of($log->target, 'CmsModule\\Content\\Entities\\PageEntity')}
 			{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_UPDATED}{_'Page has been updated'}{/if}
 			{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_CREATED}{_'Page has been created'}{/if}
 			{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_REMOVED}{_'Page has been removed'}{/if}
@@ -64,21 +60,21 @@
 			<div class="media">
 				<a class="pull-left" href="#">
 					{var $user = $presenter->user->identity}
-					{if $user instanceof \CmsModule\Security\Entities\UserEntity && $user->avatar}
-					<img class="media-object img-polaroid img-rounded" n:src="$user->avatar->getFileUrl(true), size=>'96x96'" alt="{$user}">
+					{if $user instanceof \CmsModule\Pages\Users\UserEntity && $user->route->photo}
+					<img class="media-object img-polaroid img-rounded" n:src="$user->route->photo->getFileUrl(true), size=>'96x96'" alt="{$user}">
 					{/if}
 				</a>
 
 				<div class="media-body">
 					<h4 class="media-heading">
-						{if $user instanceof \CmsModule\Security\Entities\UserEntity}{$user}{else}Administrator{/if}
+						{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
 					</h4>
 
 					{if $user}
 					<dl class="dl-horizontal">
 						<dt>{_Registered}</dt><dd>{$user->created|date: "%d.%m.%Y"}</dd>
 						<dt>{_E-mail}</dt><dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
-						{var $lastLog = $logRepository->findOneBy(array('user' => $user->id, 'target' => 'CmsModule\Security\Entities\UserEntity', 'action' => \CmsModule\Content\Entities\LogEntity::ACTION_OTHER), array('created' => 'DESC'))}
+						{var $lastLog = $logRepository->findOneBy(array('user' => $user->id, 'target' => 'CmsModule\Pages\Users\UserEntity', 'action' => \CmsModule\Content\Entities\LogEntity::ACTION_OTHER), array('created' => 'DESC'))}
 						{if $lastLog}
 						<dt>{_'Last login'}</dt><dd>{$lastLog->created|date: "%d.%m.%Y"}</dd>
 						{/if}

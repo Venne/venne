@@ -1,0 +1,26 @@
+services:
+	cms.pages.tagsContent:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Tags\PageEntity')
+		setup:
+			- addSection('Settings', @cms.pages.tags.tagsFormFactory)
+		tags: [contentType: [name: 'website lists.site tags']]
+
+	cms.pages.tags.tagsFormFactory:
+		class: CmsModule\Pages\Tags\TagsFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+	cms.pages.tags.tagRepository:
+		class: CmsModule\Pages\Tags\TagRepository
+		factory: @entityManager::getRepository('CmsModule\Pages\Tags\TagEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
+
+factories:
+	cms.pages.tags.tagsPresenter:
+		class: CmsModule\Pages\Tags\TagsPresenter
+		tags: [presenter]
+
+	cms.pages.tags.tagPresenter:
+		class: CmsModule\Pages\Tags\TagPresenter
+		tags: [presenter]

@@ -34,7 +34,7 @@ class FileEntity extends BaseFileEntity
 	protected $parent;
 
 	/** @ORM\Column(type="boolean") */
-	protected $protected;
+	protected $protected = FALSE;
 
 	/**
 	 * @var \Nette\Http\FileUpload|\SplFileInfo
@@ -47,14 +47,6 @@ class FileEntity extends BaseFileEntity
 
 	/** @var string */
 	protected $_oldPath;
-
-
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->protected = FALSE;
-	}
 
 
 	/**

@@ -49,11 +49,11 @@ class LanguageRepository extends BaseRepository
 	 */
 	public function delete($entity, $withoutFlush = self::FLUSH)
 	{
-		foreach ($entity->getPages() as $page) {
-			if (count($page->getLanguages()) == 1) {
-				throw new \Nette\InvalidArgumentException("Language '{$entity->name}' require some pages which have content only in this language.");
-			}
-		}
+//		foreach ($entity->getPages() as $page) {
+//			if (count($page->getLanguages()) == 1) {
+//				throw new \Nette\InvalidArgumentException("Language '{$entity->name}' require some pages which have content only in this language.");
+//			}
+//		}
 
 		$ret = parent::delete($entity, $withoutFlush);
 		$this->generateConfig();

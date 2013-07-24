@@ -1,0 +1,21 @@
+{if $route instanceof CmsModule\Content\Entities\ExtendedRouteEntity}{var $route = $route->route}{/if}
+
+{cache [$route->id, $presenter->lang], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
+
+{var $thumbnail = (isset($thumbnail) ? $thumbnail : '190x')}
+
+{if $route->photo}
+	<div class="thumbnail pull-right" style="margin: 0  0 10px 10px;">
+		<img n:src="$route->photo->getFileUrl(true), size=>$thumbnail" alt="{$route->name}" />
+	</div>
+{/if}
+
+<p class="lead">
+	{!$route->notation}
+</p>
+
+<p n:if="$route->text">
+	{!$route->text|content}
+</p>
+
+{/cache}

@@ -36,14 +36,12 @@ class BreadcrumbControl extends Control
 	}
 
 
-	public function render()
+	public function renderDefault()
 	{
 		$cacheKey = array(
 			$this->presenter->route->id, $this->routePrefix, $this->getPresenter()->lang
 		);
 
 		$this->template->cacheKey = implode('|', $cacheKey);
-
-		$this->template->render();
 	}
 }

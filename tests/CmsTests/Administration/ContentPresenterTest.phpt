@@ -33,7 +33,7 @@ class ContentPresenterTest extends AdministrationCase
 
 	public function testActionCreate()
 	{
-		$this->helper->createResponse('Cms:Admin:Content', 'GET', array('action' => 'create', 'type' => 'CmsModule\Content\Entities\StaticPageEntity'))
+		$this->helper->createResponse('Cms:Admin:Content', 'GET', array('action' => 'create', 'type' => 'CmsModule\Pages\Text\TextPageEntity'))
 			->type('Nette\Application\Responses\TextResponse')
 			->getTemplate()->type('Nette\Templating\ITemplate')
 			->getDom()
@@ -49,13 +49,14 @@ class ContentPresenterTest extends AdministrationCase
 		$this->helper->prepareTestEnvironment();
 
 		$this->helper->createResponse('Cms:Admin:Content', 'POST', array(
-			'action' => 'create', 'type' => 'CmsModule\Content\Entities\StaticPageEntity', 'do' => 'form-submit'
+			'action' => 'create', 'type' => 'CmsModule\Pages\Text\TextPageEntity', 'do' => 'form-submit'
 		), array(
-			'name' => 'foo', 'mainRoute' => array(
-				'localUrl' => 'foo', 'title' => 'fooTitle', 'copyLayoutFromParent' => TRUE, 'copyLayoutToChildren' => TRUE,
-				'layout' => NULL, 'childrenLayout' => NULL
-			),
-			'tag' => 0, 'parent' => 1, 'navigationShow' => TRUE, 'navigationOwn' => FALSE, 'navigationTitleRaw' => '', '_submit' => 'Save',
+			'page' => array('mainRoute' => array(
+				'name' => 'foo', 'localUrl' => 'foo', 'title' => 'fooTitle', 'copyLayoutFromParent' => TRUE, 'copyLayoutToChildren' => TRUE,
+				'layout' => NULL, 'childrenLayout' => NULL, 'parent' => 1, 'navigationShow' => TRUE, 'navigationOwn' => FALSE, 'navigationTitleRaw' => '',
+				'contentTags' => array(),
+			),),
+			'_submit' => 'Save',
 		))
 			->type('Nette\Application\Responses\RedirectResponse')
 			->redirectContains('http:///admincontent/edit?key=3');
@@ -71,7 +72,7 @@ class ContentPresenterTest extends AdministrationCase
 
 		$this->helper->createResponse('Cms:Admin:Content', 'POST', array(
 			'action' => 'edit', 'key' => 3, 'do' => 'formEdit-submit'
-		), array('text' => 'fooText', '_submit' => 'Save'));
+		), array('page' => array('mainRoute' => array('text' => 'fooText')), '_submit' => 'Save'));
 
 		$this->helper->createResponse('Cms:Admin:Content', 'GET', array('action' => 'edit', 'key' => 3, 'do' => 'publish'));
 
@@ -79,18 +80,17 @@ class ContentPresenterTest extends AdministrationCase
 		/** @var RouteRepository $repository */
 		$repository = $this->helper->getContainer()->getByType('CmsModule\Content\Repositories\RouteRepository');
 		$route = $repository->findOneBy(array('id' => 3));
+		$extendedRoute = $this->helper->getContainer()->entityManager->getRepository($route->class)->findOneBy(array('route' => $route->id));
 
-		$this->helper->createResponse('Cms:Static', 'GET', array('route' => $route))
+		$this->helper->createResponse('Cms:Pages:Text:Text', 'GET', array('route' => $extendedRoute))
 			->type('Nette\Application\Responses\TextResponse')
 			->getTemplate()->type('Nette\Templating\ITemplate')
 			->getDom()
 			->contains('foo', 'h1')
 			->xpathContains('Main page', '//ul[@class="breadcrumb"]/li/a')
 			->xpathContains('fooTitle', '//ul[@class="breadcrumb"]/li[2]')
-			->xpathContains('foo', '//div[starts-with(@class,"navbar")]//ul/li[starts-with(@class, "active")]/a')
-			->xpathContains('fooText', '//h1/parent::div');
+			->xpathContains('fooText', '//h1/parent::div/p[2]');;
 	}
-
 }
 
 \run(new ContentPresenterTest);
