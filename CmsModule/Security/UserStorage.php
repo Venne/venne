@@ -63,7 +63,7 @@ class UserStorage extends \Nette\Http\UserStorage
 		}
 
 		if (!$this->checkConnection->invoke()) {
-			throw new InvalidArgumentException('Database connection not found');
+			return NULL;
 		}
 
 		if (!isset($this->identities[$identity->id])) {

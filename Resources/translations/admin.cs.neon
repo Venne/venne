@@ -47,7 +47,9 @@ file: soubor
 files: soubory
 files and attachements: soubory a přílohy
 general: globální
+global: globální
 global meta informations: globální meta informace
+hide: skrýt
 informations: informace
 installation: isntalace
 items per page: počet položek na stránku
@@ -73,7 +75,9 @@ notation: notace
 pages: stránky
 page: stránka
 parent: rodič
+permissions: oprávnění
 preview: náhled
+publish: publikovat
 really remove?: opravdu odstranit?
 remove: odstranit
 role: role
@@ -90,6 +94,7 @@ sessions: relace
 surname: příjmení
 show: zobrazit
 show in table: zobrazit tabulku
+show page: zobrazit stránku
 show website: zobrazit web
 share data with: sdílet data s
 sign in: přihlásit se
