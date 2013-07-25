@@ -49,13 +49,11 @@ class ContentTableFactory extends Object
 		$table = $adminGrid->getTable();
 
 		$table->addColumn('name', 'Name')
-			->setColumn('mainRoute.name')
-			//->setCustomRender(function ($entity) {
-//				return $entity->mainRoute->name;
-//			})
+			->setCustomRender(function ($entity) {
+				return $entity->mainRoute->name;
+			})
 			->setSortable()
 			->setFilter()
-				->setColumn('mainRoute.name')
 				->setSuggestion(function($item) { return $item->mainRoute->name; });
 		$table->getColumn('name')->getCellPrototype()->width = '50%';
 		$table->addColumn('mainRoute', 'URL')

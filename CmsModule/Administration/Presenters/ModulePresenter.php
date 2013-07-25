@@ -85,6 +85,7 @@ class ModulePresenter extends BasePresenter
 	 */
 	public function handleInstall($name, $confirm = false)
 	{
+		$this->invalidateControl('content');
 		$module = $this->moduleManager->createInstance($name);
 
 		try {
@@ -121,6 +122,7 @@ class ModulePresenter extends BasePresenter
 	 */
 	public function handleUpgrade($name, $confirm = false)
 	{
+		$this->invalidateControl('content');
 		$module = $this->moduleManager->createInstance($name);
 
 		try {
@@ -157,6 +159,7 @@ class ModulePresenter extends BasePresenter
 	 */
 	public function handleUninstall($name, $confirm = false)
 	{
+		$this->invalidateControl('content');
 		$module = $this->moduleManager->createInstance($name);
 
 		try {
