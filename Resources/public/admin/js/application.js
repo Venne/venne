@@ -47,7 +47,6 @@ $(function () {
 
 
 	// Jquery plugins
-	$('select[multiple]').multiSelect();
 	$('select[data-venne-form-textwithselect]').textWithSelect();
 
 
@@ -76,17 +75,26 @@ $(function () {
 		}
 	});
 	$.nette.ext('formsMultiSelectBind', {
+		init: function(){
+			this.init($('body'));
+		},
 		success:function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
 
+			var _this = this;
 			for (var i in payload.snippets) {
-				$('#' + i + ' select[multiple]').each(function () {
-					$(this).multiSelect();
+				$('#' + i).each(function () {
+					_this.init($(this));
 				});
 			}
 		}
+	},{
+		init: function(target){
+			target.find(this.selector).select2({width: 'resolve'});
+		},
+		selector: 'select[multiple]'
 	});
 	$.nette.ext('formsDateInputBind', {
 		init:function () {

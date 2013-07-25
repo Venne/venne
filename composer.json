@@ -17,6 +17,7 @@
 		"venne/bootstrap2-module": "*",
 		"venne/jquery2.0-module": "*",
 		"venne/jqueryui1.10-module": "*",
+		"venne/select2-module": "3.4.x-dev",
 		"kdyby/bootstrap-form-renderer": "v1.1.0",
 		"o5/grido": "@dev"
 	},
