@@ -54,4 +54,3 @@ abstract class FrontPresenter extends BasePresenter
 		$this->redirect("this", array("lang" => $alias));
 	}
 }
-

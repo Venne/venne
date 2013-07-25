@@ -23,20 +23,28 @@ use DoctrineModule\Entities\NamedEntity;
  *
  * @property RoleEntity[] $roles
  * @property PageEntity $page;
- *
+ * @property bool $all
  */
 class PermissionEntity extends NamedEntity
 {
+
+	const CACHE = 'Cms.PermissionEntity';
 
 	/**
 	 * @var RoleEntity[]
 	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity", indexBy="name")
 	 * @ORM\JoinTable(name="pagePermission_roles",
 	 *      joinColumns={@ORM\JoinColumn(name="pagePermission_id", referencedColumnName="id", onDelete="CASCADE")},
-	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", unique=true, onDelete="CASCADE")}
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )
 	 **/
 	protected $roles;
+
+	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean", name="allowAll")
+	 */
+	protected $all = TRUE;
 
 	/**
 	 * @var PageEntity
@@ -85,6 +93,24 @@ class PermissionEntity extends NamedEntity
 	public function getRoles()
 	{
 		return $this->roles;
+	}
+
+
+	/**
+	 * @param bool $all
+	 */
+	public function setAll($all)
+	{
+		$this->all = (bool)$all;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function getAll()
+	{
+		return $this->all;
 	}
 }
 

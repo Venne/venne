@@ -27,6 +27,8 @@ use Nette\Utils\Strings;
 abstract class ExtendedRouteEntity extends IdentifiedEntity
 {
 
+	const CACHE = 'Cms.ExtendedRouteEntity';
+
 	/**
 	 * @var PageEntity
 	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity")

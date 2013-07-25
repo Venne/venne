@@ -38,8 +38,12 @@ class PermissionsFormFactory extends FormFactory
 			$permissions = $form->addContainer('permissions');
 			foreach ($form->data->getPrivileges() as $key => $name) {
 				$container = $permissions->addContainer($key);
-				$container->setCurrentGroup($form->addGroup($name));
-				$container->addMultiSelect('permissions', '', $this->getRoles());
+				$container->setCurrentGroup($form->addGroup(ucfirst($name)));
+				$container->addCheckbox('all', 'Allow for all')->addCondition($form::EQUAL, FALSE)->toggle($container->name . $key);
+
+				$group = $form->addGroup()->setOption('id', $container->name . $key);
+				$container->setCurrentGroup($group);
+				$container->addMultiSelect('permissions', 'Roles', $this->getRoles());
 			}
 		}
 
@@ -56,6 +60,7 @@ class PermissionsFormFactory extends FormFactory
 				foreach ($permission->roles as $role) {
 					$items[] = $role->id;
 				}
+				$form['permissions'][$key]['all']->setDefaultValue($permission->all);
 				$form['permissions'][$key]['permissions']->setDefaultValue($items);
 			}
 		}
@@ -74,6 +79,7 @@ class PermissionsFormFactory extends FormFactory
 				$permissionEntity = new PermissionEntity;
 				$permissionEntity->setName($key);
 				$permissionEntity->setPage($entity->getPage());
+				$permissionEntity->setAll($permission['all']);
 
 				foreach ($permission['permissions'] as $id) {
 					$permissionEntity->roles[$id] = $this->getRoleRepository()->find($id);

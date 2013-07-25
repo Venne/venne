@@ -427,21 +427,31 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	 */
 	public function isAllowed(User $user, $permission)
 	{
-		if (!isset($this->_isAlowed[$user->id])) {
+		if (!isset($this->_isAlowed[$user->id][$permission])) {
+
+			if (!isset($this->_isAlowed[$user->id])) {
+				$this->_isAlowed[$user->id] = array();
+			}
+
 			if (isset($this->permissions[$permission])) {
-				$permission = $this->permissions[$permission];
+				$permissionEntity = $this->permissions[$permission];
+
+				if ($permissionEntity->getAll()) {
+					$this->_isAlowed[$user->id][$permission] = TRUE;
+					return TRUE;
+				}
 
 				foreach ($user->getRoles() as $role) {
-					if (isset($permission->roles[$role])) {
-						$this->_isAlowed[$user->id] = TRUE;
+					if (isset($permissionEntity->roles[$role])) {
+						$this->_isAlowed[$user->id][$permission] = TRUE;
 						return TRUE;
 					}
 				}
 			}
-			$this->_isAlowed[$user->id] = FALSE;
+			$this->_isAlowed[$user->id][$permission] = FALSE;
 		}
 
-		return $this->_isAlowed[$user->id];
+		return $this->_isAlowed[$user->id][$permission];
 	}
 
 

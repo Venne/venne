@@ -73,9 +73,9 @@ class SearchControl extends Control
 				}
 				$results[$route->id] = array(
 					'url' => $this->presenter->link('Route', array('route' => $route)),
-					'name' => $route->name,
+					'name' => str_ireplace($query, "<strong>{$query}</strong>", $route->name),
 					'value' => $route->name,
-					'description' => $text,
+					'description' => str_ireplace($query, "<strong>{$query}</strong>", $text),
 					'photo' => $route->photo ? $this->template->basePath . \CmsModule\Content\Macros\MediaMacro::proccessImage($route->photo->getFileUrl(true), array('size' => 'x48')) : NULL,
 				);
 			}

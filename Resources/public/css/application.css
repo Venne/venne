@@ -20,6 +20,9 @@
 	font-weight: bold;
 	white-space: nowrap !important;
 }
+.tt-suggestion p.tt-suggestion-name strong {
+	background-color: #dddddd;
+}
 
 .tt-suggestion p.tt-suggestion-description {
 	margin-right: 60px;

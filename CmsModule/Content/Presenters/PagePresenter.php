@@ -220,16 +220,14 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			}
 		}
 
-		if ($this->route->page->getSecured()) {
-			if (!$this->route->extendedPage->isAllowed($this->user, 'show')) {
-				throw new ForbiddenRequestException;
-			}
+		$this->extendedRoute = $this->route;
+		$this->route = $this->route->route;
+
+		if (!$this->isAllowed('show')) {
+			throw new ForbiddenRequestException;
 		}
 
 		parent::startup();
-
-		$this->extendedRoute = $this->route;
-		$this->route = $this->route->route;
 	}
 
 
@@ -350,6 +348,21 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			), $ret);
 		}
 		return $ret;
+	}
+
+
+	/**
+	 * @param null $resource
+	 * @param null $privilege
+	 * @return bool
+	 */
+	public function isAllowed($resource = NULL, $privilege = NULL)
+	{
+		if (!$this->getPage()->getSecured()) {
+			return TRUE;
+		}
+
+		return $this->getExtendedPage()->isAllowed($this->getUser(), $resource);
 	}
 
 

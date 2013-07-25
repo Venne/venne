@@ -29,6 +29,10 @@ use Nette\Security\User;
 abstract class ExtendedPageEntity extends IdentifiedEntity
 {
 
+	const CACHE = 'Cms.ExtendedPageEntity';
+
+	const PRIVILEGE_SHOW = 'show';
+
 	/**
 	 * @var PageEntity
 	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", cascade={"ALL"})
@@ -173,7 +177,7 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 	public function getPrivileges()
 	{
 		return array(
-			'show' => 'show page',
+			self::PRIVILEGE_SHOW => 'show page',
 		);
 	}
 }
