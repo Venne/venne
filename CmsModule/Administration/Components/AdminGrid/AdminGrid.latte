@@ -93,6 +93,9 @@
 					e.preventDefault();
 					$('#modal-{!$control->getName()} form input[name="_submit"]').click();
 				});
+				$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
+					e.preventDefault();
+				});
 			});
 			// ]]>
 		</script>
@@ -149,6 +152,9 @@
 				$('#modal-{!$control->getName()} .btn-primary').on('click', function (e) {
 					e.preventDefault();
 					$('#modal-{!$control->getName()} form input[name="_submit"]').click();
+				});
+				$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
+					e.preventDefault();
 				});
 			});
 			// ]]>
