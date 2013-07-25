@@ -11,6 +11,7 @@
 		{var $entity = $item}
 		{continueIf $entity===NULL}
 		{continueIf !$entity->mainRoute->published}
+		{continueIf $entity->secured && !$entity->isAllowed($presenter->user, 'show')}
 
 		{var $active = $control->isActive($entity)}
 		{var $link = $control->getLink($entity)}

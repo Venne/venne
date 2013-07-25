@@ -14,6 +14,7 @@ namespace CmsModule\Content\Entities;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\UnitOfWork;
+use Nette\Security\User;
 use Nette\Utils\Strings;
 
 /**
@@ -23,10 +24,11 @@ use Nette\Utils\Strings;
  * @ORM\Index(name="special_idx", columns={"special"}),
  * @ORM\Index(name="class_idx", columns={"class"}),
  * })
- * 
+ *
  * @property RouteEntity $mainRoute
  * @property ArrayCollection|RouteEntity[] $routes
  * @property string $special
+ * @property bool $secured
  */
 class PageEntity extends TreeEntity implements IloggableEntity
 {
@@ -94,6 +96,21 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	 */
 	protected $class;
 
+	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $secured = FALSE;
+
+	/**
+	 * @var PermissionEntity[]|ArrayCollection
+	 * @ORM\OneToMany(targetEntity="PermissionEntity", mappedBy="page", indexBy="name", fetch="EXTRA_LAZY", orphanRemoval=true, cascade={"all"})
+	 */
+	protected $permissions;
+
+	/** @var array */
+	protected $_isAlowed = array();
+
 
 	/**
 	 * @param ExtendedPageEntity $page
@@ -103,6 +120,7 @@ class PageEntity extends TreeEntity implements IloggableEntity
 		parent::__construct();
 
 		$this->routes = new ArrayCollection;
+		$this->permissions = new ArrayCollection;
 		$this->created = new \DateTime;
 		$this->updated = new \DateTime;
 		$this->class = get_class($page);
@@ -362,6 +380,68 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	public function getClass()
 	{
 		return $this->class;
+	}
+
+
+	/**
+	 * @param bool $secured
+	 */
+	public function setSecured($secured)
+	{
+		$this->secured = $secured;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function getSecured()
+	{
+		return $this->secured;
+	}
+
+
+	/**
+	 * @param PermissionEntity[] $permissions
+	 */
+	public function setPermissions($permissions)
+	{
+		$this->permissions = $permissions;
+		$this->_isAlowed = array();
+	}
+
+
+	/**
+	 * @return PermissionEntity[]|ArrayCollection
+	 */
+	public function getPermissions()
+	{
+		return $this->permissions;
+	}
+
+
+	/**
+	 * @param User $user
+	 * @param $permission
+	 * @return bool
+	 */
+	public function isAllowed(User $user, $permission)
+	{
+		if (!isset($this->_isAlowed[$user->id])) {
+			if (isset($this->permissions[$permission])) {
+				$permission = $this->permissions[$permission];
+
+				foreach ($user->getRoles() as $role) {
+					if (isset($permission->roles[$role])) {
+						$this->_isAlowed[$user->id] = TRUE;
+						return TRUE;
+					}
+				}
+			}
+			$this->_isAlowed[$user->id] = FALSE;
+		}
+
+		return $this->_isAlowed[$user->id];
 	}
 
 

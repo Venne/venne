@@ -114,6 +114,11 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
+	cms.admin.permissionsFormFactory:
+		class: CmsModule\Content\Forms\PermissionsFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 	cms.tagFormFactory:
 		class: CmsModule\Forms\TagFormFactory
 		setup:

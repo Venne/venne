@@ -24,6 +24,7 @@ use CmsModule\Content\Repositories\RouteRepository;
 use CmsModule\Panels\Stopwatch;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Caching\Cache;
 use Nette\InvalidArgumentException;
 
@@ -216,6 +217,12 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 				throw new BadRequestException;
 			} else {
 				$this->flashMessage('This page is unpublished.', 'info');
+			}
+		}
+
+		if ($this->route->page->getSecured()) {
+			if (!$this->route->extendedPage->isAllowed($this->user, 'show')) {
+				throw new ForbiddenRequestException;
 			}
 		}
 

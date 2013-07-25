@@ -16,6 +16,7 @@ use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\ContentManager;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Forms\BasicFormFactory;
+use CmsModule\Content\Forms\PermissionsFormFactory;
 use CmsModule\Content\ISectionControl;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
@@ -66,8 +67,11 @@ class ContentPresenter extends BasePresenter
 	/** @var ContentTableFactory */
 	protected $contentTableFactory;
 
+	/** @var PermissionsFormFactory */
+	protected $permissionsFormFactory;
 
-	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory)
+
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory)
 	{
 		parent::__construct();
 
@@ -76,6 +80,7 @@ class ContentPresenter extends BasePresenter
 		$this->contentManager = $contentManager;
 		$this->contentTableFactory = $contentTableFactory;
 		$this->contentRouteControlFactory = $routeControlFactory;
+		$this->permissionsFormFactory = $permissionsFormFactory;
 	}
 
 
@@ -332,6 +337,8 @@ class ContentPresenter extends BasePresenter
 			$form = $this->contentFormFactory->invoke($entity);
 		} elseif ($this->section == 'routes') {
 			$form = $this->contentRouteControlFactory->invoke();
+		} elseif ($this->section == 'permissions') {
+			$form = $this->permissionsFormFactory->invoke($entity);
 		} else {
 			if ($this->section) {
 				if (!$contentType->hasSection($this->section)) {

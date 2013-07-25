@@ -19,7 +19,6 @@
 	{/foreach}
 
 	<li{if 'basic' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">{_'Basic setup'}</a></li>
-	<li{if 'routes' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}">{_'Routes'}</a></li>
 
 	<li class="pull-right"><a n:href="preview!" target="_blank"><span class="icon icon-eye-open icon-white"></span> {_preview}</a></li>
 
@@ -41,6 +40,9 @@
 		</ul>
 	</li>
 	{/if}
+
+	<li class="pull-right{if 'routes' == $section} active{/if}"><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}">{_'Routes'}</a></li>
+	<li class="pull-right{if 'permissions' == $section} active{/if}"><a class="ajax" href="{$presenter->link('this', array('section'=>'permissions') + $nullLinkParams)}">{_'Permissions'}</a></li>
 
 {/block}
 

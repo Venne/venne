@@ -14,6 +14,7 @@ namespace CmsModule\Content\Entities;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Entities\IdentifiedEntity;
 use Nette\InvalidArgumentException;
+use Nette\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,6 +22,9 @@ use Nette\InvalidArgumentException;
  * @ORM\MappedSuperclass
  *
  * @property-read PageEntity $page
+ * @property-read ExtendedRouteEntity $extendedMainRoute
+ * @property-read string $special
+ * @property LanguageEntity $locale
  */
 abstract class ExtendedPageEntity extends IdentifiedEntity
 {
@@ -149,5 +153,27 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 	protected function getSpecial()
 	{
 		return NULL;
+	}
+
+
+	/**
+	 * @param User $user
+	 * @param $permission
+	 * @return bool
+	 */
+	public function isAllowed(User $user, $permission)
+	{
+		return $this->page->isAllowed($user, $permission);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPrivileges()
+	{
+		return array(
+			'show' => 'show page',
+		);
 	}
 }

@@ -78,6 +78,9 @@ class NavigationControl extends Control
 		$this->template->maxDepth = $maxDepth ? : 1;
 		$this->template->followActive = $followActive ? : FALSE;
 		$this->template->showMain = $showMain;
-		$this->template->cacheKey = implode('|', $cacheKey);
+		$this->template->cacheKey = array(
+			implode('|', $cacheKey),
+			$this->presenter->user->isLoggedIn() ? $this->presenter->user->getRoles() : NULL,
+		);
 	}
 }
