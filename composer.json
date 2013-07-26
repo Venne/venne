@@ -18,9 +18,10 @@
 		"venne/jquery2.0-module": "*",
 		"venne/jqueryui1.10-module": "*",
 		"venne/select2-module": "3.4.x-dev",
+		"venne/typeahead-module": "0.9.x-dev",
+		"venne/dynatree-module": "1.2.x-dev",
 		"venne/grido-module": "2.0.x-dev",
-		"kdyby/bootstrap-form-renderer": "v1.1.0",
-		"o5/grido": "@dev"
+		"kdyby/bootstrap-form-renderer": "v1.1.0"
 	},
 	"require-dev": {
 		"venne/tester": "@dev"

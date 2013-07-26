@@ -38,13 +38,10 @@
 		{js @CmsModule/ajax/spinner.ajax.js}
 
 		{* forms *}
-		{js @FormsModule/jquery-tags-input/jquery.tagsinput.min.js}
-		{css @FormsModule/jquery-tags-input/jquery.tagsinput.css}
+		{css @formsModule/datetimepicker/css/bootstrap-datetimepicker.min.css}
+		{js @formsModule/datetimepicker/js/bootstrap-datetimepicker.min.js}
 
-		{css @FormsModule/datetimepicker/css/bootstrap-datetimepicker.min.css}
-		{js @FormsModule/datetimepicker/js/bootstrap-datetimepicker.min.js}
-
-		{js @FormsModule/textWithSelect/textWithSelect.js}
+		{js @formsModule/textWithSelect/textWithSelect.js}
 
 		{* application *}
 		{js @CmsModule/admin/js/application.js}
@@ -54,18 +51,16 @@
 		{if $presenter->compact}{css @CmsModule/admin/css/style_compact.css}{/if}
 
 		{* Grido *}
-		{js @CmsModule/grido/js/jquery.hashchange.min.js}
-		{js @CmsModule/grido/js/jquery.maskedinput.min.js}
 		{js @gridoModule/jquery.grido.js}
-		{css @CmsModule/grido/css/grido.css}
+		{css @gridoModule/grido.css}
 
 		{* select2 *}
 		{js @select2Module/select2.min.js}
 		{css @select2Module/select2.css}
 
 		{* dynatree *}
-		{js @CmsModule/dynatree/jquery.dynatree.js}
-		{css @CmsModule/dynatree/skin-bootstrap/ui.dynatree.css}
+		{js @dynatreeModule/jquery.dynatree.js}
+		{css @dynatreeModule/skin-bootstrap/ui.dynatree.css}
 
 	{/head}
 
