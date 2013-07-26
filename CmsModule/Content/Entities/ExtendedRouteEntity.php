@@ -45,7 +45,7 @@ abstract class ExtendedRouteEntity extends IdentifiedEntity
 
 	/**
 	 * @var RouteEntity
-	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", cascade={"persist"})
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $route;
