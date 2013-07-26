@@ -300,7 +300,7 @@ class PageRoute extends Route
 			'module' => self::DEFAULT_MODULE,
 			'presenter' => self::DEFAULT_PRESENTER,
 			'action' => self::DEFAULT_ACTION,
-			'lang' => isset($parameters['lang']) ? $parameters['lang'] : $route->page->languages[0]->alias,
+			'lang' => isset($parameters['lang']) ? $parameters['lang'] : ($route->page->language ? $route->page->language->alias : $this->defaultLanguage),
 			'url' => $route->getUrl(),
 		) + $parameters);
 		return $request;

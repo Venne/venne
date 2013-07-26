@@ -12,8 +12,6 @@
 namespace CmsModule\Content\Forms;
 
 use CmsModule\Content\Entities\RouteEntity;
-use CmsModule\Pages\Tags\TagRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use DoctrineModule\Forms\FormFactory;
 use FormsModule\ControlExtensions\ControlExtension;
 use Venne\Forms\Form;
@@ -28,6 +26,7 @@ class RouteFormFactory extends FormFactory
 	{
 		return array_merge(parent::getControlExtensions(), array(
 			new ControlExtension,
+			new \CmsModule\Content\Forms\ControlExtensions\ControlExtension,
 		));
 	}
 
@@ -77,46 +76,9 @@ class RouteFormFactory extends FormFactory
 		$form->addDateTime('expired', 'Expired');
 
 		$form->addGroup('Tags');
-		$form->addTags('contentTags');
+		$form->addContentTags('tags');
 
 		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
-	}
-
-
-
-	public function handleSave(Form $form)
-	{
-		$repository = $this->getTagRepository();
-		$collection = new ArrayCollection;
-		foreach ($form['contentTags']->getValue() as $key => $tag) {
-			if (($entity = $repository->findOneBy(array('name' => $tag))) === NULL) {
-				$entity = $repository->createNew();
-				$entity->setName($tag);
-			}
-			$collection[$key] = $entity;
-		}
-		$form->data->setTags($collection);
-
-		parent::handleSave($form);
-	}
-
-
-	public function handleLoad(Form $form)
-	{
-		$tags = array();
-		foreach ($form->data->getTags() as $tag) {
-			$tags[] = $tag->getName();
-		}
-		$form['contentTags']->setValue($tags);
-	}
-
-
-	/**
-	 * @return TagRepository
-	 */
-	private function getTagRepository()
-	{
-		return $this->mapper->getEntityManager()->getRepository('CmsModule\Pages\Tags\TagEntity');
 	}
 }

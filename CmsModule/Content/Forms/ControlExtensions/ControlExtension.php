@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Forms\ControlExtensions;
 
+use CmsModule\Content\Forms\Controls\TagsControl;
 use DoctrineModule\Forms\Mappers\EntityMapper;
 use Nette\Object;
 use Venne\Forms\Form;
@@ -46,6 +47,7 @@ class ControlExtension extends Object implements IControlExtension
 
 		return array(
 			'fileEntityInput',
+			'contentTags',
 		);
 	}
 
@@ -61,5 +63,18 @@ class ControlExtension extends Object implements IControlExtension
 	public function addFileEntityInput($form, $name, $label = NULL)
 	{
 		return $form[$name] = new \CmsModule\Content\Forms\Controls\FileEntityControl($label);
+	}
+
+
+	/**
+	 * Add tags input to the form.
+	 *
+	 * @param type $name
+	 * @param type $label
+	 */
+	public function addContentTags($form, $name, $label = NULL)
+	{
+		$control = $form[$name] = new TagsControl($label);
+		return $control;
 	}
 }

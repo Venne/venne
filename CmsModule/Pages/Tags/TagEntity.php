@@ -81,7 +81,7 @@ class TagEntity extends ExtendedRouteEntity
 	public function setName($name)
 	{
 		if ($this->name) {
-			$this->route->updated = new \DateTime;
+			$this->route->generateDate();
 		}
 
 		$this->name = $name;

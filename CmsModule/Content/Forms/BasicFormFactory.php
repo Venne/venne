@@ -11,7 +11,6 @@
 
 namespace CmsModule\Content\Forms;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use DoctrineModule\Forms\FormFactory;
 use DoctrineModule\Repositories\BaseRepository;
 use Venne\Forms\Form;
@@ -32,8 +31,9 @@ class BasicFormFactory extends FormFactory
 	protected function getControlExtensions()
 	{
 		return array(
-			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension(),
-			new \FormsModule\ControlExtensions\ControlExtension(),
+			new \DoctrineModule\Forms\ControlExtensions\DoctrineExtension,
+			new \FormsModule\ControlExtensions\ControlExtension,
+			new \CmsModule\Content\Forms\ControlExtensions\ControlExtension,
 		);
 	}
 
@@ -96,7 +96,8 @@ class BasicFormFactory extends FormFactory
 		}
 
 		if ($this->getTagPage()) {
-			$mainRoute->addTags('contentTags', 'Tags');
+			$mainRoute->addContentTags('tags', 'Tags')
+				->getControlPrototype()->class[] = 'input-block-level';
 		}
 
 		$mainRoute->setCurrentGroup($form->addGroup('Layout'));
@@ -209,22 +210,6 @@ class BasicFormFactory extends FormFactory
 
 	public function handleSave(Form $form)
 	{
-		if ($this->getTagPage()) {
-			$repository = $this->getTagRepository();
-			$collection = new ArrayCollection;
-			foreach ($form['page']['mainRoute']['contentTags']->getValue() as $key => $tag) {
-				if (!$tag) {
-					continue;
-				}
-				if (($entity = $repository->findOneBy(array('name' => $tag))) === NULL) {
-					$entity = $repository->createNew();
-					$entity->setName($tag);
-				}
-				$collection[$key] = $entity;
-			}
-			$form->data->page->mainRoute->setTags($collection);
-		}
-
 		if ($form['page']['navigationOwn']->value) {
 			$form->data->page->navigationTitleRaw = $form['navigationTitleRaw']->value;
 		} else {
@@ -237,14 +222,6 @@ class BasicFormFactory extends FormFactory
 
 	public function handleLoad(Form $form)
 	{
-		if ($this->getTagPage()) {
-			$tags = array();
-			foreach ($form->data->page->mainRoute->getTags() as $tag) {
-				$tags[] = $tag->getName();
-			}
-			$form['page']['mainRoute']['contentTags']->setValue($tags);
-		}
-
 		if (!$form->data->page->parent) {
 			$form['page']['mainRoute']['copyLayoutFromParent']->value = FALSE;
 		}
@@ -264,15 +241,6 @@ class BasicFormFactory extends FormFactory
 			$form->addError('Duplicate entry');
 			return TRUE;
 		}
-	}
-
-
-	/**
-	 * @return \Doctrine\ORM\EntityRepository
-	 */
-	private function getTagRepository()
-	{
-		return $this->mapper->getEntityManager()->getRepository('CmsModule\Pages\Tags\TagEntity');
 	}
 
 

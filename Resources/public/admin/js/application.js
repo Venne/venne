@@ -92,9 +92,63 @@ $(function () {
 		}
 	},{
 		init: function(target){
-			target.find(this.selector).select2({width: 'resolve'});
+			target.find(this.selector).each(function(){
+				var args = {
+						width: 'resolve'
+					};
+
+				if ($(this).attr('data-tag-suggest') !== undefined) {
+					args.createSearchChoice = function(term, data) {
+						if ($(data).filter(function() {
+							return this.text.localeCompare(term) === 0;
+						}).length === 0) {
+							return {
+								id: term,
+								text: term
+							};
+						}
+					};
+					args.initSelection = function(element, callback) {
+						var data = [];
+						$(element.val().split($(element).attr('data-tag-joiner'))).each(function () {
+							data.push({id: this, text: this});
+						});
+						callback(data);
+					};
+					args.ajax = {
+						url: $(this).attr('data-tag-suggest'),
+						dataType: 'json',
+						results: function (data) {
+							var results = [];
+							$.each(data.results, function(index, item){
+								results.push({
+									id: index,
+									text: item
+								});
+							});
+							return {
+								results: results
+							};
+						},
+						data: function (term, page) {
+							return {
+								q: term
+							}
+						}
+					};
+				}
+
+				if ($(this).attr('data-tag-joiner') !== undefined) {
+					var tags = jQuery.parseJSON($(this).attr('data-tags'));
+					args.tags = true;
+					//args.tokenSeparators = [$(this).attr('data-tag-joiner')];
+					args.separator = $(this).attr('data-tag-joiner');
+				}
+
+				$(this).select2(args);
+			});
 		},
-		selector: 'select[multiple]'
+		selector: 'select[multiple], input[data-tag-joiner]'
 	});
 	$.nette.ext('formsDateInputBind', {
 		init:function () {
