@@ -152,7 +152,7 @@ class ContentPresenter extends BasePresenter
 			$session->routes[$route->id] = TRUE;
 		}
 
-		$this->redirect(':Cms:Pages:Text:Text:', array('route' => $route));
+		$this->redirect(':Cms:Pages:Text:Route:', array('route' => $route, 'key' => NULL, 'lang' => $this->contentLang));
 	}
 
 
