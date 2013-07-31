@@ -25,6 +25,10 @@ use Nette\Utils\Strings;
 class TagsControl extends TagsInput
 {
 
+	/** @var array */
+	private $_values;
+
+
 	public function __construct($label = NULL, $cols = NULL, $maxLength = NULL)
 	{
 		parent::__construct($label, $cols, $maxLength);
@@ -59,21 +63,23 @@ class TagsControl extends TagsInput
 
 	public function getValue()
 	{
-		$repository = $this->getTagRepository();
-		$collection = new ArrayCollection;
+		if ($this->_values === NULL) {
+			$repository = $this->getTagRepository();
+			$this->_values = array();
 
-		foreach (parent::getValue() as $key => $tag) {
-			if (!$tag) {
-				continue;
+			foreach (parent::getValue() as $key => $tag) {
+				if (!$tag) {
+					continue;
+				}
+				if (($entity = $repository->findOneBy(array('name' => $tag))) === NULL) {
+					$entity = $repository->createNew();
+					$entity->setName($tag);
+				}
+				$this->_values[$key] = $entity;
 			}
-			if (($entity = $repository->findOneBy(array('name' => $tag))) === NULL) {
-				$entity = $repository->createNew();
-				$entity->setName($tag);
-			}
-			$collection[$key] = $entity;
 		}
 
-		return $collection;
+		return $this->_values;
 	}
 
 
