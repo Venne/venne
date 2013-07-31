@@ -12,11 +12,8 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
-use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Forms\TagFormFactory;
-use CmsModule\Pages\Tags\TagEntity;
 use CmsModule\Pages\Tags\TagRepository;
-use CmsModule\Pages\Tags\PageEntity;
 use Nette\Application\UI\Form;
 
 /**
@@ -30,9 +27,6 @@ class TagPresenter extends BasePresenter
 	/** @var TagRepository */
 	protected $tagRepository;
 
-	/** @var PageRepository */
-	protected $pageRepository;
-
 	/** @var TagFormFactory */
 	protected $formFactory;
 
@@ -43,18 +37,9 @@ class TagPresenter extends BasePresenter
 	/**
 	 * @param TagRepository $tagRepository
 	 */
-	public function injectLanguageRepository(TagRepository $tagRepository)
+	public function injectTagRepository(TagRepository $tagRepository)
 	{
 		$this->tagRepository = $tagRepository;
-	}
-
-
-	/**
-	 * @param PageRepository $pageRepository
-	 */
-	public function injectPageRepository(PageRepository $pageRepository)
-	{
-		$this->pageRepository = $pageRepository;
 	}
 
 
@@ -71,10 +56,8 @@ class TagPresenter extends BasePresenter
 	{
 		parent::startup();
 
-		if (($page = $this->pageRepository->findOneBy(array('special' => 'tags'))) === NULL) {
+		if (($this->extendedPage = $this->tagRepository->findOneBy(array())) === NULL) {
 			$this->flashMessage('Tag page does not exist.', 'warning');
-		} else {
-			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
 		}
 	}
 
@@ -121,30 +104,16 @@ class TagPresenter extends BasePresenter
 		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('name', 'Name')
 			->setSortable()
-			->getCellPrototype()->width = '50%';
-
-//		$table->addColumnDate('created', 'Created')
-//			->setCustomRender(function($entity){
-//				return $entity->route->created;
-//			})
-//			->setSortable()
-//			->getCellPrototype()->width = '25%';
-//
-//		$table->addColumnDate('updated', 'Updated')
-//			->setCustomRender(function($entity){
-//				return $entity->route->updated;
-//			})
-//			->setSortable()
-//			->getCellPrototype()->width = '25%';
+			->getCellPrototype()->width = '100%';
 
 		// actions
 		if ($this->isAuthorized('edit')) {
 			$table->addAction('edit', 'Edit')
 				->getElementPrototype()->class[] = 'ajax';
 
-			$extendedPage = $this->extendedPage;
-			$form = $admin->createForm($this->formFactory, 'Tag', function () use ($extendedPage) {
-				return new TagEntity($extendedPage);
+			$repository = $this->tagRepository;
+			$form = $admin->createForm($this->formFactory, 'Tag', function () use ($repository) {
+				return $repository->createNew();
 			}, \CmsModule\Components\Table\Form::TYPE_LARGE);
 			$admin->connectFormWithAction($form, $table->getAction('edit'));
 
