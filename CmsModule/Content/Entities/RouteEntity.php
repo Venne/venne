@@ -650,6 +650,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param LayoutEntity $layout
+	 * @return $this
+	 */
 	public function setLayout(LayoutEntity $layout = NULL)
 	{
 		if ($layout === NULL && $this->layout === NULL) {
@@ -662,6 +666,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 		$this->layout = $layout;
 		$this->generateLayouts();
+		return $this;
 	}
 
 
@@ -671,6 +676,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param LayoutEntity $childrenLayout
+	 * @return $this
+	 */
 	public function setChildrenLayout(LayoutEntity $childrenLayout = NULL)
 	{
 		if ($childrenLayout === NULL && $this->childrenLayout === NULL) {
@@ -683,6 +692,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 		$this->childrenLayout = $childrenLayout;
 		$this->generateLayouts();
+		return $this;
 	}
 
 
@@ -692,9 +702,14 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param $description
+	 * @return $this
+	 */
 	public function setDescription($description)
 	{
 		$this->description = $description;
+		return $this;
 	}
 
 
@@ -704,6 +719,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param $copyLayoutFromParent
+	 * @return $this
+	 */
 	public function setCopyLayoutFromParent($copyLayoutFromParent)
 	{
 		if ($this->copyLayoutFromParent == $copyLayoutFromParent) {
@@ -712,6 +731,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 		$this->copyLayoutFromParent = $copyLayoutFromParent;
 		$this->generateLayouts();
+		return $this;
 	}
 
 
