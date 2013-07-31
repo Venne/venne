@@ -136,7 +136,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var TagEntity[]
-	 * @ORM\ManyToMany(targetEntity="\CmsModule\Pages\Tags\TagEntity", inversedBy="routes", cascade={"persist", "remove"})
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Pages\Tags\TagEntity", inversedBy="routes", cascade={"all"})
 	 * @ORM\JoinTable(name="routes_tags")
 	 **/
 	protected $tags;

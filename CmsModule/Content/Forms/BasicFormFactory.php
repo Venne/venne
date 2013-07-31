@@ -76,7 +76,7 @@ class BasicFormFactory extends FormFactory
 			->setOption('description', $htmlUrl)
 			->getControlPrototype()->class[] = 'localUrl';
 		if (!$form->data->page->mainRoute->locale) {
-			$mainRoute['localUrl']->addRule($form::FILLED);;
+			$mainRoute['localUrl']->addRule($form::FILLED);
 		}
 
 
