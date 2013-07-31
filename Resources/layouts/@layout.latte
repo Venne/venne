@@ -64,7 +64,17 @@
 					</div>
 				</div>
 			</div>
-			{control breadcrumb}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="span12">
+			<div class="page-header">
+				<div class="pull-right">
+					{control breadcrumb}
+				</div>
+				<h1 class="">{block #title}{$presenter->route->name|firstUpper}{/block}</h1>
+			</div>
 		</div>
 	</div>
 
@@ -75,8 +85,9 @@
 	<hr />
 
 	<footer>
-		<p>&copy; Company 2013</p>
-		<p><a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a></p>
+		<p>
+			&copy; Company 2013 &nbsp; · &nbsp; <a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a>
+		</p>
 	</footer>
 
 </div>
