@@ -47,36 +47,9 @@ class DatabasePresenter extends BasePresenter
 	public function save()
 	{
 		$this->flashMessage("Database settings has been updated", "success");
-		$this->redirect('install!');
+		$this->redirect('this');
 	}
 
 
-	public function handleInstall()
-	{
-		if ($this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {
-			/** @var $em \Doctrine\ORM\EntityManager */
-			$em = $this->context->entityManager;
-			$tool = new SchemaTool($em);
 
-			$robotLoader = new RobotLoader();
-			$robotLoader->setCacheStorage(new MemoryStorage);
-			$robotLoader->addDirectory($this->context->parameters['modules']['cms']['path'] . '/CmsModule');
-			$robotLoader->register();
-
-			$classes = array();
-			foreach ($robotLoader->getIndexedClasses() as $item => $a) {
-				$ref = ClassType::from($item);
-				if ($ref->hasAnnotation('ORM\Entity')) {
-					$classes[] = $em->getClassMetadata('\\' . $item);
-				}
-			}
-
-			$tool->createSchema($classes);
-
-			/** @var $installer CmsInstaller */
-			$installer = $this->context->createInstance('CmsModule\Module\Installers\CmsInstaller');
-			$installer->install($this->context->venne->moduleManager->modules['cms']);
-		}
-		$this->redirect(":Cms:Admin:{$this->getContext()->parameters['administration']['defaultPresenter']}:");
-	}
 }

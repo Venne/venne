@@ -26,6 +26,9 @@ abstract class AdminPresenter extends BasePresenter
 	/** @persistent */
 	public $contentLang;
 
+	/** @var bool */
+	protected $__installation;
+
 
 	public function startup()
 	{
@@ -35,9 +38,11 @@ abstract class AdminPresenter extends BasePresenter
 
 		// check admin account
 		if (!$this->context->parameters['administration']['login']['name']) {
-			if ($this->getName() != 'Cms:Admin:Administrator') {
-				$this->redirect(':Cms:Admin:Administrator:');
+			if ($this->getName() != 'Cms:Admin:Installation') {
+				$this->redirect(':Cms:Admin:Installation:');
 			}
+			$this->setView('account');
+			$this->__installation = TRUE;
 			$this->template->hideMenuItems = true;
 			$this->flashMessage('Please set administrator account.', 'warning', true);
 		} // end
@@ -69,16 +74,20 @@ abstract class AdminPresenter extends BasePresenter
 
 			// check database
 			if (!$this->context->createCheckConnection()) {
-				if ($this->getName() != 'Cms:Admin:Database') {
-					$this->redirect(':Cms:Admin:Database:');
+				if ($this->getName() != 'Cms:Admin:Installation') {
+					$this->redirect(':Cms:Admin:Installation:');
 				}
+				$this->setView('database');
+				$this->__installation = TRUE;
 				$this->template->hideMenuItems = true;
 				$this->flashMessage('Database connection not found. Please fix it.', 'warning', true);
 			} // check languages
 			elseif ($this->context->schemaManager->tablesExist('users') && count($this->context->parameters['website']['languages']) == 0) {
-				if ($this->getName() != 'Cms:Admin:Language') {
-					$this->redirect(':Cms:Admin:Language:', array('table-navbar-id' => 'navbar-new', 'do' => 'table-navbar-click'));
+				if ($this->getName() != 'Cms:Admin:Installation') {
+					$this->redirect(':Cms:Admin:Installation:');
 				}
+				$this->setView('language');
+				$this->__installation = TRUE;
 				$this->template->hideMenuItems = true;
 				$this->flashMessage('Please enter at least one language.', 'warning', true);
 			}
