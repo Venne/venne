@@ -13,7 +13,7 @@ The best way to install Venne:CMS is create new project using
 [Composer](http://doc.nette.org/composer):
 
 	composer create-project venne/sandbox:2.0.x-dev myApp && cd myApp
-	composer require venne/cms-module:2.0.x [--prefer-dist]
+	composer require venne/cms-module:2.1.x [--prefer-dist]
 	php www/index.php venne:module:update
 	php www/index.php venne:module:install cms [--noconfirm]
 
