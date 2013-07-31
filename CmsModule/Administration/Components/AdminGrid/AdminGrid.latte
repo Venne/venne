@@ -93,9 +93,11 @@
 					e.preventDefault();
 					$('#modal-{!$control->getName()} form input[name="_submit"]').click();
 				});
-				$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
-					e.preventDefault();
-				});
+				if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
+					$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
+						e.preventDefault();
+					});
+				}
 			});
 			// ]]>
 		</script>
@@ -153,9 +155,11 @@
 					e.preventDefault();
 					$('#modal-{!$control->getName()} form input[name="_submit"]').click();
 				});
-				$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
-					e.preventDefault();
-				});
+				if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
+					$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
+						e.preventDefault();
+					});
+				}
 			});
 			// ]]>
 		</script>
