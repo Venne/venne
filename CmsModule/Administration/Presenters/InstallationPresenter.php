@@ -189,6 +189,9 @@ class InstallationPresenter extends BasePresenter
 			throw new InvalidArgumentException("Page structure must be empty");
 		}
 
+		$cacheDriver = $em->getConfiguration()->getMetadataCacheImpl();
+		$cacheDriver->deleteAll();
+
 		$layout = $em->getRepository('CmsModule\Content\Entities\LayoutEntity')->find(1);
 
 		// pages
@@ -197,6 +200,7 @@ class InstallationPresenter extends BasePresenter
 			->getExtendedMainRoute()
 			->setName('Main page')
 			->getRoute()
+			->setCopyLayoutFromParent(FALSE)
 			->setLayout($layout)
 			->setText('Hello, this is main page of this website.')
 			->setPublished(TRUE);
