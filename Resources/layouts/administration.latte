@@ -11,40 +11,40 @@
 	{head}
 
 		{* jquery *}
-		{js @jquery2.0Module/jquery.min.js}
-		{js @jquery2.0Module/jquery-migrate.min.js}
-		{js @jqueryui1.10Module/jquery-ui.min.js}
+		{js @jquery2.0Module/jquery.js}
+		{js @jquery2.0Module/jquery-migrate.js}
+		{js @jqueryui1.10Module/jquery-ui.js}
 		{css @jqueryui1.10Module/themes/base/jquery-ui.css, media=>'screen, projection, tv'}
 
 		{* jquery plugins *}
-		{js @CmsModule/admin/js/jquery.contextMenu.js}
-		{css @CmsModule/admin/css/jquery.contextMenu.css}
+		{js @cmsModule/admin/js/jquery.contextMenu.js}
+		{css @cmsModule/admin/css/jquery.contextMenu.css}
 
-		{js @CmsModule/stringToSlug/jquery.stringToSlug.min.js}
+		{js @stringtoslugModule/jquery.stringToSlug.js}
 
-		{js @CmsModule/iframe-post-form/jquery.iframe-post-form.js}
-		{js @CmsModule/typing/jquery.typing-0.2.0.min.js}
-		{js @CmsModule/holder/holder.js}
+		{*js @CmsModule/iframe-post-form/jquery.iframe-post-form.js*}
+		{js @cmsModule/typing/jquery.typing-0.2.0.min.js}
+		{js @holderModule/holder.js}
 
 		{* nette *}
 		{js @CmsModule/admin/js/netteForms.js}
 
 		{* bootstrap *}
-		{js @bootstrap2Module/js/bootstrap.min.js}
-		{css @bootstrap2Module/css/bootstrap.min.css}
+		{js @bootstrap2Module/js/bootstrap.js}
+		{css @bootstrap2Module/css/bootstrap.css}
 
 		{* ajax *}
 		{js @CmsModule/ajax/nette.ajax.js}
 		{js @CmsModule/ajax/spinner.ajax.js}
 
 		{* forms *}
-		{css @formsModule/datetimepicker/css/bootstrap-datetimepicker.min.css}
-		{js @formsModule/datetimepicker/js/bootstrap-datetimepicker.min.js}
+		{css @bootstrapdatetimeModule/bootstrap-datetimepicker.min.css}
+		{js @bootstrapdatetimeModule/bootstrap-datetimepicker.min.js}
 
 		{js @formsModule/textWithSelect/textWithSelect.js}
 
 		{* application *}
-		{js @CmsModule/admin/js/application.js}
+		{js @cmsModule/admin/js/application.js}
 		{if $presenter->mode == $presenter::MODE_EDIT}{js @CmsModule/admin/js/panel.js}{/if}
 		{css @CmsModule/admin/css/style.css}
 		{if $presenter->mode == $presenter::MODE_NORMAL}{css @CmsModule/admin/css/background.css}{/if}
@@ -55,7 +55,7 @@
 		{css @gridoModule/grido.css}
 
 		{* select2 *}
-		{js @select2Module/select2.min.js}
+		{js @select2Module/select2.js}
 		{css @select2Module/select2.css}
 
 		{* dynatree *}
