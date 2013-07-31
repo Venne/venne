@@ -6,8 +6,8 @@
 
 	<link rel="shortcut icon" href="{$basePath}/themes/favicon.ico" type="image/x-icon">
 
-	<link n:foreach="$css  as $css=>$params" rel="stylesheet"{if isset($params["media"])} media="{$params["media"]}"{/if} href="{$css}" type="text/css">
+	{control css}
 
-	<script n:foreach="$js as $js=>$params" type="text/javascript" src="{$js}"></script>
+	{control js}
 
-    <title>{strtr($control->titleTemplate, array("%s" => (!$control->title ? "" : $control->titleSeparator), "%t" => $control->title, "%n" => $control->websiteName))}</title>
+	<title>{strtr($control->titleTemplate, array("%s" => (!$control->title ? "" : $control->titleSeparator), "%t" => $control->title, "%n" => $control->websiteName))}</title>
