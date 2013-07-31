@@ -109,8 +109,7 @@ abstract class AdminPresenter extends BasePresenter
 	}
 
 
-	public
-	function handleLogout()
+	public function handleLogout()
 	{
 		$this->user->logout(TRUE);
 		$this->flashMessage('Logout success');
@@ -118,8 +117,7 @@ abstract class AdminPresenter extends BasePresenter
 	}
 
 
-	protected
-	function checkLanguage()
+	protected function checkLanguage()
 	{
 		if (!$this->lang) {
 			$this->lang = $this->getHttpRequest()->detectLanguage(array('cs', 'en'));
@@ -132,8 +130,7 @@ abstract class AdminPresenter extends BasePresenter
 	 *
 	 * @return array
 	 */
-	public
-	function formatLayoutTemplateFiles()
+	public function formatLayoutTemplateFiles()
 	{
 		return array($this->getContext()->parameters['modules']['cms']['path'] . '/Resources/layouts/administration.latte');
 	}
@@ -144,8 +141,7 @@ abstract class AdminPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	public
-	function beforeRender()
+	public function beforeRender()
 	{
 		parent::beforeRender();
 
