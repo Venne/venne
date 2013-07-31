@@ -32,12 +32,4 @@ class TagFormFactory extends FormFactory
 
 		$form->addSaveButton('Save');
 	}
-
-
-//	public function handleCatchError(Form $form, $e)
-//	{
-//		$m = explode("'", $e->getMessage());
-//		$form->addError("Duplicate entry '{$m[1]}'");
-//		return true;
-//	}
 }

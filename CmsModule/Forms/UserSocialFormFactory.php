@@ -53,15 +53,6 @@ class UserSocialFormFactory extends FormFactory
 	}
 
 
-	public function handleCatchError(Form $form, \DoctrineModule\SqlException $e)
-	{
-		if ($e->getCode() == '23000') {
-			$form->addError("User is not unique");
-			return true;
-		}
-	}
-
-
 	public function handleSuccess(Form $form)
 	{
 		$form->getPresenter()->flashMessage('User has been saved', 'success');

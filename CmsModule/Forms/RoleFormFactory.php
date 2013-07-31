@@ -33,15 +33,6 @@ class RoleFormFactory extends FormFactory
 	}
 
 
-	public function handleCatchError(Form $form, SqlException $e)
-	{
-		if ($e->getCode() == '23000') {
-			$form->addError("Role is not unique");
-			return true;
-		}
-	}
-
-
 	public function handleSuccess(Form $form)
 	{
 		$form->getPresenter()->flashMessage('Role has been saved', 'success');
