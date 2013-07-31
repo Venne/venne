@@ -21,6 +21,7 @@
 		"venne/typeahead-module": "0.9.x-dev",
 		"venne/dynatree-module": "1.2.x-dev",
 		"venne/stringtoslug-module": "1.2.x-dev",
+		"venne/holder-module": "2.0.x-dev",
 		"venne/bootstrapdatetime-module": "0.0.x-dev",
 		"venne/grido-module": "2.0.x-dev",
 		"kdyby/bootstrap-form-renderer": "v1.1.0"
