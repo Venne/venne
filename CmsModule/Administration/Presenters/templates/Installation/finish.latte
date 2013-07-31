@@ -1,8 +1,24 @@
-{block #header}{_'Default language'}{/block}
+{block #header}{_'Finish'}{/block}
 
 {block toolbar}
 {/block}
 
 {block content}
 
-hotovo
+<h2>Installation is complete</h2>
+
+<p>
+	Now you can start with building website structure. If you need help with it, you can use prepared structure.
+</p>
+
+
+<h2>Interesting modules</h2>
+
+<p>
+	Look at next official modules. You can find them useful. <a href="https://github.com/Venne">https://github.com/Venne</a>.
+</p>
+
+<hr />
+
+<a n:if="$presenter->isEmptyStructure()" class="btn btn-large btn-primary" n:href="createStructure!">Create basic website structure and continue</a>
+<a class="btn btn-large" n:href="Dashboard:">Continue</a>
