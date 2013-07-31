@@ -386,7 +386,8 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param mixed $text
+	 * @param $text
+	 * @return $this
 	 */
 	public function setText($text)
 	{
@@ -396,6 +397,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 		$this->setTranslatedValue('text', $text);
 		$this->generateDate();
+		return $this;
 	}
 
 
