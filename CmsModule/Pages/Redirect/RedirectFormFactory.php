@@ -44,7 +44,7 @@ class RedirectFormFactory extends FormFactory
 
 	public function handleLoad($form)
 	{
-		if ($form->data->page) {
+		if ($form->data->redirect) {
 			$form['type']->value = 'page';
 		} else {
 			$form['type']->value = 'url';

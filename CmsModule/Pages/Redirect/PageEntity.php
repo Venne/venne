@@ -46,9 +46,9 @@ class PageEntity extends ExtendedPageEntity
 
 
 	/**
-	 * @param PageEntity $page
+	 * @param \CmsModule\Content\Entities\PageEntity $page
 	 */
-	public function setRedirect(PageEntity $page = NULL)
+	public function setRedirect(\CmsModule\Content\Entities\PageEntity $page = NULL)
 	{
 		$this->redirect = $page;
 
@@ -75,7 +75,7 @@ class PageEntity extends ExtendedPageEntity
 		$this->redirectUrl = $redirectUrl;
 
 		if ($this->redirectUrl) {
-			$this->page = NULL;
+			$this->redirect = NULL;
 		}
 	}
 }
