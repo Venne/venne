@@ -44,7 +44,7 @@ class TagEntity extends ExtendedRouteEntity
 		parent::startup();
 
 		$this->route->published = TRUE;
-		$this->setName(Strings::random());
+		$this->setName('');
 	}
 
 
