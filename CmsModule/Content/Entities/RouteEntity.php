@@ -657,11 +657,11 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function setLayout(LayoutEntity $layout = NULL)
 	{
 		if ($layout === NULL && $this->layout === NULL) {
-			return;
+			return $this;
 		}
 
 		if ($layout && $this->layout && $layout->id == $this->layout->id) {
-			return;
+			return $this;
 		}
 
 		$this->layout = $layout;
