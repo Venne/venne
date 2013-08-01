@@ -55,7 +55,7 @@ class ErrorPresenter extends FrontPresenter
 					->getRepository($page->mainRoute->class)
 					->findOneBy(array('route' => $page->mainRoute->id));
 
-				$this->forward(':Cms:Pages:Text:Text:default', array('route' => $route));
+				$this->forward(':Cms:Pages:Text:Route:default', array('route' => $route));
 			}
 		}
 	}
