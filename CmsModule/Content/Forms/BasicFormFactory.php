@@ -232,18 +232,6 @@ class BasicFormFactory extends FormFactory
 	}
 
 
-	public function handleCatchError(Form $form, $e)
-	{
-		if ($e instanceof \Nette\InvalidArgumentException) {
-			$form->addError($e->getMessage());
-			return TRUE;
-		} else if ($e instanceof \Doctrine\DBAL\DBALException && strpos($e->getMessage(), 'Duplicate entry') !== false) {
-			$form->addError('Duplicate entry');
-			return TRUE;
-		}
-	}
-
-
 	/**
 	 * @return \CmsModule\Pages\Tags\PageEntity
 	 */
