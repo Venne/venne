@@ -11,8 +11,11 @@
 
 namespace CmsModule\Pages\Registration;
 
+use CmsModule\Content\IRegistrationFormFactory;
 use CmsModule\Content\Presenters\PagePresenter;
+use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\SecurityManager;
+use Nette\InvalidArgumentException;
 use Nette\Security\AuthenticationException;
 
 /**
@@ -27,6 +30,27 @@ class RoutePresenter extends PagePresenter
 	/** @var SecurityManager */
 	protected $securityManager;
 
+	/** @var AuthorizatorFactory */
+	protected $authorizatorFactory;
+
+
+	/**
+	 * @param SecurityManager $securityManager
+	 */
+	public function injectSecurityManager(SecurityManager $securityManager)
+	{
+		$this->securityManager = $securityManager;
+	}
+
+
+	/**
+	 * @param AuthorizatorFactory $authorizatorFactory
+	 */
+	public function injectAuthorizatorFactory(AuthorizatorFactory $authorizatorFactory)
+	{
+		$this->authorizatorFactory = $authorizatorFactory;
+	}
+
 
 	public function startup()
 	{
@@ -40,15 +64,6 @@ class RoutePresenter extends PagePresenter
 		if ($this->key) {
 			$this->setView('confirm');
 		}
-	}
-
-
-	/**
-	 * @param SecurityManager $securityManager
-	 */
-	public function injectSecurityManager(SecurityManager $securityManager)
-	{
-		$this->securityManager = $securityManager;
 	}
 
 
@@ -77,10 +92,12 @@ class RoutePresenter extends PagePresenter
 			$this->redirect('this');
 		}
 
+		$this->authorizatorFactory->clearPermissionSession();
+
 		$formFactory = $this->securityManager->getFormFactoryByEntity($this->extendedPage->userType);
 
-		if (!$formFactory instanceof \CmsModule\Content\IRegistrationFormFactory) {
-			throw new \Nette\InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \CmsModule\Content\IRegistrationFormFactory");
+		if (!$formFactory instanceof IRegistrationFormFactory) {
+			throw new InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \CmsModule\Content\IRegistrationFormFactory");
 		}
 
 		$formFactory->setSocialData($this['form'], $socialLogin);
