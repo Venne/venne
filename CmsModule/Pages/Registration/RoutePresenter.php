@@ -13,6 +13,7 @@ namespace CmsModule\Pages\Registration;
 
 use CmsModule\Content\Presenters\PagePresenter;
 use CmsModule\Security\SecurityManager;
+use Nette\Security\AuthenticationException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -65,7 +66,11 @@ class RoutePresenter extends PagePresenter
 		/** @var $socialLogin \CmsModule\Security\ISocialLogin */
 		$socialLogin = $this->securityManager->getSocialLoginByName($name);
 
-		$identity = $socialLogin->authenticate(array());
+		try{
+			$identity = $socialLogin->authenticate(array());
+		}catch(AuthenticationException $e) {
+		}
+
 		if ($identity) {
 			$this->user->login($identity);
 			$this->flashMessage('User is already registered');
@@ -128,8 +133,10 @@ class RoutePresenter extends PagePresenter
 		$form->onSuccess[] = $this->processSuccess;
 
 		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)->onClick[] = function () use ($_this, $socialLogin) {
-				$_this->handleLogin($socialLogin);
+			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)
+				->setValidationScope(FALSE)
+				->onClick[] = function () use ($_this, $socialLogin) {
+				$_this->handleLoad($socialLogin);
 			};
 		}
 

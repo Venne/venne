@@ -106,7 +106,7 @@ services:
 	cms.registrationFrontFormFactory:
 		class: CmsModule\Content\Forms\RegistrationFrontFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 		tags: [component]
 
 	cms.specialFormFactory:

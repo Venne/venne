@@ -11,6 +11,7 @@
 
 namespace CmsModule\Security\Entities;
 
+use CmsModule\Pages\Users\UserEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,6 +25,7 @@ class SocialLoginEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
 	/**
+	 * @var UserEntity
 	 * @ORM\ManyToOne(targetEntity="\CmsModule\Pages\Users\UserEntity", inversedBy="socialLogins")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */

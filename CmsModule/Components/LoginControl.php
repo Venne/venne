@@ -72,10 +72,11 @@ class LoginControl extends Control
 			$this->presenter->redirectUrl($socialLogin->getLoginUrl());
 		}
 
-
-		$identity = $socialLogin->authenticate(array());
-		if ($identity) {
+		try {
+			$identity = $socialLogin->authenticate(array());
 			$this->presenter->user->login($identity);
+		} catch (\Nette\Security\AuthenticationException $e) {
+			$this->getPresenter()->flashMessage($e->getMessage(), 'warning');
 		}
 
 		$this->redirect('this');
