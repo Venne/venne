@@ -53,8 +53,9 @@ class PageRepository extends BaseRepository
 	public function save($entity, $withoutFlush = self::FLUSH)
 	{
 		$parent = $entity instanceof ExtendedPageEntity ? $entity->getPage() : $entity;
+		$main = $parent;
 		while (($parent = $parent->parent) !== NULL) {
-			if ($entity->id === $parent->id) {
+			if ($main->id === $parent->id) {
 				throw new \Nette\InvalidArgumentException('Cyclic association detected!');
 			}
 		}
