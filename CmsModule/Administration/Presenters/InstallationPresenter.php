@@ -15,6 +15,9 @@ use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Forms\LanguageFormFactory;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemDatabaseFormFactory;
+use CmsModule\Pages\Errors\Error403PageEntity;
+use CmsModule\Pages\Errors\Error404PageEntity;
+use CmsModule\Pages\Errors\Error500PageEntity;
 use CmsModule\Pages\Text\PageEntity;
 use Doctrine\ORM\Tools\SchemaTool;
 use Nette\Caching\Cache;
@@ -227,9 +230,45 @@ class InstallationPresenter extends BasePresenter
 			->setText('List of tags.')
 			->setPublished(TRUE);
 
+		$error404Page = new  Error404PageEntity;
+		$error404Page
+			->getPage()
+			->setParent($textPage->getPage());
+		$error404Page
+			->getExtendedMainRoute()
+			->setName('Page not found')
+			->getRoute()
+			->setText('404')
+			->setPublished(TRUE);
+
+		$error403Page = new  Error403PageEntity;
+		$error403Page
+			->getPage()
+			->setParent($textPage->getPage());
+		$error403Page
+			->getExtendedMainRoute()
+			->setName('Forbidden')
+			->getRoute()
+			->setText('403')
+			->setPublished(TRUE);
+
+		$error500Page = new  Error500PageEntity;
+		$error500Page
+			->getPage()
+			->setParent($textPage->getPage());
+		$error500Page
+			->getExtendedMainRoute()
+			->setName('Internal server error')
+			->getRoute()
+			->setText('500')
+			->setPublished(TRUE);
+
 		$em->persist($textPage);
 		$em->persist($userPage);
 		$em->persist($tagsPage);
+		$em->persist($error403Page);
+		$em->persist($error404Page);
+		$em->persist($error500Page);
 		$em->flush();
 
 		$this->redirect('Dashboard:');
