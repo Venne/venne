@@ -96,7 +96,7 @@ class AuthorizatorFactory extends Object
 			return $this->session['permission'] = $this->getPermissionsByUser($user, FALSE);
 		}
 
-		return $this->getPermissionsByRoles(array_merge($user->roles, array("guest", "authenticated")));
+		return $this->getPermissionsByRoles(array_merge($user->roles, array('guest', 'authenticated')));
 	}
 
 
@@ -153,8 +153,8 @@ class AuthorizatorFactory extends Object
 	 */
 	protected function setPermissionsByRole(Permission $permission, $role)
 	{
-		if ($role == "admin") {
-			$permission->allow("admin", Permission::ALL);
+		if ($role == 'admin') {
+			$permission->allow('admin', Permission::ALL);
 			return $permission;
 		}
 

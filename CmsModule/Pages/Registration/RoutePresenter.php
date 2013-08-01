@@ -66,9 +66,9 @@ class RoutePresenter extends PagePresenter
 		/** @var $socialLogin \CmsModule\Security\ISocialLogin */
 		$socialLogin = $this->securityManager->getSocialLoginByName($name);
 
-		try{
+		try {
 			$identity = $socialLogin->authenticate(array());
-		}catch(AuthenticationException $e) {
+		} catch (AuthenticationException $e) {
 		}
 
 		if ($identity) {
@@ -183,7 +183,7 @@ class RoutePresenter extends PagePresenter
 
 	public function renderDefault()
 	{
-		if ($this->user->isLoggedIn()){
+		if ($this->user->isLoggedIn()) {
 			$this->flashMessage('You are already logged in.', 'info');
 		}
 
