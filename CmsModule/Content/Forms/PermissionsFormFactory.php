@@ -75,17 +75,19 @@ class PermissionsFormFactory extends FormFactory
 			$entity->getPage()->getPermissions()->clear();
 			$form->mapper->entityManager->flush($entity);
 
-			foreach ($form->values['permissions'] as $key => $permission) {
-				$permissionEntity = new PermissionEntity;
-				$permissionEntity->setName($key);
-				$permissionEntity->setPage($entity->getPage());
-				$permissionEntity->setAll($permission['all']);
+			if (isset($form->values['permissions'])) {
+				foreach ($form->values['permissions'] as $key => $permission) {
+					$permissionEntity = new PermissionEntity;
+					$permissionEntity->setName($key);
+					$permissionEntity->setPage($entity->getPage());
+					$permissionEntity->setAll($permission['all']);
 
-				foreach ($permission['permissions'] as $id) {
-					$permissionEntity->roles[$id] = $this->getRoleRepository()->find($id);
+					foreach ($permission['permissions'] as $id) {
+						$permissionEntity->roles[$id] = $this->getRoleRepository()->find($id);
+					}
+
+					$entity->getPage()->permissions[$key] = $permissionEntity;
 				}
-
-				$entity->getPage()->permissions[$key] = $permissionEntity;
 			}
 		}
 
