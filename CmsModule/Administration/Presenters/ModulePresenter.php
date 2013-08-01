@@ -80,6 +80,17 @@ class ModulePresenter extends BasePresenter
 	}
 
 
+	public function handleClose()
+	{
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
+
+		$this->invalidateControl('content');
+		$this->presenter->payload->url = $this->link('this');
+	}
+
+
 	/**
 	 * @secured(privilege="edit")
 	 */

@@ -23,6 +23,7 @@ basic meta informations: základní meta informace
 cache strategy: cachovací strategie
 connection settings: nastavení připojení
 content: obsah
+continue: pokračovat
 current: aktuální
 create: vytvořit
 create new: vytvořit
@@ -35,6 +36,7 @@ default modules: výchozí moduly
 default presenter: výchozí prezenter
 delete: smazat
 delete all: smazat vše
+dependencies: závislosti
 description: popis
 download current module list: stáhnout aktuální seznam modulů
 edit: editovat
@@ -91,6 +93,7 @@ search: vyhledat
 save: uložit
 security: zabezpečení
 sessions: relace
+this action requires some additional changes. Confirm if you understand the risks. Please be careful.: 'tato akce vyžaduje některé další změny. Potvrďte, pokud jste si vědomi rizika. Prosím, buďte opatrní.'
 surname: příjmení
 show: zobrazit
 show in table: zobrazit tabulku

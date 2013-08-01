@@ -26,22 +26,38 @@
 
 {snippet confirm}
 	{if isset($solutions)}
-    <div class="modal">
+    <div class="modal hide fade" id="confirm-modal">
         <div class="modal-header">
             <a n:href="this" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-            <h3>Dependencies</h3>
+            <h3>{_Dependencies}</h3>
         </div>
         <div class="modal-body">
+			<p>
+				{_'This action requires some additional changes. Confirm if you understand the risks. Please be careful.'}
+			</p>
+			<hr />
+			<dl class="dl-horizontal">
 			{foreach $solutions as $job}
-				{$job->module->name} : {$job->action}<br />
+				<dt title="{$job->module->description}">{$job->module->name}</dt>
+				<dd>{_$job->action} <small>({_version} {$job->module->version})</small></dd>
 			{/foreach}
+			</dl>
         </div>
         <div class="modal-footer">
-            <a n:href="this" class="btn">Cancel</a>
-            {if $solutionAction === 'uninstall'}<a n:href="uninstall! $solutionModule, true" class="btn btn-primary">Continue</a>{/if}
-			{if $solutionAction === 'install'}<a n:href="install! $solutionModule, true" class="btn btn-primary">Continue</a>{/if}
+            <a n:href="this" class="btn">{_Cancel}</a>
+            {if $solutionAction === 'uninstall'}<a n:href="uninstall! $solutionModule, true" class="btn btn-primary">{_Continue}</a>{/if}
+			{if $solutionAction === 'install'}<a n:href="install! $solutionModule, true" class="btn btn-primary">{_Continue}</a>{/if}
         </div>
     </div>
+	<script type="text/javascript">
+		if (jQuery)(function () {
+			$('#confirm-modal').modal('show').on('hidden', function () {
+				if($('#confirm-modal .modal-close').length !=1){
+					$.nette.ajax({ url: {link close!}});
+				}
+			});
+		})(jQuery);
+	</script>
 	{/if}
 {/snippet}
 
