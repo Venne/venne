@@ -436,6 +436,11 @@ class PageEntity extends TreeEntity implements IloggableEntity
 			if (isset($this->permissions[$permission])) {
 				$permissionEntity = $this->permissions[$permission];
 
+				if (!$user->isLoggedIn()) {
+					$this->_isAlowed[$user->id][$permission] = FALSE;
+					return FALSE;
+				}
+
 				if ($permissionEntity->getAll()) {
 					$this->_isAlowed[$user->id][$permission] = TRUE;
 					return TRUE;
