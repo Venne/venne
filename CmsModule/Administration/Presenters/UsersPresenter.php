@@ -14,6 +14,7 @@ namespace CmsModule\Administration\Presenters;
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Components\Table\Form;
 use CmsModule\Content\Entities\UserPageEntity;
+use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
 use CmsModule\Pages\Users\UserEntity;
@@ -33,6 +34,9 @@ class UsersPresenter extends BasePresenter
 	/** @var UserRepository */
 	protected $userRepository;
 
+	/** @var PageRepository */
+	protected $pageRepository;
+
 	/** @var UserFormFactory */
 	protected $form;
 
@@ -49,6 +53,15 @@ class UsersPresenter extends BasePresenter
 	public function injectUserRepository(UserRepository $userRepository)
 	{
 		$this->userRepository = $userRepository;
+	}
+
+
+	/**
+	 * @param PageRepository $pageRepository
+	 */
+	public function injectPageRepository(PageRepository $pageRepository)
+	{
+		$this->pageRepository = $pageRepository;
 	}
 
 
@@ -74,8 +87,10 @@ class UsersPresenter extends BasePresenter
 	{
 		parent::startup();
 
-		if (($this->extendedPage = $this->userRepository->findOneBy(array())) === NULL) {
+		if (($page = $this->pageRepository->findOneBy(array('special' => 'users'))) === NULL) {
 			$this->flashMessage('User page does not exist.', 'warning');
+		} else {
+			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
 		}
 	}
 

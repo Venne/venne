@@ -12,6 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
+use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Forms\TagFormFactory;
 use CmsModule\Pages\Tags\TagRepository;
 use Nette\Application\UI\Form;
@@ -26,6 +27,9 @@ class TagPresenter extends BasePresenter
 
 	/** @var TagRepository */
 	protected $tagRepository;
+
+	/** @var PageRepository */
+	protected $pageRepository;
 
 	/** @var TagFormFactory */
 	protected $formFactory;
@@ -44,6 +48,15 @@ class TagPresenter extends BasePresenter
 
 
 	/**
+	 * @param PageRepository $pageRepository
+	 */
+	public function injectPageRepository(PageRepository $pageRepository)
+	{
+		$this->pageRepository = $pageRepository;
+	}
+
+
+	/**
 	 * @param TagFormFactory $formFactory
 	 */
 	public function injectForm(TagFormFactory $formFactory)
@@ -56,8 +69,10 @@ class TagPresenter extends BasePresenter
 	{
 		parent::startup();
 
-		if (($this->extendedPage = $this->tagRepository->findOneBy(array())) === NULL) {
+		if (($page = $this->pageRepository->findOneBy(array('special' => 'tags'))) === NULL) {
 			$this->flashMessage('Tag page does not exist.', 'warning');
+		} else {
+			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
 		}
 	}
 
