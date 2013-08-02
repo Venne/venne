@@ -38,7 +38,7 @@ class UserLogListener
 			return;
 		}
 
-		$userEntity = $this->getUserRepository()->findOneBy(array('email' => $user->identity->id));
+		$userEntity = $this->getUserRepository()->findOneBy(array('id' => $user->identity->id));
 
 		if ($userEntity) {
 			$logEntity = new LogEntity($userEntity, get_class($userEntity), $userEntity->id, LogEntity::ACTION_OTHER);
@@ -55,7 +55,7 @@ class UserLogListener
 			return;
 		}
 
-		$userEntity = $this->getUserRepository()->findOneBy(array('email' => $user->identity->id));
+		$userEntity = $this->getUserRepository()->findOneBy(array('id' => $user->identity->id));
 
 		if ($userEntity) {
 			$logEntity = new LogEntity($userEntity, get_class($userEntity), $userEntity->id, LogEntity::ACTION_OTHER);

@@ -23,7 +23,7 @@
 		{_User}
 	{elseif $log->target === 'Venne\\Forms\\Form'}
 		<a href="{$log->type}">{_Form}</a>
-	{elseif is_subclass_of($log->target, 'CmsModule\\Content\\Entities\\PageEntity')}
+	{elseif $log->target === 'CmsModule\\Content\\Entities\\PageEntity'}
 		{_Page}
 	{/if}
 {else}
@@ -41,7 +41,7 @@
 	{_$log->message}
 {else}
 	{if $log->target}
-		{if is_subclass_of($log->target, 'CmsModule\\Content\\Entities\\PageEntity')}
+		{if $log->target === 'CmsModule\\Content\\Entities\\PageEntity'}
 			{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_UPDATED}{_'Page has been updated'}{/if}
 			{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_CREATED}{_'Page has been created'}{/if}
 			{if $log->action === \CmsModule\Content\Entities\LogEntity::ACTION_REMOVED}{_'Page has been removed'}{/if}
