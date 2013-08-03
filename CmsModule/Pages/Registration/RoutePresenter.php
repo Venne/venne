@@ -17,6 +17,7 @@ use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\SecurityManager;
 use Nette\InvalidArgumentException;
 use Nette\Security\AuthenticationException;
+use Nette\Security\Identity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -87,7 +88,7 @@ class RoutePresenter extends PagePresenter
 		}
 
 		if ($identity) {
-			$this->user->login($identity);
+			$this->user->login(new Identity($identity->email, $identity->roles));
 			$this->flashMessage('User is already registered');
 			$this->redirect('this');
 		}

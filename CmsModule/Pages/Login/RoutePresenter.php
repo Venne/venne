@@ -48,17 +48,10 @@ class RoutePresenter extends PagePresenter
 
 	protected function createComponentForm()
 	{
-		$_this = $this;
 		$this->loginFormFactory->setRedirect(NULL);
 
 		$form = $this->loginFormFactory->invoke();
 		$form->onSuccess[] = $this->formSuccess;
-
-		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)->onClick[] = function () use ($_this, $socialLogin) {
-				$_this->handleLogin($socialLogin);
-			};
-		}
 
 		return $form;
 	}
@@ -73,28 +66,7 @@ class RoutePresenter extends PagePresenter
 	}
 
 
-	public function handleLogin($name)
-	{
-		$socialLogin = $this->securityManager->getSocialLoginByName($name);
-		$data = $socialLogin->getData();
-
-		if (!$data) {
-			$this->redirectUrl($socialLogin->getLoginUrl());
-		}
-
-
-		$identity = $socialLogin->authenticate(array());
-		if ($identity) {
-			$this->user->login($identity);
-		} else if ($this->page->registration) {
-			$this->redirect('this', array('do' => 'load', 'name' => $name, 'route' => $this->page->registration->mainRoute));
-		}
-
-		$this->redirect('this');
-	}
-
-
-	public function  renderDefault()
+	public function renderDefault()
 	{
 		if ($this->user->isLoggedIn()) {
 			$this->flashMessage('You are already logged in.', 'info');

@@ -11,6 +11,10 @@
 
 namespace CmsModule\Forms;
 
+use CmsModule\Security\AuthorizatorFactory;
+use CmsModule\Security\SecurityManager;
+use Nette\Security\AuthenticationException;
+use Nette\Security\Identity;
 use Venne\Forms\Form;
 use Venne\Forms\FormFactory;
 
@@ -23,6 +27,23 @@ class LoginFormFactory extends FormFactory
 	/** @var string */
 	protected $redirect = 'this';
 
+	/** @var SecurityManager */
+	private $securityManager;
+
+	/** @var AuthorizatorFactory */
+	private $authorizatorFactory;
+
+
+	/**
+	 * @param AuthorizatorFactory $authorizatorFactory
+	 * @param SecurityManager $securityManager
+	 */
+	public function __construct(AuthorizatorFactory $authorizatorFactory, SecurityManager $securityManager)
+	{
+		$this->authorizatorFactory = $authorizatorFactory;
+		$this->securityManager = $securityManager;
+	}
+
 
 	/**
 	 * @param string $redirect
@@ -33,23 +54,53 @@ class LoginFormFactory extends FormFactory
 	}
 
 
+	public function handleLogin($form, $name)
+	{
+		$socialLogin = $this->securityManager->getSocialLoginByName($name);
+		$data = $socialLogin->getData();
+
+		if (!$data) {
+			$this->redirectUrl($socialLogin->getLoginUrl());
+		}
+
+		$this->authorizatorFactory->clearPermissionSession();
+
+		try {
+			$identity = $socialLogin->authenticate(array());
+			$form->presenter->user->login(new Identity($identity->email, $identity->roles));
+		} catch (AuthenticationException $e) {
+			$form->getPresenter()->flashMessage($e->getMessage(), 'warning');
+		}
+	}
+
+
 	/**
 	 * @param Form $form
 	 */
 	public function configure(Form $form)
 	{
+		$_this = $this;
 		$form->addText('username', 'Login')->setRequired('Please provide a username.');
 		$form->addPassword('password', 'Password')->setRequired('Please provide a password.');
 		$form->addCheckbox('remember', 'Remember me on this computer');
 		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
+
+		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
+			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)->onClick[] = function ($button) use ($_this, $socialLogin) {
+				$_this->handleLogin($button->form, $socialLogin);
+			};
+		}
 	}
 
 
-	public function handleSuccess($form)
+	public function handleSuccess(Form $form)
 	{
 		try {
 			$values = $form->getValues();
-			$form->presenter->user->login($values->username, $values->password);
+
+			if ($form->isSubmitted() === $form->getSaveButton()) {
+				$form->presenter->user->login($values->username, $values->password);
+			}
 
 			if ($values->remember) {
 				$form->presenter->user->setExpiration('+ 14 days', FALSE);
@@ -57,12 +108,18 @@ class LoginFormFactory extends FormFactory
 				$form->presenter->user->setExpiration('+ 20 minutes', TRUE);
 			}
 
-			$form->presenter->restoreRequest($form->presenter->backlink);
-			if ($this->redirect) {
-				$form->presenter->redirect($this->redirect . ':');
-			}
-		} catch (\Nette\Security\AuthenticationException $e) {
+			$this->doRedirect($form);
+		} catch (AuthenticationException $e) {
 			$form->getPresenter()->flashMessage($e->getMessage(), 'warning');
+		}
+	}
+
+
+	private function doRedirect($form)
+	{
+		$form->presenter->restoreRequest($form->presenter->backlink);
+		if ($this->redirect) {
+			$form->presenter->redirect($this->redirect . ':');
 		}
 	}
 }
