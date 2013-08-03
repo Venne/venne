@@ -37,6 +37,7 @@ class RouteFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addGroup();
+		$form->addText('name', 'Name');
 		$form->addText('localUrl', 'URL');
 		$form->addText('title', 'Title');
 		$form->addText('keywords', 'Keywords');
