@@ -17,7 +17,6 @@ use CmsModule\Security\Repositories\UserRepository;
 use Doctrine\DBAL\DBALException;
 use Nette\Callback;
 use Nette\Http\Session;
-use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

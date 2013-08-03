@@ -12,9 +12,9 @@
 namespace CmsModule\Forms;
 
 use CmsModule\Security\AuthorizatorFactory;
+use CmsModule\Security\Identity;
 use CmsModule\Security\SecurityManager;
 use Nette\Security\AuthenticationException;
-use Nette\Security\Identity;
 use Venne\Forms\Form;
 use Venne\Forms\FormFactory;
 
