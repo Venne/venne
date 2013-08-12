@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Listeners;
 
+use CmsModule\Content\Entities\ExtendedRouteEntity;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
@@ -41,7 +42,7 @@ class PageListener implements EventSubscriber
 	protected $container;
 
 	/** @var LanguageEntity */
-	protected $languageEntity;
+	protected $languageEntity = FALSE;
 
 	/** @var array */
 	protected $entities = array(
@@ -61,7 +62,7 @@ class PageListener implements EventSubscriber
 	public function setLocale($locale = NULL)
 	{
 		$this->locale = $locale;
-		$this->languageEntity = NULL;
+		$this->languageEntity = FALSE;
 	}
 
 
@@ -105,7 +106,8 @@ class PageListener implements EventSubscriber
 	 */
 	public function postLoad(LifecycleEventArgs $args)
 	{
-		if (($e = $this->getLanguageEntity()) && ($entity = $args->getEntity()) instanceof RouteEntity) {
+		$entity = $args->getEntity();
+		if (($entity instanceof RouteEntity OR $entity instanceof ExtendedRouteEntity) && ($e = $this->getLanguageEntity())) {
 			$entity->setLocale($e);
 		}
 	}
@@ -116,7 +118,7 @@ class PageListener implements EventSubscriber
 	 */
 	private function getLanguageEntity()
 	{
-		if (!$this->languageEntity) {
+		if ($this->languageEntity === FALSE) {
 			$this->languageEntity = $this->locale instanceof LanguageEntity ? $this->locale : $this->getLanguageRepository()->findOneBy(array('alias' => $this->locale));
 		}
 		return $this->languageEntity;
