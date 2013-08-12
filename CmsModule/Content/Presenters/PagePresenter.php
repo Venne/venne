@@ -270,7 +270,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function getLanguage()
 	{
 		if (!$this->language) {
-			$this->language = $this->languageRepository->findOneBy(array('alias' => $this->lang));
+			$this->language = $this->languageRepository->findOneBy(array('alias' => $this->lang ? $this->lang : $this->context->parameters['website']['defaultLanguage']));
 		}
 		return $this->language;
 	}
