@@ -3,6 +3,22 @@ User-agent: *
 Disallow: /*?do=*
 Disallow: /*&do=*
 
+
+# langauges
 {foreach $languageRepository->findBy(array(), array('id'=>'ASC')) as $language}
 Sitemap: {link sitemap lang=>$language->alias}
+{/foreach}
+
+
+## Big pages
+{foreach $pageRepository->findAll() as $page}
+{if $presenter->countRoutesByPage($page) > $itemsLimit}
+{if $page->language}
+Sitemap: {link sitemap lang=>$language->alias, page=>$page->id}  # {$page->mainRoute->name}
+{else}
+	{foreach $languageRepository->findBy(array(), array('id'=>'ASC')) as $language}
+Sitemap: {link sitemap lang=>$language->alias, page=>$page->id}  # {$page->mainRoute->name}
+	{/foreach}
+{/if}
+{/if}
 {/foreach}

@@ -109,7 +109,7 @@ class CmsExtension extends CompilerExtension
 			))
 			->addTag("route", array("priority" => 999999999));
 		$container->addDefinition($this->prefix("sitemapRoute"))
-			->setClass("Nette\Application\Routers\Route", array('<lang>/sitemap.xml',
+			->setClass("Nette\Application\Routers\Route", array('[lang-<lang>/][page-<page>/]sitemap.xml',
 				array('presenter' => 'Cms:Sitemap', 'action' => 'sitemap',)
 			))
 			->addTag("route", array("priority" => 999999998));

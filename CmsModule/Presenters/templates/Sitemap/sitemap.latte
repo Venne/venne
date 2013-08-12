@@ -1,17 +1,16 @@
 {contentType application/xml}
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{foreach $pageRepository->findBy(array('translationFor' => NULL)) as $page}
-	{var $entity = $page->getPageWithLanguageAlias($lang)}
-	{if $entity}
-		{foreach $entity->routes as $route}
-			<url>
-				<loc>{plink :Cms:Static:default route=>$route}</loc>
-				<lastmod>{$page->updated|date:'%Y-%m-%d'}</lastmod>
-				{if $route->changefreq}<changefreq>{$route->changefreq}</changefreq>{/if}
-				{if $route->priority}<priority>{if $route->priority === 10}1.0{else}0.{$route->priority}{/if}</priority>{/if}
-			</url>
-		{/foreach}
-	{/if}
+{foreach $presenter->routes as $route}
+{include #item route => $route}
 {/foreach}
 </urlset>
+
+{define #item}
+	<url>
+		<loc>{plink :Cms:Pages:Text:Route:default route=>$route, lang=>$presenter->lang}</loc>
+		<lastmod>{$route->updated|date:'%Y-%m-%d'}</lastmod>
+		<changefreq n:if="$route->changefreq">{$route->changefreq}</changefreq>
+		<priority n:if="$route->priority">{if $route->priority === 10}1.0{else}0.{$route->priority}{/if}</priority>
+	</url>
+{/define}
