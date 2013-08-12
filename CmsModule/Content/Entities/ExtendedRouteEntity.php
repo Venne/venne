@@ -143,7 +143,7 @@ abstract class ExtendedRouteEntity extends IdentifiedEntity
 	 */
 	public function setLocale(LanguageEntity $locale = NULL)
 	{
-		$this->locale = $locale;
+		$this->route->locale = $this->locale = $locale;
 	}
 
 

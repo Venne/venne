@@ -138,7 +138,7 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 	 */
 	public function setLocale(LanguageEntity $locale = NULL)
 	{
-		$this->locale = $locale;
+		$this->page->locale = $this->locale = $locale;
 	}
 
 
