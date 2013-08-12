@@ -16,7 +16,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity
- * @ORM\Table(name="routeTranslation")
+ * @ORM\Table(name="routeTranslation", indexes={
+ * @ORM\Index(name="url_idx", columns={"url"}),
+ * })
  */
 class RouteTranslationEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {

@@ -23,6 +23,8 @@ use Nette\InvalidArgumentException;
  * @ORM\Table(name="route", indexes={
  * @ORM\Index(name="type_idx", columns={"type"}),
  * @ORM\Index(name="url_idx", columns={"url"}),
+ * @ORM\Index(name="expired_idx", columns={"expired"}),
+ * @ORM\Index(name="released_idx", columns={"released"}),
  * })
  *
  * @property string $type
