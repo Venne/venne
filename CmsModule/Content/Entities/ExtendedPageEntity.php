@@ -35,7 +35,7 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 
 	/**
 	 * @var PageEntity
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", cascade={"ALL"})
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", cascade={"ALL"})
 	 * @ORM\JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $page;

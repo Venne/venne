@@ -60,7 +60,7 @@ class LoginFormFactory extends FormFactory
 		$data = $socialLogin->getData();
 
 		if (!$data) {
-			$this->redirectUrl($socialLogin->getLoginUrl());
+			$form->presenter->redirectUrl($socialLogin->getLoginUrl());
 		}
 
 		$this->authorizatorFactory->clearPermissionSession();
