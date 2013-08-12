@@ -149,16 +149,28 @@ class PageRoute extends Route
 		}
 
 		if (count($this->languages) > 1) {
-			try {
-				$route = $this->getRouteRepository()->createQueryBuilder('a')
-					->leftJoin('a.language', 'p')
-					->leftJoin('a.translations', 't')
-					->leftJoin('t.language', 'g')
-					->where('(a.url = :url AND (t.id IS NULL OR g.alias != :lang OR t.url IS NULL)) OR (t.url = :url AND g.alias = :lang)')
-					->andWhere('p.alias = :lang OR a.language IS NULL')
-					->setParameter('lang', $parameters['lang'])
-					->setParameter('url', $parameters['url'])
+			try{
+				$tr = $this->container->entityManager->getRepository('CmsModule\Content\Entities\RouteTranslationEntity')->createQueryBuilder('a')
+					->leftJoin('a.language', 'l')
+					->andWhere('a.url = :url')->setParameter('url', $parameters['url'])
+					->andWhere('l.alias = :lang')->setParameter('lang', $parameters['lang'])
 					->getQuery()->getSingleResult();
+			} catch (NoResultException $e) {
+			}
+
+			try {
+				if (!isset($tr) || !$tr) {
+					$route = $this->getRouteRepository()->createQueryBuilder('a')
+						->leftJoin('a.language', 'p')
+						->andWhere('a.language IS NULL OR p.alias = :lang')->setParameter('lang', $parameters['lang'])
+						->andWhere('a.url = :url')->setParameter('url', $parameters['url'])
+						->getQuery()->getSingleResult();
+				} else {
+					$route = $this->getRouteRepository()->createQueryBuilder('a')
+						->leftJoin('a.translations', 't')
+						->where('t.id = :id')->setParameter('id', $tr->id)
+						->getQuery()->getSingleResult();
+				}
 			} catch (NoResultException $e) {
 				return NULL;
 			}
