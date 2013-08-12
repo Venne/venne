@@ -81,6 +81,12 @@ abstract class ItemsPresenter extends PagePresenter
 	}
 
 
+	protected function getCountItems()
+	{
+		return $this->getQueryBuilder()->select('COUNT(a.id)')->getQuery()->getSingleScalarResult();
+	}
+
+
 	/**
 	 * @return VisualPaginator
 	 */
@@ -88,7 +94,7 @@ abstract class ItemsPresenter extends PagePresenter
 	{
 		$vp = new VisualPaginator;
 		$pg = $vp->getPaginator();
-		$pg->setItemCount($this->getQueryBuilder()->select('COUNT(a.id)')->getQuery()->getSingleScalarResult());
+		$pg->setItemCount($this->getCountItems());
 		if (($itemsPerPage = $this->getItemsPerPage()) !== NULL) {
 			$pg->setItemsPerPage($itemsPerPage);
 		} else {
