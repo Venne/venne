@@ -73,15 +73,26 @@ class SearchControl extends Control
 				}
 				$results[$route->id] = array(
 					'url' => $this->presenter->link('Route', array('route' => $route)),
-					'name' => str_ireplace($query, "<strong>{$query}</strong>", $route->name),
+					'name' => $this->highlightText($route->name, $query),
 					'value' => $route->name,
-					'description' => str_ireplace($query, "<strong>{$query}</strong>", $text),
+					'description' => $this->highlightText($text, $query),
 					'photo' => $route->photo ? $this->template->basePath . \CmsModule\Content\Macros\MediaMacro::proccessImage($route->photo->getFileUrl(true), array('size' => 'x48')) : NULL,
 				);
 			}
 		}
 
 		$this->presenter->sendResponse(new JsonResponse(array_merge($results)));
+	}
+
+
+	/**
+	 * @param $text
+	 * @param $word
+	 * @return string
+	 */
+	protected function highlightText($text, $word)
+	{
+		return preg_replace('#' . preg_quote($word) . '#i', '<strong>\\0</strong>', $text);
 	}
 
 
