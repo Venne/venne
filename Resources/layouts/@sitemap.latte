@@ -1,0 +1,17 @@
+{define #page-content}
+	{include #page-item items => array($presenter->getRootPage()), floor => 1}
+{/define}
+
+
+{define #page-item}
+	<ul n:inner-foreach="$items as $item">
+		{continueIf !$item->mainRoute->published}
+
+		<li>
+			<a n:href="Route route=>$item->mainRoute">{$item->mainRoute->name}</a>
+			{if $floor < $presenter->extendedPage->maxDepth && count($item->children) && count($item->children) < $presenter->extendedPage->maxWidth}
+				{include #page-item items => $item->children, floor => ($floor + 1)}
+			{/if}
+		</li>
+	</ul>
+{/define}

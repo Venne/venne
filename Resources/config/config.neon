@@ -147,3 +147,4 @@ includes:
 	- pages.errors.neon
 	- pages.menu.neon
 	- pages.search.neon
+	- pages.sitemap.neon

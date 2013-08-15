@@ -93,6 +93,7 @@ search: vyhledat
 save: uložit
 security: zabezpečení
 sessions: relace
+sitemap: mapa webu
 this action requires some additional changes. Confirm if you understand the risks. Please be careful.: 'tato akce vyžaduje některé další změny. Potvrďte, pokud jste si vědomi rizika. Prosím, buďte opatrní.'
 surname: příjmení
 show: zobrazit
@@ -117,6 +118,7 @@ version: verze
 visitors last month: návštěvníci za poslední měsíc
 website: webová stránka
 website name: název webové stránky
+website lists: seznamy webu
 website settings: nastavení webové stránky
 widgets: widgety
 save changes: uložit změny

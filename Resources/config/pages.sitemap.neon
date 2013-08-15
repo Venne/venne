@@ -1,0 +1,17 @@
+services:
+	cms.pages.sitemapContent:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Sitemap\PageEntity')
+		setup:
+			- addSection('Sitemap', @cms.pages.sitemap.pageFormFactory)
+		tags: [contentType: [name: 'website lists.sitemap']]
+
+	cms.pages.sitemap.pageFormFactory:
+		class: CmsModule\Pages\Sitemap\PageFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.sitemap.routePresenter:
+		class: CmsModule\Pages\Sitemap\RoutePresenter
+		tags: [presenter]
