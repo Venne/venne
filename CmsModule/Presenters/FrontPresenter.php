@@ -19,12 +19,12 @@ abstract class FrontPresenter extends BasePresenter
 
 	protected function checkLanguage()
 	{
-		if (count($this->context->parameters["website"]["languages"]) > 1) {
-			if (!$this->lang && !$this->getParameter("lang")) {
+		if (count($this->context->parameters['website']['languages']) > 1) {
+			if (!$this->lang && !$this->getParameter('lang')) {
 				$this->lang = $this->getDefaultLanguageAlias();
 			}
 		} else {
-			$this->lang = $this->context->parameters["website"]["defaultLanguage"];
+			$this->lang = $this->context->parameters['website']['defaultLanguage'];
 		}
 	}
 
@@ -51,6 +51,6 @@ abstract class FrontPresenter extends BasePresenter
 	 */
 	public function handleChangeLanguage($alias)
 	{
-		$this->redirect("this", array("lang" => $alias));
+		$this->redirect('this', array('lang' => $alias));
 	}
 }
