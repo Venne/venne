@@ -49,7 +49,7 @@ class RoutePresenter extends ItemsPresenter
 	}
 
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

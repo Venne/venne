@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Error500PageEntity extends ExtendedPageEntity
 {
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

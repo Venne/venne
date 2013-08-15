@@ -31,7 +31,6 @@ use Nette\InvalidArgumentException;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
- * @property-read EntityManager $entityManager
  * @property-read ElementManager $elementManager
  * @property-read RouteRepository $routeRepository
  * @property-read PageRepository $pageRepository
@@ -75,9 +74,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 	/** @var \Venne\Module\Helpers */
 	protected $moduleHelpers;
-
-	/** @var EntityManager */
-	private $entityManager;
 
 	/** @var RouteRepository */
 	private $routeRepository;
@@ -131,15 +127,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function injectRouteRepository(RouteRepository $routeRepository)
 	{
 		$this->routeRepository = $routeRepository;
-	}
-
-
-	/**
-	 * @param EntityManager $entityManager
-	 */
-	public function injectEntityManager(EntityManager $entityManager)
-	{
-		$this->entityManager = $entityManager;
 	}
 
 
@@ -200,7 +187,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	/**
 	 * @return void
 	 */
-	public function startup()
+	protected function startup()
 	{
 		if (!$this->route) {
 			throw new BadRequestException;

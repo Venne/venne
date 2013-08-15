@@ -52,16 +52,16 @@ class HeadControl extends Control
 	protected $titleSeparator;
 
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 
-		$this->websiteName = $this->presenter->context->parameters["website"]["name"];
-		$this->titleTemplate = $this->presenter->context->parameters["website"]["title"];
-		$this->titleSeparator = $this->presenter->context->parameters["website"]["titleSeparator"];
-		$this->author = $this->presenter->context->parameters["website"]["author"];
-		$this->keywords = $this->presenter->context->parameters["website"]["keywords"];
-		$this->description = $this->presenter->context->parameters["website"]["description"];
+		$this->websiteName = $this->presenter->context->parameters['website']['name'];
+		$this->titleTemplate = $this->presenter->context->parameters['website']['title'];
+		$this->titleSeparator = $this->presenter->context->parameters['website']['titleSeparator'];
+		$this->author = $this->presenter->context->parameters['website']['author'];
+		$this->keywords = $this->presenter->context->parameters['website']['keywords'];
+		$this->description = $this->presenter->context->parameters['website']['description'];
 	}
 
 

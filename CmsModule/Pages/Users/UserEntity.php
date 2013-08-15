@@ -106,7 +106,7 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	protected $routes;
 
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

@@ -19,7 +19,7 @@ use CmsModule\Content\Presenters\PagePresenter;
 class RoutePresenter extends PagePresenter
 {
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

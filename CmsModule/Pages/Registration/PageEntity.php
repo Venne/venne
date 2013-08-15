@@ -99,7 +99,7 @@ class PageEntity extends ExtendedPageEntity
 	protected $subject;
 
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

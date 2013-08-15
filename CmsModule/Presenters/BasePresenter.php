@@ -63,7 +63,7 @@ abstract class BasePresenter extends Presenter
 	/**
 	 * @return void
 	 */
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

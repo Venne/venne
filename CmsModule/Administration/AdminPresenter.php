@@ -30,7 +30,7 @@ abstract class AdminPresenter extends BasePresenter
 	protected $__installation;
 
 
-	public function startup()
+	protected function startup()
 	{
 		if ($this->contentLang && $this->context->createCheckConnection()) {
 			$this->context->cms->pageListener->setLocale($this->contentLang);

@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Error403PageEntity extends ExtendedPageEntity
 {
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

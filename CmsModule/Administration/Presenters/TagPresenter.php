@@ -65,7 +65,7 @@ class TagPresenter extends BasePresenter
 	}
 
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 

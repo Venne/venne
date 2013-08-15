@@ -53,7 +53,7 @@ class RoutePresenter extends PagePresenter
 	}
 
 
-	public function startup()
+	protected function startup()
 	{
 		parent::startup();
 
