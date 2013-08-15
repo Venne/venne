@@ -60,7 +60,7 @@
 
             initAjax:{
                 data:{ mode:'all'},
-                url: {link getPages!}
+                url: '{!$presenter->link(':Cms:Admin:Dashboard:default')}?do=panel-browser-getPages'
             },
 
             onLazyRead:function (node) {

@@ -33,6 +33,22 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 
 	const PRIVILEGE_SHOW = 'show';
 
+	const ADMIN_PRIVILEGE_SHOW = 'admin_show';
+
+	const ADMIN_PRIVILEGE_PERMISSIONS = 'admin_permissions';
+
+	const ADMIN_PRIVILEGE_ROUTES = 'admin_routes';
+
+	const ADMIN_PRIVILEGE_PUBLICATION = 'admin_publication';
+
+	const ADMIN_PRIVILEGE_PREVIEW = 'admin_preview';
+
+	const ADMIN_PRIVILEGE_BASE = 'admin_base';
+
+	const ADMIN_PRIVILEGE_REMOVE = 'admin_remove';
+
+	const ADMIN_PRIVILEGE_CHANGE_STRUCTURE = 'admin_change_structure';
+
 	/**
 	 * @var PageEntity
 	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", cascade={"ALL"})
@@ -172,12 +188,41 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 
 
 	/**
+	 * @param User $user
+	 * @param $permission
+	 * @return bool
+	 */
+	public function isAllowedInBackend(User $user, $permission)
+	{
+		return $this->page->isAllowedInBackend($user, $permission);
+	}
+
+
+	/**
 	 * @return array
 	 */
 	public function getPrivileges()
 	{
 		return array(
 			self::PRIVILEGE_SHOW => 'show page',
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getAdminPrivileges()
+	{
+		return array(
+			self::ADMIN_PRIVILEGE_SHOW => 'show page',
+			self::ADMIN_PRIVILEGE_PERMISSIONS => 'permissios',
+			self::ADMIN_PRIVILEGE_PUBLICATION => 'publication',
+			self::ADMIN_PRIVILEGE_PREVIEW => 'preview page',
+			self::ADMIN_PRIVILEGE_ROUTES => 'edit routes',
+			self::ADMIN_PRIVILEGE_BASE => 'edit base form',
+			self::ADMIN_PRIVILEGE_REMOVE => 'remove page',
+			self::ADMIN_PRIVILEGE_CHANGE_STRUCTURE => 'change page structure',
 		);
 	}
 }

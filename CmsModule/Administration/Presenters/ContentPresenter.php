@@ -14,7 +14,9 @@ namespace CmsModule\Administration\Presenters;
 use CmsModule\Content\Components\ContentTableFactory;
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\ContentManager;
+use CmsModule\Content\Entities\ExtendedPageEntity;
 use CmsModule\Content\Entities\LanguageEntity;
+use CmsModule\Content\Forms\AdminPermissionsFormFactory;
 use CmsModule\Content\Forms\BasicFormFactory;
 use CmsModule\Content\Forms\PermissionsFormFactory;
 use CmsModule\Content\ISectionControl;
@@ -23,6 +25,7 @@ use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Pages\Users\UserEntity;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\InvalidArgumentException;
 use Venne\Forms\Form;
@@ -70,8 +73,11 @@ class ContentPresenter extends BasePresenter
 	/** @var PermissionsFormFactory */
 	protected $permissionsFormFactory;
 
+	/** @var AdminPermissionsFormFactory */
+	protected $adminPermissionsFormFactory;
 
-	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory)
+
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory, AdminPermissionsFormFactory $adminPermissionsFormFactory)
 	{
 		parent::__construct();
 
@@ -81,6 +87,7 @@ class ContentPresenter extends BasePresenter
 		$this->contentTableFactory = $contentTableFactory;
 		$this->contentRouteControlFactory = $routeControlFactory;
 		$this->permissionsFormFactory = $permissionsFormFactory;
+		$this->adminPermissionsFormFactory = $adminPermissionsFormFactory;
 	}
 
 
@@ -126,11 +133,34 @@ class ContentPresenter extends BasePresenter
 	 */
 	public function actionEdit()
 	{
+		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_SHOW)) {
+			throw new ForbiddenRequestException;
+		}
+
+		if ($this->section === 'basic') {
+			if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_BASE)) {
+				throw new ForbiddenRequestException;
+			}
+		} elseif ($this->section === 'routes') {
+			if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_ROUTES)) {
+				throw new ForbiddenRequestException;
+			}
+		} elseif ($this->section === 'permissions' || $this->section === 'admin_permissions') {
+			if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_PERMISSIONS)) {
+				throw new ForbiddenRequestException;
+			}
+		}
+	}
+
+
+	public function isAllowedInBackend($permission)
+	{
+		return $this->getPageEntity()->isAllowedInBackend($this->user, $permission);
 	}
 
 
 	/**
-	 * @secured
+	 * @secured(privilege="edit")
 	 */
 	public function handlePreview($id)
 	{
@@ -141,6 +171,10 @@ class ContentPresenter extends BasePresenter
 			$route = $entity->mainRoute;
 		} else {
 			$route = $this->getPageEntity()->page->getMainRoute();
+		}
+
+		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)) {
+			throw new ForbiddenRequestException;
 		}
 
 		if (!$route->published) {
@@ -163,6 +197,10 @@ class ContentPresenter extends BasePresenter
 	{
 		if (!$entity = $this->pageRepository->find($id)) {
 			throw new BadRequestException;
+		}
+
+		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_REMOVE)) {
+			throw new ForbiddenRequestException;
 		}
 
 		$this->pageRepository->delete($entity);
@@ -188,6 +226,10 @@ class ContentPresenter extends BasePresenter
 			throw new BadRequestException;
 		}
 
+		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)) {
+			throw new ForbiddenRequestException;
+		}
+
 		$entity->mainRoute->published = !$entity->mainRoute->published;
 		$this->pageRepository->save($entity);
 
@@ -207,6 +249,10 @@ class ContentPresenter extends BasePresenter
 	{
 		if (!$entity = $this->pageRepository->find($id)) {
 			throw new BadRequestException;
+		}
+
+		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_CHANGE_STRUCTURE)) {
+			throw new ForbiddenRequestException;
 		}
 
 		$main = $entity->getRoot();
@@ -246,45 +292,73 @@ class ContentPresenter extends BasePresenter
 		$adminGrid = $this->contentTableFactory->create();
 		$table = $adminGrid->getTable();
 
-		$table->addAction('publish', 'published')
-			->setCustomRender(function ($entity, $element) {
-				if ((bool)$entity->mainRoute->published) {
-					$element->class[] = 'btn-primary';
-				};
-				return $element;
-			})
-			->setCustomHref(function ($entity) use ($_this) {
-				return $_this->link('publish!', array($entity->id));
-			})
-			->getElementPrototype()->class[] = 'ajax';
-		$table->addAction('preview', 'Preview')
-			->setCustomHref(function ($entity) use ($_this) {
-				return $_this->link('preview!', array($entity->id));
-			});
-		$table->addAction('edit', 'Edit')
-			->setCustomHref(function ($entity) use ($_this) {
-				return $_this->link('edit', array('key' => $entity->id));
-			})
-			->getElementPrototype()->class[] = 'ajax';
-		$table->addAction('setAsRoot', 'Set as root')
-			->setCustomRender(function ($entity, $element) {
-				if ($entity->parent === NULL) {
-					$element->class[] = 'disabled';
-				};
-				return $element;
-			})
-			->setCustomHref(function ($entity) use ($_this) {
-				return $_this->link('setAsRoot!', array($entity->id));
-			})
-			->getElementPrototype()->class[] = 'ajax';
-		$table->addAction('remove', 'Remove')
-			->getElementPrototype()->class[] = 'ajax';
+		if ($this->isAuthorized('edit')) {
+			$table->addAction('publish', 'published')
+				->setCustomRender(function ($entity, $element) use ($_this) {
+					if ((bool)$entity->mainRoute->published) {
+						$element->class[] = 'btn-primary';
+					};
+					if (!$entity->isAllowedInBackend($_this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)) {
+						$element->class[] = 'disabled';
+					};
+					return $element;
+				})
+				->setCustomHref(function ($entity) use ($_this) {
+					return $_this->link('publish!', array($entity->id));
+				})
+				->getElementPrototype()->class[] = 'ajax';
+			$table->addAction('preview', 'Preview')
+				->setCustomHref(function ($entity) use ($_this) {
+					return $_this->link('preview!', array($entity->id));
+				})
+				->setCustomRender(function ($entity, $element) use ($_this) {
+					if (!$entity->isAllowedInBackend($_this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)) {
+						$element->class[] = 'disabled';
+					};
+					return $element;
+				});
 
-		$adminGrid->connectActionAsDelete($table->getAction('remove'));
+			$table->addAction('edit', 'Edit')
+				->setCustomHref(function ($entity) use ($_this) {
+					return $_this->link('edit', array('key' => $entity->id));
+				})
+				->setCustomRender(function ($entity, $element) use ($_this) {
+					if (!$entity->isAllowedInBackend($_this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_SHOW)) {
+						$element->class[] = 'disabled';
+					};
+					return $element;
+				})
+				->getElementPrototype()->class[] = 'ajax';
 
-		$table->getAction('remove')->onClick[] = function () use ($_this) {
-			$_this['panel']->invalidateControl('content');
-		};
+			$table->addAction('setAsRoot', 'Set as root')
+				->setCustomRender(function ($entity, $element) use ($_this) {
+					if ($entity->parent === NULL) {
+						$element->class[] = 'disabled';
+					};
+					if (!$entity->isAllowedInBackend($_this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_CHANGE_STRUCTURE)) {
+						$element->class[] = 'disabled';
+					};
+					return $element;
+				})
+				->setCustomHref(function ($entity) use ($_this) {
+					return $_this->link('setAsRoot!', array($entity->id));
+				})
+				->getElementPrototype()->class[] = 'ajax';
+			$table->addAction('remove', 'Remove')
+				->setCustomRender(function ($entity, $element) use ($_this) {
+					if (!$entity->isAllowedInBackend($_this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_REMOVE)) {
+						$element->class[] = 'disabled';
+					};
+					return $element;
+				})
+				->getElementPrototype()->class[] = 'ajax';
+
+			$adminGrid->connectActionAsDelete($table->getAction('remove'));
+
+			$table->getAction('remove')->onClick[] = function () use ($_this) {
+				$_this['panel']->invalidateControl('content');
+			};
+		}
 
 		return $adminGrid;
 	}
@@ -311,14 +385,25 @@ class ContentPresenter extends BasePresenter
 		$this->flashMessage('Page has been created');
 
 		if (!$this->isAjax()) {
-			$this->redirect('edit', array('type' => NULL, 'key' => $form->data->page->id));
+			if ($this->isAuthorized('edit')) {
+				$this->redirect('edit', array('type' => NULL, 'key' => $form->data->page->id));
+			} else {
+				$this->redirect('default', array('type' => NULL, 'key' => NULL));
+			}
 		}
 		$this->invalidateControl('content');
 		$this['panel']->invalidateControl('content');
-		$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->page->id));
-		$this->setView('edit');
-		$this->changeAction('edit');
-		$this->key = $form->data->page->id;
+		if ($this->isAuthorized('edit')) {
+			$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->page->id));
+			$this->setView('edit');
+			$this->changeAction('edit');
+			$this->key = $form->data->page->id;
+		} else {
+			$this->payload->url = $this->link('default', array('type' => NULL, 'key' => NULL));
+			$this->setView('default');
+			$this->changeAction('default');
+			$this->key = NULL;
+		}
 	}
 
 
@@ -339,6 +424,8 @@ class ContentPresenter extends BasePresenter
 			$form = $this->contentRouteControlFactory->invoke();
 		} elseif ($this->section == 'permissions') {
 			$form = $this->permissionsFormFactory->invoke($entity);
+		} elseif ($this->section == 'admin_permissions') {
+			$form = $this->adminPermissionsFormFactory->invoke($entity);
 		} else {
 			if ($this->section) {
 				if (!$contentType->hasSection($this->section)) {
@@ -375,6 +462,10 @@ class ContentPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @return ExtendedPageEntity
+	 * @throws \Nette\Application\BadRequestException
+	 */
 	public function getPageEntity()
 	{
 		if (!$entity = $this->pageRepository->find($this->key)) {

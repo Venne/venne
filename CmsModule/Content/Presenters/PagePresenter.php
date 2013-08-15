@@ -358,10 +358,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function isAllowed($resource = NULL, $privilege = NULL)
 	{
-		if (!$this->getPage()->getSecured()) {
-			return TRUE;
-		}
-
 		return $this->getExtendedPage()->isAllowed($this->getUser(), $resource);
 	}
 

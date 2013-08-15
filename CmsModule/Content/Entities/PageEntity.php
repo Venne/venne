@@ -103,13 +103,28 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	protected $secured = FALSE;
 
 	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $adminSecured = FALSE;
+
+	/**
 	 * @var PermissionEntity[]|ArrayCollection
 	 * @ORM\OneToMany(targetEntity="PermissionEntity", mappedBy="page", indexBy="name", fetch="EXTRA_LAZY", orphanRemoval=true, cascade={"all"})
 	 */
 	protected $permissions;
 
+	/**
+	 * @var AdminPermissionEntity[]|ArrayCollection
+	 * @ORM\OneToMany(targetEntity="AdminPermissionEntity", mappedBy="page", indexBy="name", fetch="EXTRA_LAZY", orphanRemoval=true, cascade={"all"})
+	 */
+	protected $adminPermissions;
+
 	/** @var array */
-	protected $_isAlowed = array();
+	protected $_isAllowed = array();
+
+	/** @var array */
+	protected $_isAllowedInAdmin = array();
 
 
 	/**
@@ -121,6 +136,7 @@ class PageEntity extends TreeEntity implements IloggableEntity
 
 		$this->routes = new ArrayCollection;
 		$this->permissions = new ArrayCollection;
+		$this->adminPermissions = new ArrayCollection;
 		$this->created = new \DateTime;
 		$this->updated = new \DateTime;
 		$this->class = get_class($page);
@@ -402,12 +418,30 @@ class PageEntity extends TreeEntity implements IloggableEntity
 
 
 	/**
-	 * @param PermissionEntity[] $permissions
+	 * @param boolean $adminSecured
+	 */
+	public function setAdminSecured($adminSecured)
+	{
+		$this->adminSecured = $adminSecured;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getAdminSecured()
+	{
+		return $this->adminSecured;
+	}
+
+
+	/**
+	 * @param PermissionEntity[]|ArrayCollection $permissions
 	 */
 	public function setPermissions($permissions)
 	{
 		$this->permissions = $permissions;
-		$this->_isAlowed = array();
+		$this->_isAllowed = array();
 	}
 
 
@@ -421,42 +455,91 @@ class PageEntity extends TreeEntity implements IloggableEntity
 
 
 	/**
+	 * @param AdminPermissionEntity[]|ArrayCollection $adminPermissions
+	 */
+	public function setAdminPermissions($adminPermissions)
+	{
+		$this->adminPermissions = $adminPermissions;
+	}
+
+
+	/**
+	 * @return AdminPermissionEntity[]|ArrayCollection
+	 */
+	public function getAdminPermissions()
+	{
+		return $this->adminPermissions;
+	}
+
+
+	/**
+	 * @param User $user
+	 * @param $permission
+	 * @return bool
+	 */
+	private function baseIsAllowed(& $secured, & $source, & $cache, User $user, $permission)
+	{
+		if (!$secured) {
+			return TRUE;
+		}
+
+		if (!isset($cache[$user->id][$permission])) {
+
+			if (!isset($cache[$user->id])) {
+				$cache[$user->id] = array();
+			}
+
+			if (isset($source[$permission])) {
+				$permissionEntity = $source[$permission];
+
+				if (!$user->isLoggedIn()) {
+					$cache[$user->id][$permission] = FALSE;
+					return FALSE;
+				}
+
+				if ($user->isInRole('admin')) {
+					$cache[$user->id][$permission] = TRUE;
+					return TRUE;
+				}
+
+				if ($permissionEntity->getAll()) {
+					$cache[$user->id][$permission] = TRUE;
+					return TRUE;
+				}
+
+				foreach ($user->getRoles() as $role) {
+					if (isset($permissionEntity->roles[$role])) {
+						$cache[$user->id][$permission] = TRUE;
+						return TRUE;
+					}
+				}
+			}
+			$cache[$user->id][$permission] = FALSE;
+		}
+
+		return $cache[$user->id][$permission];
+	}
+
+
+	/**
 	 * @param User $user
 	 * @param $permission
 	 * @return bool
 	 */
 	public function isAllowed(User $user, $permission)
 	{
-		if (!isset($this->_isAlowed[$user->id][$permission])) {
+		return $this->baseIsAllowed($this->secured, $this->permissions, $this->_isAllowed, $user, $permission);
+	}
 
-			if (!isset($this->_isAlowed[$user->id])) {
-				$this->_isAlowed[$user->id] = array();
-			}
 
-			if (isset($this->permissions[$permission])) {
-				$permissionEntity = $this->permissions[$permission];
-
-				if (!$user->isLoggedIn()) {
-					$this->_isAlowed[$user->id][$permission] = FALSE;
-					return FALSE;
-				}
-
-				if ($permissionEntity->getAll()) {
-					$this->_isAlowed[$user->id][$permission] = TRUE;
-					return TRUE;
-				}
-
-				foreach ($user->getRoles() as $role) {
-					if (isset($permissionEntity->roles[$role])) {
-						$this->_isAlowed[$user->id][$permission] = TRUE;
-						return TRUE;
-					}
-				}
-			}
-			$this->_isAlowed[$user->id][$permission] = FALSE;
-		}
-
-		return $this->_isAlowed[$user->id][$permission];
+	/**
+	 * @param User $user
+	 * @param $permission
+	 * @return bool
+	 */
+	public function isAllowedInBackend(User $user, $permission)
+	{
+		return $this->baseIsAllowed($this->adminSecured, $this->adminPermissions, $this->_isAllowedInAdmin, $user, $permission);
 	}
 
 

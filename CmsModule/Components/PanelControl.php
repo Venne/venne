@@ -48,15 +48,6 @@ class PanelControl extends Control
 	}
 
 
-	public function getKey()
-	{
-		return array(
-			$this->getTab(),
-			$this->session->state[$this->getTab()],
-		);
-	}
-
-
 	public function render()
 	{
 		$this->template->render();
