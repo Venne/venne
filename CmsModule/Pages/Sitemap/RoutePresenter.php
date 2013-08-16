@@ -42,7 +42,10 @@ class RoutePresenter extends PagePresenter
 	{
 		return $this->extendedPage->rootPage
 			? $this->extendedPage->rootPage
-			: $this->pageRepository->findOneBy(array('url' => ''));
+			: $this->pageRepository->createQueryBuilder('a')
+			->leftJoin('a.mainRoute', 'r')
+			->where('r.url = :url')->setParameter('url', '')
+			->getQuery()->getSingleResult();
 	}
 
 }
