@@ -62,6 +62,7 @@ language settings: nastavení jazyků
 languages: jazyky
 layouts: layouty
 list: výpis
+list of subpages: seznam podstránek
 log browser: prohlížeč logů
 log out: odhlásit
 login: přihlášení
@@ -90,6 +91,7 @@ routing: routování
 robots: roboti
 statistics: statistiky
 search: vyhledat
+search page: vyhledávací stránka
 save: uložit
 security: zabezpečení
 sessions: relace
@@ -102,6 +104,7 @@ show page: zobrazit stránku
 show website: zobrazit web
 share data with: sdílet data s
 sign in: přihlásit se
+site tags: tagy webu
 site users: stránka uživatelů
 system: systém
 tags: tagy
