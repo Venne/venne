@@ -113,7 +113,7 @@ abstract class AdminPresenter extends BasePresenter
 	{
 		$this->user->logout(TRUE);
 		$this->flashMessage('Logout success');
-		$this->redirect('this');
+		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
 	}
 
 
