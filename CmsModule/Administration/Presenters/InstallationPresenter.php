@@ -11,14 +11,11 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\StructureInstallatorManager;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Forms\LanguageFormFactory;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemDatabaseFormFactory;
-use CmsModule\Pages\Errors\Error403PageEntity;
-use CmsModule\Pages\Errors\Error404PageEntity;
-use CmsModule\Pages\Errors\Error500PageEntity;
-use CmsModule\Pages\Text\PageEntity;
 use Doctrine\ORM\Tools\SchemaTool;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -76,6 +73,9 @@ class InstallationPresenter extends BasePresenter
 	/** @var SystemDatabaseFormFactory */
 	protected $databaseFormFactory;
 
+	/** @var StructureInstallatorManager */
+	protected $installatorManager;
+
 
 	/**
 	 * @param IStorage $cacheStorage
@@ -95,6 +95,15 @@ class InstallationPresenter extends BasePresenter
 		$this->publicDir = $publicDir;
 		$this->cacheStorage = $cacheStorage;
 		$this->administration = $administration;
+	}
+
+
+	/**
+	 * @param StructureInstallatorManager $installatorManager
+	 */
+	public function injectInstallatorManager(StructureInstallatorManager $installatorManager)
+	{
+		$this->installatorManager = $installatorManager;
 	}
 
 
@@ -122,7 +131,19 @@ class InstallationPresenter extends BasePresenter
 	}
 
 
-	protected function startup()
+	/**
+	 * @return StructureInstallatorManager
+	 */
+	public function getInstallatorManager()
+	{
+		return $this->installatorManager;
+	}
+
+
+
+
+
+	public function startup()
 	{
 		parent::startup();
 
@@ -184,7 +205,7 @@ class InstallationPresenter extends BasePresenter
 	}
 
 
-	public function handleCreateStructure()
+	public function handleCreateStructure($name)
 	{
 		$em = $this->context->entityManager;
 
@@ -195,81 +216,8 @@ class InstallationPresenter extends BasePresenter
 		$cacheDriver = $em->getConfiguration()->getMetadataCacheImpl();
 		$cacheDriver->deleteAll();
 
-		$layout = $em->getRepository('CmsModule\Content\Entities\LayoutEntity')->find(1);
-
-		// pages
-		$textPage = new PageEntity;
-		$textPage
-			->getExtendedMainRoute()
-			->setName('Main page')
-			->getRoute()
-			->setCopyLayoutFromParent(FALSE)
-			->setLayout($layout)
-			->setText('Hello, this is main page of this website.')
-			->setPublished(TRUE);
-
-		$userPage = new \CmsModule\Pages\Users\PageEntity;
-		$userPage
-			->getPage()
-			->setParent($textPage->getPage());
-		$userPage
-			->getExtendedMainRoute()
-			->setName('Users')
-			->getRoute()
-			->setText('List of users.')
-			->setPublished(TRUE);
-
-		$tagsPage = new \CmsModule\Pages\Tags\PageEntity;
-		$tagsPage
-			->getPage()
-			->setParent($textPage->getPage());
-		$tagsPage
-			->getExtendedMainRoute()
-			->setName('Tags')
-			->getRoute()
-			->setText('List of tags.')
-			->setPublished(TRUE);
-
-		$error404Page = new  Error404PageEntity;
-		$error404Page
-			->getPage()
-			->setParent($textPage->getPage());
-		$error404Page
-			->getExtendedMainRoute()
-			->setName('Page not found')
-			->getRoute()
-			->setText('404')
-			->setPublished(TRUE);
-
-		$error403Page = new  Error403PageEntity;
-		$error403Page
-			->getPage()
-			->setParent($textPage->getPage());
-		$error403Page
-			->getExtendedMainRoute()
-			->setName('Forbidden')
-			->getRoute()
-			->setText('403')
-			->setPublished(TRUE);
-
-		$error500Page = new  Error500PageEntity;
-		$error500Page
-			->getPage()
-			->setParent($textPage->getPage());
-		$error500Page
-			->getExtendedMainRoute()
-			->setName('Internal server error')
-			->getRoute()
-			->setText('500')
-			->setPublished(TRUE);
-
-		$em->persist($textPage);
-		$em->persist($userPage);
-		$em->persist($tagsPage);
-		$em->persist($error403Page);
-		$em->persist($error404Page);
-		$em->persist($error500Page);
-		$em->flush();
+		$installator = $this->installatorManager->getInstallatorByName($name);
+		$installator->run();
 
 		$this->redirect('Dashboard:');
 	}

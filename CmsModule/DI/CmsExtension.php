@@ -170,6 +170,14 @@ class CmsExtension extends CompilerExtension
 				$config['mediaUrl'] ?: '/public/media',
 			))
 			->addTag('listener');
+
+		// Structure installators
+		$container->addDefinition($this->prefix('administration.structureInstallator'))
+			->setClass('CmsModule\Administration\StructureInstallators\StructureInstallator');
+
+		$container->addDefinition($this->prefix('structureInstallatorManager'))
+			->setClass('CmsModule\Administration\StructureInstallatorManager')
+			->addSetup('registerInstallator', array($this->prefix('@administration.structureInstallator'), 'Basic website structure and access list'));
 	}
 
 
