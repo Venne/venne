@@ -100,7 +100,7 @@ class LayouteditFormFactory extends FormFactory
 		$form->addText('component', 'Component');
 
 		$form->addGroup('Template')->setOption('class', 'full');
-		$form->addTextArea('text', NULL, NULL, 30)
+		$form->addCode('text', NULL, NULL, 30)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
 
 		$form->addSubmit('_submit', 'Save');
