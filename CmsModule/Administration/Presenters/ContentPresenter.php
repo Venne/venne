@@ -173,7 +173,7 @@ class ContentPresenter extends BasePresenter
 			$route = $this->getPageEntity()->page->getMainRoute();
 		}
 
-		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)) {
+		if (!$entity->isAllowedInBackend($this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)) {
 			throw new ForbiddenRequestException;
 		}
 
@@ -199,7 +199,7 @@ class ContentPresenter extends BasePresenter
 			throw new BadRequestException;
 		}
 
-		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_REMOVE)) {
+		if (!$entity->isAllowedInBackend($this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_REMOVE)) {
 			throw new ForbiddenRequestException;
 		}
 
@@ -226,7 +226,7 @@ class ContentPresenter extends BasePresenter
 			throw new BadRequestException;
 		}
 
-		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)) {
+		if (!$entity->isAllowedInBackend($this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)) {
 			throw new ForbiddenRequestException;
 		}
 
@@ -251,7 +251,7 @@ class ContentPresenter extends BasePresenter
 			throw new BadRequestException;
 		}
 
-		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_CHANGE_STRUCTURE)) {
+		if (!$entity->isAllowedInBackend($this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_CHANGE_STRUCTURE)) {
 			throw new ForbiddenRequestException;
 		}
 
