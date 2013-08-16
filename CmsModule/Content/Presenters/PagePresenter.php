@@ -21,7 +21,6 @@ use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Content\Repositories\RouteRepository;
-use CmsModule\Panels\Stopwatch;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;

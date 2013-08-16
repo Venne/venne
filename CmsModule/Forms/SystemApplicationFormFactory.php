@@ -60,7 +60,6 @@ class SystemApplicationFormFactory extends FormFactory
 		/* containers */
 		$nette = $form->addContainer('nette');
 		$venne = $form->addContainer('venne');
-		$stopwatch = $venne->addContainer('stopwatch');
 		$doctrine = $form->addContainer('doctrine');
 		/** @var $debugger \Nette\Forms\Container */
 		$debugger = $nette->addContainer('debugger');
@@ -85,9 +84,6 @@ class SystemApplicationFormFactory extends FormFactory
 		$debugger->addText('browser', 'Browser');
 		$debugger->addText('email', 'E-mail for logs')
 			->addCondition($form::FILLED)->addRule($form::EMAIL);
-
-		$stopwatch->setCurrentGroup($group);
-		$stopwatch->addCheckbox('debugger', 'Stopwatch panel')->setDefaultValue(TRUE);
 
 		$application->setCurrentGroup($group);
 		$application->addCheckbox('debugger', 'Debugger panel in bluescreen')->setDefaultValue(TRUE);

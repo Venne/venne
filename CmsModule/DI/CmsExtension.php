@@ -21,9 +21,6 @@ class CmsExtension extends CompilerExtension
 {
 
 	public $defaults = array(
-		'stopwatch' => array(
-			'debugger' => NULL
-		),
 		'administration' => array(
 			'login' => array(
 				'name' => '',
@@ -152,14 +149,6 @@ class CmsExtension extends CompilerExtension
 		// config manager
 		$container->addDefinition($this->prefix("configService"))
 			->setClass("CmsModule\Services\ConfigBuilder", array("%configDir%/config.neon"));
-
-		// Stopwatch
-		if ($config['stopwatch']['debugger']) {
-			$application = $container->getDefinition('application');
-			$application->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)', array(
-				new \Nette\DI\Statement('CmsModule\Panels\Stopwatch')
-			));
-		}
 
 		// listeners
 		$container->addDefinition($this->prefix('fileListener'))

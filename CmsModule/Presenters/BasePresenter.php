@@ -11,12 +11,13 @@
 
 namespace CmsModule\Presenters;
 
-use CmsModule\Panels\Stopwatch;
 use Doctrine\ORM\EntityManager;
 use Venne\Application\UI\Presenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @property-read EntityManager $entityManager
  */
 abstract class BasePresenter extends Presenter
 {
@@ -33,13 +34,6 @@ abstract class BasePresenter extends Presenter
 
 	/** @var EntityManager */
 	private $entityManager;
-
-
-	public function __construct()
-	{
-		Stopwatch::start();
-		parent::__construct();
-	}
 
 
 	/**
@@ -75,10 +69,6 @@ abstract class BasePresenter extends Presenter
 			$translator->setLang($this->lang);
 		}
 
-		// Stopwatch
-		Stopwatch::stop("base startup");
-		Stopwatch::start();
-
 		// mode
 		if ($this->mode && !$this->getUser()->isLoggedIn()) {
 			$this->mode = self::MODE_NORMAL;
@@ -88,33 +78,5 @@ abstract class BasePresenter extends Presenter
 
 	protected function checkLanguage()
 	{
-	}
-
-
-	/**
-	 * Common render method.
-	 *
-	 * @return void
-	 */
-	public function beforeRender()
-	{
-		// Stopwatch
-		Stopwatch::stop("module startup and action");
-		Stopwatch::start();
-
-		parent::beforeRender();
-	}
-
-
-	/**
-	 * @param  \Nette\Application\IResponse optional catched exception
-	 * @return void
-	 */
-	public function shutdown($response)
-	{
-		parent::shutdown($response);
-
-		Stopwatch::stop("template render");
-		Stopwatch::start();
 	}
 }
