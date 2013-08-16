@@ -73,6 +73,12 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	protected $updated;
 
 	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $published = FALSE;
+
+	/**
 	 * @var string
 	 * @ORM\Column(type="string", nullable=true)
 	 */
@@ -324,6 +330,26 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	public function setExpired($expired)
 	{
 		$this->expired = $expired;
+	}
+
+
+	/**
+	 * @param $published
+	 * @return $this
+	 */
+	public function setPublished($published)
+	{
+		$this->published = $published;
+		return $this;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getPublished()
+	{
+		return $this->published;
 	}
 
 

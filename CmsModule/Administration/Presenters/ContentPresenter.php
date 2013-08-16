@@ -177,7 +177,7 @@ class ContentPresenter extends BasePresenter
 			throw new ForbiddenRequestException;
 		}
 
-		if (!$route->published) {
+		if (!$entity->published || !$route->published || ($route->released && $route->released > new \DateTime)) {
 			$session = $this->getSession(self::PREVIEW_SESSION);
 			$session->setExpiration('+ 2 minutes');
 			if (!isset($session->routes)) {
@@ -230,7 +230,8 @@ class ContentPresenter extends BasePresenter
 			throw new ForbiddenRequestException;
 		}
 
-		$entity->mainRoute->published = !$entity->mainRoute->published;
+		$entity->published = !$entity->published;
+		$entity->mainRoute->published = $entity->published;
 		$this->pageRepository->save($entity);
 
 		if (!$this->isAjax()) {
@@ -295,7 +296,7 @@ class ContentPresenter extends BasePresenter
 		if ($this->isAuthorized('edit')) {
 			$table->addAction('publish', 'published')
 				->setCustomRender(function ($entity, $element) use ($_this) {
-					if ((bool)$entity->mainRoute->published) {
+					if ((bool)$entity->published) {
 						$element->class[] = 'btn-primary';
 					};
 					if (!$entity->isAllowedInBackend($_this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)) {

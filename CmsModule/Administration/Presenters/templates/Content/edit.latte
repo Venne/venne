@@ -23,7 +23,7 @@
 	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)" class="pull-right"><a n:href="preview!" target="_blank"><span class="icon icon-eye-open icon-white"></span> {_preview}</a></li>
 
 	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)" class="dropdown pull-right">
-		{if $entity->page->mainRoute->published}
+		{if $entity->page->published}
 			<a n:href="publish!"><span class="icon icon-arrow-down icon-white"></span> {_Hide}</a>
 		{else}
 			<a n:href="publish!"><span class="icon icon-globe icon-white"></span> {_Publish}</a>

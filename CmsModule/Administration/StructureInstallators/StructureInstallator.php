@@ -44,6 +44,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$this->createAccessList();
 	}
 
+
 	private function createPages()
 	{
 		$em = $this->entityManager;
@@ -52,6 +53,9 @@ class StructureInstallator extends Object implements IStructureInstallator
 
 		// pages
 		$textPage = new \CmsModule\Pages\Text\PageEntity;
+		$textPage
+			->getPage()
+			->setPublished(TRUE);
 		$textPage
 			->getExtendedMainRoute()
 			->setName('Main page')
@@ -64,6 +68,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$userPage = new \CmsModule\Pages\Users\PageEntity;
 		$userPage
 			->getPage()
+			->setPublished(TRUE)
 			->setParent($textPage->getPage());
 		$userPage
 			->getExtendedMainRoute()
@@ -75,6 +80,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$tagsPage = new \CmsModule\Pages\Tags\PageEntity;
 		$tagsPage
 			->getPage()
+			->setPublished(TRUE)
 			->setParent($textPage->getPage());
 		$tagsPage
 			->getExtendedMainRoute()
@@ -86,6 +92,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$error404Page = new  Error404PageEntity;
 		$error404Page
 			->getPage()
+			->setPublished(TRUE)
 			->setParent($textPage->getPage());
 		$error404Page
 			->getExtendedMainRoute()
@@ -97,6 +104,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$error403Page = new  Error403PageEntity;
 		$error403Page
 			->getPage()
+			->setPublished(TRUE)
 			->setParent($textPage->getPage());
 		$error403Page
 			->getExtendedMainRoute()
@@ -108,6 +116,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$error500Page = new  Error500PageEntity;
 		$error500Page
 			->getPage()
+			->setPublished(TRUE)
 			->setParent($textPage->getPage());
 		$error500Page
 			->getExtendedMainRoute()
@@ -119,6 +128,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$sitemapPage = new \CmsModule\Pages\Sitemap\PageEntity;
 		$sitemapPage
 			->getPage()
+			->setPublished(TRUE)
 			->setParent($textPage->getPage());
 		$sitemapPage
 			->getExtendedMainRoute()
@@ -157,7 +167,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$editor->setName('editor');
 		$editor->setParent($manager);
 
-		$contentManager  = new RoleEntity;
+		$contentManager = new RoleEntity;
 		$contentManager->setName('contentManager');
 		$contentManager->setParent($editor);
 
@@ -194,6 +204,5 @@ class StructureInstallator extends Object implements IStructureInstallator
 
 		$em->flush();
 	}
-
 }
 
