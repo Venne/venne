@@ -6,22 +6,46 @@
 			</a>
 			<ul class="dropdown-menu">
 				<li class="nav-header">Actions</li>
-				<li><a n:href="logout"><i class="icon-off"></i> Log out</a></li>
+				<li><a n:href="logout"><i class="icon-off"></i> {_'Log out'}</a></li>
 			</ul>
 		</li>
 	</ul>
 {else}
-	{form form class=>'navbar-form pull-right'}
-	{input username class=>input-small,  placeholder=>"username", autocomplete=>off}&nbsp;
-	{input password class=>input-small,  placeholder=>"password"}&nbsp;
-		<div class="btn-group">
-			{input _submit class=>'btn'}
-			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-			<ul class="dropdown-menu">
-				{foreach $socialLogins as $name}
-					<li><a n:href="login! name=>$name">{$name}</a></li>
-				{/foreach}
-			</ul>
-		</div>
-	{/form}
+	<ul class="nav pull-right">
+		<li class="dropdown">
+			<a class="dropdown-toggle" href="#" data-toggle="dropdown">
+				<span class="icon-user"></span> {_'Sign in'} <b class="caret"></b>
+			</a>
+			<div class="dropdown-menu" style="padding: 17px;">
+				{form form class=>'form'}
+					<div id="frmform-username-pair" class="control-group required">
+						<label class="required control-label" for="frmform-username">{label username /}</label>
+						<div class="controls">
+							{input username class=>'input-xlarge'}
+						</div>
+					</div>
+
+					<div id="frmform-password-pair" class="control-group required">
+						<label class="required control-label" for="frmform-password">{label password /}</label>
+						<div class="controls">
+							{input password class=>'input-xlarge'}
+						</div>
+					</div>
+
+					<div id="frmform-remember-pair" class="control-group">
+						<div class="controls">
+							<label class="checkbox">{input remember}{_$form['remember']->caption}</label>
+						</div>
+					</div>
+
+					<div class="form-actions">
+						{input _submit}
+						{foreach $socialLogins as $name}
+							<a class="btn" n:href="login! name=>$name">{$name}</a>
+						{/foreach}
+					</div>
+				{/form}
+			</div>
+		</li>
+	</ul>
 {/if}
