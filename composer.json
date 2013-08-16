@@ -29,6 +29,16 @@
 	"require-dev": {
 		"venne/tester": "@dev"
 	},
+	"suggest": {
+		"venne/blog-module": "Module with blog system",
+		"venne/gallery-module": "Simple gallery page based on blog module",
+		"venne/guestbook-module": "Simple guestbook page",
+		"venne/mailform-module": "Mailform page with many useful options",
+		"venne/googleanalytics-module": "Google analytics integration",
+		"venne/ckeditor-module": "Popular WYSIWYG editor",
+		"venne/lightbox-module": "Lightbox integration",
+		"venne/social-module": "Integration of logging with social networks"
+	},
 	"autoload": {
 		"psr-0": {
 			"CmsModule": ""
