@@ -44,9 +44,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 	const CACHE_OUTPUT = 'Venne.Output';
 
-	/** @persistent */
-	public $backlink;
-
 	/**
 	 * @persistent
 	 * @var RouteEntity
@@ -175,15 +172,6 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 
 	/**
-	 * @return EntityManager
-	 */
-	public function getEntityManager()
-	{
-		return $this->entityManager;
-	}
-
-
-	/**
 	 * @return void
 	 */
 	protected function startup()
@@ -196,6 +184,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			throw new InvalidArgumentException("Route must be instance of 'CmsModule\Content\Entities\ExtendedRouteEntity'. '" . get_class($this->route) . "' is given.");
 		}
 
+		// preview
 		if (!$this->route->page->published || !$this->route->route->published || ($this->route->route->released && $this->route->route->released > new \DateTime)) {
 			$session = $this->getSession(ContentPresenter::PREVIEW_SESSION);
 
