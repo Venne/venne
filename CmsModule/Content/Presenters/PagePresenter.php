@@ -24,6 +24,8 @@ use CmsModule\Content\Repositories\RouteRepository;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
+use Nette\Application;
+use Nette\Application\Responses;
 use Nette\Caching\Cache;
 use Nette\InvalidArgumentException;
 
@@ -198,6 +200,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$this->extendedRoute = $this->route;
 		$this->route = $this->route->route;
 
+		if ($this->getPage()->secured && !$this->user->isLoggedIn()) {
+			$this->redirect('Route', array('special' => 'login', 'backlink' => $this->storeRequest()));
+		}
+
 		if (!$this->isAllowed('show')) {
 			throw new ForbiddenRequestException;
 		}
@@ -353,6 +359,30 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		}
 
 		return parent::createComponent($name);
+	}
+
+
+	/**
+	 * Restores current request to session.
+	 * @param  string key
+	 * @return void
+	 */
+	public function restoreRequest($key)
+	{
+		$session = $this->getSession('Nette.Application/requests');
+		if (!isset($session[$key]) || ($session[$key][0] !== NULL && $session[$key][0] !== $this->getUser()->getId())) {
+			return;
+		}
+		$request = clone $session[$key][1];
+		unset($session[$key]);
+		$request->setFlag(Application\Request::RESTORED, TRUE);
+		$params = $request->getParameters();
+		$params[self::FLASH_KEY] = $this->getParameter(self::FLASH_KEY);
+		if (isset($params['route'])) {
+			$params['route'] = $this->getEntityManager()->getRepository(get_class($params['route']))->find($params['route']->id);
+		}
+		$request->setParameters($params);
+		$this->sendResponse(new Responses\ForwardResponse($request));
 	}
 
 
