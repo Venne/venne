@@ -30,6 +30,12 @@ class PageEntity extends ExtendedPageEntity
 	protected $registration;
 
 
+	protected function getSpecial()
+	{
+		return 'login';
+	}
+
+
 	/**
 	 * @param \CmsModule\Pages\Registration\PageEntity $registration
 	 */
