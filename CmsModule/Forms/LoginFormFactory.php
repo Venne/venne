@@ -117,8 +117,8 @@ class LoginFormFactory extends FormFactory
 
 	private function doRedirect($form)
 	{
-		$form->presenter->restoreRequest($form->presenter->backlink);
 		if ($this->redirect) {
+			$form->presenter->restoreRequest($form->presenter->backlink);
 			$form->presenter->redirect($this->redirect . ':');
 		}
 	}
