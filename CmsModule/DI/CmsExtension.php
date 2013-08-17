@@ -74,6 +74,9 @@ class CmsExtension extends CompilerExtension
 		$container->getDefinition('nette.userStorage')
 			->setClass('CmsModule\Security\UserStorage', array('@session', '@cms.loginRepository', '@cms.userRepository', '@doctrine.checkConnectionFactory'));
 
+		$container->addDefinition($this->prefix('userManager'))
+			->setClass('CmsModule\Pages\Users\UserManager');
+
 		// Application
 		$application = $container->getDefinition('application');
 		$application->addSetup('$service->errorPresenter = ?', $container->parameters['website']['errorPresenter']);
@@ -154,9 +157,9 @@ class CmsExtension extends CompilerExtension
 		$container->addDefinition($this->prefix('fileListener'))
 			->setClass('CmsModule\Content\Listeners\FileListener', array(
 				'@container',
-				$config['mediaDir'] ?: $container->parameters['publicDir'] . '/media',
-				$config['protectedMediaDir'] ?: $container->parameters['dataDir'] . '/media',
-				$config['mediaUrl'] ?: '/public/media',
+				$config['mediaDir'] ? : $container->parameters['publicDir'] . '/media',
+				$config['protectedMediaDir'] ? : $container->parameters['dataDir'] . '/media',
+				$config['mediaUrl'] ? : '/public/media',
 			))
 			->addTag('listener');
 
@@ -175,6 +178,7 @@ class CmsExtension extends CompilerExtension
 		$this->registerContentTypes();
 		$this->registerAdministrationPages();
 		$this->registerElements();
+		$this->registerUsers();
 	}
 
 
@@ -220,6 +224,24 @@ class CmsExtension extends CompilerExtension
 			}
 
 			$config->addSetup('addWidget', array(\CmsModule\Content\ElementManager::ELEMENT_PREFIX . $meta, "@{$factory}"));
+		}
+	}
+
+
+	protected function registerUsers()
+	{
+		$container = $this->getContainerBuilder();
+		$config = $container->getDefinition($this->prefix('userManager'));
+
+		foreach ($container->findByTag('user') as $item => $tags) {
+			$arguments = $container->getDefinition($item)->factory->arguments;
+
+			$container->getDefinition($item)->factory->arguments = array(
+				0 => is_array($tags) ? $tags['name'] : $tags,
+				1 => $arguments[0],
+			);
+
+			$config->addSetup('addUserType', array("@{$item}"));
 		}
 	}
 }

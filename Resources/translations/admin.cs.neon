@@ -34,6 +34,7 @@ database settings: nastavení databáze
 dates: data
 default modules: výchozí moduly
 default presenter: výchozí prezenter
+default user: výchozí uživatel
 delete: smazat
 delete all: smazat vše
 dependencies: závislosti

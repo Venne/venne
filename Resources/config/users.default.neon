@@ -1,0 +1,12 @@
+services:
+
+	cms.defaultUser:
+		class: CmsModule\Pages\Users\UserType('CmsModule\Pages\Users\DefaultUserEntity')
+		setup:
+			- setFormFactory(@cms.userFormFactory)
+		tags: [user: [name: Default user]]
+
+	cms.userFormFactory:
+		class: CmsModule\Forms\UserFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)

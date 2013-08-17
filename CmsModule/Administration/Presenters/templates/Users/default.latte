@@ -2,12 +2,13 @@
 	{_'User manager'}
 {/block}
 
-{block toolbar}
-{/block}
-
 {block breadcrumb}
 	{include #parent}
 	<li class="active"><span class="divider">/</span> {include #header}</li>
+{/block}
+
+{block toolbar-items}
+	<li n:foreach="$presenter->userManager->userTypes as $type=>$item" class="{if $type == $presenter->type} active{/if}"><a class="ajax" href="{link this type=>$type}">{_$item->name}</a></li>
 {/block}
 
 {block content}

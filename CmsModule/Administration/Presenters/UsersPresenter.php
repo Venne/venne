@@ -17,7 +17,7 @@ use CmsModule\Content\Entities\UserPageEntity;
 use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
-use CmsModule\Pages\Users\UserEntity;
+use CmsModule\Pages\Users\UserManager;
 use CmsModule\Security\Repositories\UserRepository;
 
 /**
@@ -30,6 +30,9 @@ class UsersPresenter extends BasePresenter
 
 	/** @persistent */
 	public $page;
+
+	/** @persistent */
+	public $type;
 
 	/** @var UserRepository */
 	protected $userRepository;
@@ -45,6 +48,9 @@ class UsersPresenter extends BasePresenter
 
 	/** @var UserPageEntity */
 	protected $extendedPage;
+
+	/** @var UserManager */
+	protected $userManager;
 
 
 	/**
@@ -83,6 +89,24 @@ class UsersPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @param UserManager $userManager
+	 */
+	public function injectUserManager(UserManager $userManager)
+	{
+		$this->userManager = $userManager;
+	}
+
+
+	/**
+	 * @return UserManager
+	 */
+	public function getUserManager()
+	{
+		return $this->userManager;
+	}
+
+
 	protected function startup()
 	{
 		parent::startup();
@@ -91,6 +115,10 @@ class UsersPresenter extends BasePresenter
 			$this->flashMessage('User page does not exist.', 'warning');
 		} else {
 			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
+		}
+
+		if (!$this->type) {
+			$this->type = key($this->userManager->getUserTypes());
 		}
 	}
 
@@ -130,12 +158,17 @@ class UsersPresenter extends BasePresenter
 
 	protected function createComponentTable()
 	{
-		$admin = new AdminGrid($this->userRepository);
+		$_this = $this;
+		$repository = $this->entityManager->getRepository($this->type);
+		$admin = new AdminGrid($repository);
 
 		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->context->translator->translator);
 		$table->addColumn('email', 'E-mail')
+			->setCustomRender(function ($entity) {
+				return $entity->user->email;
+			})
 			->setSortable()
 			->getCellPrototype()->width = '60%';
 		$table->getColumn('email')
@@ -146,7 +179,7 @@ class UsersPresenter extends BasePresenter
 			->getCellPrototype()->width = '40%';
 		$table->getColumn('roles')
 			->setCustomRender(function ($entity) {
-				return implode(", ", $entity->roles);
+				return implode(", ", $entity->user->roles);
 			});
 
 		// actions
@@ -158,18 +191,19 @@ class UsersPresenter extends BasePresenter
 				->getElementPrototype()->class[] = 'ajax';
 
 			$extendedPage = $this->extendedPage;
-			$form = $admin->createForm($this->form, 'User', function () use ($extendedPage) {
-				return new UserEntity($extendedPage);
+			$type = $this->type;
+			$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($extendedPage, $type) {
+				return new $type($extendedPage);
 			}, Form::TYPE_LARGE);
 			$socialForm = $admin->createForm($this->socialForm, 'Social Logins', NULL, Form::TYPE_LARGE);
 
-			$admin->connectFormWithAction($form, $table->getAction('edit'));
+			$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
 			$admin->connectFormWithAction($socialForm, $table->getAction('socialLogins'));
 
 			// Toolbar
 			$toolbar = $admin->getNavbar();
 			$toolbar->addSection('new', 'Create', 'file');
-			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'), $admin::MODE_PLACE);
 		}
 
 		if ($this->isAuthorized('remove')) {
@@ -179,5 +213,14 @@ class UsersPresenter extends BasePresenter
 		}
 
 		return $admin;
+	}
+
+
+	/**
+	 * @return \CmsModule\Pages\Users\UserType
+	 */
+	private function getUserType()
+	{
+		return $this->userManager->getUserTypeByClass($this->type);
 	}
 }

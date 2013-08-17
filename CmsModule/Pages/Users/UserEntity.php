@@ -105,6 +105,11 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	 */
 	protected $routes;
 
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	protected $class;
+
 
 	protected function startup()
 	{
@@ -417,6 +422,24 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	public function getSocialType()
 	{
 		return $this->socialType;
+	}
+
+
+	/**
+	 * @param mixed $class
+	 */
+	public function setClass($class)
+	{
+		$this->class = $class;
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getClass()
+	{
+		return $this->class;
 	}
 
 

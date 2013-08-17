@@ -12,6 +12,7 @@
 namespace CmsModule\Forms;
 
 use CmsModule\Content\Forms\ControlExtensions\ControlExtension;
+use CmsModule\Pages\Users\UserEntity;
 use Doctrine\DBAL\DBALException;
 use DoctrineModule\Forms\FormFactory;
 use Venne\Forms\Form;
@@ -38,36 +39,38 @@ class UserFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
+		$user = $form->addOne('user');
 		$group = $form->addGroup();
-		$form->addCheckbox('published', 'Enable');
-		$form->addText('email', 'E-mail')
+		$user->setCurrentGroup($group);
+		$user->addCheckbox('published', 'Enable');
+		$user->addText('email', 'E-mail')
 			->addRule(Form::EMAIL, 'Enter email');
-		$form->addText('name', 'Name');
-		$form->addTextArea('notation', 'Notation', 40, 3)
+		$user->addText('name', 'Name');
+		$user->addTextArea('notation', 'Notation', 40, 3)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
 
-		$route = $form->addOne('route');
+		$route = $user->addOne('route');
 		$route->setCurrentGroup($group);
 		$route->addFileEntityInput('photo', 'Avatar');
 
-		$form->addCheckbox('key_new', 'Block by key')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
-		$form->addGroup()->setOption('id', 'setKey');
-		$form->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
+		$user->addCheckbox('key_new', 'Block by key')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
+		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setKey'));
+		$user->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
 
-		$form->addGroup();
-		$form->addCheckbox('password_new', 'Set password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
-		$form->addGroup()->setOption('id', 'setPasswd');
-		$form->addPassword('password', 'Password')
+		$user->setCurrentGroup($form->addGroup());
+		$user->addCheckbox('password_new', 'Set password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
+		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setPasswd'));
+		$user->addPassword('password', 'Password')
 			->setOption('description', 'minimal length is 5 char')
-			->addConditionOn($form['password_new'], Form::FILLED)
+			->addConditionOn($user['password_new'], Form::FILLED)
 			->addRule(Form::FILLED, 'Enter password')
 			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
-		$form->addPassword('password_confirm', 'Confirm password')
-			->addConditionOn($form['password_new'], Form::FILLED)
-			->addRule(Form::EQUAL, 'Invalid re password', $form['password']);
+		$user->addPassword('password_confirm', 'Confirm password')
+			->addConditionOn($user['password_new'], Form::FILLED)
+			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
 
-		$form->addGroup('Next informations');
-		$form->addManyToMany('roleEntities', 'Roles');
+		$user->setCurrentGroup($form->addGroup('Next informations'));
+		$user->addManyToMany('roleEntities', 'Roles');
 
 		$form->addSaveButton('Save');
 	}
@@ -85,8 +88,8 @@ class UserFormFactory extends FormFactory
 	public function handleAttached(Form $form)
 	{
 		if ($form->isSubmitted()) {
-			if (!$form['password_new']->value) {
-				unset($form['password']);
+			if (!$form['user']['password_new']->value) {
+				unset($form['user']['password']);
 			}
 		}
 	}
@@ -94,14 +97,22 @@ class UserFormFactory extends FormFactory
 
 	public function handleSave(Form $form)
 	{
-		if ($form['password_new']->value) {
-			$form->data->setPassword($form['password']->value);
+		if ($form['user']['password_new']->value) {
+			$form->data->user->setPassword($form['user']['password']->value);
 		}
-		if (!$form['key_new']->value) {
-			$form->data->setKey(NULL);
+		if (!$form['user']['key_new']->value) {
+			$form->data->user->setKey(NULL);
 		}
 
 		parent::handleSave($form);
+	}
+
+
+	public function handleLoad(Form $form)
+	{
+		if ($form->data instanceof UserEntity) {
+			$form->data = $form->mapper->getEntityManager()->getRepository($form->data->class)->findOneBy(array('user' => $form->data->id));
+		}
 	}
 
 
