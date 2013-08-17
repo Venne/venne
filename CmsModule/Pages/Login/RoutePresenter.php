@@ -21,6 +21,9 @@ use Nette\Forms\Form;
 class RoutePresenter extends PagePresenter
 {
 
+	/** @persistent */
+	public $backlink;
+
 	/** @var \CmsModule\Forms\LoginFormFactory */
 	protected $loginFormFactory;
 
@@ -59,6 +62,10 @@ class RoutePresenter extends PagePresenter
 
 	public function formSuccess(Form $form)
 	{
+		if ($this->backlink) {
+			$this->restoreRequest($this->backlink);
+		}
+
 		if ($this->extendedPage->page) {
 			$this->redirect('this', array('route' => $this->extendedPage->page->mainRoute));
 		}
