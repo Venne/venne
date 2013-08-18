@@ -21,13 +21,15 @@ use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Content\Repositories\RouteRepository;
-use Doctrine\ORM\EntityManager;
+use CmsModule\Pages\Users\ExtendedUserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application;
 use Nette\Application\Responses;
 use Nette\Caching\Cache;
 use Nette\InvalidArgumentException;
+use Nette\InvalidStateException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -40,6 +42,7 @@ use Nette\InvalidArgumentException;
  * @property-read RouteEntity $route
  * @property-read ExtendedPageEntity $extendedPage
  * @property-read ExtendedRouteEntity $extendedRoute
+ * @property-read ExtendedUserEntity $extendedUser
  */
 class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 {
@@ -63,6 +66,9 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 	/** @var LanguageEntity */
 	private $language;
+
+	/** @var ExtendedUserEntity */
+	private $extendedUser;
 
 	/** @var string */
 	protected $_layoutPath;
@@ -254,6 +260,29 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			$this->language = $this->languageRepository->findOneBy(array('alias' => $this->lang ? $this->lang : $this->context->parameters['website']['defaultLanguage']));
 		}
 		return $this->language;
+	}
+
+
+	/**
+	 * @return ExtendedUserEntity
+	 * @throws InvalidStateException
+	 */
+	public function getExtendedUser()
+	{
+		if (!$this->extendedUser) {
+			if (!$this->user->isLoggedIn()) {
+				throw new InvalidStateException("User is not logged in.");
+			}
+
+			if (!$this->user->identity instanceof UserEntity) {
+				throw new InvalidStateException("User must be instance of 'CmsModule\Pages\Users\UserEntity'.");
+			}
+
+			$this->extendedUser = $this->getEntityManager()
+				->getRepository($this->user->identity->class)
+				->findOneBy(array('user' => $this->user->identity->id));
+		}
+		return $this->extendedUser;
 	}
 
 
