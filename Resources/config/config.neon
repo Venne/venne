@@ -148,4 +148,5 @@ includes:
 	- pages.menu.neon
 	- pages.search.neon
 	- pages.sitemap.neon
+	- pages.profile.neon
 	- users.default.neon

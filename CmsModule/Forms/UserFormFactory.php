@@ -53,12 +53,13 @@ class UserFormFactory extends FormFactory
 		$route->setCurrentGroup($group);
 		$route->addFileEntityInput('photo', 'Avatar');
 
-		$user->addCheckbox('key_new', 'Block by key')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
+		$user->setCurrentGroup($form->addGroup('Block by key'));
+		$user->addCheckbox('key_new', 'Enable')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
 		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setKey'));
 		$user->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
 
-		$user->setCurrentGroup($form->addGroup());
-		$user->addCheckbox('password_new', 'Set password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
+		$user->setCurrentGroup($form->addGroup('Password'));
+		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
 		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setPasswd'));
 		$user->addPassword('password', 'Password')
 			->setOption('description', 'minimal length is 5 char')
@@ -113,11 +114,5 @@ class UserFormFactory extends FormFactory
 		if ($form->data instanceof UserEntity) {
 			$form->data = $form->mapper->getEntityManager()->getRepository($form->data->class)->findOneBy(array('user' => $form->data->id));
 		}
-	}
-
-
-	public function handleSuccess(Form $form)
-	{
-		$form->getPresenter()->flashMessage('User has been saved', 'success');
 	}
 }

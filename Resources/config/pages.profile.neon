@@ -1,0 +1,9 @@
+services:
+	cms.pages.profileContent:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Profile\PageEntity')
+		tags: [contentType: [name: 'authentication.profile page']]
+
+factories:
+	cms.pages.profile.routePresenter:
+		class: CmsModule\Pages\Profile\RoutePresenter
+		tags: [presenter]
