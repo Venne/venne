@@ -43,6 +43,10 @@ class LoginPresenter extends BasePresenter
 		if (!$this->context->createCheckConnection()) {
 			$this->flashMessage("Only administrator can be logged", "warning");
 		}
+
+		if ($this->user->isLoggedIn()) {
+			$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
+		}
 	}
 
 
