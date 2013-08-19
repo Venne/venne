@@ -70,6 +70,9 @@ class RouteFormFactory extends FormFactory
 		$form->setCurrentGroup($form->getForm()->addGroup()->setOption('id', 'group-cache_' . $form->data->id));
 		$form->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');
 
+		$form->setCurrentGroup($form->addGroup());
+		$form->addFileEntityInput('photo', 'Photo');
+
 		$form->addGroup('Dates');
 		$form->addDateTime('created', 'Created')->setDisabled(TRUE);
 		$form->addDateTime('updated', 'Updated')->setDisabled(TRUE);
