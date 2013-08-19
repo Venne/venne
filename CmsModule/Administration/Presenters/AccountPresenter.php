@@ -13,9 +13,10 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Forms\SystemAccountFormFactory;
-use CmsModule\Forms\UserFormFactory;
-use CmsModule\Security\Entities\LoginEntity;
+use CmsModule\Pages\Users\AdminUserFormFactory;
 use CmsModule\Pages\Users\UserEntity;
+use CmsModule\Pages\Users\UserManager;
+use CmsModule\Security\Entities\LoginEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
 use Grido\DataSources\Doctrine;
@@ -39,15 +40,18 @@ class AccountPresenter extends BasePresenter
 	/** @var SystemAccountFormFactory */
 	protected $accountFormFactory;
 
-	/** @var UserFormFactory */
+	/** @var AdminUserFormFactory */
 	protected $userFormFactory;
+
+	/** @var UserManager */
+	protected $userManager;
 
 	/** @var Session */
 	protected $session;
 
 
 	/**
-	 * @param \CmsModule\Security\Repositories\UserRepository $userRepository
+	 * @param UserRepository $userRepository
 	 */
 	public function injectUserRepository(UserRepository $userRepository)
 	{
@@ -56,7 +60,7 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
-	 * @param \CmsModule\Security\Repositories\LoginRepository $loginRepository
+	 * @param LoginRepository $loginRepository
 	 */
 	public function injectLoginRepository(LoginRepository $loginRepository)
 	{
@@ -65,7 +69,7 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
-	 * @param \CmsModule\Forms\SystemAccountFormFactory $accountFormFactory
+	 * @param SystemAccountFormFactory $accountFormFactory
 	 */
 	public function injectAccountFormFactory(SystemAccountFormFactory $accountFormFactory)
 	{
@@ -74,11 +78,20 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
-	 * @param \CmsModule\Forms\UserFormFactory $userFormFactory
+	 * @param AdminUserFormFactory $userFormFactory
 	 */
-	public function injectUserFormFactory(UserFormFactory $userFormFactory)
+	public function injectUserFormFactory(AdminUserFormFactory $userFormFactory)
 	{
 		$this->userFormFactory = $userFormFactory;
+	}
+
+
+	/**
+	 * @param UserManager $userManager
+	 */
+	public function injectUserManager(UserManager $userManager)
+	{
+		$this->userManager = $userManager;
 	}
 
 
@@ -103,14 +116,6 @@ class AccountPresenter extends BasePresenter
 	 * @secured
 	 */
 	public function actionEdit()
-	{
-	}
-
-
-	/**
-	 * @secured
-	 */
-	public function actionAdvanced()
 	{
 	}
 
@@ -156,20 +161,22 @@ class AccountPresenter extends BasePresenter
 	protected function createComponentAccountForm()
 	{
 		if ($this->user->identity instanceof UserEntity) {
-			$form = $this->userFormFactory->invoke($this->user->identity);
-			if (!$this->isAuthorized('advanced')) {
-				$form['email']->setDisabled();
-				$form['key']->setDisabled();
-				$form['enable']->setDisabled();
-				$form['roleEntities']->setDisabled();
-			}
+			$form = $this->userManager
+				->getUserTypeByClass($this->user->identity->class)
+				->getFrontFormFactory()
+				->invoke($this->extendedUser);
 		} else {
 			$form = $this->accountFormFactory->invoke();
 		}
-		$form->onSuccess[] = function ($form) {
-			$form->getPresenter()->flashMessage("Account settings has been updated", "success");
-			$form->getPresenter()->redirect("this");
-		};
+
+		$form->onSuccess[] = $this->accountFormSuccess;
 		return $form;
+	}
+
+
+	public function accountFormSuccess()
+	{
+		$this->flashMessage('Account settings has been updated', 'success');
+		$this->redirect('this');
 	}
 }
