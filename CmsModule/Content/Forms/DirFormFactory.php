@@ -26,7 +26,9 @@ class DirFormFactory extends FormFactory
 	protected function configure(Form $form)
 	{
 		$form->addText('name', 'Name');
-		$form->addManyToOne('parent', 'Parent');
+		$form->addManyToOne('parent', 'Parent')
+			->setCriteria(array('invisible' => FALSE))
+			->setOrderBy(array('path' => 'ASC'));
 
 		$form->addSaveButton('Save');
 	}
