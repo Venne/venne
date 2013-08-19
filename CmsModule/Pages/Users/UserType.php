@@ -29,6 +29,9 @@ class UserType extends Object
 	/** @var FormFactory */
 	protected $formFactory;
 
+	/** @var FormFactory */
+	protected $frontFormFactory;
+
 
 	/**
 	 * @param $name
@@ -68,6 +71,7 @@ class UserType extends Object
 	}
 
 
+
 	/**
 	 * @return FormFactory
 	 */
@@ -75,4 +79,24 @@ class UserType extends Object
 	{
 		return $this->formFactory;
 	}
+
+
+	/**
+	 * @param FormFactory $formFactory
+	 */
+	public function setFrontFormFactory(FormFactory $formFactory)
+	{
+		$this->frontFormFactory = $formFactory;
+	}
+
+
+	/**
+	 * @return FormFactory
+	 */
+	public function getFrontFormFactory()
+	{
+		return $this->frontFormFactory;
+	}
+
+
 }

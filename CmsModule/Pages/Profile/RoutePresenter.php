@@ -52,7 +52,7 @@ class RoutePresenter extends PagePresenter
 	{
 		$form = $this->userManager
 			->getUserTypeByClass($this->user->identity->class)
-			->getFormFactory()
+			->getFrontFormFactory()
 			->invoke($this->extendedUser);
 
 		$form->onSuccess[] = $this->formSuccess;

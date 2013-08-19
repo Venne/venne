@@ -9,18 +9,16 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Forms;
+namespace CmsModule\Pages\Users;
 
 use CmsModule\Content\Forms\ControlExtensions\ControlExtension;
-use CmsModule\Pages\Users\UserEntity;
-use Doctrine\DBAL\DBALException;
 use DoctrineModule\Forms\FormFactory;
 use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class UserFormFactory extends FormFactory
+class FrontUserFormFactory extends FormFactory
 {
 
 	/**
@@ -42,21 +40,13 @@ class UserFormFactory extends FormFactory
 		$user = $form->addOne('user');
 		$group = $form->addGroup();
 		$user->setCurrentGroup($group);
-		$user->addCheckbox('published', 'Enable');
-		$user->addText('email', 'E-mail')
-			->addRule(Form::EMAIL, 'Enter email');
 		$user->addText('name', 'Name');
-		$user->addTextArea('notation', 'Notation', 40, 3)
+		$user->addTextArea('notation', 'Notation', 40, 4)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
 
 		$route = $user->addOne('route');
 		$route->setCurrentGroup($group);
 		$route->addFileEntityInput('photo', 'Avatar');
-
-		$user->setCurrentGroup($form->addGroup('Block by key'));
-		$user->addCheckbox('key_new', 'Enable')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
-		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setKey'));
-		$user->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
 
 		$user->setCurrentGroup($form->addGroup('Password'));
 		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
@@ -70,19 +60,8 @@ class UserFormFactory extends FormFactory
 			->addConditionOn($user['password_new'], Form::FILLED)
 			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
 
-		$user->setCurrentGroup($form->addGroup('Next informations'));
-		$user->addManyToMany('roleEntities', 'Roles');
-
+		$user->setCurrentGroup($form->addGroup());
 		$form->addSaveButton('Save');
-	}
-
-
-	public function handleCatchError(Form $form, $e)
-	{
-		if ($e instanceof DBALException && $e->getCode() == '23000') {
-			$form->addError('User is not unique');
-			return TRUE;
-		}
 	}
 
 
@@ -101,18 +80,7 @@ class UserFormFactory extends FormFactory
 		if ($form['user']['password_new']->value) {
 			$form->data->user->setPassword($form['user']['password']->value);
 		}
-		if (!$form['user']['key_new']->value) {
-			$form->data->user->setKey(NULL);
-		}
 
 		parent::handleSave($form);
-	}
-
-
-	public function handleLoad(Form $form)
-	{
-		if ($form->data instanceof UserEntity) {
-			$form->data = $form->mapper->getEntityManager()->getRepository($form->data->class)->findOneBy(array('user' => $form->data->id));
-		}
 	}
 }

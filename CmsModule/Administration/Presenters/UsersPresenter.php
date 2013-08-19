@@ -15,8 +15,8 @@ use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Components\Table\Form;
 use CmsModule\Content\Entities\UserPageEntity;
 use CmsModule\Content\Repositories\PageRepository;
-use CmsModule\Forms\UserFormFactory;
 use CmsModule\Forms\UserSocialFormFactory;
+use CmsModule\Pages\Users\AdminUserFormFactory;
 use CmsModule\Pages\Users\UserManager;
 use CmsModule\Security\Repositories\UserRepository;
 
@@ -40,7 +40,7 @@ class UsersPresenter extends BasePresenter
 	/** @var PageRepository */
 	protected $pageRepository;
 
-	/** @var UserFormFactory */
+	/** @var AdminUserFormFactory */
 	protected $form;
 
 	/** @var UserSocialFormFactory */
@@ -72,9 +72,9 @@ class UsersPresenter extends BasePresenter
 
 
 	/**
-	 * @param UserFormFactory $form
+	 * @param AdminUserFormFactory $form
 	 */
-	public function injectForm(UserFormFactory $form)
+	public function injectForm(AdminUserFormFactory $form)
 	{
 		$this->form = $form;
 	}

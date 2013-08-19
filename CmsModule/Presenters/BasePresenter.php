@@ -11,13 +11,17 @@
 
 namespace CmsModule\Presenters;
 
+use CmsModule\Pages\Users\ExtendedUserEntity;
+use CmsModule\Pages\Users\UserEntity;
 use Doctrine\ORM\EntityManager;
+use Nette\InvalidStateException;
 use Venne\Application\UI\Presenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @property-read EntityManager $entityManager
+ * @property-read ExtendedUserEntity $extendedUser
  */
 abstract class BasePresenter extends Presenter
 {
@@ -35,6 +39,9 @@ abstract class BasePresenter extends Presenter
 	/** @var EntityManager */
 	private $entityManager;
 
+	/** @var ExtendedUserEntity */
+	private $extendedUser;
+
 
 	/**
 	 * @param EntityManager $entityManager
@@ -51,6 +58,29 @@ abstract class BasePresenter extends Presenter
 	public function getEntityManager()
 	{
 		return $this->entityManager;
+	}
+
+
+	/**
+	 * @return ExtendedUserEntity
+	 * @throws InvalidStateException
+	 */
+	public function getExtendedUser()
+	{
+		if (!$this->extendedUser) {
+			if (!$this->user->isLoggedIn()) {
+				throw new InvalidStateException("User is not logged in.");
+			}
+
+			if (!$this->user->identity instanceof UserEntity) {
+				throw new InvalidStateException("User must be instance of 'CmsModule\Pages\Users\UserEntity'.");
+			}
+
+			$this->extendedUser = $this->getEntityManager()
+				->getRepository($this->user->identity->class)
+				->findOneBy(array('user' => $this->user->identity->id));
+		}
+		return $this->extendedUser;
 	}
 
 

@@ -3,10 +3,16 @@ services:
 	cms.defaultUser:
 		class: CmsModule\Pages\Users\UserType('CmsModule\Pages\Users\DefaultUserEntity')
 		setup:
-			- setFormFactory(@cms.userFormFactory)
+			- setFormFactory(@cms.pages.users.adminUserFormFactory)
+			- setFrontFormFactory(@cms.pages.users.frontUserFormFactory)
 		tags: [user: [name: Default user]]
 
-	cms.userFormFactory:
-		class: CmsModule\Forms\UserFormFactory
+	cms.pages.users.adminUserFormFactory:
+		class: CmsModule\Pages\Users\AdminUserFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.pages.users.frontUserFormFactory:
+		class: CmsModule\Pages\Users\FrontUserFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
