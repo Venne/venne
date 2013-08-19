@@ -37,38 +37,38 @@ abstract class Control extends \Venne\Application\UI\Control
 	{
 		$list = parent::formatTemplateFiles();
 		$refl = $this->getReflection();
+		$ret = array();
+		$paths = array();
 
 		foreach ($this->getPresenter()->formatTemplateFiles() as $file) {
 			if (is_file($file)) {
-				$path1 = dirname($file);
+				$paths[] = dirname($file);
 				break;
 			}
 		}
 
 		foreach ($this->getPresenter()->formatLayoutTemplateFiles() as $file) {
 			if (is_file($file)) {
-				$path2 = dirname($file);
+				$paths[] = dirname($file);
 				break;
 			}
 		}
 
-		$ret = array_merge(array(
-			dirname($path1) . '/' . $refl->getShortName() . '.latte',
-			dirname($path2) . '/' . $refl->getShortName() . '.latte',
-			$path1 . '/' . $refl->getShortName() . '.latte',
-			$path2 . '/' . $refl->getShortName() . '.latte',
-		), $list);
-
-		if ($this->variant) {
-			$ret = array_merge(array(
-				dirname($path1) . '/' . $refl->getShortName() . '.' . $this->variant . '.latte',
-				dirname($path2) . '/' . $refl->getShortName() . '.' . $this->variant . '.latte',
-				$path1 . '/' . $refl->getShortName() . '.' . $this->variant . '.latte',
-				$path2 . '/' . $refl->getShortName() . '.' . $this->variant . '.latte',
-			), $ret);
+		foreach ($paths as $path) {
+			if ($this->variant) {
+				$ret[] = dirname($path) . '/' . $refl->getShortName() . '.' . $this->variant . '.latte';
+			}
+			$ret[] = dirname($path) . '/' . $refl->getShortName() . '.latte';
 		}
 
-		return $ret;
+		foreach ($paths as $path) {
+			if ($this->variant) {
+				$ret[] = $path . '/' . $refl->getShortName() . '.' . $this->variant . '.latte';
+			}
+			$ret[] = $path . '/' . $refl->getShortName() . '.latte';
+		}
+
+		return array_merge($ret, $list);
 	}
 
 
