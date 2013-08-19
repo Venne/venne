@@ -36,7 +36,7 @@ abstract class Control extends \Venne\Application\UI\Control
 	protected function formatTemplateFiles()
 	{
 		$list = parent::formatTemplateFiles();
-		$refl = $this->getReflection();
+		$name = ucfirst($this->name) . 'Control';
 		$ret = array();
 		$paths = array();
 
@@ -56,16 +56,16 @@ abstract class Control extends \Venne\Application\UI\Control
 
 		foreach ($paths as $path) {
 			if ($this->variant) {
-				$ret[] = dirname($path) . '/' . $refl->getShortName() . '.' . $this->variant . '.latte';
+				$ret[] = dirname($path) . '/' . $name . '.' . $this->variant . '.latte';
 			}
-			$ret[] = dirname($path) . '/' . $refl->getShortName() . '.latte';
+			$ret[] = dirname($path) . '/' . $name . '.latte';
 		}
 
 		foreach ($paths as $path) {
 			if ($this->variant) {
-				$ret[] = $path . '/' . $refl->getShortName() . '.' . $this->variant . '.latte';
+				$ret[] = $path . '/' . $name . '.' . $this->variant . '.latte';
 			}
-			$ret[] = $path . '/' . $refl->getShortName() . '.latte';
+			$ret[] = $path . '/' . $name . '.latte';
 		}
 
 		return array_merge($ret, $list);
