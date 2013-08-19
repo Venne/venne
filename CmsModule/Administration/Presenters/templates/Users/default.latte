@@ -8,7 +8,7 @@
 {/block}
 
 {block toolbar-items}
-	<li n:foreach="$presenter->userManager->userTypes as $type=>$item" class="{if $type == $presenter->type} active{/if}"><a class="ajax" href="{link this type=>$type}">{_$item->name}</a></li>
+	<li n:foreach="$presenter->securityManager->userTypes as $type=>$item" class="{if $type == $presenter->type} active{/if}"><a class="ajax" href="{link this type=>$type}">{_$item->name}</a></li>
 {/block}
 
 {block content}

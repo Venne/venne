@@ -74,9 +74,6 @@ class CmsExtension extends CompilerExtension
 		$container->getDefinition('nette.userStorage')
 			->setClass('CmsModule\Security\UserStorage', array('@session', '@cms.loginRepository', '@cms.userRepository', '@doctrine.checkConnectionFactory'));
 
-		$container->addDefinition($this->prefix('userManager'))
-			->setClass('CmsModule\Pages\Users\UserManager');
-
 		// Application
 		$application = $container->getDefinition('application');
 		$application->addSetup('$service->errorPresenter = ?', $container->parameters['website']['errorPresenter']);
@@ -231,7 +228,7 @@ class CmsExtension extends CompilerExtension
 	protected function registerUsers()
 	{
 		$container = $this->getContainerBuilder();
-		$config = $container->getDefinition($this->prefix('userManager'));
+		$config = $container->getDefinition($this->prefix('securityManager'));
 
 		foreach ($container->findByTag('user') as $item => $tags) {
 			$arguments = $container->getDefinition($item)->factory->arguments;

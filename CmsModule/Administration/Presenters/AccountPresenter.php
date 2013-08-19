@@ -15,7 +15,7 @@ use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Pages\Users\AdminUserFormFactory;
 use CmsModule\Pages\Users\UserEntity;
-use CmsModule\Pages\Users\UserManager;
+use CmsModule\Security\SecurityManager;
 use CmsModule\Security\Entities\LoginEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
@@ -43,8 +43,8 @@ class AccountPresenter extends BasePresenter
 	/** @var AdminUserFormFactory */
 	protected $userFormFactory;
 
-	/** @var UserManager */
-	protected $userManager;
+	/** @var SecurityManager */
+	protected $securityManager;
 
 	/** @var Session */
 	protected $session;
@@ -87,11 +87,11 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
-	 * @param UserManager $userManager
+	 * @param SecurityManager $securityManager
 	 */
-	public function injectUserManager(UserManager $userManager)
+	public function injectSecurityManager(SecurityManager $securityManager)
 	{
-		$this->userManager = $userManager;
+		$this->securityManager = $securityManager;
 	}
 
 
@@ -161,7 +161,7 @@ class AccountPresenter extends BasePresenter
 	protected function createComponentAccountForm()
 	{
 		if ($this->user->identity instanceof UserEntity) {
-			$form = $this->userManager
+			$form = $this->securityManager
 				->getUserTypeByClass($this->user->identity->class)
 				->getFrontFormFactory()
 				->invoke($this->extendedUser);

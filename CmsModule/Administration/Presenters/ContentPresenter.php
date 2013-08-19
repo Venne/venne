@@ -171,6 +171,7 @@ class ContentPresenter extends BasePresenter
 			$route = $entity->mainRoute;
 		} else {
 			$route = $this->getPageEntity()->page->getMainRoute();
+			$entity = $route->getPage();
 		}
 
 		if (!$entity->isAllowedInBackend($this->user, ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)) {

@@ -1,10 +1,11 @@
 services:
 
 	cms.defaultUser:
-		class: CmsModule\Pages\Users\UserType('CmsModule\Pages\Users\DefaultUserEntity')
+		class: CmsModule\Security\UserType('CmsModule\Pages\Users\DefaultUserEntity')
 		setup:
 			- setFormFactory(@cms.pages.users.adminUserFormFactory)
 			- setFrontFormFactory(@cms.pages.users.frontUserFormFactory)
+			- setRegistrationFormFactory(@cms.pages.users.registrationFormFactory)
 		tags: [user: [name: Default user]]
 
 	cms.pages.users.adminUserFormFactory:
@@ -14,5 +15,10 @@ services:
 
 	cms.pages.users.frontUserFormFactory:
 		class: CmsModule\Pages\Users\FrontUserFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.pages.users.registrationFormFactory:
+		class: CmsModule\Pages\Users\RegistrationFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)

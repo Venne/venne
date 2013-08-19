@@ -129,10 +129,6 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
-	cms.securityManager:
-		setup:
-			- addUserType(basic user, \CmsModule\Pages\Users\UserEntity, cms.registrationFrontFormFactory)
-
 
 factories:
 

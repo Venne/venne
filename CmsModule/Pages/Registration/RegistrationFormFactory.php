@@ -51,7 +51,9 @@ class RegistrationFormFactory extends FormFactory
 		$form->addSelect('mode', 'Registration mode', PageEntity::getModes())
 			->addCondition($form::IS_IN, array(PageEntity::MODE_MAIL, PageEntity::MODE_MAIL_CHECKUP))->toggle('form-group-email');
 		$form->addSelect('socialMode', 'Social login mode', PageEntity::getSocialModes());
-		$form->addSelect('userType', 'User type', $this->securityManager->getTypes())->setPrompt('------');
+		$form->addSelect('userType', 'User type', $this->getUserTypes())
+			->setPrompt('------')
+			->setRequired('User type is required');
 		$form->addManyToMany('roles', 'Roles for new user');
 
 		$form->addGroup('E-mail')->setOption('id', 'form-group-email');
@@ -64,5 +66,15 @@ class RegistrationFormFactory extends FormFactory
 
 		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
+	}
+
+
+	private function getUserTypes()
+	{
+		$ret = array();
+		foreach ($this->securityManager->getUserTypes() as $class => $type) {
+			$ret[$class] = $type->getName();
+		}
+		return $ret;
 	}
 }

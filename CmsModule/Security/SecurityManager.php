@@ -25,14 +25,8 @@ class SecurityManager extends Object
 	/** @var Container */
 	protected $content;
 
-	/** @var array */
-	protected $types = array();
-
-	/** @var array */
-	protected $typesByEntity = array();
-
-	/** @var array */
-	protected $typesByName = array();
+	/** @var UserType[] */
+	private $userTypes = array();
 
 	/** @var ISocialLogin[] */
 	protected $socialLogins = array();
@@ -47,27 +41,38 @@ class SecurityManager extends Object
 	}
 
 
+	public function addUserType(UserType $userType)
+	{
+		$type = $userType->getEntityName();
+		if (isset($this->userTypes[$type])) {
+			throw new InvalidArgumentException("Type '$type' is already exists.");
+		}
+
+		$this->userTypes[$type] = $userType;
+	}
+
+
 	/**
-	 * @param $name
-	 * @param $entity
-	 * @param $formFactoryName
+	 * @return UserType[]
+	 */
+	public function getUserTypes()
+	{
+		return $this->userTypes;
+	}
+
+
+	/**
+	 * @param $class
+	 * @return UserType
 	 * @throws InvalidArgumentException
 	 */
-	public function addUserType($name, $entity, $formFactoryName)
+	public function getUserTypeByClass($class)
 	{
-		$entity = $this->normalizeEntityName($entity);
-
-		if (isset($this->typesByName[$name])) {
-			throw new InvalidArgumentException("User type name '{$name}' is already installed.");
+		if (!isset($this->userTypes[$class])) {
+			throw new InvalidArgumentException("Type '$type' does not exist.");
 		}
 
-		if (isset($this->typesByEntity[$entity])) {
-			throw new InvalidArgumentException("User type entity '{$entity}' is already installed.");
-		}
-
-		$this->types[$entity] = $name;
-		$this->typesByName[$name] = $formFactoryName;
-		$this->typesByEntity[$entity] = $formFactoryName;
+		return $this->userTypes[$class];
 	}
 
 
@@ -83,51 +88,6 @@ class SecurityManager extends Object
 		}
 
 		$this->socialLogins[$name] = $socialLoginFactoryName;
-	}
-
-
-	/**
-	 * @return mixed
-	 */
-	public function getTypes()
-	{
-		return $this->types;
-	}
-
-
-	/**
-	 * @param $entity
-	 * @return mixed
-	 * @throws InvalidArgumentException
-	 */
-	public function getFormFactoryByEntity($entity)
-	{
-		$entity = $this->normalizeEntityName($entity);
-
-		if (!isset($this->typesByEntity[$entity])) {
-			throw new InvalidArgumentException("Form factory for entity '{$entity}' has not been registered.");
-		}
-
-		$name = $this->typesByEntity[$entity];
-
-		return $this->content->getService($name);
-	}
-
-
-	/**
-	 * @param $name
-	 * @return mixed
-	 * @throws InvalidArgumentException
-	 */
-	public function getFormFactoryByName($name)
-	{
-		if (!isset($this->typesByName[$name])) {
-			throw new InvalidArgumentException("Form factory for name '{$name}' has not been registered.");
-		}
-
-		$name = $this->typesByName[$name];
-
-		return $this->content->getService($name);
 	}
 
 

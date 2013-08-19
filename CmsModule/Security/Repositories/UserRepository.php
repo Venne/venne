@@ -24,9 +24,13 @@ class UserRepository extends BaseRepository
 	public function createNew($arguments = array())
 	{
 		if (!count($arguments)) {
-			$arguments = array($this->getEntityManager()
+			$userPage = $this->getEntityManager()
 				->getRepository('CmsModule\Content\Entities\PageEntity')
-				->findOneBy(array('special' => 'users')));
+				->findOneBy(array('special' => 'users'));
+
+			$arguments = array($this->getEntityManager()
+				->getRepository($userPage->class)
+				->findOneBy(array('page' => $userPage->id)));
 		}
 		return parent::createNew($arguments);
 	}

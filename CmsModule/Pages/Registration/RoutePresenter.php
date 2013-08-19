@@ -13,6 +13,7 @@ namespace CmsModule\Pages\Registration;
 
 use CmsModule\Content\IRegistrationFormFactory;
 use CmsModule\Content\Presenters\PagePresenter;
+use CmsModule\Pages\Users\ExtendedUserEntity;
 use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\SecurityManager;
 use Nette\InvalidArgumentException;
@@ -129,21 +130,22 @@ class RoutePresenter extends PagePresenter
 
 	protected function createComponentForm()
 	{
+		$userType = $this->securityManager->getUserTypeByClass($this->extendedPage->userType);
 		$repository = $this->entityManager->getRepository($this->extendedPage->userType);
-		$formFactory = $this->securityManager->getFormFactoryByEntity($this->extendedPage->userType);
+		$formFactory = $userType->getRegistrationFormFactory();
 
-		/** @var $entity \CmsModule\Pages\Users\UserEntity */
-		$entity = $repository->createNew(array($this->getEntityManager()->getRepository('CmsModule\Pages\Users\PageEntity')->findOneBy(array())));
+		/** @var $entity ExtendedUserEntity */
+		$entity = $repository->createNew();
 		if ($this->extendedPage->mode === PageEntity::MODE_BASIC) {
-			$entity->setPublished(true);
+			$entity->getUser()->getRoute()->setPublished(true);
 		} elseif ($this->extendedPage->mode === PageEntity::MODE_MAIL) {
-			$entity->setPublished(true);
-			$entity->disableByKey();
+			$entity->getUser()->getRoute()->setPublished(true);
+			$entity->getUser()->disableByKey();
 		} elseif ($this->extendedPage->mode === PageEntity::MODE_MAIL_CHECKUP) {
-			$entity->disableByKey();
+			$entity->getUser()->disableByKey();
 		}
 		foreach ($this->extendedPage->roles as $role) {
-			$entity->roleEntities[] = $role;
+			$entity->getUser()->roleEntities[] = $role;
 		}
 
 		$_this = $this;

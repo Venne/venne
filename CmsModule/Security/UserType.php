@@ -9,7 +9,7 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Pages\Users;
+namespace CmsModule\Security;
 
 use Nette\Object;
 use Venne\Forms\FormFactory;
@@ -31,6 +31,9 @@ class UserType extends Object
 
 	/** @var FormFactory */
 	protected $frontFormFactory;
+
+	/** @var FormFactory */
+	protected $registrationFormFactory;
 
 
 	/**
@@ -71,7 +74,6 @@ class UserType extends Object
 	}
 
 
-
 	/**
 	 * @return FormFactory
 	 */
@@ -99,4 +101,20 @@ class UserType extends Object
 	}
 
 
+	/**
+	 * @param FormFactory $formFactory
+	 */
+	public function setRegistrationFormFactory(FormFactory $formFactory)
+	{
+		$this->registrationFormFactory = $formFactory;
+	}
+
+
+	/**
+	 * @return FormFactory
+	 */
+	public function getRegistrationFormFactory()
+	{
+		return $this->registrationFormFactory;
+	}
 }

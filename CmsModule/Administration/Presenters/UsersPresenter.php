@@ -17,7 +17,7 @@ use CmsModule\Content\Entities\UserPageEntity;
 use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Forms\UserSocialFormFactory;
 use CmsModule\Pages\Users\AdminUserFormFactory;
-use CmsModule\Pages\Users\UserManager;
+use CmsModule\Security\SecurityManager;
 use CmsModule\Security\Repositories\UserRepository;
 
 /**
@@ -49,8 +49,8 @@ class UsersPresenter extends BasePresenter
 	/** @var UserPageEntity */
 	protected $extendedPage;
 
-	/** @var UserManager */
-	protected $userManager;
+	/** @var SecurityManager */
+	protected $securityManager;
 
 
 	/**
@@ -90,20 +90,20 @@ class UsersPresenter extends BasePresenter
 
 
 	/**
-	 * @param UserManager $userManager
+	 * @param SecurityManager $securityManager
 	 */
-	public function injectUserManager(UserManager $userManager)
+	public function injectSecurityManager(SecurityManager $securityManager)
 	{
-		$this->userManager = $userManager;
+		$this->securityManager = $securityManager;
 	}
 
 
 	/**
-	 * @return UserManager
+	 * @return SecurityManager
 	 */
-	public function getUserManager()
+	public function getSecurityManager()
 	{
-		return $this->userManager;
+		return $this->securityManager;
 	}
 
 
@@ -118,7 +118,7 @@ class UsersPresenter extends BasePresenter
 		}
 
 		if (!$this->type) {
-			$this->type = key($this->userManager->getUserTypes());
+			$this->type = key($this->securityManager->getUserTypes());
 		}
 	}
 
@@ -221,6 +221,6 @@ class UsersPresenter extends BasePresenter
 	 */
 	private function getUserType()
 	{
-		return $this->userManager->getUserTypeByClass($this->type);
+		return $this->securityManager->getUserTypeByClass($this->type);
 	}
 }

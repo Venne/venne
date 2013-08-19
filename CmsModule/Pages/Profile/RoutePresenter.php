@@ -13,7 +13,7 @@ namespace CmsModule\Pages\Profile;
 
 use CmsModule\Content\Presenters\PagePresenter;
 use CmsModule\Pages\Users\UserEntity;
-use CmsModule\Pages\Users\UserManager;
+use CmsModule\Security\SecurityManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,16 +21,16 @@ use CmsModule\Pages\Users\UserManager;
 class RoutePresenter extends PagePresenter
 {
 
-	/** @var UserManager */
-	private $userManager;
+	/** @var SecurityManager */
+	private $securityManager;
 
 
 	/**
-	 * @param UserManager $userManager
+	 * @param SecurityManager $securityManager
 	 */
-	public function injectUserManager(UserManager $userManager)
+	public function injectSecurityManager(SecurityManager $securityManager)
 	{
-		$this->userManager = $userManager;
+		$this->securityManager = $securityManager;
 	}
 
 
@@ -50,7 +50,7 @@ class RoutePresenter extends PagePresenter
 
 	protected function createComponentForm()
 	{
-		$form = $this->userManager
+		$form = $this->securityManager
 			->getUserTypeByClass($this->user->identity->class)
 			->getFrontFormFactory()
 			->invoke($this->extendedUser);
