@@ -66,6 +66,11 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
+	cms.overloadFormFactory:
+		class: CmsModule\Content\Forms\OverloadFormFactory(%modules%)
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 	cms.contentFormFactory:
 		class: CmsModule\Content\Forms\BasicFormFactory
 		setup:

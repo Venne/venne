@@ -13,6 +13,8 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Content\Forms\LayouteditFormFactory;
 use CmsModule\Content\Forms\LayoutFormFactory;
+use CmsModule\Content\Forms\OverloadFormFactory;
+use Venne\Forms\Form;
 use Venne\Module\Helpers;
 use Venne\Module\TemplateManager;
 use Venne\Utils\File;
@@ -40,6 +42,9 @@ class TemplatesPresenter extends BasePresenter
 	/** @var LayouteditFormFactory */
 	protected $layouteditFormFactory;
 
+	/** @var OverloadFormFactory */
+	protected $overloadFormFactory;
+
 	/** @var Helpers */
 	protected $moduleHelpers;
 
@@ -62,6 +67,15 @@ class TemplatesPresenter extends BasePresenter
 	public function injectLayouteditForm(LayouteditFormFactory $layouteditForm)
 	{
 		$this->layouteditFormFactory = $layouteditForm;
+	}
+
+
+	/**
+	 * @param OverloadFormFactory $overloadFormFactory
+	 */
+	public function injectOverloadFormFactory(OverloadFormFactory $overloadFormFactory)
+	{
+		$this->overloadFormFactory = $overloadFormFactory;
 	}
 
 
@@ -125,6 +139,22 @@ class TemplatesPresenter extends BasePresenter
 		$form = $this->layouteditFormFactory->invoke();
 		$form->onSuccess[] = $this->formSuccess;
 		return $form;
+	}
+
+
+	protected function createComponentOverloadForm()
+	{
+		$form = $this->overloadFormFactory->invoke();
+		$form->onSuccess[] = $this->overloadFormSuccess;
+		return $form;
+	}
+
+
+	public function overloadFormSuccess(Form $form)
+	{
+		if ($form->isSubmitted() === $form->getSaveButton() && !$form->errors) {
+			$this->redirect('default');
+		}
 	}
 
 

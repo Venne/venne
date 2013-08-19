@@ -232,6 +232,7 @@ view: pohled
 'on': zap
 'off': vyp
 change password: změnit heslo
+overload template: přetížit šablonu
 page has been removed: stránka byla odstraněna
 page has been created: stránka byla vytvořena
 page has been updated: stránka byla aktualizována

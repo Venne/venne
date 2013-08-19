@@ -1,0 +1,16 @@
+{block header}
+	{$presenter->key}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><span class="divider">/</span> <a n:href="default">{_'Templates'}</a></li>
+	<li class="active"><span class="divider">/</span> {_Editing}</li>
+{/block}
+
+{block content}
+
+{control overloadForm}
