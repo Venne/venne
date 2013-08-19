@@ -145,7 +145,7 @@ abstract class BaseElement extends Control implements IElement
 
 
 	/**
-	 * @return \CmsModule\Content\Entities\ElementEntity
+	 * @return ExtendedElementEntity
 	 */
 	protected function createEntity()
 	{
@@ -217,7 +217,7 @@ abstract class BaseElement extends Control implements IElement
 				}
 				$this->entityManager->persist($ret);
 				$this->entityManager->flush($ret);
-				$this->element = $ret;
+				$this->element = $ret->getElement();
 			}
 		}
 		return $this->element;
