@@ -45,11 +45,5 @@ interface IElement extends IRenderable
 	/**
 	 * @abstract
 	 */
-	public function render();
-
-
-	/**
-	 * @abstract
-	 */
 	public function getViews();
 }

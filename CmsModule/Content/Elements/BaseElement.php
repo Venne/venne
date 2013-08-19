@@ -237,11 +237,6 @@ abstract class BaseElement extends Control implements IElement
 	}
 
 
-	public function render()
-	{
-	}
-
-
 	public function renderBasicSetup()
 	{
 		echo $this['basicForm']->render();
