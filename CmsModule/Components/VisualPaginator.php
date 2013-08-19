@@ -97,7 +97,7 @@ class VisualPaginator extends Control
 
 		$list = parent::formatTemplateFiles();
 		$refl = $this->getReflection();
-		$path = dirname($this->getPresenter()->getLayoutPath());
+		$path = dirname($this->getPresenter()->getLayoutFile());
 
 		return array_merge(array(
 			dirname($path) . '/' . $refl->getShortName() . '.latte',

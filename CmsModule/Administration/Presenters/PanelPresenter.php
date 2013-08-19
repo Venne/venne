@@ -46,7 +46,7 @@ class PanelPresenter extends BasePresenter
 	public $language;
 
 	/** @var string */
-	protected $_layoutPath;
+	protected $_layoutFile;
 
 
 	public function beforeRender()
@@ -125,11 +125,11 @@ class PanelPresenter extends BasePresenter
 	 *
 	 * @return null|string
 	 */
-	public function getLayoutPath()
+	public function getLayoutFile()
 	{
-		if ($this->_layoutPath === NULL) {
+		if ($this->_layoutFile === NULL) {
 			if (!$this->route->layout) {
-				$this->_layoutPath = FALSE;
+				$this->_layoutFile = FALSE;
 			}
 
 			if ($this->route->layout == 'default') {
@@ -142,14 +142,14 @@ class PanelPresenter extends BasePresenter
 			$module = lcfirst(substr($layout, 1, $pos - 1));
 
 			if ($module === 'app') {
-				$this->_layoutPath = $this->context->parameters['appDir'] . '/layouts/' . substr($layout, $pos + 1);
+				$this->_layoutFile = $this->context->parameters['appDir'] . '/layouts/' . substr($layout, $pos + 1);
 			} else if (!isset($this->context->parameters['modules'][$module]['path'])) {
-				$this->_layoutPath = FALSE;
+				$this->_layoutFile = FALSE;
 			} else {
-				$this->_layoutPath = $this->context->parameters['modules'][$module]['path'] . '/layouts/' . substr($layout, $pos + 1);
+				$this->_layoutFile = $this->context->parameters['modules'][$module]['path'] . '/layouts/' . substr($layout, $pos + 1);
 			}
 		}
 
-		return $this->_layoutPath === FALSE ? NULL : $this->_layoutPath;
+		return $this->_layoutFile === FALSE ? NULL : $this->_layoutFile;
 	}
 }

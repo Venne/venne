@@ -64,7 +64,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	private $language;
 
 	/** @var string */
-	protected $_layoutPath;
+	protected $_layoutFile;
 
 	/** @var \Nette\Caching\Cache */
 	protected $_templateCache;
@@ -286,17 +286,17 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 *
 	 * @return null|string
 	 */
-	public function getLayoutPath()
+	public function getLayoutFile()
 	{
-		if ($this->_layoutPath === NULL) {
+		if ($this->_layoutFile === NULL) {
 			if (!$this->route->layout) {
-				$this->_layoutPath = FALSE;
+				$this->_layoutFile = FALSE;
 			} else {
-				$this->_layoutPath = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources/layouts');
+				$this->_layoutFile = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources/layouts');
 			}
 		}
 
-		return $this->_layoutPath === FALSE ? NULL : $this->_layoutPath;
+		return $this->_layoutFile === FALSE ? NULL : $this->_layoutFile;
 	}
 
 
@@ -307,7 +307,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function formatLayoutTemplateFiles()
 	{
-		return array($this->getLayoutPath());
+		return array($this->getLayoutFile());
 	}
 
 
@@ -321,10 +321,11 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		$ret = parent::formatTemplateFiles();
 		$presenter = str_replace(":", ".", $this->name);
 
-		$path = dirname($this->getLayoutPath());
+		$path = dirname($this->getLayoutFile());
 		if ($path) {
 			$ret = array_merge(array(
 				"$path/$presenter.$this->view.latte",
+				dirname($path) . "/$presenter.$this->view.latte",
 			), $ret);
 		}
 		return $ret;
