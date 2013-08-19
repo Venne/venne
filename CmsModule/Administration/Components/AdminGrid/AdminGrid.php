@@ -172,6 +172,8 @@ class AdminGrid extends Control
 			$_this->invalidateControl('navbarFormContainer');
 			if ($_this->mode === $this::MODE_PLACE) {
 				$_this->invalidateControl('table');
+				$_this->invalidateControl('navbarFormContainer');
+				$_this->invalidateControl('actionFormContainer');
 			}
 			$_this->setFormName($section->getName());
 		};
@@ -190,6 +192,8 @@ class AdminGrid extends Control
 			$_this->invalidateControl('actionFormContainer');
 			if ($_this->mode === $this::MODE_PLACE) {
 				$_this->invalidateControl('table');
+				$_this->invalidateControl('navbarFormContainer');
+				$_this->invalidateControl('actionFormContainer');
 			}
 			$_this->setFormName($action->getName());
 		};
@@ -417,6 +421,8 @@ class AdminGrid extends Control
 			}
 
 			$this->invalidateControl('table');
+			$this->invalidateControl('navbarFormContainer');
+			$this->invalidateControl('actionFormContainer');
 			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'mode'=>NULL));
 		}
 	}
@@ -435,6 +441,8 @@ class AdminGrid extends Control
 			}
 
 			$this->invalidateControl('table');
+			$this->invalidateControl('navbarFormContainer');
+			$this->invalidateControl('actionFormContainer');
 			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL, 'mode'=>NULL));
 		}
 	}
