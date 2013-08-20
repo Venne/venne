@@ -36,10 +36,7 @@ class FileEntity extends BaseFileEntity
 	/** @ORM\Column(type="boolean") */
 	protected $protected = FALSE;
 
-	/**
-	 * @var \Nette\Http\FileUpload|\SplFileInfo
-	 * @ORM\Column(type="boolean", nullable=true)
-	 */
+	/** @var FileUpload|\SplFileInfo */
 	protected $file;
 
 	/** @var bool */
