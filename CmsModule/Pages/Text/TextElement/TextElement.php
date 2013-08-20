@@ -55,7 +55,7 @@ class TextElement extends BaseElement
 
 	public function renderDefault()
 	{
-		echo $this->getExtendedElement()->getText();
+		$this->template->text = $this->getExtendedElement()->getText();
 	}
 
 

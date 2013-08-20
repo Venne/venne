@@ -19,8 +19,4 @@ use CmsModule\Pages\Text\TextElement\TextElement;
 class EditorElement extends TextElement
 {
 
-	public function renderDefault()
-	{
-		$this->template->text = $this->getExtendedElement()->getText();
-	}
 }
