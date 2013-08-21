@@ -284,6 +284,10 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	 */
 	public function setRoleEntities($roles)
 	{
+		if (is_array($roles)) {
+			$roles = new ArrayCollection($roles);
+		}
+
 		$this->roleEntities = $roles;
 		$this->invalidateLogins();
 	}
