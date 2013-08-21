@@ -12,12 +12,11 @@
 namespace CmsModule\Pages\Search;
 
 use Venne\Forms\Form;
-use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FrontFormFactory extends FormFactory
+class FrontFormFactory extends \Venne\Forms\FormFactory
 {
 
 	/**
