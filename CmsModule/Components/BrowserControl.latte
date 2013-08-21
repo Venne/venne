@@ -1,48 +1,24 @@
-<div id="tree-{$control->name}">
-    <ul class="">
-	{foreach $control->getPages() as $page}
-        <li>
-            <a href="#">{$page["title"]}</a>
+<div id="tree-{$control->name}"></div>
 
-            <ul>
-                <li><a>a</a></li>
-                <li><a>b</a></li>
-            </ul>
-
-        </li>
-	{/foreach}
-    </ul>
-</div>
-
-<ul id="myMenu" class="contextMenu">
-    <li class="edit"><a href="#edit">Edit</a></li>
-    <li class="cut separator"><a href="#cut">Cut</a></li>
-    <li class="copy"><a href="#copy">Copy</a></li>
-    <li class="paste"><a href="#paste">Paste</a></li>
-    <li class="delete"><a href="#delete">Delete</a></li>
-    <li class="quit separator"><a href="#quit">Quit</a></li>
+{var $contentMenu = $control->getContentMenu()}
+<ul n:if="count($contentMenu)" id="tree-contentMenu-{$control->name}" class="contextMenu">
+	<li n:foreach="$contentMenu as $name=>$callback" class="{$name}"><a href="#contentMenu-{$control->name}-{$name}">{$name}</a></li>
 </ul>
 
 <script type="text/javascript">
 // <![CDATA[
+
+	{if count($contentMenu)}
     function bindContextMenu(span) {
-        // Add context menu to this node:
-        $(span).contextMenu({ menu:"myMenu"}, function (action, el, pos) {
-            // The event was bound to the <span> tag, but the node object
-            // is stored in the parent <li> tag
+        $(span).contextMenu({ menu:"tree-contentMenu-{!$control->name}"}, function (action, el, pos) {
             var node = $.ui.dynatree.getNode(el);
-            switch (action) {
-                case "cut":
-                case "copy":
-                case "paste":
-                    copyPaste(action, node);
-                    break;
-                default:
-                    alert("Todo: appply action '" + action + "' to node " + node);
-            }
+			var t = 'contentMenu-{!$control->name}-';
+			$.nette.ajax({
+				'url': {link contentMenu! name=>'this'}.replace('this', action.substr(t.length))
+			});
         });
-    }
-    ;
+    };
+	{/if}
 
 
     $(function () {
@@ -50,11 +26,9 @@
             autoFocus:false,
             onActivate:function (node) {
                 node.deactivate();
-                var url = '{!$control->onActivateLink}'.replace('this', node.data.key);
-                var html = '<a class="ajax" id="obj-{!$control->name}" href="' + url + '">test</a>';
-                $("body").append(html);
-                $.nette.load();
-                $("#obj-{!$control->name}").click().remove();
+				$.nette.ajax({
+					'url': {link click! key=>'this'}.replace('this', node.data.key)
+				});
             },
             // persist: true,
 
@@ -69,21 +43,27 @@
                 node.appendAjax({
                     url:url
                 });
-            },
+            }
 
+			{if count($contentMenu)}
+			,
             onCreate:function (node, span) {
                 bindContextMenu(span);
-            },
+            }
+			{/if}
 
-		{if count($control->onExpand) > 0}
-            onExpand:function (flag, dtnode) {
-                var url = {link expand! '-a-', '-b-'}.
-                replace('-a-', dtnode.data.key).replace('-b-', flag);
-                $.nette.ajax({ url:url })
-            },
-		{/if}
+			{if count($control->onExpand) > 0}
+			,
+			onExpand:function (flag, dtnode) {
+				var url = {link expand! '-a-', '-b-'}.
+				replace('-a-', dtnode.data.key).replace('-b-', flag);
+				$.nette.ajax({ url:url })
+			}
+			{/if}
 
-            dnd:{
+			{if $control->dropCallback}
+            ,
+			dnd:{
                 onDragStart:function (node) {
                     return true;
                 },
@@ -93,31 +73,15 @@
                 autoExpandMS:1000,
                 preventVoidMoves:true, // Prevent dropping nodes 'before self', etc.
                 onDragEnter:function (node, sourceNode) {
-                    /** sourceNode may be null for non-dynatree droppables.
-                     *  Return false to disallow dropping on node. In this case
-                     *  onDragOver and onDragLeave are not called.
-                     *  Return 'over', 'before, or 'after' to force a hitMode.
-                     *  Return ['before', 'after'] to restrict available hitModes.
-                     *  Any other return value will calc the hitMode from the cursor position.
-                     */
-//		  if(node.parent.data.key == "_1"){
-//			  return false;
-//		  }
                     logMsg("tree.onDragEnter(%o, %o)", node, sourceNode);
                     return true;
                 },
                 onDragOver:function (node, sourceNode, hitMode) {
-                    /** Return false to disallow dropping this node.
-                     *
-                     */
                     logMsg("tree.onDragOver(%o, %o, %o)", node, sourceNode, hitMode);
                     // Prevent dropping a parent below it's own child
                     if (node.isDescendantOf(sourceNode)) {
                         return false;
                     }
-                    // Prohibit creating childs in non-folders (only sorting allowed)
-//        if( !node.isFolder && hitMode == "over" )
-//          return "after";
                 },
                 onDrop:function (node, sourceNode, hitMode, ui, draggable) {
                     node.expand(true);
@@ -127,15 +91,12 @@
                     //alert("move:" + sourceNode.data.key + " to " + node.data.key + " hit " + hitMode);
                     logMsg("tree.onDrop(%o, %o, %s)", node, sourceNode, hitMode);
                     sourceNode.move(node, hitMode);
-                    // expand the drop target
-//        sourceNode.expand(true);
                 },
                 onDragLeave:function (node, sourceNode) {
-                    /** Always called if onDragEnter was called.
-                     */
                     logMsg("tree.onDragLeave(%o, %o)", node, sourceNode);
                 }
             }
+			{/if}
         });
     });
 // ]]>

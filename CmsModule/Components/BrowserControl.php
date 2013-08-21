@@ -11,6 +11,9 @@
 
 namespace CmsModule\Components;
 
+use Nette\Application\Responses\JsonResponse;
+use Nette\Callback;
+use Nette\InvalidArgumentException;
 use Venne\Application\UI\Control;
 
 /**
@@ -20,27 +23,84 @@ class BrowserControl extends Control
 {
 
 	/** @var callable */
-	protected $loadItems;
-
-	/** @var callable */
-	protected $parentCallback;
-
-	/** @var string */
-	protected $onActivateLink;
-
-	/** @var callable */
 	public $onExpand;
+
+	/** @var array */
+	public $onClick;
+
+	/** @var callable */
+	protected $loadCallback;
+
+	/** @var callable */
+	protected $dropCallback;
+
+	/** @var array */
+	protected $contentMenu = array();
 
 
 	/**
-	 * @param callable $loadItems
+	 * @param $name
+	 * @param $callback
+	 * @throws InvalidArgumentException
 	 */
-	public function __construct($loadItems, $setParent)
+	public function addContentMenu($name, $callback)
 	{
-		parent::__construct();
+		if (isset($this->contentMenu[$name])) {
+			throw new InvalidArgumentException("Content menu '$name' is already exists.");
+		}
 
-		$this->loadItems = $loadItems;
-		$this->parentCallback = $setParent;
+		$this->contentMenu[$name] = Callback::create($callback);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getContentMenu()
+	{
+		return $this->contentMenu;
+	}
+
+
+	/**
+	 * @param callable $dropCallback
+	 */
+	public function setDropCallback($dropCallback)
+	{
+		$this->dropCallback = $dropCallback;
+	}
+
+
+	/**
+	 * @return callable
+	 */
+	public function getDropCallback()
+	{
+		return $this->dropCallback;
+	}
+
+
+	/**
+	 * @param callable $loadCallback
+	 */
+	public function setLoadCallback($loadCallback)
+	{
+		$this->loadCallback = $loadCallback;
+	}
+
+
+	/**
+	 * @return callable
+	 */
+	public function getLoadCallback()
+	{
+		return $this->loadCallback;
+	}
+
+
+	public function handleClick($key)
+	{
+		$this->onClick($key);
 	}
 
 
@@ -52,43 +112,30 @@ class BrowserControl extends Control
 
 	public function getPages($parent = NULL)
 	{
-		return $this->loadItems->invoke($parent);
+		return Callback::create($this->loadCallback)->invoke($parent);
+	}
+
+
+	public function handleContentMenu($name)
+	{
+		$this->contentMenu[$name]->invoke();
 	}
 
 
 	public function handleGetPages($parent = NULL)
 	{
-		$data = $this->getPages($parent);
-		$this->getPresenter()->sendResponse(new \Nette\Application\Responses\JsonResponse($data));
+		$this->getPresenter()->sendResponse(new JsonResponse($this->getPages($parent)));
 	}
 
 
 	public function handleSetParent($from = NULL, $to = NULL, $dropmode = NULL)
 	{
-		$this->parentCallback->invoke($from, $to, $dropmode);
+		Callback::create($this->dropCallback)->invoke($from, $to, $dropmode);
 	}
 
 
 	public function handleExpand($key, $open)
 	{
 		$this->onExpand($key, $open === 'true');
-	}
-
-
-	/**
-	 * @param string $onActivateLink
-	 */
-	public function setOnActivateLink($onActivateLink)
-	{
-		$this->onActivateLink = $onActivateLink;
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getOnActivateLink()
-	{
-		return $this->onActivateLink;
 	}
 }

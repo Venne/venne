@@ -12,7 +12,6 @@
 namespace CmsModule\Components;
 
 use CmsModule\Content\ContentManager;
-use CmsModule\Content\Entities\PageEntity;
 use Nette\Http\SessionSection;
 use Venne\Application\UI\Control;
 use Venne\Module\TemplateManager;
@@ -97,27 +96,44 @@ class PanelControl extends Control
 
 	protected function createComponentBrowser()
 	{
+		$_this = $this;
 		$nullLinkParams = \Venne\Application\UI\Helpers::nullLinkParams($this);
 		unset($nullLinkParams['lang']);
 
+		$browser = new BrowserControl;
+		$browser->setTemplateConfigurator($this->templateConfigurator);
+
 		if ($this->tab == 0) {
-			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getPages"), callback($this, "setPageParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Content:edit', array('key' => 'this') + $nullLinkParams));
+			$browser->setLoadCallback($this->getPages);
+			$browser->setDropCallback($this->setPageParent);
+			$browser->onClick[] = function ($key) use ($_this, $nullLinkParams) {
+				$_this->getPresenter()->ajaxRedirect(':Cms:Admin:Content:edit', array('key' => $key) + $nullLinkParams);
+			};
 			$browser->onExpand[] = $this->pageExpand;
 		} else if ($this->tab == 2) {
-			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getFiles"), callback($this, "setFileParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Files:', array('key' => 'this') + $nullLinkParams));
+			$browser->setLoadCallback($this->getFiles);
+			$browser->setDropCallback($this->setFileParent);
+			$browser->onClick[] = function ($key) use ($_this, $nullLinkParams) {
+				if (substr($key, 0, 2) === 'd:') {
+					$_this->getPresenter()->ajaxRedirect(':Cms:Admin:Files:', array('key' => $key) + $nullLinkParams);
+				}
+			};
 			$browser->onExpand[] = $this->fileExpand;
 		} else if ($this->tab == 3) {
-			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getLayouts"), callback($this, "setLayoutParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Layouts:', array('key' => 'this') + $nullLinkParams));
+			$browser->setLoadCallback($this->getLayouts);
+			$browser->onClick[] = function ($key) use ($_this, $nullLinkParams) {
+				$_this->getPresenter()->ajaxRedirect(':Cms:Admin:Layouts:', array('table-floorId' => $key, 'table-floor' => 'Borec') + $nullLinkParams);
+			};
 			$browser->onExpand[] = $this->layoutExpand;
 		} else if ($this->tab == 4) {
-			$browser = new \CmsModule\Components\BrowserControl(callback($this, "getTemplates"), callback($this, "setTemplateParent"));
-			$browser->setOnActivateLink($this->getPresenter()->link(':Cms:Admin:Templates:edit', array('key' => 'this') + $nullLinkParams));
+			$browser->setLoadCallback($this->getTemplates);
+			$browser->onClick[] = function ($key) use ($_this, $nullLinkParams) {
+				if (substr($key, 0, 1) === '@') {
+					$_this->getPresenter()->ajaxRedirect(':Cms:Admin:Templates:edit', array('key' => $key) + $nullLinkParams);
+				}
+			};
 			$browser->onExpand[] = $this->templateExpand;
 		}
-		$browser->setTemplateConfigurator($this->templateConfigurator);
 		return $browser;
 	}
 
@@ -263,9 +279,9 @@ class PanelControl extends Control
 		$dql = $dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 
 		foreach ($dql->getQuery()->getResult() as $page) {
-			$item = array("title" => $page->name, 'key' => 'd:' . $page->id);
+			$item = array('title' => $page->name, 'key' => 'd:' . $page->id);
 
-			$item["isFolder"] = TRUE;
+			$item['isFolder'] = TRUE;
 
 			if (count($page->children) > 0 || count($page->files) > 0) {
 				$item['isLazy'] = TRUE;
