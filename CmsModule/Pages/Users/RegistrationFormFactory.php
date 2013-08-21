@@ -11,32 +11,10 @@
 
 namespace CmsModule\Pages\Users;
 
-use DoctrineModule\Forms\FormFactory;
-use Venne\Forms\Form;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationFormFactory extends FormFactory
+class RegistrationFormFactory extends BaseRegistrationFormFactory
 {
 
-	/**
-	 * @param Form $form
-	 */
-	protected function configure(Form $form)
-	{
-		$user = $form->addOne('user');
-		$user->setCurrentGroup($form->addGroup());
-		$user->addText('email', 'E-mail')
-			->addRule(Form::EMAIL, 'Enter email');
-
-		$user->addPassword('password', 'Password')
-			->setOption('description', 'minimal length is 5 char')
-			->addRule(Form::FILLED, 'Enter password')
-			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
-		$user->addPassword('password_confirm', 'Confirm password')
-			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
-
-		$form->addSaveButton('Save');
-	}
 }
