@@ -137,6 +137,17 @@ class ContentPresenter extends BasePresenter
 			throw new ForbiddenRequestException;
 		}
 
+		if (!$this->section) {
+			$entity = $this->getPageEntity();
+			$sections = $this->contentManager->getContentType(get_class($entity))->getSections();
+
+			if (count($sections)) {
+				$this->section = reset($sections)->name;
+			} else {
+				$this->section = 'basic';
+			}
+		}
+
 		if ($this->section === 'basic') {
 			if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_BASE)) {
 				throw new ForbiddenRequestException;
@@ -420,7 +431,7 @@ class ContentPresenter extends BasePresenter
 		$entity = $this->getPageEntity();
 		$contentType = $this->contentManager->getContentType(get_class($entity));
 
-		if ((!$this->section && count($contentType->sections) == 0) || $this->section == 'basic') {
+		if ($this->section == 'basic') {
 			$form = $this->contentFormFactory->invoke($entity);
 		} elseif ($this->section == 'routes') {
 			$form = $this->contentRouteControlFactory->invoke();
