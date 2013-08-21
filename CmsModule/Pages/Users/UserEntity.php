@@ -33,9 +33,9 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	protected $email = '';
 
 	/**
-	 * @ORM\Column(type="string", unique=true)
+	 * @ORM\Column(type="string", unique=true, nullable=true)
 	 */
-	protected $name = '';
+	protected $name;
 
 	/**
 	 * @ORM\Column(type="text")
@@ -224,7 +224,7 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 
 	public function setName($name)
 	{
-		$this->name = $name;
+		$this->name = $name ? $name : NULL;
 		$this->generateSlug();
 	}
 
