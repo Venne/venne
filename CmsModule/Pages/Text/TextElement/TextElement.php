@@ -78,6 +78,6 @@ class TextElement extends BaseElement
 
 	public function processForm()
 	{
-		$this->getPresenter()->redirect('this');
+		$this->getPresenter()->redirect('refresh!');
 	}
 }

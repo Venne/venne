@@ -1,11 +1,26 @@
 {block content}
 
+{if isset($showRefresh)}
+	<script type="text/javascript">
+		$(function () {
+			var url = $('#venne-panel', top.document).contents().get(0).location.href + '&do=refreshElement';
+			$.get(url, function (data) {
+				parameters = data['state'];
+				var html = $(data['snippets']['snippet--element']);
+				var id = html.attr('id');
+
+				$('#' + id, top.document).html(html.html());
+				$("#venne-panel", top.document)[0].contentWindow.redrawRectangles();
+			});
+		});
+	</script>
+{/if}
+
 {snippet elementView}
 	{if isset($showElementView)}
 	<div class="modal modal-large hide" id="optionEdit">
 		<div class="modal-header">
 			<a href="#" onClick="$('#optionEdit').modal('hide')" class="close">×</a>
-
 			<h3>Edit option</h3>
 		</div>
 		<div class="modal-body">

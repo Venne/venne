@@ -13,16 +13,15 @@ $(function () {
 	var rectangles = new Array();
 	var rectangleObjects = new Array();
 	var edit = false;
-	var _venne_panel_load = false;
 
 
 	// Iframe manipulation
-	$('div').live('mouseover', function () {
+	$('div').on('mouseover', function () {
 		if (!edit) {
 			$('#venne-panel-container', topDocument).height('100%');
 		}
 	});
-	$('div').bind('mouseout', function () {
+	$('div').on('mouseout', function () {
 		if (!edit) {
 			$('#venne-panel-container', topDocument).height('43px');
 		}
@@ -32,7 +31,7 @@ $(function () {
 	if (window.parent.location.href.indexOf("?mode=1") == -1 && window.parent.location.href.indexOf("&mode=1") == -1) {
 		$('#venne-panel-close').hide();
 		$('#venne-panel-button-edit').hide();
-		$('#venne-panel-edit').live('click', function () {
+		$('#venne-panel-edit').on('click', function () {
 			if (window.parent.location.href.indexOf("?") != -1) {
 				window.parent.location.href = window.parent.location.href + '&mode=1';
 			} else {
@@ -41,7 +40,7 @@ $(function () {
 		});
 	} else {
 		$('#venne-panel-edit').hide();
-		$('#venne-panel-close').live('click', function () {
+		$('#venne-panel-close').on('click', function () {
 			var url = window.parent.location.href;
 			url = url.replace('?mode=1', '').replace('&mode=1', '');
 			window.parent.location.href = url;
@@ -49,29 +48,9 @@ $(function () {
 	}
 
 
-	// Refresh element
-	if (window.parent._venne_panel == undefined) {
-		$('#venne-panel', topDocument).bind('load', function () {
-			if (_venne_panel_load) {
-				$.get($(this).contents().get(0).location.href + '&do=refreshElement', function (data) {
-					parameters = data['state'];
-					var html = $(data['snippets']['snippet--element']);
-					var id = html.attr('id');
-
-					$('#' + id, topDocument).html(html.html());
-					$("#venne-panel", topDocument)[0].contentWindow.redrawRectangles();
-				});
-			} else {
-				_venne_panel_load = true;
-			}
-		});
-		window.parent._venne_panel = true;
-	}
-
-
 	// Edit & Save buttons
 	$('#venne-panel-button-save').hide();
-	$('#venne-panel-button-edit').live('click', function () {
+	$('#venne-panel-button-edit').on('click', function () {
 		$("#venne-panel-container", topDocument).height('100%');
 		$('body').css('background-color', 'rgba(255, 255, 255, 0.5)');
 
@@ -82,7 +61,7 @@ $(function () {
 
 		window.parent._venne_panel_button = 'edit';
 	});
-	$('#venne-panel-button-save').live('click', function () {
+	$('#venne-panel-button-save').on('click', function () {
 		$("#venne-panel-container", topDocument).height('42px');
 		$('body').css('background-color', 'transparent');
 
@@ -99,7 +78,7 @@ $(function () {
 
 
 	// Close button
-	$('#venne-panel-button-close').live('click', function () {
+	$('#venne-panel-button-close').on('click', function () {
 		$('#venne-panel-container', topDocument).remove();
 	});
 

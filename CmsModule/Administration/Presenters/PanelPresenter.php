@@ -84,6 +84,13 @@ class PanelPresenter extends BasePresenter
 	}
 
 
+	public function handleRefresh()
+	{
+		$this->setView('default');
+		$this->template->showRefresh = TRUE;
+	}
+
+
 	public function handleElement()
 	{
 		$this->template->showElementView = TRUE;
