@@ -37,6 +37,7 @@
 		"venne/mailform-module": "Mailform page with many useful options",
 		"venne/googleanalytics-module": "Google analytics integration",
 		"venne/ckeditor-module": "Popular WYSIWYG editor",
+		"venne/ace-module": "Great code editor for templates",
 		"venne/lightbox-module": "Lightbox integration",
 		"venne/social-module": "Integration of logging with social networks"
 	},
