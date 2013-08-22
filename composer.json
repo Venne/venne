@@ -15,6 +15,7 @@
 		"venne/assets-module": "2.1.x-dev",
 		"venne/translator-module": "2.1.x-dev",
 		"venne/bootstrap2-module": "*",
+		"venne/bootstrapmodal-module": "2.1.x-dev",
 		"venne/jquery2.0-module": "*",
 		"venne/jqueryui1.10-module": "*",
 		"venne/select2-module": "3.4.x-dev",
