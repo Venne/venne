@@ -7,8 +7,6 @@
 
 ## Installation
 
-### By Composer
-
 The best way to install Venne:CMS is create new project using
 [Composer](http://doc.nette.org/composer):
 
@@ -17,21 +15,6 @@ The best way to install Venne:CMS is create new project using
 	php www/index.php venne:module:update
 	php www/index.php venne:module:install cms [--noconfirm]
 
-### Manual
-
-Next way to install Venne:CMS is download and unpack archive.
-
-**CMS with additional modules**
-- [zip archive](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.zip)
-- [tgz archive](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.tgz)
-- [zip archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.ws.zip)
-- [tgz archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-full-2.0.0-dev.ws.tgz)
-
-**CMS without additional modules**
-- [zip archive](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.zip)
-- [tgz archive](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.tgz)
-- [zip archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.ws.zip)
-- [tgz archive without symlinks](https://github.com/Venne/files/raw/master/VenneCMS-2.0.0-dev.ws.tgz)
 
 ## Modules
 
@@ -56,10 +39,3 @@ Module can be installed manualy. Download archive from GitHub and unpack it into
 	composer require venne/sample-module:2.0.x [--prefer-dist]      # Download module
 	php www/index.php venne:module:update                           # Update local database of modules
 	php www/index.php venne:module:install sample                   # Install module
-
-### Next official useful modules
-
-- [**Ckeditor**](https://github.com/Venne/ckeditor-module) - Integration of Ckeditor.
-- [**Blog**](https://github.com/Venne/blog-module) - Basic module for blog system.
-- [**Mailform**](https://github.com/Venne/mailform-module) - Module with dynamic mailform page.
-- [**Social**](https://github.com/Venne/social-module) - Module with support for social sites.
