@@ -731,7 +731,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 			return;
 		}
 
-		$this->copyLayoutFromParent = $copyLayoutFromParent;
+		$this->copyLayoutFromParent = (bool)$copyLayoutFromParent;
 		$this->generateLayouts();
 		return $this;
 	}
