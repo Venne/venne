@@ -30,6 +30,7 @@ create: vytvořit
 create new: vytvořit
 create new directory: vytvořit nový adresář
 create new language: vytvořit nový jazyk
+create template: vytvořit šablonu
 database: databáze
 database settings: nastavení databáze
 dates: data
@@ -111,6 +112,9 @@ site tags: tagy webu
 site users: stránka uživatelů
 system: systém
 tags: tagy
+target: cíl
+target module: cílový modul
+target layout: cílový layout
 templating: šablony
 templates: šablony
 up: nahoru
