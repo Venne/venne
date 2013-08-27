@@ -89,7 +89,9 @@
 
 	<footer>
 		<p>
-			&copy; Company 2013 &nbsp; · &nbsp; <a n:href="Route special=>'sitemap'">{_Sitemap}</a> &nbsp; · &nbsp; <a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a>
+			&copy; Company 2013 &nbsp;
+			{ifLinkExists Route special=>'sitemap'}· &nbsp; <a n:link>{_Sitemap}</a> &nbsp;{/ifLinkExists}
+			· &nbsp; <a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a>
 		</p>
 	</footer>
 
