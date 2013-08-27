@@ -20,7 +20,6 @@ use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\IElement;
 use Doctrine\ORM\EntityManager;
-use Nette\NotImplementedException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -131,7 +130,7 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	protected function getEntityName()
 	{
-		throw new NotImplementedException("Please set entity name in the inherited class.");
+		return static::getReflection()->getNamespaceName() . '\TextEntity';
 	}
 
 
