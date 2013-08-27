@@ -148,8 +148,14 @@ class LayoutsPresenter extends BasePresenter
 
 	public function handleCreate()
 	{
-		$this['table']['navbar']->{'handleClick'}('navbar-new');
+		if (!$this->isAjax()) {
+			$this['table-navbar']->redirect('click!', array('id' => 'navbar-new'));
+		}
+
 		$this->invalidateControl('content');
+		$this['table-navbar']->handleClick('navbar-new');
+
+		$this->payload->url = $this['table-navbar']->link('click!', array('id' => 'navbar-new'));
 	}
 
 
