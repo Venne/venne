@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Sitemap\PageEntity')
 		setup:
 			- addSection('Sitemap', @cms.pages.sitemap.pageFormFactory)
-		tags: [contentType: [name: 'website lists.sitemap']]
+		tags: [contentType: 'website lists.sitemap']
 
 	cms.pages.sitemap.pageFormFactory:
 		class: CmsModule\Pages\Sitemap\PageFormFactory

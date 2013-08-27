@@ -477,7 +477,7 @@ class ContentPresenter extends BasePresenter
 
 	/**
 	 * @return ExtendedPageEntity
-	 * @throws \Nette\Application\BadRequestException
+	 * @throws BadRequestException
 	 */
 	public function getPageEntity()
 	{

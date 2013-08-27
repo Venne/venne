@@ -187,13 +187,14 @@ class CmsExtension extends CompilerExtension
 		foreach ($container->findByTag('contentType') as $item => $tags) {
 			$arguments = $container->getDefinition($item)->factory->arguments;
 			$entityName = trim($arguments[0], '\\');
+			$name = is_array($tags) ? $tags['name'] : $tags;
 
 			$container->getDefinition($item)->factory->arguments = array(
-				0 => is_array($tags) ? $tags['name'] : $tags,
+				0 => $name,
 				1 => $arguments[0],
 			);
 
-			$manager->addSetup('$service->addContentType(?, ?, ?)', $entityName, $tags['name'], "@{$item}");
+			$manager->addSetup('$service->addContentType(?, ?, ?)', $entityName, $name, "@{$item}");
 		}
 	}
 

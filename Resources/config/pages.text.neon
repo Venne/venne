@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Text\PageEntity')
 		setup:
 			- addSection('Content', @cms.pages.text.textFormFactory)
-		tags: [contentType: [name: 'static page']]
+		tags: [contentType: 'static page']
 
 	cms.pages.text.textFormFactory:
 		class: CmsModule\Pages\Text\TextFormFactory
@@ -37,12 +37,12 @@ factories:
 	cms.pages.text.textareaElement.textFormFactory:
 		class: CmsModule\Pages\Text\TextElement\TextFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.pages.text.editorElement.textareaFormFactory:
 		class: CmsModule\Pages\Text\EditorElement\TextareaFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.pages.text.editorElement.editorFormFactory:
 		class: CmsModule\Pages\Text\EditorElement\EditorFormFactory

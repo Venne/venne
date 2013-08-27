@@ -56,16 +56,16 @@ abstract class Control extends \Venne\Application\UI\Control
 
 		foreach ($paths as $path) {
 			if ($this->variant) {
-				$ret[] = dirname($path) . '/' . $name . '.' . $this->variant . '.latte';
+				$ret[] = $path . '/' . $name . '.' . $this->variant . '.latte';
 			}
-			$ret[] = dirname($path) . '/' . $name . '.latte';
+			$ret[] = $path . '/' . $name . '.latte';
 		}
 
 		foreach ($paths as $path) {
 			if ($this->variant) {
-				$ret[] = $path . '/' . $name . '.' . $this->variant . '.latte';
+				$ret[] = dirname($path) . '/' . $name . '.' . $this->variant . '.latte';
 			}
-			$ret[] = $path . '/' . $name . '.latte';
+			$ret[] = dirname($path) . '/' . $name . '.latte';
 		}
 
 		return array_merge($ret, $list);

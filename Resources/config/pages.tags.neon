@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Tags\PageEntity')
 		setup:
 			- addSection('Settings', @cms.pages.tags.tagsFormFactory)
-		tags: [contentType: [name: 'website lists.site tags']]
+		tags: [contentType: 'website lists.site tags']
 
 	cms.pages.tags.tagsFormFactory:
 		class: CmsModule\Pages\Tags\TagsFormFactory

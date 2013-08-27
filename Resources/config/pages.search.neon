@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Search\PageEntity')
 		setup:
 			- addSection('Settings', @cms.pages.search.formFactory)
-		tags: [contentType: [name: 'search page']]
+		tags: [contentType: 'search page']
 
 	cms.pages.search.formFactory:
 		class: CmsModule\Pages\Search\FormFactory

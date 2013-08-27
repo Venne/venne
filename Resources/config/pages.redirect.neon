@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Redirect\PageEntity')
 		setup:
 			- addSection('Redirection', @cms.pages.redirect.redirectFormFactory)
-		tags: [contentType: [name: 'redirect']]
+		tags: [contentType: 'redirect']
 
 	cms.pages.redirect.redirectFormFactory:
 		class: CmsModule\Pages\Redirect\RedirectFormFactory

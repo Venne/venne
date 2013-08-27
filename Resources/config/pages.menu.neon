@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Menu\PageEntity')
 		setup:
 			- addSection('Content', @cms.pages.menu.menuFormFactory)
-		tags: [contentType: [name: 'website lists.list of subpages']]
+		tags: [contentType: 'website lists.list of subpages']
 
 	cms.pages.menu.menuFormFactory:
 		class: CmsModule\Pages\Menu\MenuFormFactory

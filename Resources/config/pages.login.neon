@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Login\PageEntity')
 		setup:
 			- addSection('Login page', @cms.pages.login.loginPageFormFactory)
-		tags: [contentType: [name: 'authentication.login page']]
+		tags: [contentType: 'authentication.login page']
 
 	cms.pages.login.loginPageFormFactory:
 		class: CmsModule\Pages\Login\LoginFormFactory

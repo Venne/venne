@@ -304,7 +304,7 @@ $(function () {
 	});
 	$.nette.init();
 
-	$('a[data-confirm], button[data-confirm], input[data-confirm]').live('click', function (e) {
+	$('a[data-confirm], button[data-confirm], input[data-confirm]').on('click', function (e) {
 		var el = $(this);
 		if (el.triggerAndReturn('confirm')) {
 			if (!confirm(el.attr('data-confirm'))) {
@@ -315,7 +315,7 @@ $(function () {
 		}
 	});
 
-	$('.table tr').live('click', function (event) {
+	$('.table tr').on('click', function (event) {
 		if (!$(event.target).closest('input[type=checkbox]').length > 0) {
 			var checkbox = $(this).find('input[type=checkbox]').each(function () {
 				if (this.checked) {

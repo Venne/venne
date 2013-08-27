@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Users\PageEntity')
 		setup:
 			- addSection('Settings', @cms.pages.users.userFormFactory)
-		tags: [contentType: [name: 'website lists.site users']]
+		tags: [contentType: 'website lists.site users']
 
 
 	cms.pages.users.userFormFactory:

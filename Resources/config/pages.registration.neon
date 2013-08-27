@@ -3,7 +3,7 @@ services:
 		class: CmsModule\Content\ContentType('CmsModule\Pages\Registration\PageEntity')
 		setup:
 			- addSection('Registration form', @cms.pages.registration.registrationFormFactory)
-		tags: [contentType: [name: 'authentication.registration']]
+		tags: [contentType: 'authentication.registration']
 
 	cms.pages.registration.registrationFormFactory:
 		class: CmsModule\Pages\Registration\RegistrationFormFactory
