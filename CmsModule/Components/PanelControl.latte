@@ -39,8 +39,13 @@
             <div class="btn-group pull-right">
 
 			{if $control->tab == 4}
-                <a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:create')" class="ajax btn"
-                   href="{plink :Cms:Admin:Templates:create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+				<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					<li><a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:create')" class="ajax"
+                   href="{plink :Cms:Admin:Templates:create}"><span class="icon icon-file"></span> {_'Create template'}</a></li>
+					<li><a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:overload')" class="ajax"
+						   href="{plink :Cms:Admin:Templates:overload}"><span class="icon icon-file"></span> {_'Overload template'}</a></li>
+				</ul>
 			{elseif $control->tab == 3}
 				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
 				   href="{plink :Cms:Admin:Layouts:default, do=>create}"><span class="icon icon-file"></span> {_'Create new'}</a>
