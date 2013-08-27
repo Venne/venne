@@ -76,13 +76,13 @@ class OverloadFormFactory extends FormFactory
 		$form->addGroup()->setOption('id', $form->name . '-component');
 		$form->addSelect('component', 'Component');
 
-		$form->addGroup();
+		$form->addGroup('Target');
 		$form->addSelect('target', 'Target module')
 			->setTranslator(NULL)
 			->setItems(array_keys($this->modules), FALSE)
 			->getControlPrototype()->onChange = 'this.form.submit();';
 
-		$form->addSelect('layout', 'Layout');
+		$form->addSelect('layout', 'Target layout');
 
 		$form->addSaveButton('Save');
 	}
