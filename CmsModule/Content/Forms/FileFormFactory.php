@@ -25,8 +25,13 @@ class FileFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addUpload('file', 'File')->getControlPrototype()->attrs['onChange'] = 'var data = $(this).val().split("\\\\"); data = data[data.length - 1]; $("input:eq(" + $("input").index(this) + 1 + ")").val(data);';
-		$form->addText('name', 'Name');
+		$form->addUpload('file', 'File')
+			->addCondition($form::FILLED);
+		$form['file']->getControlPrototype()->attrs['onChange'] = 'var data = $(this).val().split("\\\\"); data = data[data.length - 1]; $("input:eq(" + $("input").index(this) + 1 + ")").val(data);';
+
+		$form->addText('name', 'Name')
+			->addCondition($form::FILLED);
+
 		$form->addManyToOne('parent', 'Parent')
 			->setCriteria(array('invisible' => FALSE))
 			->setOrderBy(array('path' => 'ASC'));
@@ -41,9 +46,10 @@ class FileFormFactory extends FormFactory
 		if ($file->isOk()) {
 			$form->data->setFile($file);
 			$form->data->setName($file->name);
+			parent::handleSave($form);
+		} else {
+			$form->addError('File is too large');
 		}
-
-		parent::handleSave($form);
 	}
 
 
