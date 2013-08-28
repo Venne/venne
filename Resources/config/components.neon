@@ -129,6 +129,11 @@ services:
 		setup:
 			- injectFactory(@cms.admin.ajaxFormFactory)
 
+	cms.admin.publishFormFactory:
+		class: CmsModule\Administration\Forms\PublishFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 
 factories:
 

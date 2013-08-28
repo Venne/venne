@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Forms\PublishFormFactory;
 use CmsModule\Content\Components\ContentTableFactory;
 use CmsModule\Content\Components\RouteControl;
 use CmsModule\Content\ContentManager;
@@ -76,8 +77,11 @@ class ContentPresenter extends BasePresenter
 	/** @var AdminPermissionsFormFactory */
 	protected $adminPermissionsFormFactory;
 
+	/** @var PublishFormFactory */
+	protected $publishFormFactory;
 
-	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory, AdminPermissionsFormFactory $adminPermissionsFormFactory)
+
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory, AdminPermissionsFormFactory $adminPermissionsFormFactory, PublishFormFactory $publishFormFactory)
 	{
 		parent::__construct();
 
@@ -88,6 +92,7 @@ class ContentPresenter extends BasePresenter
 		$this->contentRouteControlFactory = $routeControlFactory;
 		$this->permissionsFormFactory = $permissionsFormFactory;
 		$this->adminPermissionsFormFactory = $adminPermissionsFormFactory;
+		$this->publishFormFactory = $publishFormFactory;
 	}
 
 
@@ -135,6 +140,17 @@ class ContentPresenter extends BasePresenter
 	{
 		if (!$this->isAllowedInBackend(ExtendedPageEntity::ADMIN_PRIVILEGE_SHOW)) {
 			throw new ForbiddenRequestException;
+		}
+
+		$page = $this->getPageEntity()->getPage();
+		if (!$page->getPublished() || !$page->getMainRoute()->getPublished()) {
+			$this->flashMessage('This page is not published!', 'warning', TRUE);
+		} else if ($page->getMainRoute()->getReleased() && $page->getMainRoute()->getReleased() > new \DateTime()) {
+			$this->flashMessage('Release date is already scheduled.', 'info', TRUE);
+		} else if ($page->getMainRoute()->getExpired() && $page->getMainRoute()->getExpired() > new \DateTime()) {
+			$this->flashMessage('Expire date is already scheduled.', 'info', TRUE);
+		} else if ($page->getMainRoute()->getExpired() && $page->getMainRoute()->getExpired() < new \DateTime()) {
+			$this->flashMessage('This page expired.', 'warning', TRUE);
 		}
 
 		if (!$this->section) {
@@ -489,6 +505,10 @@ class ContentPresenter extends BasePresenter
 			throw new BadRequestException;
 		}
 
+		if ($this->context->parameters['website']['defaultLanguage'] !== $this->languageEntity->alias) {
+			$entity->page->mainRoute->locale = $this->languageEntity;
+		}
+
 		return $entity;
 	}
 
@@ -496,10 +516,17 @@ class ContentPresenter extends BasePresenter
 	public function renderEdit()
 	{
 		$this->template->entity = $this->getPageEntity();
-		$this->template->entity->page->mainRoute->locale = $this->languageEntity;
 		$this->template->contentType = $this->contentManager->getContentType(get_class($this->template->entity));
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
 		$this->template->languageRepository = $this->languageRepository;
+	}
+
+
+	protected function createComponentPublishForm()
+	{
+		$form = $this->publishFormFactory->invoke($this->getPageEntity());
+		$form->onSuccess[] = $this->formEditSuccess;
+		return $form;
 	}
 }

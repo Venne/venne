@@ -24,6 +24,7 @@ block by key: blokovat klíčem
 cache strategy: cachovací strategie
 connection settings: nastavení připojení
 content: obsah
+content is in: obsah je v
 continue: pokračovat
 current: aktuální
 create: vytvořit
@@ -48,6 +49,7 @@ error pages: chybové stránky
 e-mails: e-maily
 environments settings: nastavení prostředí
 elements: elementy
+expire: vypršet
 file: soubor
 files: soubory
 files and attachements: soubory a přílohy
@@ -86,6 +88,7 @@ preview: náhled
 profile page: profilová stránka
 publish: publikovat
 really remove?: opravdu odstranit?
+release: vydat
 remove: odstranit
 role: role
 roles: role
@@ -107,6 +110,7 @@ show in table: zobrazit tabulku
 show page: zobrazit stránku
 show website: zobrazit web
 share data with: sdílet data s
+shared: sdílený
 sign in: přihlásit se
 site tags: tagy webu
 site users: stránka uživatelů

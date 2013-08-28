@@ -20,19 +20,55 @@
 
 	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_BASE)" {if 'basic' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">{_'Basic setup'}</a></li>
 
-	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)" class="pull-right"><a n:href="preview!" target="_blank"><span class="icon icon-eye-open icon-white"></span> {_preview}</a></li>
-
 	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)" class="dropdown pull-right">
-		{if $entity->page->published}
-			<a n:href="publish!"><span class="icon icon-arrow-down icon-white"></span> {_Hide}</a>
-		{else}
-			<a n:href="publish!"><span class="icon icon-globe icon-white"></span> {_Publish}</a>
-		{/if}
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="icon icon-globe icon-white"></span> {_publication} <b class="caret"></b></a>
+		<div class="dropdown-menu pull-right" style="padding: 17px;">
+			{form publishForm}
+				<div id="frmform-password-pair" class="control-group required">
+					<label class="required control-label" for="frmform-password">{label page-mainRoute-released /}</label>
+					<div class="controls">
+						{input page-mainRoute-released placeholder => 'Just now'}
+					</div>
+				</div>
+
+				<div id="frmform-password-pair" class="control-group required">
+					<label class="required control-label" for="frmform-password">{label page-mainRoute-expired /}</label>
+					<div class="controls">
+						{input page-mainRoute-expired placeholder => 'Never'}
+					</div>
+				</div>
+
+				<div id="frmform-password-pair" class="control-group required">
+					<label class="required control-label" for="frmform-password">{label page-mainRoute-published /}</label>
+					<div class="controls">
+						{input page-mainRoute-published}
+					</div>
+				</div>
+
+				<div id="frmform-password-pair" class="control-group required">
+					<div class="controls">
+						{input _submit class=> 'btn btn-primary'}
+					</div>
+				</div>
+			{/form}
+		</div>
 	</li>
 
-	{if !$entity->page->language}
-	<li class="dropdown pull-right">
-		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{$presenter->languageEntity} <b class="caret"></b></a>
+	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PREVIEW)" class="pull-right" data-toggle="tooltip" title="{_'Preview'}"><a n:href="preview!" target="_blank" title="{_preview}"><span class="icon icon-eye-open icon-white"></span></a></li>
+
+	<li style="margin-right: 8px;" n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PERMISSIONS)" class="dropdown pull-right" data-toggle="tooltip" title="{_'Advanced'}">
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="icon icon-wrench icon-white"></span> <b class="caret"></b></a>
+		<ul class="dropdown-menu pull-right">
+			<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_ROUTES)" class="{if 'routes' == $section} active{/if}"><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}"><span class="icon icon-road"></span> {_'Routes'}</a></li>
+			<li class="nav-header">{_Permissions}</li>
+			<li><a class="ajax" href="{$presenter->link('this', array('section'=>'permissions') + $nullLinkParams)}"><span class="icon icon-lock"></span> {_'Frontend permissions'}</a></li>
+			<li><a class="ajax" href="{$presenter->link('this', array('section'=>'admin_permissions') + $nullLinkParams)}"><span class="icon icon-lock"></span> {_'Backend permissions'}</a></li>
+		</ul>
+	</li>
+
+	{if !$entity->page->language && count($presenter->context->parameters['website']['languages'])}
+	<li style="margin-right: 8px;" class="dropdown pull-right">
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="icon icon-flag icon-white"></span> {$presenter->languageEntity} <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
 			{foreach $languageRepository->findAll() as $language}
 				<li><a class="ajax" href="{link this contentLang=>($language->alias !== $languageRepository->findOneBy(array('short' => $presenter->context->parameters['website']['defaultLanguage']))->alias ? $language->alias : NULL)}">{$language}</a></li>
@@ -40,16 +76,6 @@
 		</ul>
 	</li>
 	{/if}
-
-	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_ROUTES)" class="pull-right{if 'routes' == $section} active{/if}"><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}">{_'Routes'}</a></li>
-
-	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PERMISSIONS)" class="dropdown pull-right">
-		<a class="dropdown-toggle" data-toggle="dropdown" href="#">{_'Permissions'} <b class="caret"></b></a>
-		<ul class="dropdown-menu pull-right">
-			<li><a class="ajax" href="{$presenter->link('this', array('section'=>'permissions') + $nullLinkParams)}">{_'Frontend'}</a></li>
-			<li><a class="ajax" href="{$presenter->link('this', array('section'=>'admin_permissions') + $nullLinkParams)}">{_'Backend'}</a></li>
-		</ul>
-	</li>
 
 {/block}
 

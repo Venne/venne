@@ -135,8 +135,8 @@ class BasicFormFactory extends FormFactory
 			// languages
 			/** @var $repository \DoctrineModule\Repositories\BaseRepository */
 			$repository = $form->mapper->entityManager->getRepository('CmsModule\Content\Entities\LanguageEntity');
-			if ($repository->createQueryBuilder('a')->select('COUNT(a)')->getQuery()->getSingleScalarResult() > 1) {
-				$form->addGroup("Languages");
+			if ($repository->createQueryBuilder('a')->select('COUNT(a.id)')->getQuery()->getSingleScalarResult() > 1) {
+				$page->setCurrentGroup($form->addGroup('Languages'));
 				$page->addManyToOne("language", "Content is in")
 					->setPrompt('shared');
 			}

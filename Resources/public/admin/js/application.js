@@ -74,6 +74,30 @@ $(function () {
 			}
 		}
 	});
+	$.nette.ext('tooltipBind', {
+		init:function () {
+			this.init($('body'));
+		},
+		success:function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			var _this = this;
+			for (var i in payload.snippets) {
+				$('#' + i).each(function () {
+					_this.init($(this));
+				});
+			}
+		}
+	}, {
+		init: function(target) {
+			target.find(this.selector).each(function(){
+				$(this).tooltip();
+			});
+		},
+		selector: "[data-toggle='tooltip']"
+	});
 	$.nette.ext('formsMultiSelectBind', {
 		init: function(){
 			this.init($('body'));
