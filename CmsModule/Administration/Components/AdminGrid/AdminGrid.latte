@@ -71,7 +71,7 @@
 							input.parent().hide();
 						}
 						{if $control['navbarForm']->isSubmitted() === $control['navbarForm']->getSaveButton() && !$control['navbarForm']->getErrors()}
-						$('#modal-{!$control->getName()}').modal('hide').remove();
+						$('#modal-{!$control->getName()}').modal('hide');
 						{/if}
 					});
 				</script>
@@ -133,7 +133,7 @@
 							input.parent().hide();
 						}
 						{if $control['actionForm']->isSubmitted() === $control['actionForm']->getSaveButton() && !$control['actionForm']->getErrors()}
-						$('#modal-{!$control->getName()}').modal('hide').remove();
+						$('#modal-{!$control->getName()}').modal('hide');
 						{/if}
 					});
 				</script>

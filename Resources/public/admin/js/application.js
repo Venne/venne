@@ -45,11 +45,6 @@ $(function () {
 		}
 	});
 
-
-	// Jquery plugins
-	$('select[data-venne-form-textwithselect]').textWithSelect();
-
-
 	// Ajax
 	$.nette.ext('data-ajax-confirm', {
 		before: function (xhr, settings) {
@@ -204,19 +199,6 @@ $(function () {
 		},
 		selector: 'input[type=date], input[type=datetime]'
 	});
-	$.nette.ext('formsTextWithSelectInputBind', {
-		success:function (payload) {
-			if (!payload.snippets) {
-				return;
-			}
-
-			for (var i in payload.snippets) {
-				$('#' + i + ' select[data-venne-form-textwithselect]').each(function () {
-					$(this).textWithSelect();
-				});
-			}
-		}
-	});
 	$.nette.ext('gridBind', {
 		success:function (payload) {
 			if (!payload.snippets) {
@@ -325,6 +307,25 @@ $(function () {
 		resize:function () {
 			$(".modal.modal-full .modal-body").css("max-height", $(window).height() - 120);
 		}
+	});
+	$.nette.ext('textWithSelectBind', {
+		init:function () {
+			this.init($('body'));
+		},
+		success:function (payload) {
+			if (!payload.snippets) {
+				return;
+			}
+
+			this.init($('body'));
+		}
+	}, {
+		init: function(target) {
+			target.find(this.selector).each(function(){
+				$(this).textWithSelect();
+			});
+		},
+		selector: "select[data-venne-form-textwithselect]"
 	});
 	$.nette.init();
 
