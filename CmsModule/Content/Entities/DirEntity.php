@@ -18,7 +18,9 @@ use Nette\Utils\Strings;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\DirRepository")
- * @ORM\Table(name="directory")
+ * @ORM\Table(name="directory", uniqueConstraints={@ORM\UniqueConstraint(
+ *    name="path_idx", columns={"path"}
+ * )})
  * @ORM\HasLifecycleCallbacks
  */
 class DirEntity extends BaseFileEntity

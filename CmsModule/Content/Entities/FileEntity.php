@@ -20,7 +20,9 @@ use Nette\Utils\Strings;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\FileRepository")
- * @ORM\Table(name="file")
+ * @ORM\Table(name="file", uniqueConstraints={@ORM\UniqueConstraint(
+ *    name="path_idx", columns={"path"}
+ * )})
  * @ORM\HasLifecycleCallbacks
  */
 class FileEntity extends BaseFileEntity
@@ -136,7 +138,7 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @param \Nette\Http\FileUpload|\SplFileInfo $file
+	 * @param FileUpload|\SplFileInfo $file
 	 */
 	public function setFile($file)
 	{
@@ -158,7 +160,7 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @return \Nette\Http\FileUpload|\SplFileInfo
+	 * @return FileUpload|\SplFileInfo
 	 */
 	public function getFile()
 	{
