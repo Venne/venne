@@ -213,6 +213,7 @@ class FilesPresenter extends BasePresenter
 		$dirRepository = $this->dirRepository;
 
 		$table = new TableControl;
+		$table->setDefaultPerPage(99999999999);
 		$table->setTemplateConfigurator($this->templateConfigurator);
 
 		// forms
