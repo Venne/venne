@@ -14,12 +14,15 @@ namespace CmsModule\Content\Entities;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\UnitOfWork;
+use DoctrineModule\Entities\IdentifiedEntity;
+use Nette\InvalidArgumentException;
 use Nette\Security\User;
 use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="page", indexes={
  * @ORM\Index(name="special_idx", columns={"special"}),
  * @ORM\Index(name="class_idx", columns={"class"}),
@@ -30,10 +33,39 @@ use Nette\Utils\Strings;
  * @property string $special
  * @property bool $secured
  */
-class PageEntity extends TreeEntity implements IloggableEntity
+class PageEntity extends IdentifiedEntity implements IloggableEntity
 {
 
 	const CACHE = 'Cms.PageEntity';
+
+	/**
+	 * @var PageEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="children")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
+	 */
+	protected $parent;
+
+	/**
+	 * @var PageEntity
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next", fetch="EAGER")  # ManyToOne is hack for prevent '1062 Duplicate entry update'
+	 */
+	protected $previous;
+
+	/**
+	 * @var PageEntity
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="previous", fetch="EAGER")
+	 */
+	protected $next;
+
+	/** @ORM\Column(type="integer") */
+	protected $position = 1;
+
+	/**
+	 * @var PageEntity[]
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageEntity", mappedBy="parent", cascade={"persist", "remove", "detach"}, fetch="EXTRA_LAZY")
+	 * @ORM\OrderBy({"position" = "ASC"})
+	 */
+	protected $children;
 
 	/**
 	 * @var ArrayCollection|RouteEntity[]
@@ -140,6 +172,7 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	{
 		parent::__construct();
 
+		$this->children = new ArrayCollection;
 		$this->routes = new ArrayCollection;
 		$this->permissions = new ArrayCollection;
 		$this->adminPermissions = new ArrayCollection;
@@ -163,6 +196,106 @@ class PageEntity extends TreeEntity implements IloggableEntity
 
 
 	/**
+	 * @ORM\PostRemove()
+	 */
+	public function onPostRemove()
+	{
+		$this->removeFromPosition();
+	}
+
+
+	/**
+	 * @return PageEntity
+	 */
+	public function getParent()
+	{
+		return $this->parent;
+	}
+
+
+	/**
+	 * @param $children
+	 */
+	public function setChildren($children)
+	{
+		$this->children = $children;
+	}
+
+
+	/**
+	 * @return ArrayCollection|PageEntity[]
+	 */
+	public function getChildren()
+	{
+		return $this->children;
+	}
+
+
+	/**
+	 * @return PageEntity
+	 */
+	public function getPrevious()
+	{
+		return $this->previous;
+	}
+
+
+	public function setNext(PageEntity $next = NULL, $recursively = TRUE)
+	{
+		if ($next === $this) {
+			throw new InvalidArgumentException("Next page is the same as current page.");
+		}
+
+		$this->next = $next;
+
+		if ($recursively && $next) {
+			$next->setPrevious($this, FALSE);
+		}
+	}
+
+
+	public function setPrevious(PageEntity $previous = NULL, $recursively = TRUE)
+	{
+		if ($previous === $this) {
+			throw new InvalidArgumentException("Previous page is the same as current page.");
+		}
+
+		$this->previous = $previous;
+
+		if ($recursively && $previous) {
+			$previous->setNext($this, FALSE);
+		}
+	}
+
+
+	/**
+	 * @return PageEntity
+	 */
+	public function getNext()
+	{
+		return $this->next;
+	}
+
+
+	public function generatePosition($recursively = TRUE)
+	{
+		$position = $this->getPrevious() ? $this->getPrevious()->position + 1 : 1;
+
+		$this->position = $position;
+
+		if ($recursively && $this->getNext()) {
+			$this->getNext()->generatePosition();
+		}
+	}
+
+
+	public function getPosition()
+	{
+		return $this->position;
+	}
+
+
+	/**
 	 * Set this page as root.
 	 */
 	public function setAsRoot()
@@ -178,37 +311,63 @@ class PageEntity extends TreeEntity implements IloggableEntity
 
 
 	/**
-	 * @param $parent
+	 * @param PageEntity $parent
+	 * @param null $setPrevious
+	 * @param PageEntity $previous
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
 	{
-		parent::setParent($parent, $setPrevious, $previous);
-
-		$this->mainRoute->parent = $this->parent && $this->parent->mainRoute ? $this->parent->mainRoute : NULL;
-		$this->generateUrl();
-	}
-
-
-	/**
-	 * @param $parent
-	 */
-	public function setVirtualParent(PageEntity $parent = NULL)
-	{
-		parent::setVirtualParent($parent);
-
-		$this->mainRoute->parent = $this->virtualParent && $this->virtualParent->mainRoute ? $this->virtualParent->mainRoute : NULL;
-		$this->generateUrl();
-	}
-
-
-	/**
-	 * Generate URL.
-	 */
-	protected function generateUrl($recursively = TRUE)
-	{
-		foreach ($this->routes as $route) {
-			$route->generateUrl($recursively);
+		if ($parent == $this->getParent() && !$setPrevious) {
+			return;
 		}
+
+		if (!$parent && !$this->getNext() && !$this->getPrevious() && !$this->getParent() && !$setPrevious) {
+			return;
+		}
+
+		if ($setPrevious && $previous === $this) {
+			throw new InvalidArgumentException("Previous page is the same as current page.");
+		}
+
+		$oldParent = $this->getParent();
+		$oldPrevious = $this->getPrevious();
+		$oldNext = $this->getNext();
+
+		$this->removeFromPosition();
+
+		if ($parent) {
+			$this->parent = $parent;
+
+			if ($setPrevious) {
+				if ($previous) {
+					$this->setNext($previous->next);
+					$this->setPrevious($previous);
+				} else {
+					$this->setNext($parent->getChildren()->first() ? : NULL);
+				}
+			} else {
+				$this->setPrevious($parent->getChildren()->last() ? : NULL);
+			}
+
+			$parent->children[] = $this;
+		} else {
+			if ($setPrevious) {
+				if ($previous) {
+					$this->setNext($previous->next);
+					$this->setPrevious($previous);
+				} else {
+					$this->setNext($this->getRoot($oldNext ? : ($oldParent ? : ($oldPrevious))));
+				}
+			} else {
+				$this->parent = NULL;
+				$this->previous = NULL;
+				$this->next = NULL;
+			}
+		}
+
+		$this->getMainRoute()->parent = $this->getParent() && $this->getParent()->getMainRoute() ? $this->getParent()->getMainRoute() : NULL;
+		$this->generatePosition();
+		$this->generateUrl();
 	}
 
 
@@ -240,24 +399,6 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	public function getDir()
 	{
 		return $this->dir;
-	}
-
-
-	/**
-	 * @param $children
-	 */
-	public function setChildren($children)
-	{
-		$this->children = $children;
-	}
-
-
-	/**
-	 * @return ArrayCollection|PageEntity[]
-	 */
-	public function getChildren()
-	{
-		return $this->children;
 	}
 
 
@@ -312,24 +453,6 @@ class PageEntity extends TreeEntity implements IloggableEntity
 	public function getUpdated()
 	{
 		return $this->updated;
-	}
-
-
-	/**
-	 * @return DateTime
-	 */
-	public function getExpired()
-	{
-		return $this->expired;
-	}
-
-
-	/**
-	 * @param $expired
-	 */
-	public function setExpired($expired)
-	{
-		$this->expired = $expired;
 	}
 
 
@@ -580,6 +703,81 @@ class PageEntity extends TreeEntity implements IloggableEntity
 			} else {
 				$logEntity->setMessage('Page has been unpublished');
 			}
+		}
+	}
+
+
+	/**
+	 * @param PageEntity $entity
+	 * @return PageEntity
+	 */
+	public function getRoot(PageEntity $entity = NULL)
+	{
+		$entity = $entity ? : $this;
+
+		while ($entity->getParent()) {
+			$entity = $entity->parent;
+		}
+
+		while ($entity->getPrevious()) {
+			$entity = $entity->previous;
+		}
+
+		return $entity;
+	}
+
+
+	public function removeFromPosition()
+	{
+		if (!$this->getPrevious() && !$this->getNext() && !$this->getParent()) {
+			return;
+		}
+
+		if ($this->getParent()) {
+			foreach ($this->getParent()->getChildren() as $key => $item) {
+				if ($item->id === $this->id) {
+					$this->getParent()->children->remove($key);
+					break;
+				}
+			}
+		}
+
+		if ($this->getMainRoute()->getParent()) {
+			foreach ($this->mainRoute->parent->getChildren() as $key => $route) {
+				if ($route->id === $this->mainRoute->id) {
+					$this->mainRoute->parent->getChildren()->remove($key);
+				}
+			}
+		}
+
+		$next = $this->getNext();
+		$previous = $this->getPrevious();
+
+		if ($next) {
+			$next->setPrevious($previous, FALSE);
+		}
+
+		if ($previous) {
+			$previous->setNext($next, FALSE);
+		}
+
+		if ($next) {
+			$next->generatePosition();
+		}
+
+		$this->setPrevious(NULL);
+		$this->parent = NULL;
+		$this->setNext(NULL);
+	}
+
+
+	/**
+	 * Generate URL.
+	 */
+	private function generateUrl($recursively = TRUE)
+	{
+		foreach ($this->routes as $route) {
+			$route->generateUrl($recursively);
 		}
 	}
 }
