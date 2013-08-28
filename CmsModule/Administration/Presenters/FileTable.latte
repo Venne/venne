@@ -12,7 +12,7 @@
 					{var $type = 'text-plain'}
 				{/if}
 				{var $ext = substr($item->getName(), strrpos($item->getName(), '.') + 1)}
-				<a class="noAjax" href="{if $type=='folder'}{=$control->presenter->link('changeDir!', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
+				<a href="{if $type=='folder'}{=$control->presenter->link('changeDir!', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
 					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
 						<img n:src="$item->getPath(), size=>'64x64', format=>8" alt="" />
 					{else}

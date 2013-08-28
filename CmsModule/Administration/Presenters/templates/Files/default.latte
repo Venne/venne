@@ -104,8 +104,11 @@
 			$(this).addClass('ui-selected');
 		});
 
-		$("#sortable li.d").dblclick(function () {
-			$.nette.ajax({ url:$(this).find("a").attr("href") });
+		$("#sortable li.d").dblclick(function (event) {
+			$.nette.ajax({
+				url:$(this).find("a").attr("href"),
+				off: ['history']
+			});
 		});
 
 		$("#sortable li").trigger({
