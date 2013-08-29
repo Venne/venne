@@ -63,7 +63,8 @@
 				<div class="modal-close"></div>
 				{/if}
 
-				<script>
+				<script type="text/javascript">
+					// <![CDATA[
 					$(function () {
 						var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
 						input.hide();
@@ -74,6 +75,7 @@
 						$('#modal-{!$control->getName()}').modal('hide');
 						{/if}
 					});
+					// ]]>
 				</script>
 			</div>
 			<div class="modal-footer">
@@ -81,7 +83,7 @@
 				<button type="button" class="btn btn-primary">Uložit</button>
 			</div>
 		</div>
-		<script>
+		<script type="text/javascript">
 			// <![CDATA[
 			$(function () {
 				$('#modal-{!$control->getName()}').modal('show').on('hidden', function () {
@@ -125,7 +127,8 @@
 					<div class="modal-close"></div>
 				{/if}
 
-				<script>
+				<script type="text/javascript">
+					// <![CDATA[
 					$(function () {
 						var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
 						input.hide();
@@ -136,6 +139,7 @@
 						$('#modal-{!$control->getName()}').modal('hide');
 						{/if}
 					});
+					// ]]>
 				</script>
 			</div>
 			<div class="modal-footer">
@@ -143,7 +147,7 @@
 				<button type="button" class="btn btn-primary">Uložit</button>
 			</div>
 		</div>
-		<script>
+		<script type="text/javascript">
 			// <![CDATA[
 			$(function () {
 				$('#modal-{!$control->getName()}').modal('show').on('hidden', function () {

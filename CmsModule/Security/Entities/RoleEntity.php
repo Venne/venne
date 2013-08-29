@@ -50,7 +50,7 @@ class RoleEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	public function __toString()
 	{
-		return $this->name;
+		return (string)$this->name;
 	}
 
 
