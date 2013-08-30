@@ -80,7 +80,7 @@ class LoginFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$_this = $this;
-		$form->addText('username', 'Login')->setRequired('Please provide a username.');
+		$form->addText('username', 'E-mail')->setRequired('Please provide a e-mail.');
 		$form->addPassword('password', 'Password')->setRequired('Please provide a password.');
 		$form->addCheckbox('remember', 'Remember me on this computer');
 		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
