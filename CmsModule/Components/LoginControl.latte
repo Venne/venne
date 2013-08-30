@@ -5,7 +5,7 @@
 				<span class="icon-user"></span> {if $presenter->user->identity instanceof \CmsModule\Pages\Users\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b>
 			</a>
 			<ul class="dropdown-menu">
-				<li class="nav-header">Actions</li>
+				<li class="nav-header">{_Actions}</li>
 				<li n:ifPlinkExists="Route special=>'profile'"><a n:link><i class="icon-user"></i> {_'User card'}</a></li>
 				<li><a n:href="logout"><i class="icon-off"></i> {_'Log out'}</a></li>
 			</ul>
