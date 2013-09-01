@@ -133,7 +133,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 			$this->parent->__load();
 		}
 
-		$this->path = ($this->parent ? $this->parent->path . '/' : '') . Strings::webalize($this->name, '.');
+		$this->path = ($this->parent ? $this->parent->path . '/' : '') . Strings::webalize($this->name, '.', FALSE);
 
 		if ($this->path == $old) {
 			return;

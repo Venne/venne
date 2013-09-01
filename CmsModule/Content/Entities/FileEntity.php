@@ -57,7 +57,7 @@ class FileEntity extends BaseFileEntity
 			if ($this->file instanceof FileUpload) {
 				$this->setName($this->file->getSanitizedName());
 			} else {
-				$this->setName(Strings::webalize($this->file->getBasename(), '.'));
+				$this->setName(trim(Strings::webalize($this->file->getBasename(), '.', FALSE), '.-'));
 			}
 
 			$this->generatePath();
