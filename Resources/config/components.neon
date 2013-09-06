@@ -134,6 +134,11 @@ services:
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
+	cms.admin.cacheFormFactory:
+		class: CmsModule\Forms\CacheFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 
 factories:
 

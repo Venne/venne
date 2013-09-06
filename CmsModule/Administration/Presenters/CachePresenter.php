@@ -11,8 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer;
-use Nette\Application\ForbiddenRequestException;
+use CmsModule\Forms\CacheFormFactory;
 use Nette\InvalidArgumentException;
 use Venne\Caching\CacheManager;
 use Venne\Forms\Form;
@@ -28,8 +27,8 @@ class CachePresenter extends BasePresenter
 	/** @var CacheManager */
 	protected $cacheManager;
 
-	/** @var BootstrapRenderer */
-	protected $renderer;
+	/** @var CacheFormFactory */
+	protected $cacheFormFactory;
 
 
 	public function injectCacheManager(CacheManager $cacheManager)
@@ -38,9 +37,12 @@ class CachePresenter extends BasePresenter
 	}
 
 
-	public function injectRenderer(BootstrapRenderer $renderer)
+	/**
+	 * @param CacheFormFactory $cacheFormFactory
+	 */
+	public function injectCacheFormFactory(CacheFormFactory $cacheFormFactory)
 	{
-		$this->renderer = $renderer;
+		$this->cacheFormFactory = $cacheFormFactory;
 	}
 
 
@@ -57,41 +59,6 @@ class CachePresenter extends BasePresenter
 	 */
 	public function actionEdit()
 	{
-	}
-
-
-	protected function createComponentForm()
-	{
-		$form = new Form;
-		$form->setRenderer($this->renderer);
-
-		$form->addGroup('Setup');
-		$form->addRadioList('section', 'Section', array('all' => 'All', 'namespace' => 'Namespace', 'sessions' => 'Sessions'))
-			->setDefaultValue('all')
-			->addCondition($form::EQUAL, 'namespace')->toggle('namespace');
-
-		$form->addGroup('Namespace')->setOption('id', 'namespace');
-		$form->addText('namespace');
-
-		$form->addGroup();
-		$form->addSaveButton('Clear');
-
-		$form->onSuccess[] = $this->processForm;
-
-		// permissions
-		if (!$this->isAuthorized('edit')) {
-			$form->onAttached[] = function (Form $form) {
-				if ($form->isSubmitted()) {
-					throw new ForbiddenRequestException;
-				}
-			};
-
-			foreach ($form->getComponents(TRUE) as $component) {
-				$component->setDisabled(TRUE);
-			}
-		}
-
-		return $form;
 	}
 
 
@@ -119,5 +86,13 @@ class CachePresenter extends BasePresenter
 		if (!$this->isAjax()) {
 			$this->redirect('this');
 		}
+	}
+
+
+	protected function createComponentForm()
+	{
+		$form = $this->cacheFormFactory->invoke();
+		$form->onSuccess[] = $this->processForm;
+		return $form;
 	}
 }
