@@ -29,6 +29,9 @@ abstract class AdminPresenter extends BasePresenter
 	/** @var bool */
 	protected $__installation;
 
+	/** @var string */
+	private $_layoutFileCache;
+
 
 	protected function startup()
 	{
@@ -95,8 +98,7 @@ abstract class AdminPresenter extends BasePresenter
 
 		parent::startup();
 
-		if ($this->getParameter('mode') == self::MODE_EDIT) {
-
+		if ($this->isPanelOpened()) {
 			$this->invalidateControl('panel');
 		}
 
@@ -126,13 +128,48 @@ abstract class AdminPresenter extends BasePresenter
 
 
 	/**
+	 * Finds layout template file name.
+	 * @return string
+	 */
+	public function findLayoutTemplateFile()
+	{
+		if (!$this->_layoutFileCache) {
+			$this->_layoutFileCache = parent::findLayoutTemplateFile();
+		}
+
+		return $this->_layoutFileCache;
+	}
+
+
+	/**
 	 * Formats layout template file names.
-	 *
 	 * @return array
 	 */
 	public function formatLayoutTemplateFiles()
 	{
-		return array($this->getContext()->parameters['modules']['cms']['path'] . '/Resources/layouts/administration.latte');
+		$parameters = $this->getContext()->parameters;
+		$module = isset($parameters['administration']['theme']) ? $parameters['administration']['theme'] : 'cms';
+
+		return array(
+			$this->getContext()->parameters['modules'][$module]['path'] . '/Resources/administration/@layout.latte',
+		);
+	}
+
+
+	/**
+	 * Formats view template file names.
+	 * @return array
+	 */
+	public function formatTemplateFiles()
+	{
+		$name = $this->getName();
+		$presenter = substr($name, strrpos(':' . $name, ':'));
+		$themeDir = dirname($this->findLayoutTemplateFile());
+
+		return array_merge(array(
+			"$themeDir/$presenter/$this->view.latte",
+			"$themeDir/$presenter.$this->view.latte",
+		), parent::formatTemplateFiles());
 	}
 
 
