@@ -80,6 +80,9 @@ class ContentPresenter extends BasePresenter
 	/** @var PublishFormFactory */
 	protected $publishFormFactory;
 
+	/** @var ExtendedPageEntity */
+	private $_pageEntity;
+
 
 	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory, AdminPermissionsFormFactory $adminPermissionsFormFactory, PublishFormFactory $publishFormFactory)
 	{
@@ -142,7 +145,8 @@ class ContentPresenter extends BasePresenter
 			throw new ForbiddenRequestException;
 		}
 
-		$page = $this->getPageEntity()->getPage();
+		$entity = $this->getPageEntity();
+		$page = $entity->getPage();
 		if (!$page->getPublished() || !$page->getMainRoute()->getPublished()) {
 			$this->flashMessage('This page is not published!', 'warning', TRUE);
 		} else if ($page->getMainRoute()->getReleased() && $page->getMainRoute()->getReleased() > new \DateTime()) {
@@ -153,9 +157,9 @@ class ContentPresenter extends BasePresenter
 			$this->flashMessage('This page expired.', 'warning', TRUE);
 		}
 
-		if (!$this->section) {
-			$entity = $this->getPageEntity();
-			$sections = $this->contentManager->getContentType(get_class($entity))->getSections();
+		$contentType = $this->getContentType();
+		if (!$this->section || (!in_array($this->section, array('basic', 'routes', 'permissions', 'admin_permissions')) && !$contentType->hasSection($this->section))) {
+			$sections = $contentType->getSections();
 
 			if (count($sections)) {
 				$this->section = reset($sections)->name;
@@ -445,7 +449,7 @@ class ContentPresenter extends BasePresenter
 	protected function createComponentFormEdit()
 	{
 		$entity = $this->getPageEntity();
-		$contentType = $this->contentManager->getContentType(get_class($entity));
+		$contentType = $this->getContentType();
 
 		if ($this->section == 'basic') {
 			$form = $this->contentFormFactory->invoke($entity);
@@ -497,26 +501,38 @@ class ContentPresenter extends BasePresenter
 	 */
 	public function getPageEntity()
 	{
-		if (!$entity = $this->pageRepository->find($this->key)) {
-			throw new BadRequestException;
+		if (!$this->_pageEntity) {
+			if (!$this->_pageEntity = $this->pageRepository->find($this->key)) {
+				throw new BadRequestException;
+			}
+
+			if (!$this->_pageEntity = $this->context->entityManager->getRepository($this->_pageEntity->class)->findOneBy(array('page' => $this->_pageEntity->id))) {
+				throw new BadRequestException;
+			}
+
+			if ($this->context->parameters['website']['defaultLanguage'] !== $this->languageEntity->alias) {
+				$this->_pageEntity->page->mainRoute->locale = $this->languageEntity;
+			}
 		}
 
-		if (!$entity = $this->context->entityManager->getRepository($entity->class)->findOneBy(array('page' => $entity->id))) {
-			throw new BadRequestException;
-		}
+		return $this->_pageEntity;
+	}
 
-		if ($this->context->parameters['website']['defaultLanguage'] !== $this->languageEntity->alias) {
-			$entity->page->mainRoute->locale = $this->languageEntity;
-		}
 
-		return $entity;
+	/**
+	 * @return \CmsModule\Content\IContentType
+	 */
+	private function getContentType()
+	{
+		$entityClass = $this->entityManager->getClassMetadata(get_class($this->getPageEntity()))->getName();
+		return $this->contentManager->getContentType($entityClass);
 	}
 
 
 	public function renderEdit()
 	{
 		$this->template->entity = $this->getPageEntity();
-		$this->template->contentType = $this->contentManager->getContentType(get_class($this->template->entity));
+		$this->template->contentType = $this->getContentType();
 		$sections = $this->template->contentType->getSections();
 		$this->template->section = $this->section ? : reset($sections)->name;
 		$this->template->languageRepository = $this->languageRepository;
