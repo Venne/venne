@@ -119,13 +119,12 @@
 						<ul class="nav navbar-nav navbar-right">
 
 							{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
-								<li>
-									{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
-										<a href="{$basePath}/?do=openPanel"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'In-Site administration'}</a>
-									{else}
-										<a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':', array('mode'=>NULL))}"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Full administration'}</a>
-									{/if}
-								</li>
+								{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
+									<li><a href="{$basePath}/?do=openPanel"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'In-Site administration'}</a></li>
+									<li><a href="{$basePath}/"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Frontend'}</a></li>
+								{else}
+									<li><a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':', array('mode'=>NULL))}"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Full administration'}</a></li>
+								{/if}
 							{/if}
 
 							{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
