@@ -11,20 +11,20 @@
 	],
 	"require": {
 		"php": ">=5.3.2",
-		"venne/doctrine-module": "2.1.x-dev",
-		"venne/assets-module": "2.1.x-dev",
-		"venne/translator-module": "2.1.x-dev",
+		"venne/doctrine-module": "2.1.*",
+		"venne/assets-module": "2.1.*",
+		"venne/translator-module": "2.1.*",
 		"venne/bootstrap3-module": "*",
-		"venne/bootstrapmodal-module": "2.1.x-dev",
+		"venne/bootstrapmodal-module": "2.1.*",
 		"venne/jquery2.0-module": "*",
 		"venne/jqueryui1.10-module": "*",
-		"venne/select2-module": "3.4.x-dev",
-		"venne/typeahead-module": "0.9.x-dev",
-		"venne/dynatree-module": "1.2.x-dev",
-		"venne/stringtoslug-module": "1.2.x-dev",
-		"venne/holder-module": "2.0.x-dev",
-		"venne/bootstrapdatetime-module": "0.0.x-dev",
-		"venne/grido-module": "2.0.x-dev",
+		"venne/select2-module": "3.4.*",
+		"venne/typeahead-module": "0.9.*",
+		"venne/dynatree-module": "1.2.*",
+		"venne/stringtoslug-module": "1.2.*",
+		"venne/holder-module": "2.0.*",
+		"venne/bootstrapdatetime-module": "0.0.*",
+		"venne/grido-module": "2.0.*",
 		"kdyby/bootstrap-form-renderer": "v2.0.0"
 	},
 	"require-dev": {
@@ -48,7 +48,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "2.1.x-dev"
+			"dev-master": "2.1-dev"
 		},
 		"venne": {
 			"configuration": {
@@ -84,6 +84,5 @@
 				}
 			}
 		}
-	},
-	"minimum-stability": "dev"
+	}
 }
