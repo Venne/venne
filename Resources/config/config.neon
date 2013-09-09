@@ -12,7 +12,7 @@ services:
 			- '$service->addDictionary(new TranslatorModule\Dictionary(?))'(%modules.cms.path%/Resources/translations)
 
 	cms.formRenderer:
-		class: Kdyby\Extension\Forms\BootstrapRenderer\BootstrapRenderer
+		class: CmsModule\Administration\Forms\Bootstrap3Renderer
 
 	cms.contentManager:
 		class: CmsModule\Content\ContentManager

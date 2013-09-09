@@ -7,22 +7,20 @@
 
 {block breadcrumb}
 	{include #parent}
-	<li class="active"><span class="divider">/</span> {include #header}</li>
+	<li class="active">{include #header}</li>
 {/block}
 
 {block content}
 
-<div n:if="$presenter->isAuthorized('deleteAll!')" class="navbar">
-	<div class="navbar-inner">
-		<div class="container">
-			<ul class="nav">
-			    <li>
-			    	<a class="ajax" href="{link deleteAll!}">
-			    		<span class="icon icon-remove"></span> Delete all
-			    	</a>
-			     </li>
-			</ul>
-		</div>
+<div n:if="$presenter->isAuthorized('deleteAll!')" class="navbar navbar-default">
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+		    <li>
+		    	<a class="ajax" href="{link deleteAll!}">
+		    		<span class="glyphicon glyphicon-remove"></span> Delete all
+		    	</a>
+		     </li>
+		</ul>
 	</div>
 </div>
 
@@ -43,10 +41,10 @@
 			<td>
 				{$info["date"]|date:'%d.%m.%Y'}
 			</td>
-			<td class="table-td-action">
-				<div class="btn-group pull-right">
-					<a n:if="$presenter->isAuthorized('show')" class="btn btn-small" target="_blank" href="{link show name=>$info["link"]}">{_'show'}</a>
-					<a n:if="$presenter->isAuthorized('delete!')" class="btn btn-small" n:confirm="really?" href="{link delete! name=>$info["link"]}">{_'delete'}</a>
+			<td class="actions">
+				<div class="btn-group">
+					<a n:if="$presenter->isAuthorized('show')" class="btn btn-default btn-xs" target="_blank" href="{link show name=>$info["link"]}">{_'show'}</a>
+					<a n:if="$presenter->isAuthorized('delete!')" class="btn btn-default btn-xs" n:confirm="really?" href="{link delete! name=>$info["link"]}">{_'delete'}</a>
 				</div>
 			</td>
 		</tr>

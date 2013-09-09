@@ -6,7 +6,7 @@
 	{cache [$route->id, $presenter->lang], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
 		<div class="media">
 
-			<a class="pull-left thumbnail" href="{plink Route route=>$route}">
+			<a class="pull-left img-thumbnail" href="{plink Route route=>$route}">
 				{if $route->photo}
 					<img class="media-object" n:src="$route->photo->getFileUrl(true), size=>$thumbnail"
 						 alt="{$route->name}"/>

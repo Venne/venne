@@ -129,7 +129,7 @@ class Button extends \Nette\ComponentModel\Component
 	public function getControl($id)
 	{
 		$control = clone $this->control;
-		$control->class[] = 'ajax btn btn-small';
+		$control->class[] = 'ajax btn btn-default btn-sm';
 		$control->disabled = $this->disabled;
 
 		if ($this->getOption('data-confirm')) {

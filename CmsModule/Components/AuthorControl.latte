@@ -2,7 +2,7 @@
 {if $route->author}
 	<div class="media">
 		{if $route->author->photo}
-			<img class="pull-left media-object thumbnail" n:src="$route->author->photo->getFileUrl(true), size=>'64x'" alt="{$route->author}" />
+			<img class="pull-left media-object img-thumbnail" n:src="$route->author->photo->getFileUrl(true), size=>'64x'" alt="{$route->author}" />
 		{/if}
 		<div class="media-body">
 			<h4 class="media-heading"><a href="{plink this special=>'users', id=>$route->author}">{$route->author}</a></h4>

@@ -136,7 +136,7 @@ class AccountPresenter extends BasePresenter
 		$table->addColumnDate('current', 'Current')
 			->setCustomRender(function (LoginEntity $entity) use ($session) {
 				$el = Html::el('span');
-				$el->class[] = 'icon ' . ($session->id == $entity->getSessionId() ? 'icon-ok' : 'icon-remove');
+				$el->class[] = 'glyphicon ' . ($session->id == $entity->getSessionId() ? 'glyphicon-ok' : 'glyphicon-remove');
 				return $el;
 			})
 			->getCellPrototype()->width = '10%';

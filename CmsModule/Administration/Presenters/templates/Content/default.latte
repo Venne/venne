@@ -7,24 +7,20 @@
 
 {block breadcrumb}
 	{include #parent}
-	<li class="active"><span class="divider">/</span> {include #header}</li>
+	<li class="active">{include #header}</li>
 {/block}
 
 {block #content}
 
 {if $presenter->isAuthorized('create')}
-<div class="navbar">
-	<div class="navbar-inner">
-		<div class="container">
-			<ul class="nav">
-
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <b class="caret"></b></a>
-					{include #tree items=>$presenter->context->cms->contentManager->getContentTypes(TRUE)}
-				</li>
-
-			</ul>
-		</div>
+<div class="navbar navbar-default">
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-file"></span> {_'Create new'} <b class="caret"></b></a>
+				{include #tree items=>$presenter->context->cms->contentManager->getContentTypes(TRUE)}
+			</li>
+		</ul>
 	</div>
 </div>
 {/if}

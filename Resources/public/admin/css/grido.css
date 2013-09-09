@@ -1,0 +1,34 @@
+.table.grido {
+	border-color: #dddddd;
+}
+.table.grido th,
+.grido td {
+	border: inherit;
+}
+.table .actions .btn-group > .btn {
+	float: inherit;
+}
+.table .actions,
+.table .btn-group,
+.table.grido thead .buttons {
+	white-space: nowrap;
+}
+.table.grido thead th {
+	font-size: 13px;
+}
+.table.grido tfoot .count select {
+	display: inline;
+}
+.table.grido tfoot td {
+	font-size: 13px;
+}
+.table.grido tbody > tr > td {
+	border-top: 0;
+	border-bottom: 1px solid #dddddd;
+}
+.table.grido tbody > tr:first-child > td {
+	border-top: 1px solid #dddddd;
+}
+.table.grido thead > tr > th {
+	border: 0;
+}

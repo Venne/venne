@@ -14,6 +14,7 @@ namespace CmsModule\Components\Grido\Actions;
 
 use Grido\Components\Actions\Href;
 use Nette\Application\BadRequestException;
+use Nette\Utils\Html;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -47,7 +48,6 @@ class CallbackAction extends Href
 		$pk = $this->getPrimaryKey();
 
 		$text = $this->translate($this->label);
-		$this->icon ? $text = ' ' . $text : $text;
 
 		$el = clone $this->getElementPrototype();
 		$el->setText($text);
@@ -67,10 +67,16 @@ class CallbackAction extends Href
 			);
 		}
 
-		if ($this->icon) {
-			$el->insert(0, \Nette\Utils\Html::el('i')->setClass(array("icon-$this->icon")));
-		}
+		return $el;
+	}
 
+
+	public function getElementPrototype()
+	{
+		$el = parent::getElementPrototype();
+		$el->class[] = 'btn';
+		$el->class[] = 'btn-default';
+		$el->class[] = 'btn-xs';
 		return $el;
 	}
 

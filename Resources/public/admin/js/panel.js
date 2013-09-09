@@ -28,24 +28,6 @@ $(function () {
 	});
 	$('a').attr("target", "_parent");
 	$('form').attr("target", "_parent");
-	if (window.parent.location.href.indexOf("?mode=1") == -1 && window.parent.location.href.indexOf("&mode=1") == -1) {
-		$('#venne-panel-close').hide();
-		$('#venne-panel-button-edit').hide();
-		$('#venne-panel-edit').on('click', function () {
-			if (window.parent.location.href.indexOf("?") != -1) {
-				window.parent.location.href = window.parent.location.href + '&mode=1';
-			} else {
-				window.parent.location.href = window.parent.location.href + '?mode=1';
-			}
-		});
-	} else {
-		$('#venne-panel-edit').hide();
-		$('#venne-panel-close').on('click', function () {
-			var url = window.parent.location.href;
-			url = url.replace('?mode=1', '').replace('&mode=1', '');
-			window.parent.location.href = url;
-		});
-	}
 
 
 	// Edit & Save buttons
@@ -79,7 +61,11 @@ $(function () {
 
 	// Close button
 	$('#venne-panel-button-close').on('click', function () {
-		$('#venne-panel-container', topDocument).remove();
+		if (window.parent.location.href.indexOf("?") != -1) {
+			window.top.location.href = window.parent.location.href + '&do=closePanel';
+		} else {
+			window.top.location.href = window.parent.location.href + '?do=closePanel';
+		}
 	});
 
 
@@ -117,7 +103,7 @@ $(function () {
 			var width = $(this).width();
 			var top = position.top - $(window.parent).scrollTop();
 			var left = position.left - $(window.parent).scrollLeft();
-			var html = '<div class="btn-group"><a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">Edit <span class="caret"></span></a><ul class="dropdown-menu">';
+			var html = '<div class="btn-group"><a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" href="#">Edit <span class="caret"></span></a><ul class="dropdown-menu">';
 			$.each(buttons, function (index, value) {
 				html += '<li><a href="?mode=1&do=element&elementName=' + obj.data('venne-element-name') + '&elementView=' + index + '&elementId=' + obj.data('venne-element-id') + '&elementRouteId=' + obj.data('venne-element-route') + '&elementLanguageId=' + obj.data('venne-element-language') + '" target="_self" class="ajax" type="button">' + value + '</a></li>';
 			});

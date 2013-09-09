@@ -14,7 +14,7 @@
 		"venne/doctrine-module": "2.1.x-dev",
 		"venne/assets-module": "2.1.x-dev",
 		"venne/translator-module": "2.1.x-dev",
-		"venne/bootstrap2-module": "*",
+		"venne/bootstrap3-module": "*",
 		"venne/bootstrapmodal-module": "2.1.x-dev",
 		"venne/jquery2.0-module": "*",
 		"venne/jqueryui1.10-module": "*",
@@ -25,7 +25,7 @@
 		"venne/holder-module": "2.0.x-dev",
 		"venne/bootstrapdatetime-module": "0.0.x-dev",
 		"venne/grido-module": "2.0.x-dev",
-		"kdyby/bootstrap-form-renderer": "v1.1.0"
+		"kdyby/bootstrap-form-renderer": "v2.0.0"
 	},
 	"require-dev": {
 		"venne/tester": "@dev"

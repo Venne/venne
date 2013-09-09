@@ -36,7 +36,7 @@
 			{/foreach}
 		{var $_form = $___form}
 		{var $form = $___form}
-			<th>{input _filters class=>'btn btn-block ajax'}{*input reset2 class=>'btn'*}</th>
+			<th>{input _filters class=>'btn btn-default btn-block ajax'}{*input reset2 class=>'btn'*}</th>
 		</tr>
 	{/if}
     </thead>
@@ -77,9 +77,9 @@
         <tr>
             <td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
 				{control vp}
-				<div class="pull-right input-append">{input perPage class=>'input-mini ajax'} {input perPageSubmit class=>'btn btn-small'}</div>
+				<div class="pull-right input-group">{input perPage class=>'input-mini ajax'} {input perPageSubmit class=>'btn btn-default btn-sm'}</div>
 				{if count($globalActions) > 0}
-				<div class="pull-left input-append">{input _action class=>'input-small ajax'} {input _submit class=>'btn btn-small'}</div>
+				<div class="pull-left input-group">{input _action class=>'input-sm ajax'} {input _submit class=>'btn btn-default btn-sm'}</div>
 				{/if}
             </td>
         </tr>

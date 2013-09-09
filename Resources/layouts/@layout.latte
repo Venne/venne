@@ -24,8 +24,9 @@
 	{js @cmsModule/ajax/nette.ajax.js}
 
 	{* bootstrap *}
-	{js @bootstrap2Module/js/bootstrap.min.js}
-	{css @bootstrap2Module/css/bootstrap.min.css}
+	{js @bootstrap3Module/js/bootstrap.min.js}
+	{css @bootstrap3Module/css/bootstrap.min.css}
+	{css @bootstrap3Module/css/bootstrap-theme.min.css}
 
 	{* typeahead.js *}
 	{js @hoganModule/hogan-2.0.0.js}
@@ -41,17 +42,17 @@
 
 {body}
 
-<div class="navbar navbar-fixed-top">
-	<div class="navbar-inner">
-		<div class="container">
-			<a class="brand" href="{link Route special=>'main'}">{$presenter['head']->websiteName}</a>
-			<div class="nav-collapse">
+<div class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="{link Route special=>'main'}">{$presenter['head']->websiteName}</a>
+		</div>
+		<div class="collapse navbar-collapse">
 			{control search}
 			{control login}
 			{if count($presenter->context->parameters['website']['languages']) > 1}
 				{control languageswitch}
 			{/if}
-			</div>
 		</div>
 	</div>
 </div>
@@ -59,19 +60,17 @@
 <div class="container" style="padding-top: 60px;">
 
 	<div class="row">
-		<div class="span12">
-			<div class="navbar">
-				<div class="navbar-inner">
-					<div class="container">
-						{control navigation 0, 2, false}
-					</div>
+		<div class="col-md-12">
+			<div class="navbar navbar-default">
+				<div class="container">
+					{control navigation 0, 2, false}
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="row">
-		<div class="span12">
+		<div class="col-md-12">
 			<div class="page-header">
 				<div class="pull-right">
 					{control breadcrumb}

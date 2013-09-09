@@ -7,20 +7,18 @@
 
 {block breadcrumb}
 	{include #parent}
-	<li class="active"><span class="divider">/</span> {include #header}</li>
+	<li class="active">{include #header}</li>
 {/block}
 
 {block content}
 
 {if $presenter->isAuthorized('edit')}
-<div class="navbar">
-    <div class="navbar-inner">
-        <div class="container">
-            <ul class="nav">
-                <li><a n:href="sync!"><span class="icon icon-refresh"></span> {_'Refresh database'}</a></li>
-            </ul>
-        </div>
-    </div>
+<div class="navbar navbar-default">
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+			<li><a n:href="sync!"><span class="glyphicon glyphicon-refresh"></span> {_'Refresh database'}</a></li>
+		</ul>
+	</div>
 </div>
 {/if}
 
@@ -44,7 +42,7 @@
 			</dl>
         </div>
         <div class="modal-footer">
-            <a n:href="this" class="btn">{_Cancel}</a>
+            <a n:href="this" class="btn btn-default">{_Cancel}</a>
             {if $solutionAction === 'uninstall'}<a n:href="uninstall! $solutionModule, true" class="btn btn-primary">{_Continue}</a>{/if}
 			{if $solutionAction === 'install'}<a n:href="install! $solutionModule, true" class="btn btn-primary">{_Continue}</a>{/if}
         </div>
@@ -75,7 +73,7 @@
     <tbody>
 	{foreach $modules as $name=>$module}
 		{if array_search($name, $hiddenModules) !== false}
-    <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+    <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}">
         <td>
 			{$module->getName()}
         </td>
@@ -85,7 +83,7 @@
         <td>
 			{$module->getVersion()}
         </td>
-        <td class="table-td-action">
+        <td class="actions">
 
         </td>
     </tr>
@@ -108,7 +106,7 @@
     <tbody>
 		{foreach $modules as $name=>$module}
 			{if array_search($name, $hiddenModules) === false}
-        <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+        <tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}">
             <td>
 				{$module->getName()}
             </td>
@@ -118,12 +116,12 @@
             <td>
 				{$module->getVersion()}
             </td>
-            <td class="table-td-action" style="white-space:nowrap;">
-				<div n:if="$presenter->isAuthorized('edit')" class="btn-group pull-right">
-					<a class="ajax btn btn-small{if $presenter->moduleManager->getStatus($module) != 'installed'} btn-success{/if}"{if $presenter->moduleManager->getStatus($module) == 'installed'} disabled="disabled"{/if} n:href="install! $name"><span class="icon icon-refresh icon-white"></span> {_Install}</a>
-					<a class="ajax btn btn-small{if $presenter->moduleManager->getStatus($module) == 'installed'} btn-danger{/if}"{if $presenter->moduleManager->getStatus($module) != 'installed'} disabled="disabled"{/if} n:href="uninstall! $name"><span class="icon icon-off icon-white"></span> {_Uninstall}</a>
+            <td class="actions">
+				<a style="margin-right: 4px;" class="ajax btn btn-default btn-xs{if $presenter->moduleManager->getStatus($module) == 'installed' && $module->getVersion() != $presenter->context->parameters['modules'][$name]['version']} btn-success{else}" disabled="disabled{/if}" n:href="upgrade! $name"><span class="glyphicon glyphicon-arrow-up"></span> {_Upgrade}</a>
+				<div n:if="$presenter->isAuthorized('edit')" class="btn-group">
+					<a class="ajax btn btn-default btn-xs{if $presenter->moduleManager->getStatus($module) != 'installed'} btn-success{/if}"{if $presenter->moduleManager->getStatus($module) == 'installed'} disabled="disabled"{/if} n:href="install! $name"><span class="glyphicon glyphicon-refresh"></span> {_Install}</a>
+					<a class="ajax btn btn-default btn-xs{if $presenter->moduleManager->getStatus($module) == 'installed'} btn-danger{/if}"{if $presenter->moduleManager->getStatus($module) != 'installed'} disabled="disabled"{/if} n:href="uninstall! $name"><span class="glyphicon glyphicon-off"></span> {_Uninstall}</a>
 				</div>
-				<a style="margin-right: 4px;" class="pull-left ajax btn btn-small{if $presenter->moduleManager->getStatus($module) == 'installed' && $module->getVersion() != $presenter->context->parameters['modules'][$name]['version']} btn-success{else}" disabled="disabled{/if}" n:href="upgrade! $name"><span class="icon icon-arrow-up icon-white"></span> {_Upgrade}</a>
             </td>
         </tr>
 		{/if}

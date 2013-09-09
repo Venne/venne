@@ -25,16 +25,6 @@ $(function () {
 		$(this).next().click();
 	});
 
-	var resizeTimeout;
-
-	$(window).on('resize.modal', function(){
-		resizeTimeout && clearTimeout(resizeTimeout);
-		resizeTimeout = setTimeout(function(){
-			$('.modal').each(function(){
-				$(this).css('margin-top', 0 - $(this).height() / 2);
-			});
-		}, 10);
-	});
 
 	$('#button-fullscreen').on('click', function (event){
 		if ($('#panel').data('state') != 'closed') {
@@ -200,12 +190,12 @@ $(function () {
 		init: function(target) {
 				target.find(this.selector).each(function(){
 					var e = $(this);
-					e.wrap('<div class="input-append" />')
-						.after('<span class="add-on"><i data-date-icon="icon-calendar" data-time-icon="icon-time" class="icon-calendar"></i></span>')
-						.parent('div')
-						.datetimepicker({
-							format: 'yyyy-MM-dd hh:mm:ss'
-						});
+					e.wrap('<div class="input-group date" id="datetimepicker-' + $(this).attr('id')  + '" />')
+						.after('<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>')
+						.parent('div');
+					$('#datetimepicker-' + $(this).attr('id')).datetimepicker({
+						format: 'yyyy-MM-dd hh:mm:ss'
+					});
 				});
 		},
 		selector: 'input[type=date], input[type=datetime]'
@@ -271,7 +261,7 @@ $(function () {
 				object.change(function () {
 					var data = $(this).val();
 					if (data) {
-						var data = '<i class="icon-file"></i> ' + data;
+						var data = '<i class="glyphicon glyphicon-file"></i> ' + data;
 						$('#' + object.attr('id') + '_fake').html(data.replace('C:\\fakepath\\', ''));
 						$('#' + object.attr('id') + '_fakeRemove').show();
 						$('#' + object.attr('id') + '_fakeButton').text('Change');
@@ -284,10 +274,12 @@ $(function () {
 			}
 			$(target).find('input[type="file"]').each(function () {
 				var fileInput = $(this);
-				$(this).after('<div class="input-append">'
-					+ '<div class="uneditable-input input-xlarge text" id="' + $(this).attr('id') + '_fake" type="text"></div>'
-					+ '<button class="btn btn-small hide" id="' + $(this).attr('id') + '_fakeRemove" type="button">Remove</button>'
-					+ '<button class="btn btn-small" id="' + $(this).attr('id') + '_fakeButton" type="button">Select file</button>'
+				$(this).after('<div class="input-group">'
+					+ '<div class="form-control input-sm" id="' + $(this).attr('id') + '_fake" type="text" disabled></div>'
+					+ '<div class="input-group-btn btn-group">'
+					+ '<button class="btn btn-default btn-sm hide" id="' + $(this).attr('id') + '_fakeRemove" type="button">Remove</button>'
+					+ '<button class="btn btn-default btn-sm" id="' + $(this).attr('id') + '_fakeButton" type="button">Select file</button>'
+					+ '</div>'
 					+ '</div>');
 				$('#' + $(this).attr('id') + '_fakeButton').off('click');
 				$('#' + $(this).attr('id') + '_fakeRemove').off('click');
@@ -341,31 +333,7 @@ $(function () {
 				$(this).textWithSelect();
 			});
 		},
-		selector: "select[data-venne-form-textwithselect]"
-	});
-	$.nette.ext('modalBind', {
-		init:function () {
-			this.init($('body'));
-		},
-		success:function (payload) {
-			if (!payload.snippets) {
-				return;
-			}
-
-			var _this = this;
-			for (var i in payload.snippets) {
-				$('#' + i).each(function () {
-					_this.init($(this));
-				});
-			}
-		}
-	}, {
-		init: function(target) {
-			target.find(this.selector).each(function(){
-				$(this).css('margin-top', 0 - $(this).height() / 2);
-			});
-		},
-		selector: ".modal"
+		selector: "form .input-group-btn"
 	});
 	$.nette.init();
 

@@ -29,18 +29,53 @@ abstract class BasePresenter extends Presenter
 	/** @persistent */
 	public $lang;
 
-	const MODE_NORMAL = NULL;
-
-	const MODE_EDIT = 1;
-
-	/** @persistent */
-	public $mode;
-
 	/** @var EntityManager */
 	private $entityManager;
 
 	/** @var ExtendedUserEntity */
 	private $extendedUser;
+
+	/** @var bool|NULL */
+	private $_isPanelOpened;
+
+
+	public function handleOpenPanel()
+	{
+		$panelSection = $this->getPanelSession();
+		$panelSection->opened = TRUE;
+		$this->redirect('this');
+	}
+
+
+	public function handleClosePanel()
+	{
+		$panelSection = $this->getPanelSession();
+		$panelSection->opened = FALSE;
+		$this->redirect('this');
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isPanelOpened()
+	{
+		if ($this->_isPanelOpened === NULL) {
+			$panelSection = $this->getPanelSession();
+			$this->_isPanelOpened = (isset($panelSection->opened) && $panelSection->opened);
+		}
+
+		return $this->_isPanelOpened;
+	}
+
+
+	/**
+	 * @return \Nette\Http\Session
+	 */
+	private function getPanelSession()
+	{
+		return $this->getSession('_Venne.panel');
+	}
 
 
 	/**
@@ -97,11 +132,6 @@ abstract class BasePresenter extends Presenter
 		// Setup translator
 		if (($translator = $this->context->getByType('Nette\Localization\ITranslator', FALSE)) !== NULL) {
 			$translator->setLang($this->lang);
-		}
-
-		// mode
-		if ($this->mode && !$this->getUser()->isLoggedIn()) {
-			$this->mode = self::MODE_NORMAL;
 		}
 	}
 

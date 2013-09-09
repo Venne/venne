@@ -2,7 +2,7 @@
 {if !$control->parentFloor && count($control->floors)}
 <ul class="breadcrumb">
 	{if $control->floor}
-	<li><a class="ajax" n:href="floor floor=>NULL, floorId=>NULL">{_Root}</a> <span class="divider">/</span></li>
+	<li><a class="ajax" n:href="floor floor=>NULL, floorId=>NULL">{_Root}</a></li>
 	{else}
 	<li class="active">{_Root}</li>
 	{/if}
@@ -13,7 +13,7 @@
 			{var $c = $pControl->floors[$pControl->floor]}
 
 			{if $c->floor}
-				<li><a class="ajax" href="#">{$pControl->getRepository()->find($control->floorId)}</a> <span class="divider">/</span></li>
+				<li><a class="ajax" href="#">{$pControl->getRepository()->find($control->floorId)}</a></li>
 			{else}
 				<li class="active">{$pControl->getRepository()->find($control->floorId)}</li>
 			{/if}
@@ -32,7 +32,7 @@
 	{/snippet}
 
 	{snippet table}
-		{if !$control->getFormName()}
+		{if $control->mode === $control::MODE_MODAL}
 			{if $control->floor}
 				{control $control->floors[$control->floor]}
 			{else}
@@ -40,8 +40,8 @@
 			{/if}
 		{else}
 			<ul class="breadcrumb">
-					<li><a class="ajax" n:href="floor floor=>NULL, floorId=>NULL, mode => NULL, formName=>NULL, id=>NULL">{_Root}</a> <span class="divider">/</span></li>
-					<li class="active">{$control->id ? $control['actionForm']->data : $control['navbarForm']->data}</li>
+				<li><a class="ajax" n:href="floor floor=>NULL, floorId=>NULL, mode => NULL, formName=>NULL, id=>NULL">{_Root}</a></li>
+				<li class="active">{$control->id ? $control['actionForm']->data : $control['navbarForm']->data}</li>
 			</ul>
 		{/if}
 	{/snippet}
@@ -50,56 +50,61 @@
 	{snippet navbarFormContainer}
 	{if $control->getFormName() && !$control->id}
 		{if $control->mode === $control::MODE_MODAL}
-		<div id="modal-{!$control->getName()}" class="modal hide fade{if $form->type} {$form->type}{/if}" tabindex="-1"
-			 data-focus-on="input:first">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h3>{_$form->title}</h3>
-			</div>
-			<div class="modal-body" n:snippet="navbarForm">
-				{control navbarForm}
+		<div id="modal-{!$control->getName()}" class="modal fade{if $form->type} {$form->type}{/if}" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3>{_$form->title}</h3>
+					</div>
+					<div class="modal-body" n:snippet="navbarForm">
+						{control navbarForm}
 
-				{if $control['navbarForm']->isSubmitted() === $control['navbarForm']->getSaveButton() && !$control['navbarForm']->getErrors()}
-				<div class="modal-close"></div>
-				{/if}
-
-				<script type="text/javascript">
-					// <![CDATA[
-					$(function () {
-						var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
-						input.hide();
-						if (input.parent().find('input[name!="_submit"]').length == 0) {
-							input.parent().hide();
-						}
 						{if $control['navbarForm']->isSubmitted() === $control['navbarForm']->getSaveButton() && !$control['navbarForm']->getErrors()}
-						$('#modal-{!$control->getName()}').modal('hide');
+						<div class="modal-close"></div>
 						{/if}
-					});
-					// ]]>
-				</script>
-			</div>
-			<div class="modal-footer">
-				<button type="button" data-dismiss="modal" class="btn">Zavřít</button>
-				<button type="button" class="btn btn-primary">Uložit</button>
+
+						<script type="text/javascript">
+							// <![CDATA[
+							$(function () {
+								var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
+								input.hide();
+								if (input.parent().find('input[name!="_submit"]').length == 0) {
+									input.parent().hide();
+								}
+								{if $control['navbarForm']->isSubmitted() === $control['navbarForm']->getSaveButton() && !$control['navbarForm']->getErrors()}
+									$('#modal-{!$control->getName()}').modal('hide');
+								{/if}
+
+								$('#modal-{!$control->getName()} .btn-primary').off('click.admingrid');
+								$('#modal-{!$control->getName()} .btn-primary').on('click.admingrid', function (e) {
+									e.preventDefault();
+									$('#modal-{!$control->getName()} form input[name="_submit"]').click();
+								});
+								if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
+									$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
+										e.preventDefault();
+									});
+								}
+							});
+							// ]]>
+						</script>
+					</div>
+					<div class="modal-footer">
+						<button type="button" data-dismiss="modal" class="btn btn-default">Zavřít</button>
+						<button type="button" class="btn btn-primary">Uložit</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script type="text/javascript">
 			// <![CDATA[
 			$(function () {
-				$('#modal-{!$control->getName()}').modal('show').on('hidden', function () {
+				$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
 					if($('#modal-{!$control->getName()} .modal-close').length !=1){
 						$.nette.ajax({ url: {link close!}});
 					}
 				});
-				$('#modal-{!$control->getName()} .btn-primary').on('click', function (e) {
-					e.preventDefault();
-					$('#modal-{!$control->getName()} form input[name="_submit"]').click();
-				});
-				if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
-					$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
-						e.preventDefault();
-					});
-				}
 			});
 			// ]]>
 		</script>
@@ -114,56 +119,61 @@
 	{snippet actionFormContainer}
 	{if $control->getFormName() && $control->id}
 		{if $control->mode === $control::MODE_MODAL}
-		<div id="modal-{!$control->getName()}" class="modal hide fade{if $form->type} {$form->type}{/if}" tabindex="-1"
-			 data-focus-on="input:first">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h3>{_$form->title}</h3>
-			</div>
-			<div class="modal-body" n:snippet="actionForm">
-				{control actionForm}
+		<div id="modal-{!$control->getName()}" class="modal fade{if $form->type} {$form->type}{/if}" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h3>{_$form->title}</h3>
+					</div>
+					<div class="modal-body" n:snippet="actionForm">
+						{control actionForm}
 
-				{if $control['actionForm']->isSubmitted() === $control['actionForm']->getSaveButton() && !$control['actionForm']->getErrors()}
-					<div class="modal-close"></div>
-				{/if}
-
-				<script type="text/javascript">
-					// <![CDATA[
-					$(function () {
-						var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
-						input.hide();
-						if (input.parent().find('input[name!="_submit"]').length == 0) {
-							input.parent().hide();
-						}
 						{if $control['actionForm']->isSubmitted() === $control['actionForm']->getSaveButton() && !$control['actionForm']->getErrors()}
-						$('#modal-{!$control->getName()}').modal('hide');
+							<div class="modal-close"></div>
 						{/if}
-					});
-					// ]]>
-				</script>
-			</div>
-			<div class="modal-footer">
-				<button type="button" data-dismiss="modal" class="btn">Zavřít</button>
-				<button type="button" class="btn btn-primary">Uložit</button>
+
+						<script type="text/javascript">
+							// <![CDATA[
+							$(function () {
+								var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
+								input.hide();
+								if (input.parent().find('input[name!="_submit"]').length == 0) {
+									input.parent().hide();
+								}
+								{if $control['actionForm']->isSubmitted() === $control['actionForm']->getSaveButton() && !$control['actionForm']->getErrors()}
+									$('#modal-{!$control->getName()}').modal('hide');
+								{/if}
+
+								$('#modal-{!$control->getName()} .btn-primary').off('click.admingrid');
+								$('#modal-{!$control->getName()} .btn-primary').on('click.admingrid', function (e) {
+									e.preventDefault();
+									$('#modal-{!$control->getName()} form input[name="_submit"]').click();
+								});
+								if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
+									$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
+										e.preventDefault();
+									});
+								}
+							});
+							// ]]>
+						</script>
+					</div>
+					<div class="modal-footer">
+						<button type="button" data-dismiss="modal" class="btn btn-default">Zavřít</button>
+						<button type="button" class="btn btn-primary">Uložit</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script type="text/javascript">
 			// <![CDATA[
 			$(function () {
-				$('#modal-{!$control->getName()}').modal('show').on('hidden', function () {
+				$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
 					if($('#modal-{!$control->getName()} .modal-close').length !=1){
 						$.nette.ajax({ url: {link close!}});
 					}
 				});
-				$('#modal-{!$control->getName()} .btn-primary').on('click', function (e) {
-					e.preventDefault();
-					$('#modal-{!$control->getName()} form input[name="_submit"]').click();
-				});
-				if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
-					$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
-						e.preventDefault();
-					});
-				}
 			});
 			// ]]>
 		</script>

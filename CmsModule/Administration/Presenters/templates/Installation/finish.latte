@@ -22,5 +22,5 @@
 
 <h2>Create default structure by installator</h2>
 
-<a n:foreach="$presenter->installatorManager->installators as $name=>$installer" n:if="$presenter->isEmptyStructure()" class="btn btn-large btn-primary" n:href="createStructure! $name">{$name}</a>
-<a class="btn btn-large" n:href="Dashboard:">Skip this step</a>
+<a n:foreach="$presenter->installatorManager->installators as $name=>$installer" n:if="$presenter->isEmptyStructure()" class="btn btn-lg btn-primary" n:href="createStructure! $name">{$name}</a>
+<a class="btn btn-lg" n:href="Dashboard:">Skip this step</a>

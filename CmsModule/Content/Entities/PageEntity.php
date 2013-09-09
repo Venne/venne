@@ -47,7 +47,7 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 	/**
 	 * @var PageEntity
-	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next", fetch="EAGER")  # ManyToOne is hack for prevent '1062 Duplicate entry update'
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\PageEntity", inversedBy="next", fetch="EAGER")  # ManyToOne is hack for prevent '1062 Duplicate entry update'
 	 */
 	protected $previous;
 
@@ -196,9 +196,9 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 
 	/**
-	 * @ORM\PostRemove()
+	 * @ORM\PreRemove()
 	 */
-	public function onPostRemove()
+	public function onPreRemove()
 	{
 		$this->removeFromPosition();
 	}

@@ -21,9 +21,6 @@ abstract class AdminPresenter extends BasePresenter
 {
 
 	/** @persistent */
-	public $compact = false;
-
-	/** @persistent */
 	public $contentLang;
 
 	/** @var bool */

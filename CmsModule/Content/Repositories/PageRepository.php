@@ -70,11 +70,7 @@ class PageRepository extends BaseRepository
 
 	public function delete($entity, $withoutFlush = self::FLUSH)
 	{
-		if ($entity instanceof PageEntity) {
-			$entity->removeFromPosition();
-		} else if ($entity instanceof ExtendedPageEntity) {
-			$entity->page->removeFromPosition();
-		} else {
+		if (!$entity instanceof PageEntity && !$entity instanceof ExtendedPageEntity) {
 			throw new InvalidArgumentException("Entity must be instance of 'CmsModule\Content\Entities\PageEntity'. '" . get_class($entity) . "' given.");
 		}
 

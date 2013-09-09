@@ -36,7 +36,7 @@ class TextFormFactory extends FormFactory
 	{
 		$route = $form->addOne('page')->addOne('mainRoute');
 		$route->setCurrentGroup($form->addGroup()->setOption('class', 'full'));
-		$route->addContentEditor('text', NULL, NULL, 30)->getControlPrototype()->attrs['class'] = 'input-block-level';
+		$route->addContentEditor('text', NULL, NULL, 30)->getControlPrototype()->class[] = 'input-block-level';
 
 		$form->addSaveButton('Save');
 	}

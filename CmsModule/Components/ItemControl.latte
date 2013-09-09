@@ -5,7 +5,7 @@
 {var $thumbnail = (isset($thumbnail) ? $thumbnail : '190x')}
 
 {if $route->photo}
-	<div class="thumbnail pull-right" style="margin: 0  0 10px 10px;">
+	<div class="img-thumbnail pull-right" style="margin: 0  0 10px 10px;">
 		<img n:src="$route->photo->getFileUrl(true), size=>$thumbnail" alt="{$route->name}" />
 	</div>
 {/if}

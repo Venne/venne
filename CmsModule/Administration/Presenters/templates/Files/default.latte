@@ -8,7 +8,7 @@
 {block breadcrumb-item}
 	{if $entity->parent}{include #breadcrumb-item, entity=>$entity->parent, ok=>true}{/if}
 	<li{if !isset($ok)} class="active"{/if}>
-		<span class="divider">/</span> {if isset($ok)}<a class="ajax"
+		{if isset($ok)}<a class="ajax"
 														 href="{link :Cms:Admin:Files: key=>$entity->id, do=>changeDir}">{/if}{$entity->name}{if isset($ok)}</a>{/if}
 	</li>
 {/block}
@@ -16,7 +16,7 @@
 {block breadcrumb}
 	{include #parent}
 	{var $entity = $presenter->key ? $dirRepository->find($presenter->key) : NULL}
-	<li{if !$entity} class="active"{/if}><span class="divider">/</span> {if $entity}<a class="ajax" n:href="this key=>NULL, do=>changeDir">{/if}{include #header}{if $entity}</a>{/if}</li>
+	<li{if !$entity} class="active"{/if}>{if $entity}<a class="ajax" n:href="this key=>NULL, do=>changeDir">{/if}{include #header}{if $entity}</a>{/if}</li>
 	{if $entity}{include #breadcrumb-item, entity=>$entity}{/if}
 {/block}
 
@@ -55,25 +55,25 @@
 			}
 		});
 
-		$("#sortable li").live('mouseover', function (e) {
+		$("#sortable > div.item").live('mouseover', function (e) {
 			if (!$(this).hasClass('ui-selecting') && !clicked) {
 				$(this).addClass('ui-selecting');
 			}
 		});
 
-		$("#sortable li").live('mouseout', function () {
+		$("#sortable > div.item").live('mouseout', function () {
 			if ($(this).hasClass('ui-selecting') && !clicked) {
 				$(this).removeClass('ui-selecting');
 			}
 		});
 
-		$("#sortable li").contextMenu({ menu:"fileMenu"}, function (action, el, pos) {
+		$("#sortable > div.item").contextMenu({ menu:"fileMenu"}, function (action, el, pos) {
 
 			if (action == "delete") {
 				var id = $(el).attr("id");
 				$.nette.ajax({ url: {link delete!} +'&key2=' + $(el).attr("id") });
 
-				$('#sortable li.ui-selected').each(function () {
+				$('#sortable > div.item.ui-selected').each(function () {
 					if($(this).attr("id") != id){
 						$.nette.ajax({ url: {link delete!} +'&key2=' + $(this).attr("id") });
 					}
@@ -90,7 +90,7 @@
 
 		});
 
-		$("#sortable li").live("click", function (event) {
+		$("#sortable > div.item").live("click", function (event) {
 
 			event.preventDefault();
 
@@ -104,19 +104,19 @@
 			$(this).addClass('ui-selected');
 		});
 
-		$("#sortable li.d").dblclick(function (event) {
+		$("#sortable > div.item.d").dblclick(function (event) {
 			$.nette.ajax({
 				url:$(this).find("a").attr("href"),
 				off: ['history']
 			});
 		});
 
-		$("#sortable li").trigger({
+		$("#sortable > div.item").trigger({
 			type:'mousedown',
 			which:3
 		});
 
-		$("#sortable li").draggable({
+		$("#sortable > div.item").draggable({
 			drag:function (e, ui) {
 
 				$(this).addClass('ui-selected');
@@ -130,11 +130,11 @@
 			}
 		});
 
-		$("#sortable li").droppable({
+		$("#sortable > div.item").droppable({
 			drop:function (event, ui) {
 				if (confirm('Move to folder?')) {
 					var id = $(this).attr('id');
-					$('#sortable li.ui-selected').each(function () {
+					$('#sortable > div.item.ui-selected').each(function () {
 						$.nette.ajax({ url: {link setParent!} +'&from=' + $(this).attr('id') + "&to=" + id + "&dropmode=" + 'into'});
 					});
 				}
@@ -150,7 +150,7 @@
 			return (match && match.length > 1) ? match[1] : '';
 		}
 
-		$("#sortable li.f").dblclick(function () {
+		$("#sortable > div.item.f").dblclick(function () {
 			var funcNum = getUrlParam('CKEditorFuncNum');
 			window.opener.CKEDITOR.tools.callFunction(funcNum, $(this).find('a').attr('href'));
 			window.close();
@@ -160,7 +160,7 @@
 // ]]>
 </script>
 
-<ul class="thumbnails" id="sortable">
+<div id="sortable">
 {control table}
 {control fileTable}
-</ul>
+</div>

@@ -22,6 +22,18 @@ class Grid extends \Grido\Grid
 {
 
 	/**
+	 * @internal
+	 * @param string $class
+	 * @return \Nette\Templating\FileTemplate
+	 */
+	public function createTemplate($class = NULL)
+	{
+		$template = parent::createTemplate($class);
+		$template->setFile(__DIR__ . '/Grid.latte');
+		return $template;
+	}
+
+	/**
 	 * @return AdminGrid
 	 */
 	public function getAdminGrid()
@@ -46,4 +58,7 @@ class Grid extends \Grido\Grid
 		}
 		return $action;
 	}
+
+
+
 }

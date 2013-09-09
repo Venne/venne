@@ -7,20 +7,18 @@
 
 {block breadcrumb}
 	{include #parent}
-	<li class="active"><span class="divider">/</span> {include #header}</li>
+	<li class="active">{include #header}</li>
 {/block}
 
 {block content}
 
 {if $presenter->isAuthorized('create')}
-<div class="navbar">
-	<div class="navbar-inner">
-		<div class="container">
-			<ul class="nav">
-				<li><a class="ajax" n:href="create"><span class="icon icon-file"></span> {_'Create new'}</a></li>
-				<li><a class="ajax" n:href="overload"><span class="icon icon-file"></span> {_'Overload template'}</a></li>
-			</ul>
-		</div>
+<div class="navbar navbar-default">
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+			<li><a class="ajax" n:href="create"><span class="glyphicon glyphicon-file"></span> {_'Create new'}</a></li>
+			<li><a class="ajax" n:href="overload"><span class="glyphicon glyphicon-file"></span> {_'Overload template'}</a></li>
+		</ul>
 	</div>
 </div>
 {/if}
@@ -40,14 +38,14 @@
 	<tbody>
 
 	{foreach $templateManager->getTemplatesByModule($module) as $name=>$key}
-		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}">
 			<td>
 				{$name}
 			</td>
-			<td class="table-td-action">
-				<div class="btn-group pull-right">
-					<a n:if="$presenter->isAuthorized('edit')" class="ajax btn btn-small" href="{link edit key=>$key}">{_'edit'}</a>
-					<a n:if="$presenter->isAuthorized('delete!')" class="ajax btn btn-small" n:confirm="really?" href="{link delete! key=>$key}">{_'delete'}</a>
+			<td class="actions">
+				<div class="btn-group">
+					<a n:if="$presenter->isAuthorized('edit')" class="ajax btn btn-default btn-xs" href="{link edit key=>$key}">{_'edit'}</a>
+					<a n:if="$presenter->isAuthorized('delete!')" class="ajax btn btn-default btn-xs" n:confirm="really?" href="{link delete! key=>$key}">{_'delete'}</a>
 				</div>
 			</td>
 		</tr>
@@ -55,27 +53,27 @@
 
 	{foreach $templateManager->getLayoutsByModule($module) as $name2=>$key2}
 
-		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}">
 			<th>
 				@{$name2}
 			</th>
-			<td class="table-td-action">
-				<div class="btn-group pull-right">
-					<a n:if="$presenter->isAuthorized('edit')" class="ajax btn btn-small" href="{link edit key=>$key2}">{_'edit'}</a>
-					<a n:if="$presenter->isAuthorized('delete!')" class="ajax btn btn-small" n:confirm="really?" href="{link delete! key=>$key2}">{_'delete'}</a>
+			<td class="actions">
+				<div class="btn-group">
+					<a n:if="$presenter->isAuthorized('edit')" class="ajax btn btn-default btn-xs" href="{link edit key=>$key2}">{_'edit'}</a>
+					<a n:if="$presenter->isAuthorized('delete!')" class="ajax btn btn-default btn-xs" n:confirm="really?" href="{link delete! key=>$key2}">{_'delete'}</a>
 				</div>
 			</td>
 		</tr>
 
 	{foreach $templateManager->getTemplatesByModule($module, $name2) as $name=>$key}
-	<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+	<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}">
 		<td>
 			&nbsp;&nbsp;&nbsp;{$name}
 		</td>
-		<td class="table-td-action">
-			<div class="btn-group pull-right">
-				<a n:if="$presenter->isAuthorized('edit')" class="ajax btn btn-small" href="{link edit key=>$key}">{_'edit'}</a>
-				<a n:if="$presenter->isAuthorized('delete!')" class="ajax btn btn-small" n:confirm="really?" href="{link delete! key=>$key}">{_'delete'}</a>
+		<td class="actions">
+			<div class="btn-group">
+				<a n:if="$presenter->isAuthorized('edit')" class="ajax btn btn-default btn-xs" href="{link edit key=>$key}">{_'edit'}</a>
+				<a n:if="$presenter->isAuthorized('delete!')" class="ajax btn btn-default btn-xs" n:confirm="really?" href="{link delete! key=>$key}">{_'delete'}</a>
 			</div>
 		</td>
 	</tr>

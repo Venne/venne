@@ -18,13 +18,19 @@
 
 {snippet elementView}
 	{if isset($showElementView)}
-	<div class="modal modal-large hide" id="optionEdit">
-		<div class="modal-header">
-			<a href="#" onClick="$('#optionEdit').modal('hide')" class="close">×</a>
-			<h3>Edit option</h3>
-		</div>
-		<div class="modal-body">
-			{element $presenter->elementName:$presenter->elementView $presenter->elementId}
+	<div class="modal" id="optionEdit" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<a href="#" onClick="$('#optionEdit').modal('hide')" class="close">×</a>
+					<h3>Edit option</h3>
+				</div>
+				<div class="modal-body">
+					{var $__element = TRUE}
+					{element $presenter->elementName:$presenter->elementView $presenter->elementId}
+					{var $__element = FALSE}
+				</div>
+			</div>
 		</div>
 	</div>
 	<script>

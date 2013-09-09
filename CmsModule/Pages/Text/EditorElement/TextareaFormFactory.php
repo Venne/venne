@@ -25,7 +25,7 @@ class TextareaFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addTextArea('text', 'Text')->getControlPrototype()->attrs['class'][] = 'input-block-level';
+		$form->addTextArea('text', 'Text');
 		$form->addSaveButton('Save');
 	}
 }

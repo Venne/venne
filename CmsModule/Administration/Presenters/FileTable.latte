@@ -4,8 +4,8 @@
 
 		{foreach $control->getItems() as $item}
 
-		<li class="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
-			<div href="#" class="thumbnail">
+		<div class="item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center; margin: 0 10px 10px 0; display: inline-block;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
+			<div href="#" class="img-thumbnail">
 				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
 					{var $type = 'folder'}
 				{else}
@@ -21,7 +21,7 @@
 				</a>
 				<h5>{$item->name}</h5>
 			</div>
-		</li>
+		</div>
 
 		{/foreach}
 
@@ -29,42 +29,50 @@
 {snippet form}
 	{if $control->editForm}
 		{var $form = $control[$control->editForm]}
-    <div class="modal{if $form->type} {$form->type}{/if} hide" id="editForm">
-        <div class="modal-header">
-            <a class="close" onClick="$('#editForm').modal('hide')">×</a>
+    <div class="modal{if $form->type} {$form->type}{/if}" id="editForm" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<a class="close" onClick="$('#editForm').modal('hide')">×</a>
 
-            <h3>{_$form->title}</h3>
-        </div>
-        <div class="modal-body">
-			{snippet editForm}
-    			{control editForm}
-			{/snippet}
-        </div>
+					<h3>{_$form->title}</h3>
+				</div>
+				<div class="modal-body">
+					{snippet editForm}
+						{control editForm}
+					{/snippet}
+				</div>
+			</div>
+		</div>
     </div>
     <script>
         $(function () {
-            $('#editForm').modal().on('hidden', function () {
+            $('#editForm').modal().on('hide.bs.modal', function () {
                 $.nette.ajax({ url: {link edit! editId=>NULL, editForm=>NULL}});
             });
         });
     </script>
 		{elseif $control->createForm}
 		{var $form = $control[$control->createForm]}
-    <div class="modal{if $form->type} {$form->type}{/if} hide" id="createForm">
-        <div class="modal-header">
-            <a class="close" onClick="$('#createForm').modal('hide')">×</a>
+    <div class="modal{if $form->type} {$form->type}{/if}" id="createForm" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<a class="close" onClick="$('#createForm').modal('hide')">×</a>
 
-            <h3>{_$form->title}</h3>
-        </div>
-        <div class="modal-body"
-			{snippet createForm}
-        		{control createForm}
-			{/snippet}
-        </div>
+					<h3>{_$form->title}</h3>
+				</div>
+				<div class="modal-body"
+					{snippet createForm}
+						{control createForm}
+					{/snippet}
+				</div>
+			</div>
+		</div>
     </div>
     <script>
         $(function () {
-            $('#createForm').modal().on('hidden', function () {
+            $('#createForm').modal().on('hide.bs.modal', function () {
                 $.nette.ajax({ url: {link create! createForm=>NULL}});
             });
         });

@@ -1,4 +1,4 @@
-<div class="container-fluid" n:snippet="tabs">
+<div class="container" n:snippet="tabs">
     <ul class="nav nav-tabs" style="margin-bottom: -0px; border-bottom: 0;">
         <li{if $control->tab == 0} class="active"{/if}><a class="ajax" n:href="tab! tab=>0">{_'Pages'}</a></li>
         <li{if $control->tab == 2} class="active"{/if}><a class="ajax" n:href="tab! tab=>2">{_'Files'}</a></li>
@@ -8,49 +8,49 @@
 </div>
 
 <div class="well sidebar-nav" n:snippet="content">
-	<div class="container-fluid pull-right" style="width: 10px; padding: 0; height: 100px; margin-top: -12px;">
+	<div class="container pull-right" style="width: 10px; padding: 0; height: 100px; margin-top: -12px;">
 		<span class="pull-right">
 			<a id="button-fullscreen" href="#">&times;</a>&nbsp;
 		</span>
 	</div>
-    <div class="container-fluid" style="padding-right: 0px;">
+    <div class="container" style="padding-right: 0px;">
         <div class="btn-toolbar">
             <div class="btn-group">
 			{if $control->tab == 0}
-                <a n:if="$presenter->isAuthorized(':Cms:Admin:Content:')" class="ajax btn"
-                   href="{plink :Cms:Admin:Content: key=>NULL, section=>NULL}"><span class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Content:')" class="ajax btn btn-default"
+                   href="{plink :Cms:Admin:Content: key=>NULL, section=>NULL}"><span class="glyphicon glyphicon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 2}
-                <a n:if="$presenter->isAuthorized(':Cms:Admin:Files:')" class="ajax btn"
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Files:')" class="ajax btn btn-default"
                    href="{plink :Cms:Admin:Files: key=>NULL}"><span
-                        class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                        class="glyphicon glyphicon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 3}
-                <a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:')" class="ajax btn"
+                <a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:')" class="ajax btn btn-default"
                    href="{plink :Cms:Admin:Layouts: key=>NULL}"><span
-                        class="icon icon-list-alt"></span> {_'Show in table'}</a>
+                        class="glyphicon glyphicon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
 			{if $control->tab == 4}
-				<a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:')" class="ajax btn"
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:')" class="ajax btn btn-default"
 				   href="{plink :Cms:Admin:Templates: key=>NULL}"><span
-						class="icon icon-list-alt"></span> {_'Show in table'}</a>
+						class="glyphicon glyphicon-list-alt"></span> {_'Show in table'}</a>
 			{/if}
             </div>
             <div class="btn-group pull-right">
 
 			{if $control->tab == 4}
-				<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <span class="caret"></span></button>
+				<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-file"></span> {_'Create new'} <span class="caret"></span></button>
 				<ul class="dropdown-menu">
 					<li><a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:create')" class="ajax"
-                   href="{plink :Cms:Admin:Templates:create}"><span class="icon icon-file"></span> {_'Create template'}</a></li>
+                   href="{plink :Cms:Admin:Templates:create}"><span class="glyphicon glyphicon-file"></span> {_'Create template'}</a></li>
 					<li><a n:if="$presenter->isAuthorized(':Cms:Admin:Templates:overload')" class="ajax"
-						   href="{plink :Cms:Admin:Templates:overload}"><span class="icon icon-file"></span> {_'Overload template'}</a></li>
+						   href="{plink :Cms:Admin:Templates:overload}"><span class="glyphicon glyphicon-file"></span> {_'Overload template'}</a></li>
 				</ul>
 			{elseif $control->tab == 3}
-				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn"
-				   href="{plink :Cms:Admin:Layouts:default, do=>create}"><span class="icon icon-file"></span> {_'Create new'}</a>
+				<a n:if="$presenter->isAuthorized(':Cms:Admin:Layouts:create')" class="ajax btn btn-default"
+				   href="{plink :Cms:Admin:Layouts:default, do=>create}"><span class="glyphicon glyphicon-file"></span> {_'Create new'}</a>
 				{elseif $presenter->isAuthorized(':Cms:Admin:Content:create')}
-                <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="icon icon-file"></span> {_'Create new'} <span class="caret"></span></button>
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-file"></span> {_'Create new'} <span class="caret"></span></button>
                 <ul class="dropdown-menu">
 					{if $control->tab == 0}
 						{var $items = $presenter->context->cms->contentManager->getContentTypes(TRUE)}

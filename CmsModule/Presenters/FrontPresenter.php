@@ -17,6 +17,17 @@ namespace CmsModule\Presenters;
 abstract class FrontPresenter extends BasePresenter
 {
 
+	/**
+	 * Redirect to other language.
+	 *
+	 * @param string $alias
+	 */
+	public function handleChangeLanguage($alias)
+	{
+		$this->redirect('this', array('lang' => $alias));
+	}
+
+
 	protected function checkLanguage()
 	{
 		if (count($this->context->parameters['website']['languages']) > 1) {
@@ -41,16 +52,5 @@ abstract class FrontPresenter extends BasePresenter
 			$lang = $this->context->parameters['website']['defaultLanguage'];
 		}
 		return $lang;
-	}
-
-
-	/**
-	 * Redirect to other language.
-	 *
-	 * @param string $alias
-	 */
-	public function handleChangeLanguage($alias)
-	{
-		$this->redirect('this', array('lang' => $alias));
 	}
 }

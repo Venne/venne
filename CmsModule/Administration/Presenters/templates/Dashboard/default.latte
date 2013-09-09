@@ -52,134 +52,135 @@
 
 
 {block content}
-<div class="container-fluid">
-	<div class="fluid-row">
-		<div class="span7">
-			<h2>{_'Logged in user'}</h2>
+<div class="container container-full">
+	<div class="row">
+		<div class="col-md-7">
 
-			<div class="media">
-				<a class="pull-left" href="#">
-					{var $user = $presenter->user->identity}
-					{if $user instanceof \CmsModule\Pages\Users\UserEntity && $user->route->photo}
-					<img class="media-object img-polaroid img-rounded" n:src="$user->route->photo->getFileUrl(true), size=>'96x96'" alt="{$user}">
-					{/if}
-				</a>
-
-				<div class="media-body">
-					<h4 class="media-heading">
-						{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
-					</h4>
-
-					{if $user}
-					<dl class="dl-horizontal">
-						<dt>{_Registered}</dt><dd>{$user->created|date: "%d.%m.%Y"}</dd>
-						<dt>{_E-mail}</dt><dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
-						{var $lastLog = $logRepository->findOneBy(array('user' => $user->id, 'target' => 'CmsModule\Pages\Users\UserEntity', 'action' => \CmsModule\Content\Entities\LogEntity::ACTION_OTHER), array('created' => 'DESC'))}
-						{if $lastLog}
-						<dt>{_'Last login'}</dt><dd>{$lastLog->created|date: "%d.%m.%Y"}</dd>
-						{/if}
-					</dl>
-					{/if}
-				</div>
-			</div>
-
-			<hr />
-
-			<h2>{_'Last events'}</h2>
-
-			<ul class="media-list">
-				{var $logs = $logRepository->findBy(array(), array('created' => 'DESC'), 20)}
-				{for $i = 0 ; $i < count($logs) ; $i++}
-					{var $log = $logs[$i]}
-					<li class="media">
+			<div class="panel panel-default">
+				<div class="panel-heading">{_'Logged in user'}</div>
+				<div class="panel-body">
+					<div class="media">
 						<a class="pull-left" href="#">
-							<img class="media-object" src="{include #dashboard-icon log=>$log}">
+							{var $user = $presenter->user->identity}
+							{if $user instanceof \CmsModule\Pages\Users\UserEntity && $user->route->photo}
+								<img class="media-object img-polaroid img-rounded" n:src="$user->route->photo->getFileUrl(true), size=>'96x96'" alt="{$user}">
+							{/if}
 						</a>
 
 						<div class="media-body">
 							<h4 class="media-heading">
-								{include #dashboard-header log=>$log}
+								{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
 							</h4>
 
-							<p>
-								{include #dashboard-body log=>$log}
+							{if $user}
+								<dl class="dl-horizontal">
+									<dt>{_Registered}</dt><dd>{$user->created|date: "%d.%m.%Y"}</dd>
+									<dt>{_E-mail}</dt><dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
+									{var $lastLog = $logRepository->findOneBy(array('user' => $user->id, 'target' => 'CmsModule\Pages\Users\UserEntity', 'action' => \CmsModule\Content\Entities\LogEntity::ACTION_OTHER), array('created' => 'DESC'))}
+									{if $lastLog}
+										<dt>{_'Last login'}</dt><dd>{$lastLog->created|date: "%d.%m.%Y"}</dd>
+									{/if}
+								</dl>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
 
-								{if isset($logs[$i + 1])}
-									{var $next = $log}
-									{var $next2 = $logs[++$i]}
-									{var $j = 1}
-									{while ($next->target === $next2->target && $next->targetKey === $next2->targetKey && $next->type === $next2->type && $next->user === $next2->user && $next->page === $next2->page && $next->action === $next2->action && $next->message === $next2->message)}
-										{var $j = $j+1}
-										{breakIf !isset($logs[$i + 1])}
-										{var $next2 = $logs[++$i]}
-									{/while}
-									{var $i = $i-1}
-								{/if}
 
-								{if $j > 1}
-									({$j}x)
-								{/if}
-							</p>
+			<div class="panel panel-default">
+				<div class="panel-heading">{_'Last events'}</div>
+				<div class="panel-body">
+					<ul class="media-list">
+						{var $logs = $logRepository->findBy(array(), array('created' => 'DESC'), 20)}
+						{for $i = 0 ; $i < count($logs) ; $i++}
+							{var $log = $logs[$i]}
+							<li class="media">
+								<a class="pull-left" href="#">
+									<img class="media-object" src="{include #dashboard-icon log=>$log}">
+								</a>
 
-							{if isset($logs[$i + 1])}
-								{var $next = $logs[++$i]}
-								{while ($next->target === $log->target && $next->targetKey === $log->targetKey && $next->type === $log->type) || ($log->page && $log->page === $next->page)}
+								<div class="media-body">
+									<h4 class="media-heading">
+										{include #dashboard-header log=>$log}
+									</h4>
+
 									<p>
-										{include #dashboard-body log=>$next}
+										{include #dashboard-body log=>$log}
 
 										{if isset($logs[$i + 1])}
-										{var $next2 = $logs[++$i]}
-										{var $j = 1}
-										{while ($next->target === $next2->target && $next->targetKey === $next2->targetKey && $next->type === $next2->type && $next->user === $next2->user && $next->page === $next2->page && $next->action === $next2->action && $next->message === $next2->message)}
-											{var $j = $j+1}
-											{breakIf !isset($logs[$i + 1])}
+											{var $next = $log}
 											{var $next2 = $logs[++$i]}
-										{/while}
-										{var $i = $i-1}
+											{var $j = 1}
+											{while ($next->target === $next2->target && $next->targetKey === $next2->targetKey && $next->type === $next2->type && $next->user === $next2->user && $next->page === $next2->page && $next->action === $next2->action && $next->message === $next2->message)}
+												{var $j = $j+1}
+												{breakIf !isset($logs[$i + 1])}
+												{var $next2 = $logs[++$i]}
+											{/while}
+											{var $i = $i-1}
 										{/if}
 
 										{if $j > 1}
-										({$j}x)
+											({$j}x)
 										{/if}
-
 									</p>
-									{breakIf !isset($logs[$i + 1])}
-									{var $next = $logs[++$i]}
-								{/while}
-								{var $i = $i-1}
-							{/if}
-						</div>
-					</li>
-				{/for}
-			</ul>
-		</div>
-		<div class="span5">
 
-			<h2>{_'Global shortcuts'}</h2>
+									{if isset($logs[$i + 1])}
+										{var $next = $logs[++$i]}
+										{while ($next->target === $log->target && $next->targetKey === $log->targetKey && $next->type === $log->type) || ($log->page && $log->page === $next->page)}
+											<p>
+												{include #dashboard-body log=>$next}
 
-			<ul class="nav nav-tabs nav-stacked">
-				<li><a n:href="publishAll!"><span class="icon icon-globe icon-white"></span> &nbsp; {_'Publish the entire site'}</a></li>
-				<li><a n:href="publishAll!"><span class="icon icon-globe icon-white"></span> &nbsp; {_'Go to Google Analytics'}</a></li>
-			</ul>
+												{if isset($logs[$i + 1])}
+													{var $next2 = $logs[++$i]}
+													{var $j = 1}
+													{while ($next->target === $next2->target && $next->targetKey === $next2->targetKey && $next->type === $next2->type && $next->user === $next2->user && $next->page === $next2->page && $next->action === $next2->action && $next->message === $next2->message)}
+														{var $j = $j+1}
+														{breakIf !isset($logs[$i + 1])}
+														{var $next2 = $logs[++$i]}
+													{/while}
+													{var $i = $i-1}
+												{/if}
 
-			<hr />
+												{if $j > 1}
+													({$j}x)
+												{/if}
 
-			<h2>{_Statistics}</h2>
-
-			{if isset($presenter->context->parameters['modules']['googleanalytics']) && $presenter->context->parameters['modules']['googleanalytics']['status'] === 'installed'}
-			<h3>{_'Visitors last month'}</h3>
-			{control googleAnalyticsVisitors history=>'-1 month', options=>[pointSize=>4], toolbar=>true}
-
-			<hr/>
-
-			<h3>{_'Sources visits for last week'}</h3>
-			{control googleAnalyticsSources}
-			{else}
-				<div class="alert alert-info">
-					<a class="close" data-dismiss="alert">×</a>
-					{_'Please install googleAnalytics module'}
+											</p>
+											{breakIf !isset($logs[$i + 1])}
+											{var $next = $logs[++$i]}
+										{/while}
+										{var $i = $i-1}
+									{/if}
+								</div>
+							</li>
+						{/for}
+					</ul>
 				</div>
-			{/if}
+			</div>
+
+		</div>
+		<div class="col-md-5">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">{_Statistics}</div>
+				<div class="panel-body">
+					{if isset($presenter->context->parameters['modules']['googleanalytics']) && $presenter->context->parameters['modules']['googleanalytics']['status'] === 'installed'}
+						<h3>{_'Visitors last month'}</h3>
+						{control googleAnalyticsVisitors history=>'-1 month', options=>[pointSize=>4], toolbar=>true}
+
+						<hr/>
+
+						<h3>{_'Sources visits for last week'}</h3>
+						{control googleAnalyticsSources}
+					{else}
+						<div class="alert alert-info">
+							<a class="close" data-dismiss="alert">×</a>
+							{_'Please install googleAnalytics module'}
+						</div>
+					{/if}
+				</div>
+			</div>
 
 		</div>
 	</div>

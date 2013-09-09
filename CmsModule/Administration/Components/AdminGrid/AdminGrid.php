@@ -380,7 +380,7 @@ class AdminGrid extends Control
 			$form->addSubmit('_cancel', 'Cancel')
 				->setValidationScope(FALSE)
 				->onClick[] = function () {
-				$this->redirect('this', array('formName' => NULL, 'mode'=>NULL));
+				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 			};
 		}
 
@@ -401,7 +401,7 @@ class AdminGrid extends Control
 			$form->addSubmit('_cancel', 'Cancel')
 				->setValidationScope(FALSE)
 				->onClick[] = function () {
-				$this->redirect('this', array('formName' => NULL, 'mode'=>NULL));
+				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 			};
 		}
 
@@ -417,13 +417,15 @@ class AdminGrid extends Control
 
 			$this->formName = NULL;
 			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => NULL));
+				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 			}
 
 			$this->invalidateControl('table');
-			$this->invalidateControl('navbarFormContainer');
-			$this->invalidateControl('actionFormContainer');
-			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'mode'=>NULL));
+			if ($this->mode === $this::MODE_PLACE) {
+				$this->invalidateControl('navbarFormContainer');
+				$this->invalidateControl('actionFormContainer');
+			}
+			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'mode' => NULL));
 		}
 	}
 
@@ -437,13 +439,15 @@ class AdminGrid extends Control
 			$this->id = NULL;
 			$this->formName = NULL;
 			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => NULL, 'id' => NULL));
+				$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
 			}
 
 			$this->invalidateControl('table');
-			$this->invalidateControl('navbarFormContainer');
-			$this->invalidateControl('actionFormContainer');
-			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL, 'mode'=>NULL));
+			if ($this->mode === $this::MODE_PLACE) {
+				$this->invalidateControl('navbarFormContainer');
+				$this->invalidateControl('actionFormContainer');
+			}
+			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
 		}
 	}
 

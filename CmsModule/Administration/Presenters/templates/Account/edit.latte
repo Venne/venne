@@ -8,8 +8,8 @@
 
 {block breadcrumb}
 	{include #parent}
-	<li><span class="divider">/</span> <a class="ajax" n:href="default">{_'Account'}</a></li>
-	<li class="active"><span class="divider">/</span> {include #header}</li>
+	<li><a class="ajax" n:href="default">{_'Account'}</a></li>
+	<li class="active">{include #header}</li>
 {/block}
 
 {block content}
