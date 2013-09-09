@@ -82,6 +82,10 @@ class CmsExtension extends CompilerExtension
 			->setFactory("CmsModule\Security\AuthorizatorFactory", array('@nette.presenterFactory', '@cms.roleRepository', '@session', '@doctrine.checkConnectionFactory'))
 			->addSetup('setReader');
 
+		$container->getDefinition('venne.moduleManager')
+			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array('@authorizatorFactory'))
+			->addSetup('$service->onUninstall[] = ?->clearPermissionSession', array('@authorizatorFactory'));
+
 		$container->addDefinition("authorizator")
 			->setClass("Nette\Security\Permission")
 			->setFactory("@authorizatorFactory::getPermissionsByUser", array('@user', TRUE));
