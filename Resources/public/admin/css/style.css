@@ -429,6 +429,7 @@ form fieldset:first-of-type legend {
 	margin-left: 0px;
 	position: fixed;
 	padding: 0;
+	z-index: 10;
 }
 #panel > div {
 	padding: 0 10px 0 10px;
