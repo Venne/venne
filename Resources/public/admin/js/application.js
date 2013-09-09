@@ -30,7 +30,7 @@ $(function () {
 		if ($('#panel').data('state') != 'closed') {
 			event.preventDefault();
 			$('#panel').animate({
-				marginLeft: '-320px'
+				marginLeft: '-300px'
 			}, 300).data('state', 'closed');
 			$('#content').animate({
 				marginLeft: '10px'
@@ -41,7 +41,7 @@ $(function () {
 				marginLeft: '0px'
 			}, 300).data('state', null);
 			$('#content').animate({
-				marginLeft: '330px'
+				marginLeft: '310px'
 			}, 300);
 		}
 	});
