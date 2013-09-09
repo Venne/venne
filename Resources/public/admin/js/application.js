@@ -200,15 +200,11 @@ $(function () {
 		},
 		selector: 'input[type=date], input[type=datetime]'
 	});
-	$.nette.ext('gridBind', {
-		success:function (payload) {
-			if (!payload.snippets) {
-				return;
-			}
-
-			for (var i in payload.snippets) {
-				$('#' + i + ' table.grido').grido();
-			}
+	$.nette.ext('gridoBind', {
+		load: function (rh) {
+			$('.grido .actions a').off('click.nette');
+			$('.grido').grido();
+			$('.grido .actions a').on('click.nette', rh);
 		}
 	});
 	$.nette.ext('formsIframePostBind', {
