@@ -13,6 +13,7 @@ namespace CmsModule\Pages\Registration;
 
 use CmsModule\Content\IRegistrationFormFactory;
 use CmsModule\Content\Presenters\PagePresenter;
+use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Pages\Users\ExtendedUserEntity;
 use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\SecurityManager;
@@ -35,6 +36,9 @@ class RoutePresenter extends PagePresenter
 	/** @var AuthorizatorFactory */
 	protected $authorizatorFactory;
 
+	/** @var PageRepository */
+	protected $pageRepository;
+
 
 	/**
 	 * @param SecurityManager $securityManager
@@ -54,9 +58,23 @@ class RoutePresenter extends PagePresenter
 	}
 
 
+	/**
+	 * @param PageRepository $pageRepository
+	 */
+	public function injectPageRepository(PageRepository $pageRepository)
+	{
+		$this->pageRepository = $pageRepository;
+	}
+
+
 	protected function startup()
 	{
 		parent::startup();
+
+		if (!$this->pageRepository->findOneBy(array('special' => 'users'))) {
+			$this->template->hideForm = true;
+			$this->flashMessage('User page does not exist.', 'warning', false);
+		}
 
 		if (!$this->extendedPage->userType) {
 			$this->template->hideForm = true;
