@@ -331,6 +331,7 @@ $(function () {
 		},
 		selector: "form .input-group-btn"
 	});
+	$.nette.ext('history').cache = false;
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').on('click', function (e) {
