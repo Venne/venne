@@ -138,7 +138,7 @@ class PageListener implements EventSubscriber
 		if ($this->_l) {
 			if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
 				if ($meta->associationMappings['extendedMainRoute']['targetEntity'] === 'CmsModule\Blank') {
-					$meta->associationMappings['extendedMainRoute']['targetEntity'] = $this->_l;
+					$meta->associationMappings['extendedMainRoute']['targetEntity'] = $this->getMainRouteByPage($meta->name);
 				}
 			} elseif (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
 				if ($meta->associationMappings['extendedPage']['targetEntity'] === 'CmsModule\Blank') {
@@ -167,12 +167,7 @@ class PageListener implements EventSubscriber
 			$this->_l = FALSE;
 
 			$meta->associationMappings['extendedPage']['targetEntity'] = $pageEntityName;
-
-			$r = $this->getMainRouteByPage($pageEntityName);
-
-			if ($r === $meta->name) {
-				$pageMeta->associationMappings['extendedMainRoute']['targetEntity'] = $meta->name;
-			}
+			$pageMeta->associationMappings['extendedMainRoute']['targetEntity'] = $this->getMainRouteByPage($pageEntityName);
 		}
 	}
 
