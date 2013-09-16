@@ -8,8 +8,8 @@
  */
 
 jQuery.extend({
-	venne:{
-		getBasePath:function () {
+	venne: {
+		getBasePath: function () {
 			if ($("body").attr("data-venne-basepath") !== undefined) {
 				return $("body").attr("data-venne-basepath");
 			} else {
@@ -26,7 +26,7 @@ $(function () {
 	});
 
 
-	$('#button-fullscreen').on('click', function (event){
+	$('#button-fullscreen').on('click', function (event) {
 		if ($('#panel').data('state') != 'closed') {
 			event.preventDefault();
 			$('#panel').animate({
@@ -58,7 +58,7 @@ $(function () {
 		}
 	});
 	$.nette.ext('formsValidationBind', {
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -71,10 +71,10 @@ $(function () {
 		}
 	});
 	$.nette.ext('tooltipBind', {
-		init:function () {
+		load: function () {
 			this.init($('body'));
 		},
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -87,18 +87,18 @@ $(function () {
 			}
 		}
 	}, {
-		init: function(target) {
-			target.find(this.selector).each(function(){
+		init: function (target) {
+			target.find(this.selector).each(function () {
 				$(this).tooltip();
 			});
 		},
 		selector: "[data-toggle='tooltip']"
 	});
 	$.nette.ext('formsMultiSelectBind', {
-		init: function(){
+		load: function () {
 			this.init($('body'));
 		},
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -110,16 +110,16 @@ $(function () {
 				});
 			}
 		}
-	},{
-		init: function(target){
-			target.find(this.selector).each(function(){
+	}, {
+		init: function (target) {
+			target.find(this.selector).each(function () {
 				var args = {
-						width: 'resolve'
-					};
+					width: 'resolve'
+				};
 
 				if ($(this).attr('data-tag-suggest') !== undefined) {
-					args.createSearchChoice = function(term, data) {
-						if ($(data).filter(function() {
+					args.createSearchChoice = function (term, data) {
+						if ($(data).filter(function () {
 							return this.text.localeCompare(term) === 0;
 						}).length === 0) {
 							return {
@@ -128,7 +128,7 @@ $(function () {
 							};
 						}
 					};
-					args.initSelection = function(element, callback) {
+					args.initSelection = function (element, callback) {
 						var data = [];
 						$(element.val().split($(element).attr('data-tag-joiner'))).each(function () {
 							data.push({id: this, text: this});
@@ -140,7 +140,7 @@ $(function () {
 						dataType: 'json',
 						results: function (data) {
 							var results = [];
-							$.each(data.results, function(index, item){
+							$.each(data.results, function (index, item) {
 								results.push({
 									id: index,
 									text: item
@@ -171,10 +171,10 @@ $(function () {
 		selector: 'select[multiple], input[data-tag-joiner]'
 	});
 	$.nette.ext('formsDateInputBind', {
-		init:function () {
+		load: function () {
 			this.init($('body'));
 		},
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -187,16 +187,16 @@ $(function () {
 			}
 		}
 	}, {
-		init: function(target) {
-				target.find(this.selector).each(function(){
-					var e = $(this);
-					e.wrap('<div class="input-group date" id="datetimepicker-' + $(this).attr('id')  + '" />')
-						.after('<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>')
-						.parent('div');
-					$('#datetimepicker-' + $(this).attr('id')).datetimepicker({
-						format: 'yyyy-MM-dd hh:mm:ss'
-					});
+		init: function (target) {
+			target.find(this.selector).each(function () {
+				var e = $(this);
+				e.wrap('<div class="input-group date" id="datetimepicker-' + $(this).attr('id') + '" />')
+					.after('<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>')
+					.parent('div');
+				$('#datetimepicker-' + $(this).attr('id')).datetimepicker({
+					format: 'yyyy-MM-dd hh:mm:ss'
 				});
+			});
 		},
 		selector: 'input[type=date], input[type=datetime]'
 	});
@@ -208,10 +208,10 @@ $(function () {
 		}
 	});
 	$.nette.ext('formsIframePostBind', {
-		init:function () {
+		init: function () {
 			this.init(this.selector);
 		},
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -221,28 +221,28 @@ $(function () {
 			}
 		}
 	}, {
-		init:function (target) {
+		init: function (target) {
 			$(target).parents('form').each(function () {
 				$(this).removeClass('ajax');
 				var _id = $(this).attr('id');
 
 				$(this).iframePostForm({
-					iframeID:this.idPrefix + _id,
-					complete:function (response) {
+					iframeID: this.idPrefix + _id,
+					complete: function (response) {
 						url = $('#' + this.idPrefix + _id).get(0).contentWindow.location;
-						$.nette.ajax({url:url});
+						$.nette.ajax({url: url});
 					}
 				})
 			});
 		},
-		selector:'form.ajax input:file',
-		idPrefix:'iframe-post-form-'
+		selector: 'form.ajax input:file',
+		idPrefix: 'iframe-post-form-'
 	});
 	$.nette.ext('formsFileUpload', {
-		init: function () {
+		load: function () {
 			this.init('body');
 		},
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -295,23 +295,23 @@ $(function () {
 		}
 	});
 	$.nette.ext('bootstrapModalBind', {
-		init:function () {
+		init: function () {
 			this.resize();
 			$(window).bind('resize', this.resize);
 		},
-		success:function (payload) {
+		success: function (payload) {
 			this.resize();
 		}
 	}, {
-		resize:function () {
+		resize: function () {
 			$(".modal.modal-full .modal-body").css("max-height", $(window).height() - 120);
 		}
 	});
 	$.nette.ext('textWithSelectBind', {
-		init:function () {
+		init: function () {
 			this.init($('body'));
 		},
-		success:function (payload) {
+		success: function (payload) {
 			if (!payload.snippets) {
 				return;
 			}
@@ -324,14 +324,13 @@ $(function () {
 			}
 		}
 	}, {
-		init: function(target) {
-			target.find(this.selector).each(function(){
+		init: function (target) {
+			target.find(this.selector).each(function () {
 				$(this).textWithSelect();
 			});
 		},
 		selector: "form .input-group-btn"
 	});
-	$.nette.ext('history').cache = false;
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').on('click', function (e) {
