@@ -134,6 +134,11 @@ factories:
 		parameters: [compiler]
 		tags: [macro]
 
+	uiMacro:
+		factory: CmsModule\Content\Macros\UIMacros::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
+
 includes:
 	- presenters.neon
 	- components.neon
