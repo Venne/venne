@@ -1,6 +1,5 @@
 {if $paginator->pageCount > 1}
-<div class="pagination pagination-centered">
-	<ul>
+<ul class="pagination">
 
 	<li{if $paginator->isFirst()} class="disabled"{/if}><a href="{if $paginator->isFirst()}#{else}{link this, 'page' => $paginator->page - 1}{/if}">« {_Previous}</a></li>
 
@@ -15,6 +14,5 @@
 
 	<li{if $paginator->isLast()} class="disabled"{/if}><a href="{if $paginator->isLast()}#{else}{link this, 'page' => $paginator->page + 1}{/if}">{_Next} »</a></li>
 
-	</ul>
-</div>
+</ul>
 {/if}
