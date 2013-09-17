@@ -68,16 +68,15 @@ class NavigationControl extends Control
 	}
 
 
-	public function renderDefault($startDepth = NULL, $maxDepth = NULL, $followActive = NULL, $showMain = FALSE)
+	public function renderDefault($startDepth = NULL, $maxDepth = NULL, $followActive = NULL)
 	{
 		$cacheKey = array(
-			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $showMain, $this->getPresenter()->lang
+			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $this->getPresenter()->lang
 		);
 
 		$this->template->startDepth = $startDepth ? : 0;
 		$this->template->maxDepth = $maxDepth ? : 1;
 		$this->template->followActive = $followActive ? : FALSE;
-		$this->template->showMain = $showMain;
 		$this->template->cacheKey = array(
 			implode('|', $cacheKey),
 			$this->presenter->user->isLoggedIn() ? $this->presenter->user->getRoles() : NULL,
