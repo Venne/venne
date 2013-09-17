@@ -173,6 +173,15 @@ abstract class BaseElement extends Control implements IElement
 			foreach ($data as $i) {
 				$this->element = $this->getElementRepository()->findOneBy(array(
 					'name' => $this->name,
+					'mode' => ElementEntity::MODE_WEBSITE,
+				) + $i);
+
+				if ($this->element) {
+					break;
+				}
+
+				$this->element = $this->getElementRepository()->findOneBy(array(
+					'name' => $this->name,
 					'layout' => $this->layoutEntity->id,
 					'mode' => ElementEntity::MODE_LAYOUT,
 				) + $i);
@@ -211,12 +220,12 @@ abstract class BaseElement extends Control implements IElement
 
 			if (!$this->element) {
 				$ret = $this->createEntity();
-				if (($entity = $this->getElementRepository()->findOneBy(array('name' => $this->name, 'layout' => $this->layoutEntity->id)))) {
-					$ret->setMode($entity->mode);
+				$this->element = $ret->getElement();
+				if (($entity = $this->getElementRepository()->findOneBy(array('name' => $this->name)))) {
+					$this->element->setMode($entity->mode);
 				}
 				$this->entityManager->persist($ret);
 				$this->entityManager->flush($ret);
-				$this->element = $ret->getElement();
 			}
 		}
 		return $this->element;

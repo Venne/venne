@@ -26,11 +26,13 @@ use DoctrineModule\Entities\IdentifiedEntity;
 class ElementEntity extends IdentifiedEntity
 {
 
-	const MODE_LAYOUT = 0;
+	const MODE_WEBSITE = 0;
 
-	const MODE_PAGE = 1;
+	const MODE_LAYOUT = 1;
 
-	const MODE_ROUTE = 2;
+	const MODE_PAGE = 2;
+
+	const MODE_ROUTE = 4;
 
 	const LANGMODE_SHARE = 0;
 
@@ -38,15 +40,16 @@ class ElementEntity extends IdentifiedEntity
 
 	/** @var array */
 	protected static $modes = array(
+		self::MODE_WEBSITE => 'Website',
 		self::MODE_LAYOUT => 'Layout',
-		self::MODE_PAGE => 'page',
-		self::MODE_ROUTE => 'route'
+		self::MODE_PAGE => 'Page',
+		self::MODE_ROUTE => 'Route',
 	);
 
 	/** @var array */
 	protected static $langModes = array(
-		self::LANGMODE_SHARE => 'share',
-		self::LANGMODE_SPLIT => 'split',
+		self::LANGMODE_SHARE => 'Share',
+		self::LANGMODE_SPLIT => 'Split',
 	);
 
 	/**

@@ -39,6 +39,12 @@ abstract class ExtendedElementEntity extends IdentifiedEntity
 	public function __construct($name, LayoutEntity $layout = NULL, PageEntity $page = NULL, RouteEntity $route = NULL, LanguageEntity $language = NULL)
 	{
 		$this->element = new ElementEntity(get_class($this), $name, $layout, $page, $route, $language);
+		$this->startup();
+	}
+
+
+	protected function startup()
+	{
 	}
 
 

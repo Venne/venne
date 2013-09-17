@@ -39,10 +39,13 @@ class BasicFormFactory extends FormFactory
 		$element->setCurrentGroup($form->addGroup());
 		$mode = $element->addSelect('mode', 'Share data with', ElementEntity::getModes());
 		$mode
-			->addCondition($form::IS_IN, array(1, 2))->toggle('form-group-page')
+			->addCondition($form::IS_IN, array(1, 2, 4))->toggle('form-group-layout')
 			->endCondition()
-			->addCondition($form::EQUAL, 2)->toggle('form-group-route');
+			->addCondition($form::IS_IN, array(2, 4))->toggle('form-group-page')
+			->endCondition()
+			->addCondition($form::EQUAL, 4)->toggle('form-group-route');
 
+		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-layout'));
 		$element->addManyToOne('layout', 'Layout');
 
 		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-page'));
