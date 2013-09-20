@@ -4,8 +4,8 @@
 
 		{foreach $control->getItems() as $item}
 
-		<div class="item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center; margin: 0 10px 10px 0; display: inline-block;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
-			<div href="#" class="img-thumbnail">
+		<div class="dropdown item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center; margin: 0 10px 10px 0; display: inline-block;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
+			<div href="#" class="img-thumbnail dropdown-toggle">
 				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
 					{var $type = 'folder'}
 				{else}
@@ -21,10 +21,15 @@
 				</a>
 				<h5>{$item->name}</h5>
 			</div>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" style="margin-top: -10px; text-align: left;">
+				<li><a href="javascript:;" onClick="window.location = $(this).parent().parent().parent().find('a').attr('href');"><i class="glyphicon glyphicon-fullscreen"></i> {_Show}</a></li>
+				<li><a class="ajax" href="{if $item instanceof \CmsModule\Content\Entities\DirEntity}{$presenter['table']->link('doAction!', array('id' => $item->id, 'name' => 'editDir'))}{else}{$presenter['fileTable']->link('doAction!', array('id' => $item->id, 'name' => 'editFile'))}{/if}"><i class="glyphicon glyphicon-edit"></i> {_Edit}</a></li>
+				<li role="presentation" class="divider"></li>
+				<li><a class="ajax" href="{plink delete! key2=>(($item instanceof \CmsModule\Content\Entities\DirEntity ? 'd_' : 'f_') . $item->id)}"><i class="glyphicon glyphicon-trash"></i> {_Delete}</a></li>
+			</ul>
 		</div>
 
 		{/foreach}
-
 
 {snippet form}
 	{if $control->editForm}

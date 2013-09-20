@@ -21,13 +21,6 @@
 {/block}
 
 {block content}
-
-<ul id="fileMenu" class="contextMenu">
-	<li class="view"><a href="#view">View</a></li>
-	<li class="edit"><a href="#edit">Edit</a></li>
-	<li class="delete"><a href="#delete">Delete</a></li>
-</ul>
-
 <script>
 // <![CDATA[
 	$(function () {
@@ -55,42 +48,7 @@
 			}
 		});
 
-		$("#sortable > div.item").live('mouseover', function (e) {
-			if (!$(this).hasClass('ui-selecting') && !clicked) {
-				$(this).addClass('ui-selecting');
-			}
-		});
-
-		$("#sortable > div.item").live('mouseout', function () {
-			if ($(this).hasClass('ui-selecting') && !clicked) {
-				$(this).removeClass('ui-selecting');
-			}
-		});
-
-		$("#sortable > div.item").contextMenu({ menu:"fileMenu"}, function (action, el, pos) {
-
-			if (action == "delete") {
-				var id = $(el).attr("id");
-				$.nette.ajax({ url: {link delete!} +'&key2=' + $(el).attr("id") });
-
-				$('#sortable > div.item.ui-selected').each(function () {
-					if($(this).attr("id") != id){
-						$.nette.ajax({ url: {link delete!} +'&key2=' + $(this).attr("id") });
-					}
-				});
-			} else if (action == "edit") {
-				if($(el).attr("id").substr(0, 2) == 'f_') {
-					$.nette.ajax({ url: {=$presenter['fileTable']->link('doAction!')} +'&fileTable-id=' + $(el).attr("id").replace('f_', '') + '&fileTable-name=editFile' });
-				} else {
-					$.nette.ajax({ url: {=$presenter['table']->link('doAction!')} +'&table-id=' + $(el).attr("id").replace('d_', '') + '&table-name=editDir' });
-				}
-			} else if (action == "view") {
-				window.location = $(el).find('a').attr('href');
-			}
-
-		});
-
-		$("#sortable > div.item").live("click", function (event) {
+		$("#sortable > div.item").on("click", function (event) {
 
 			event.preventDefault();
 
@@ -109,36 +67,6 @@
 				url:$(this).find("a").attr("href"),
 				off: ['history']
 			});
-		});
-
-		$("#sortable > div.item").trigger({
-			type:'mousedown',
-			which:3
-		});
-
-		$("#sortable > div.item").draggable({
-			drag:function (e, ui) {
-
-				$(this).addClass('ui-selected');
-
-				// set selected group position to main dragged object
-				// this works because the position is relative to the starting position
-				$('#sortable .ui-selected').css({
-					top:ui.position.top,
-					left:ui.position.left
-				});
-			}
-		});
-
-		$("#sortable > div.item").droppable({
-			drop:function (event, ui) {
-				if (confirm('Move to folder?')) {
-					var id = $(this).attr('id');
-					$('#sortable > div.item.ui-selected').each(function () {
-						$.nette.ajax({ url: {link setParent!} +'&from=' + $(this).attr('id') + "&to=" + id + "&dropmode=" + 'into'});
-					});
-				}
-			}
 		});
 
 	{if $presenter->browserMode}
@@ -164,3 +92,21 @@
 {control table}
 {control fileTable}
 </div>
+
+<script>
+	$(function () {
+		$('.dropdown-toggle').on('click',function(e){
+			e.preventDefault();
+		});
+		$('.dropdown-toggle').on('contextmenu',function(e){
+			var _this = $(this);
+			e.preventDefault();
+			_this.dropdown('toggle');
+
+			_this.parent().on('mouseleave', function(){
+				$(this).off('mouseleave');
+				$(this).removeClass('open');
+			});
+		});
+	});
+</script>

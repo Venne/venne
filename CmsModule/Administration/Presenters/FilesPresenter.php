@@ -294,7 +294,11 @@ class FilesPresenter extends BasePresenter
 		$repository = substr($key2, 0, 1) == 'd' ? $this->dirRepository : $this->fileRepository;
 		$repository->delete($repository->find(substr($key2, 2)));
 
-		$this->flashMessage("Page has been deleted", "success");
+		if (substr($key2, 0, 1) == 'd') {
+			$this->flashMessage('Directory has been deleted', 'success');
+		} else {
+			$this->flashMessage('File has been deleted', 'success');
+		}
 
 		if (!$this->isAjax()) {
 			$this->redirect("this");
