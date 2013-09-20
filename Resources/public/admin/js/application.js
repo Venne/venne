@@ -71,7 +71,7 @@ $(function () {
 		}
 	});
 	$.nette.ext('tooltipBind', {
-		load: function () {
+		init: function () {
 			this.init($('body'));
 		},
 		success: function (payload) {
@@ -95,7 +95,7 @@ $(function () {
 		selector: "[data-toggle='tooltip']"
 	});
 	$.nette.ext('formsMultiSelectBind', {
-		load: function () {
+		init: function () {
 			this.init($('body'));
 		},
 		success: function (payload) {
@@ -171,7 +171,7 @@ $(function () {
 		selector: 'select[multiple], input[data-tag-joiner]'
 	});
 	$.nette.ext('formsDateInputBind', {
-		load: function () {
+		init: function () {
 			this.init($('body'));
 		},
 		success: function (payload) {
@@ -239,7 +239,7 @@ $(function () {
 		idPrefix: 'iframe-post-form-'
 	});
 	$.nette.ext('formsFileUpload', {
-		load: function () {
+		init: function () {
 			this.init('body');
 		},
 		success: function (payload) {
@@ -308,7 +308,7 @@ $(function () {
 		}
 	});
 	$.nette.ext('textWithSelectBind', {
-		init: function () {
+		load: function () {
 			this.init($('body'));
 		},
 		success: function (payload) {
