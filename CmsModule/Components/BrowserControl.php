@@ -34,9 +34,6 @@ class BrowserControl extends Control
 	/** @var callable */
 	protected $dropCallback;
 
-	/** @var array */
-	protected $contentMenu = array();
-
 
 	/**
 	 * @param $name
@@ -50,15 +47,6 @@ class BrowserControl extends Control
 		}
 
 		$this->contentMenu[$name] = Callback::create($callback);
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getContentMenu()
-	{
-		return $this->contentMenu;
 	}
 
 
@@ -113,12 +101,6 @@ class BrowserControl extends Control
 	public function getPages($parent = NULL)
 	{
 		return Callback::create($this->loadCallback)->invoke($parent);
-	}
-
-
-	public function handleContentMenu($name)
-	{
-		$this->contentMenu[$name]->invoke();
 	}
 
 

@@ -1,25 +1,8 @@
 <div id="tree-{$control->name}"></div>
 
-{var $contentMenu = $control->getContentMenu()}
-<ul n:if="count($contentMenu)" id="tree-contentMenu-{$control->name}" class="contextMenu">
-	<li n:foreach="$contentMenu as $name=>$callback" class="{$name}"><a href="#contentMenu-{$control->name}-{$name}">{$name}</a></li>
-</ul>
 
 <script type="text/javascript">
 // <![CDATA[
-
-	{if count($contentMenu)}
-    function bindContextMenu(span) {
-        $(span).contextMenu({ menu:"tree-contentMenu-{!$control->name}"}, function (action, el, pos) {
-            var node = $.ui.dynatree.getNode(el);
-			var t = 'contentMenu-{!$control->name}-';
-			$.nette.ajax({
-				'url': {link contentMenu! name=>'this'}.replace('this', action.substr(t.length))
-			});
-        });
-    };
-	{/if}
-
 
     $(function () {
         $("#tree-{!$control->name}").dynatree({
@@ -27,7 +10,7 @@
             onActivate:function (node) {
                 node.deactivate();
 				$.nette.ajax({
-					'url': {link click! key=>'this'}.replace('this', node.data.key)
+					url: {link click! key=>'this'}.replace('this', node.data.key)
 				});
             },
             // persist: true,
@@ -45,19 +28,15 @@
                 });
             }
 
-			{if count($contentMenu)}
-			,
-            onCreate:function (node, span) {
-                bindContextMenu(span);
-            }
-			{/if}
-
 			{if count($control->onExpand) > 0}
 			,
 			onExpand:function (flag, dtnode) {
 				var url = {link expand! '-a-', '-b-'}.
 				replace('-a-', dtnode.data.key).replace('-b-', flag);
-				$.nette.ajax({ url:url })
+				$.nette.ajax({
+					url: url,
+					off: ['history']
+				});
 			}
 			{/if}
 
@@ -87,7 +66,10 @@
                     node.expand(true);
                     var url = {link setParent 'from'=>'thisfrom', 'to'=>'thisto', 'dropmode'=>'thisdropmode'};
                     url = url.replace('thisdropmode', hitMode).replace('thisto', node.data.key).replace('thisfrom', sourceNode.data.key);
-                    $.nette.ajax({ url:url});
+                    $.nette.ajax({
+						url: url,
+						off: ['history']
+					});
                     //alert("move:" + sourceNode.data.key + " to " + node.data.key + " hit " + hitMode);
                     logMsg("tree.onDrop(%o, %o, %s)", node, sourceNode, hitMode);
                     sourceNode.move(node, hitMode);
