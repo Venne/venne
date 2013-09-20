@@ -19,4 +19,10 @@ use Venne\Module\ComposerModule;
 class Module extends ComposerModule
 {
 
+	public function getRequire()
+	{
+		return parent::getRequire() + array(
+			'ajax' => '2.0.x',
+		);
+	}
 }
