@@ -76,9 +76,9 @@ class LogsPresenter extends BasePresenter
 	 */
 	public function handleDelete()
 	{
-		unlink($this->logDir . "/" . $this->getParameter("name"));
-		$this->flashMessage("Log has been removed", "success");
-		$this->redirect("this");
+		unlink($this->logDir . '/' . $this->getParameter('name'));
+		$this->flashMessage('Log has been removed', 'success');
+		$this->redirect('this');
 	}
 
 
@@ -88,11 +88,11 @@ class LogsPresenter extends BasePresenter
 	public function handleDeleteAll()
 	{
 		foreach ($this->getFiles() as $item) {
-			unlink($this->logDir . "/" . $item["link"]);
+			unlink($this->logDir . '/' . $item['link']);
 		}
 
-		$this->flashMessage("Logs were removed", "success");
-		$this->redirect("this");
+		$this->flashMessage('Logs were removed', 'success');
+		$this->redirect('this');
 	}
 
 
@@ -100,11 +100,11 @@ class LogsPresenter extends BasePresenter
 	{
 		$ret = array();
 
-		foreach (Finder::findFiles("exception*")->in($this->logDir) as $file) {
-			$data = explode("-", $file->getFileName());
+		foreach (Finder::findFiles('exception*')->in($this->logDir) as $file) {
+			$data = explode('-', $file->getFileName());
 
 			$date = "{$data[1]}-{$data[2]}-{$data[3]} {$data[4]}:{$data[5]}:{$data[6]}";
-			$info = array("date" => DateTime::from($date), "hash" => $data[7], "link" => $file->getFileName());
+			$info = array('date' => DateTime::from($date), 'hash' => $data[7], 'link' => $file->getFileName());
 
 			$ret[$date] = $info;
 		}
