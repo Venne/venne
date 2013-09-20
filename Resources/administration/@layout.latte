@@ -34,7 +34,9 @@
 		{* ajax *}
 		{js @ajaxModule/nette.ajax.js}
 		{js @ajaxModule/extensions/spinner.ajax.js}
-		{js @ajaxModule/history/history.ajax.js}
+		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
+			{js @ajaxModule/history/history.ajax.js}
+		{/if}
 
 		{* forms *}
 		{css @bootstrapdatetimeModule/bootstrap-datetimepicker.min.css}
