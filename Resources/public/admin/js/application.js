@@ -58,17 +58,19 @@ $(function () {
 		}
 	});
 	$.nette.ext('formsValidationBind', {
-		success: function (payload) {
-			if (!payload.snippets) {
-				return;
-			}
-
-			for (var i in payload.snippets) {
-				$('#' + i + ' form').each(function () {
-					Nette.initForm(this);
-				});
-			}
+		load: function () {
+			this.init($('body'));
 		}
+	}, {
+		init: function (target) {
+			target.find(this.selector).each(function () {
+				if (!$(this).data('formsValidationBind')) {
+					$(this).data('formsValidationBind', true);
+					Nette.initForm(this);
+				}
+			});
+		},
+		selector: "form"
 	});
 	$.nette.ext('tooltipBind', {
 		load: function () {
