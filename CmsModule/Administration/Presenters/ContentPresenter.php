@@ -324,6 +324,7 @@ class ContentPresenter extends BasePresenter
 		$_this = $this;
 		$adminGrid = $this->contentTableFactory->create();
 		$table = $adminGrid->getTable();
+		$table->setTranslator($this->presenter->context->translator->translator);
 
 		if ($this->isAuthorized('edit')) {
 			$table->addAction('publish', 'published')

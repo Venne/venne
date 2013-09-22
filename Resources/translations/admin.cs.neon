@@ -63,6 +63,7 @@ installation: isntalace
 in-Site administration: in-Site administrace
 items per page: počet položek na stránku
 last events: poslední události
+last login: poslední přihlášení
 language: jazyk
 language list: výpis jazyků
 language settings: nastavení jazyků
@@ -101,6 +102,7 @@ robots: roboti
 statistics: statistiky
 search: vyhledat
 search page: vyhledávací stránka
+set as root: jako hlavní
 save: uložit
 security: zabezpečení
 sessions: relace
@@ -116,6 +118,7 @@ shared: sdílený
 sign in: přihlásit se
 site tags: tagy webu
 site users: stránka uživatelů
+social logins: sociální přihlášení
 system: systém
 tags: tagy
 target: cíl
@@ -131,6 +134,7 @@ user: uživatel
 user account: uživatelský účet
 user card: karta uživatele
 user manager: správce uživatelů
+users: uživatelé
 version: verze
 visitors last month: návštěvníci za poslední měsíc
 website: webová stránka
@@ -228,12 +232,14 @@ profile settings: nastavení profilu
 'login page': stránka pro přihlášení
 'redirect': přesměrování
 'registration': registrace
+registered: registrovaný
 'remember me on this computer': zapamatovat příhlášení na tomto počítači
 'new page': nová stránka
 new template: nová šablona
 global shortcuts: globální zkratky
 publish the entire site: přepublikovat celý web
 published: publikováno
+publication: publikace
 'page list': seznam stránek
 'special pages': speciální stránky
 normal: normální
