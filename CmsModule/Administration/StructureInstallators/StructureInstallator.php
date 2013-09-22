@@ -189,10 +189,11 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$em->persist(new PermissionEntity($manager, 'CmsModule\Administration\Presenters\DashboardPresenter'));
 		$em->persist(new PermissionEntity($manager, 'CmsModule\Administration\Presenters\AccountPresenter', 'show'));
 
-		$em->persist(new PermissionEntity($editor, 'CmsModule\Administration\Presenters\ContentPresenter'));
+		$em->persist(new PermissionEntity($editor, 'CmsModule\Administration\Presenters\ContentPresenter', 'edit'));
 		$em->persist(new PermissionEntity($editor, 'CmsModule\Administration\Presenters\TagPresenter'));
 		$em->persist(new PermissionEntity($editor, 'CmsModule\Administration\Presenters\FilesPresenter'));
 
+		$em->persist(new PermissionEntity($contentManager, 'CmsModule\Administration\Presenters\ContentPresenter'));
 		$em->persist(new PermissionEntity($contentManager, 'CmsModule\Administration\Presenters\LayoutsPresenter'));
 		$em->persist(new PermissionEntity($contentManager, 'CmsModule\Administration\Presenters\TemplatesPresenter'));
 		$em->persist(new PermissionEntity($contentManager, 'CmsModule\Administration\Presenters\LanguagePresenter'));
