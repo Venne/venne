@@ -54,7 +54,7 @@ class HeadMacro extends MacroSet
 		return $writer->write('$_bodyMacroData = ob_get_clean();?><head>
 <?php $_renderEventsArgs = new \CmsModule\Events\RenderArgs; $_renderEventsArgs->setPresenter($presenter); ?>
 <?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadBegin, $_renderEventsArgs); ?>
-<?php echo $presenter["head"]->render(); echo $_headMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadEnd, $_renderEventsArgs); ?>
+<?php echo $_headMacroData; echo $presenter["head"]->render();?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadEnd, $_renderEventsArgs); ?>
 </head>
 
 <body<?php if($basePath){?> data-venne-basepath="<?php echo $basePath;?>"<?php } ?>><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyBegin, $_renderEventsArgs); ?>

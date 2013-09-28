@@ -12,31 +12,26 @@
 <!DOCTYPE html>
 <html>
 {head}
-	{* jquery *}
-	{js @jquery2.0Module/jquery.js}
-	{js @jquery2.0Module/jquery-migrate.js}
-	{js @holderModule/holder.js}
 
-	{* nette *}
-	{js @netteModule/netteForms.js}
+	{css
+		@bootstrap3Module/css/bootstrap.css,
+		@bootstrap3Module/css/bootstrap-theme.css,
+		@typeaheadModule/typeahead.js-bootstrap.css,
+		@cmsModule/css/application.css
+	}
 
-	{* ajax *}
-	{js @ajaxModule/nette.ajax.js}
-	{js @ajaxModule/history/history.ajax.js}
-
-	{* bootstrap *}
-	{js @bootstrap3Module/js/bootstrap.js}
-	{css @bootstrap3Module/css/bootstrap.css}
-	{css @bootstrap3Module/css/bootstrap-theme.css}
-
-	{* typeahead.js *}
-	{js @hoganModule/hogan-2.0.0.js}
-	{js @typeaheadModule/typeahead.js}
-	{css @typeaheadModule/typeahead.js-bootstrap.css}
-
-	{* application *}
-	{js @cmsModule/js/application.js}
-	{css @cmsModule/css/application.css}
+	{js
+		@jquery2.0Module/jquery.js,
+		@jquery2.0Module/jquery-migrate.js,
+		@holderModule/holder.js,
+		@netteModule/netteForms.js,
+		@ajaxModule/nette.ajax.js,
+		@ajaxModule/history/history.ajax.js,
+		@bootstrap3Module/js/bootstrap.js,
+		@hoganModule/hogan-2.0.0.js,
+		@typeaheadModule/typeahead.js,
+		@cmsModule/js/application.js,
+	}
 
 	{block #head}{/block}
 {/head}

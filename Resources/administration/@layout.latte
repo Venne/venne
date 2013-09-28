@@ -10,60 +10,47 @@
 <html>
 	{head}
 
-		{* jquery *}
-		{js @jquery2.0Module/jquery.js}
-		{js @jquery2.0Module/jquery-migrate.js}
-		{js @jqueryui1.10Module/jquery-ui.js}
-		{css @jqueryui1.10Module/themes/base/jquery-ui.css, media=>'screen, projection, tv'}
+		{js
+			@jquery2.0Module/jquery.js,
+			@jquery2.0Module/jquery-migrate.js,
+			@jqueryui1.10Module/jquery-ui.js,
+			@stringtoslugModule/jquery.stringToSlug.js,
+			@cmsModule/typing/jquery.typing-0.2.0.min.js,
+			@holderModule/holder.js,
+			@netteModule/netteForms.js,
+			@bootstrap3Module/js/bootstrap.js,
+			@ajaxModule/nette.ajax.js,
+			@ajaxModule/extensions/spinner.ajax.js,
+			@bootstrapdatetimeModule/bootstrap-datetimepicker.min.js,
+			@formsModule/textWithSelect/textWithSelect.js,
+			@gridoModule/grido.js,
+			@select2Module/select2.js,
+			@dynatreeModule/jquery.dynatree.js,
 
-		{* jquery plugins *}
-		{js @stringtoslugModule/jquery.stringToSlug.js}
+			@cmsModule/admin/js/application.js
+		}
 
-		{*js @CmsModule/iframe-post-form/jquery.iframe-post-form.js*}
-		{js @cmsModule/typing/jquery.typing-0.2.0.min.js}
-		{js @holderModule/holder.js}
+		{css
+			@jqueryui1.10Module/themes/base/jquery-ui.css,
+			@bootstrap3Module/css/bootstrap.css,
+			@bootstrapdatetimeModule/bootstrap-datetimepicker.min.css,
+			@gridoModule/grido.css,
+			@CmsModule/admin/css/grido.css,
+			@select2Module/select2.css,
 
-		{* nette *}
-		{js @netteModule/netteForms.js}
+			@CmsModule/admin/css/style.css
+		}
 
-		{* bootstrap *}
-		{js @bootstrap3Module/js/bootstrap.js}
-		{css @bootstrap3Module/css/bootstrap.css}
-		{*css @bootstrap3Module/css/bootstrap-theme.css*}
+		{css @dynatreeModule/skin-bootstrap/ui.dynatree.css}
 
-		{* ajax *}
-		{js @ajaxModule/nette.ajax.js}
-		{js @ajaxModule/extensions/spinner.ajax.js}
 		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
 			{js @ajaxModule/history/history.ajax.js}
 		{/if}
 
-		{* forms *}
-		{css @bootstrapdatetimeModule/bootstrap-datetimepicker.min.css}
-		{js @bootstrapdatetimeModule/bootstrap-datetimepicker.min.js}
-
-		{js @formsModule/textWithSelect/textWithSelect.js}
-
-		{* application *}
-		{js @cmsModule/admin/js/application.js}
-		{css @CmsModule/admin/css/grido.css}
-		{css @CmsModule/admin/css/style.css}
 		{if $presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
 			{js @CmsModule/admin/js/panel.js}
 			{css @CmsModule/admin/css/inside.css}
 		{/if}
-
-		{* Grido *}
-		{js @gridoModule/grido.js}
-		{css @gridoModule/grido.css}
-
-		{* select2 *}
-		{js @select2Module/select2.js}
-		{css @select2Module/select2.css}
-
-		{* dynatree *}
-		{js @dynatreeModule/jquery.dynatree.js}
-		{css @dynatreeModule/skin-bootstrap/ui.dynatree.css}
 
 	{/head}
 
