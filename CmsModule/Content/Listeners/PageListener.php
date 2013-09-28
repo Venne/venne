@@ -51,6 +51,7 @@ class PageListener implements EventSubscriber
 		'CmsModule\Content\Entities\ExtendedPageEntity' => TRUE,
 		'CmsModule\Content\Entities\ExtendedRouteEntity' => TRUE,
 		'CmsModule\Content\Entities\ElementEntity' => TRUE,
+		'CmsModule\Content\Entities\LanguageEntity' => TRUE,
 		'CmsModule\Pages\Tags\TagEntity' => TRUE,
 		'CmsModule\Content\Entities\PermissionEntity' => TRUE,
 	);
