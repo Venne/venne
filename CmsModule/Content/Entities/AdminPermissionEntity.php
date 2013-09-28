@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity
- * @ORM\Table(name="pageAdminPermission")
+ * @ORM\Table(name="page_admin_permission")
  */
 class AdminPermissionEntity extends BasePermissionEntity
 {
@@ -26,7 +26,7 @@ class AdminPermissionEntity extends BasePermissionEntity
 	/**
 	 * @var RoleEntity[]
 	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity", indexBy="name")
-	 * @ORM\JoinTable(name="pageAdminPermission_roles",
+	 * @ORM\JoinTable(name="page_admin_permission_roles",
 	 *      joinColumns={@ORM\JoinColumn(name="pagePermission_id", referencedColumnName="id", onDelete="CASCADE")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )

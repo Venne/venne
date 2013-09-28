@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @ORM\Table(name="tagsRoute")
+ * @ORM\Table(name="tags_route")
  */
 class TagsEntity extends ExtendedRouteEntity
 {

@@ -29,7 +29,7 @@ class BasePermissionEntity extends NamedEntity
 	/**
 	 * @var RoleEntity[]
 	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity", indexBy="name")
-	 * @ORM\JoinTable(name="pagePermission_roles",
+	 * @ORM\JoinTable(name="page_permission_roles",
 	 *      joinColumns={@ORM\JoinColumn(name="pagePermission_id", referencedColumnName="id", onDelete="CASCADE")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )

@@ -21,7 +21,7 @@ use Nette\Utils\Strings;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\UserRepository")
- * @ORM\Table(name="defaultUser")
+ * @ORM\Table(name="default_user")
  */
 class DefaultUserEntity extends ExtendedUserEntity
 {

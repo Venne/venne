@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @ORM\Table(name="sitemapPage")
+ * @ORM\Table(name="sitemap_page")
  *
  * @property \CmsModule\Content\Entities\PageEntity $rootPage
  * @property int $maxDepth

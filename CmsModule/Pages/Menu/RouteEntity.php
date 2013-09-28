@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @ORM\Table(name="menuRoute")
+ * @ORM\Table(name="menu_route")
  */
 class RouteEntity extends ExtendedRouteEntity
 {

@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\DoctrineModule\Repositories\BaseRepository")
- * @ORM\Table(name="static403Route")
+ * @ORM\Table(name="static403_route")
  */
 class Error403RouteEntity extends ExtendedRouteEntity
 {

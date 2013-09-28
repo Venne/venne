@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @ORM\Table(name="static403Page")
+ * @ORM\Table(name="static403_page")
  */
 class Error403PageEntity extends ExtendedPageEntity
 {

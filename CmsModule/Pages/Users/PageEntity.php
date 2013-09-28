@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @ORM\Table(name="userPage")
+ * @ORM\Table(name="user_page")
  */
 class PageEntity extends ExtendedPageEntity
 {
@@ -31,7 +31,7 @@ class PageEntity extends ExtendedPageEntity
 	/**
 	 * @var \Doctrine\Common\Collections\ArrayCollection|\CmsModule\Security\Entities\RoleEntity[]
 	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity")
-	 * @ORM\JoinTable(name="userPage_roles",
+	 * @ORM\JoinTable(name="user_page_roles",
 	 *      joinColumns={@ORM\JoinColumn(name="page_id", referencedColumnName="id", onDelete="CASCADE")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )

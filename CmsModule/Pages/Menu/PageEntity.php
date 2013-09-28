@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
- * @ORM\Table(name="menuPage")
+ * @ORM\Table(name="menu_page")
  */
 class PageEntity extends ExtendedPageEntity
 {
