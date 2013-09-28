@@ -52,7 +52,7 @@ class BasicFormFactory extends FormFactory
 
 		$name = $mainRoute->addText('name', 'Name');
 		if (!$form->data->page->mainRoute->locale) {
-			$name->addRule($form::FILLED);;
+			$name->addRule($form::FILLED);
 		}
 
 		$mainRoute->addHidden('localUrlTemplate')
@@ -127,9 +127,12 @@ class BasicFormFactory extends FormFactory
 		$page->setCurrentGroup($form->addGroup('Navigation'));
 		$page->addCheckbox('navigationShow', 'Show in navigation')->addCondition($form::EQUAL, TRUE)->toggle('form-navigation-own');
 		$page->setCurrentGroup($form->addGroup()->setOption('id', 'form-navigation-own'));
-		$page->addCheckbox('navigationOwn', 'Use own title')->addCondition($form::EQUAL, TRUE)->toggle('form-navigation-title');
+		$navOwn = $page->addCheckbox('navigationOwn', 'Use own title');
+		$navOwn->addCondition($form::EQUAL, TRUE)->toggle('form-navigation-title');
 		$page->setCurrentGroup($form->addGroup()->setOption('id', 'form-navigation-title'));
-		$page->addText('navigationTitleRaw', 'Navigation title');
+
+		$nav = $page->addText('navigationTitleRaw', 'Navigation title');
+		$nav->addConditionOn($navOwn, $form::EQUAL, TRUE)->addRule($form::FILLED);
 
 		if (!$form->data->page->mainRoute->locale) {
 			// languages
@@ -211,7 +214,7 @@ class BasicFormFactory extends FormFactory
 	public function handleSave(Form $form)
 	{
 		if ($form['page']['navigationOwn']->value) {
-			$form->data->page->navigationTitleRaw = $form['navigationTitleRaw']->value;
+			$form->data->page->navigationTitleRaw = $form['page']['navigationTitleRaw']->value;
 		} else {
 			$form->data->page->navigationTitleRaw = NULL;
 		}
