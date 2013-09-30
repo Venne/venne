@@ -25,6 +25,7 @@
 		"venne/holder-module": "2.0.*",
 		"venne/bootstrapdatetime-module": "0.0.*",
 		"venne/grido-module": "2.0.*",
+		"venne/jqueryfileupload-module": "8.8.*",
 		"kdyby/bootstrap-form-renderer": "v2.0.0",
 		"venne/nette-ajax": "dev-venne"
 	},

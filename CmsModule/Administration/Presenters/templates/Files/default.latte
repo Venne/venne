@@ -108,5 +108,21 @@
 				$(this).removeClass('open');
 			});
 		});
+	});""
+</script>
+
+<div class="hide">
+	<input id="fileupload" type="file" name="files[]" data-url="{link upload!}" multiple>
+</div>
+<script>
+	$(function () {
+		$('#fileupload').fileupload({
+			dataType: 'json',
+			done: function (e, data) {
+				$.nette.ajax({
+					url: {link this}
+				});
+			}
+		});
 	});
 </script>

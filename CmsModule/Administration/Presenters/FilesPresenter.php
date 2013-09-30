@@ -113,6 +113,40 @@ class FilesPresenter extends BasePresenter
 	}
 
 
+	public function handleUpload()
+	{
+		$ajaxDir = $this->context->parameters['publicDir'] . '/ajaxUpload';
+
+		if (!file_exists($ajaxDir)) {
+			mkdir($ajaxDir, 0777, TRUE);
+		}
+
+		ob_start();
+		new \UploadHandler(array(
+			'upload_dir' => $ajaxDir . '/',
+			'upload_url' => $this->context->parameters['basePath'] . '/public/ajaxUpload/',
+			'script_url' => $this->context->parameters['basePath'] . '/public/ajaxUpload/',
+
+		));
+		$data = json_decode(ob_get_clean(), TRUE);
+
+		foreach ($data['files'] as $file) {
+			/** @var FileEntity $fileEntity */
+			$fileEntity = $this->fileRepository->createNew();
+			$fileEntity->setFile(new \SplFileInfo($ajaxDir . '/' . $file['name']));
+			if ($this->key) {
+				$fileEntity->setParent($this->dirRepository->find($this->key));
+			}
+			$this->fileRepository->save($fileEntity);
+
+			unlink($ajaxDir . '/' . $file['name']);
+			unlink($ajaxDir . '/thumbnail/' . $file['name']);
+		}
+
+		$this->terminate();
+	}
+
+
 	/**
 	 * @secured(privilege="show")
 	 */
@@ -228,7 +262,7 @@ class FilesPresenter extends BasePresenter
 			return $entity;
 		}, Form::TYPE_LARGE);
 
-		if ($this->isAuthorized('create')) {
+		if (!$this->browserMode && $this->isAuthorized('create')) {
 			$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
 			$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
 		}
@@ -301,8 +335,9 @@ class FilesPresenter extends BasePresenter
 		}
 
 		if (!$this->isAjax()) {
-			$this->redirect("this");
+			$this->redirect('this');
 		}
+		$this->payload->url = $this->link('this');
 		$this->invalidateControl('content');
 		$this['panel']->invalidateControl('content');
 	}
