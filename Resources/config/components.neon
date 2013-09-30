@@ -139,6 +139,9 @@ services:
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
+	cms.admin.ajaxFileUploaderFactory:
+		class: CmsModule\Administration\Components\AjaxFileUploaderControlFactory(%publicDir%/ajaxFileUpload, %publicDir%)
+
 
 factories:
 

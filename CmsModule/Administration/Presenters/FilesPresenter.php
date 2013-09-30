@@ -11,6 +11,8 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\Components\AjaxFileUploaderControl;
+use CmsModule\Administration\Components\AjaxFileUploaderControlFactory;
 use CmsModule\Components\Table\Form;
 use CmsModule\Components\Table\TableControl;
 use CmsModule\Content\Entities\DirEntity;
@@ -51,6 +53,9 @@ class FilesPresenter extends BasePresenter
 	/** @var FileFormFactory */
 	protected $fileFormFactory;
 
+	/** @var AjaxFileUploaderControlFactory */
+	protected $ajaxFileUploaderFactory;
+
 
 	public function __construct(FileRepository $fileRepository, DirRepository $dirRepository)
 	{
@@ -68,6 +73,12 @@ class FilesPresenter extends BasePresenter
 	public function injectDirForm(DirFormFactory $dirForm)
 	{
 		$this->dirFormFactory = $dirForm;
+	}
+
+
+	public function injectAjaxFileUploaderFactory(AjaxFileUploaderControlFactory $ajaxFileUploaderFactory)
+	{
+		$this->ajaxFileUploaderFactory = $ajaxFileUploaderFactory;
 	}
 
 
@@ -113,40 +124,6 @@ class FilesPresenter extends BasePresenter
 	}
 
 
-	public function handleUpload()
-	{
-		$ajaxDir = $this->context->parameters['publicDir'] . '/ajaxUpload';
-
-		if (!file_exists($ajaxDir)) {
-			mkdir($ajaxDir, 0777, TRUE);
-		}
-
-		ob_start();
-		new \UploadHandler(array(
-			'upload_dir' => $ajaxDir . '/',
-			'upload_url' => $this->context->parameters['basePath'] . '/public/ajaxUpload/',
-			'script_url' => $this->context->parameters['basePath'] . '/public/ajaxUpload/',
-
-		));
-		$data = json_decode(ob_get_clean(), TRUE);
-
-		foreach ($data['files'] as $file) {
-			/** @var FileEntity $fileEntity */
-			$fileEntity = $this->fileRepository->createNew();
-			$fileEntity->setFile(new \SplFileInfo($ajaxDir . '/' . $file['name']));
-			if ($this->key) {
-				$fileEntity->setParent($this->dirRepository->find($this->key));
-			}
-			$this->fileRepository->save($fileEntity);
-
-			unlink($ajaxDir . '/' . $file['name']);
-			unlink($ajaxDir . '/thumbnail/' . $file['name']);
-		}
-
-		$this->terminate();
-	}
-
-
 	/**
 	 * @secured(privilege="show")
 	 */
@@ -175,6 +152,30 @@ class FilesPresenter extends BasePresenter
 		$this['table-navbar']->handleClick($id);
 
 		$this->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
+	}
+
+
+	protected function createComponentAjaxFileUploader()
+	{
+		$_this = $this;
+
+		$this->ajaxFileUploaderFactory->setParentDirectory($this->key ? $this->dirRepository->find($this->key) : NULL);
+
+		$control = $this->ajaxFileUploaderFactory->invoke($this->template->basePath);
+		$control->onSuccess[] = function () use ($_this) {
+			$_this->invalidateControl('content');
+		};
+		$control->onError[] = function (AjaxFileUploaderControl $control) use ($_this) {
+			foreach ($control->getErrors() as $e) {
+				if ($e['class'] === 'Doctrine\DBAL\DBALException' && strpos($e['message'], 'Duplicate entry') !== false) {
+					$_this->flashMessage('Duplicate entry', 'warning');
+				} else {
+					$_this->flashMessage($e['message']);
+				}
+			}
+			$_this->invalidateControl('content');
+		};
+		return $control;
 	}
 
 
