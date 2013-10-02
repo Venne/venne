@@ -15,6 +15,7 @@ use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemAdministrationFormFactory;
 use CmsModule\Forms\SystemApplicationFormFactory;
 use CmsModule\Forms\SystemDatabaseFormFactory;
+use CmsModule\Forms\SystemMailerFormFactory;
 use Nette\Callback;
 use Venne\Forms\Form;
 
@@ -38,6 +39,9 @@ class ApplicationPresenter extends BasePresenter
 	/** @var SystemAccountFormFactory */
 	protected $accountForm;
 
+	/** @var SystemMailerFormFactory */
+	protected $mailerForm;
+
 
 	public function injectApplicationForm(SystemApplicationFormFactory $applicationForm)
 	{
@@ -60,6 +64,12 @@ class ApplicationPresenter extends BasePresenter
 	public function injectAdministrationForm(SystemAdministrationFormFactory $systemForm)
 	{
 		$this->systemForm = $systemForm;
+	}
+
+
+	public function injectMailerForm(SystemMailerFormFactory $mailerForm)
+	{
+		$this->mailerForm = $mailerForm;
 	}
 
 
@@ -91,6 +101,14 @@ class ApplicationPresenter extends BasePresenter
 	 * @secured
 	 */
 	public function actionAdmin()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionMailer()
 	{
 	}
 
@@ -129,6 +147,17 @@ class ApplicationPresenter extends BasePresenter
 		$form = $this->accountForm->invoke();
 		$form->onSuccess[] = function (Form $form) {
 			$form->getPresenter()->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
+			$form->getPresenter()->redirect('this');
+		};
+		return $form;
+	}
+
+
+	protected function createComponentMailerForm()
+	{
+		$form = $this->mailerForm->invoke();
+		$form->onSuccess[] = function (Form $form) {
+			$form->getPresenter()->flashMessage($this->translator->translate('Mailer settings has been updated'), 'success');
 			$form->getPresenter()->redirect('this');
 		};
 		return $form;

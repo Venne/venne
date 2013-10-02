@@ -10,3 +10,6 @@
 	<li n:if="$presenter->isAuthorized('Application:admin')"{if $presenter->isLinkCurrent("Application:admin")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:admin}">{_'Administration'}</a>
 	</li>
+	<li n:if="$presenter->isAuthorized('Application:mailer')"{if $presenter->isLinkCurrent("Application:mailer")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:mailer}">{_'Mailer'}</a>
+	</li>

@@ -266,6 +266,8 @@ logout success: odhlášení proběhlo úspěšně
 account settings has been updated: uživatelské nastavení bylo aktualizováno
 application settings has been updated: nastavení aplikace bylo aktualizováno
 database settings has been updated: nastavení databáze bylo aktualizováno
+mailer settings has been updated: nastavení mail serveru bylo aktualizováno
+mailer settings: nastavení maileru
 cache has been cleared.: cache byla vyprázdněna
 'this page is not published.': tato stránka není publikována
 release date is already scheduled.: datum vydání je již naplánováno

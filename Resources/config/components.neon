@@ -41,6 +41,11 @@ services:
 		setup:
 			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
+	cms.mailerFormFactory:
+		class: CmsModule\Forms\SystemMailerFormFactory
+		setup:
+			- injectFactory(@cms.admin.loggableAjaxFormFactory)
+
 	cms.systemFormFactory:
 		class: CmsModule\Forms\SystemAdministrationFormFactory(..., ..., %administration.routePrefix%)
 		setup:
