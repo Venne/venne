@@ -24,7 +24,7 @@ class Error500RouteEntity extends ExtendedRouteEntity
 
 	protected function getPresenterName()
 	{
-		return 'Cms:Pages:Text:Text:default';
+		return 'Cms:Pages:Text:Route:default';
 	}
 
 	/**
