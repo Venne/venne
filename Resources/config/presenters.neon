@@ -91,11 +91,7 @@ factories:
 			description: 'Set up database, environment,...'
 			priority: 15
 		]]
-#
-##	cms.admin.environmentsPresenter:
-##		class: CmsModule\Administration\Presenters\EnvironmentsPresenter(%environments%)
-##		tags: [presenter]
-#
+
 	cms.admin.contentPresenter:
 		class: CmsModule\Administration\Presenters\ContentPresenter(..., ..., ..., ..., @cms.admin.routeControlFactory)
 		tags: [presenter, administration: [
