@@ -111,4 +111,22 @@ class PageRepository extends BaseRepository
 	{
 		return $this->getEntityManager()->getRepository('CmsModule\Content\Entities\RouteEntity');
 	}
+
+
+	/**
+	 * @param $class
+	 * @return bool
+	 */
+	public function isSpecialPageCreated($class)
+	{
+		try {
+			return (bool)$this->createQueryBuilder('a')
+				->select('a.id')
+				->andWhere('a.special IS NOT NULL')
+				->andWhere('a.class = :class')->setParameter('class', $class)
+				->getQuery()->getSingleScalarResult();
+		} catch (\Doctrine\ORM\NoResultException $e) {
+			return false;
+		}
+	}
 }

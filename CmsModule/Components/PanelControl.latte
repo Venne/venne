@@ -75,7 +75,7 @@
 
 {define #tree}
 	{foreach $items as $link=>$name}
-		<li{if is_array($name)} class="dropdown-submenu"{/if}>
+		<li{if is_array($name)} class="dropdown-submenu"{elseif $presenter->context->cms->pageRepository->isSpecialPageCreated($link)} class="disabled"{/if}>
 			{if is_array($name)}
 				<a class="ajax" href="#">{_$link}</a>
 				<ul class="dropdown-menu">
