@@ -58,22 +58,22 @@ class WebsiteFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addGroup("Global meta informations");
-		$form->addText("name", "Website name")->addRule($form::FILLED);
-		$form->addText("title", "Title")->setOption("description", "(%n - name, %s - separator, %t - local title)");
-		$form->addText("titleSeparator", "Title separator");
-		$form->addText("keywords", "Keywords");
-		$form->addText("description", "Description");
-		$form->addText("author", "Author");
+		$form->addGroup('Global meta informations');
+		$form->addText('name', 'Website name')->addRule($form::FILLED);
+		$form->addText('title', 'Title')->setOption('description', '(%n - name, %s - separator, %t - local title)');
+		$form->addText('titleSeparator', 'Title separator');
+		$form->addText('keywords', 'Keywords');
+		$form->addText('description', 'Description');
+		$form->addText('author', 'Author');
 		$form->addSelect('cacheMode', 'Cache strategy')->setItems(\CmsModule\Content\Entities\RouteEntity::getCacheModes(), FALSE)->setPrompt('off');
 		$form['cacheMode']->addCondition($form::EQUAL, 'time')->toggle('cacheValue');
 
 		$form->addGroup()->setOption('id', 'cacheValue');
 		$form->addSelect('cacheValue', 'Minutes')->setItems(array(1, 2, 5, 10, 15, 20, 30, 40, 50, 60, 90, 120), FALSE);
 
-		$form->addGroup("System");
-		$form->addTextWithSelect("routePrefix", "Route prefix");
-		$form->addTextWithSelect("oneWayRoutePrefix", "One way route prefix");
+		$form->addGroup('System');
+		$form->addTextWithSelect('routePrefix', 'Route prefix');
+		$form->addTextWithSelect('oneWayRoutePrefix', 'One way route prefix');
 
 		$form->addSubmit('_submit', 'Save');
 	}
@@ -82,8 +82,8 @@ class WebsiteFormFactory extends FormFactory
 	public function handleAttached($form)
 	{
 		$url = $form->presenter->context->httpRequest->url;
-		$domain = trim($url->host . $url->scriptPath, "/") . "/";
-		$params = array("", "<lang>/", "//$domain<lang>/", "//<lang>.$domain");
+		$domain = trim($url->host . $url->scriptPath, '/') . '/';
+		$params = array('', '<lang>/', "//$domain<lang>/", "//<lang>.$domain");
 
 		$form['routePrefix']->setItems($params, FALSE);
 	}

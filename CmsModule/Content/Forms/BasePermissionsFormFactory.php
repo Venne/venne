@@ -32,7 +32,7 @@ class BasePermissionsFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addOne('page')
-			->setCurrentGroup($form->addGroup('Global'))
+			->setCurrentGroup($form->addGroup('General'))
 			->addCheckbox($this->getSecuredColumnName(), 'Enable permissions');
 
 		if ($form->data->page->{$this->getSecuredColumnName()}) {
