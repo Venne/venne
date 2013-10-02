@@ -41,7 +41,7 @@ class LoginPresenter extends BasePresenter
 		parent::startup();
 
 		if (!$this->context->createCheckConnection()) {
-			$this->flashMessage("Only administrator can be logged", "warning");
+			$this->flashMessage($this->translator->translate('Only administrator can be logged'), 'warning');
 		}
 
 		if ($this->user->isLoggedIn()) {

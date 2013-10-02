@@ -70,7 +70,7 @@ class TagPresenter extends BasePresenter
 		parent::startup();
 
 		if (($page = $this->pageRepository->findOneBy(array('special' => 'tags'))) === NULL) {
-			$this->flashMessage('Tag page does not exist.', 'warning');
+			$this->flashMessage($this->translator->translate('Page with tags does not exist.'), 'warning');
 		} else {
 			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
 		}

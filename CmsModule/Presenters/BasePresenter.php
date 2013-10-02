@@ -15,6 +15,7 @@ use CmsModule\Pages\Users\ExtendedUserEntity;
 use CmsModule\Pages\Users\UserEntity;
 use Doctrine\ORM\EntityManager;
 use Nette\InvalidStateException;
+use Nette\Localization\ITranslator;
 use Venne\Application\UI\Presenter;
 
 /**
@@ -22,6 +23,7 @@ use Venne\Application\UI\Presenter;
  *
  * @property-read EntityManager $entityManager
  * @property-read ExtendedUserEntity $extendedUser
+ * @property-read ITranslator $translator
  */
 abstract class BasePresenter extends Presenter
 {
@@ -31,6 +33,9 @@ abstract class BasePresenter extends Presenter
 
 	/** @var EntityManager */
 	private $entityManager;
+
+	/** @var ITranslator */
+	private $translator;
 
 	/** @var ExtendedUserEntity */
 	private $extendedUser;
@@ -97,6 +102,24 @@ abstract class BasePresenter extends Presenter
 
 
 	/**
+	 * @param ITranslator $translator
+	 */
+	public function injectTranslator(ITranslator $translator)
+	{
+		$this->translator = $translator;
+	}
+
+
+	/**
+	 * @return ITranslator
+	 */
+	public function getTranslator()
+	{
+		return $this->translator;
+	}
+
+
+	/**
 	 * @return ExtendedUserEntity
 	 * @throws InvalidStateException
 	 */
@@ -130,9 +153,7 @@ abstract class BasePresenter extends Presenter
 		$this->checkLanguage();
 
 		// Setup translator
-		if (($translator = $this->context->getByType('Nette\Localization\ITranslator', FALSE)) !== NULL) {
-			$translator->setLang($this->lang);
-		}
+		$this->translator->setLang($this->lang);
 	}
 
 

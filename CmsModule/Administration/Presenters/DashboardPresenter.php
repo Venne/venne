@@ -54,7 +54,7 @@ class DashboardPresenter extends BasePresenter
 	public function actionDefault()
 	{
 		if ($this->user->isLoggedIn() && !$this->user->identity instanceof UserEntity) {
-			$this->flashMessage('You are logged as superadministrator. It can be potencialy dangerous.', 'warning', TRUE);
+			$this->flashMessage($this->translator->translate('You are logged as superadministrator. It can be potencialy dangerous.'), 'warning', TRUE);
 		}
 	}
 

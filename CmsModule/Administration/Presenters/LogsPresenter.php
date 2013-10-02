@@ -77,7 +77,7 @@ class LogsPresenter extends BasePresenter
 	public function handleDelete()
 	{
 		unlink($this->logDir . '/' . $this->getParameter('name'));
-		$this->flashMessage('Log has been removed', 'success');
+		$this->flashMessage($this->translator->translate('Log has been removed'), 'success');
 		$this->redirect('this');
 	}
 
@@ -91,7 +91,7 @@ class LogsPresenter extends BasePresenter
 			unlink($this->logDir . '/' . $item['link']);
 		}
 
-		$this->flashMessage('Logs were removed', 'success');
+		$this->flashMessage($this->translator->translate('Logs were removed'), 'success');
 		$this->redirect('this');
 	}
 

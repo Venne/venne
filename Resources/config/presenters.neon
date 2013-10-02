@@ -72,13 +72,13 @@ factories:
 			priority: 150
 		]]
 
-	cms.admin.informationsPresenter:
-		class: CmsModule\Administration\Presenters\InformationsPresenter
+	cms.admin.informationPresenter:
+		class: CmsModule\Administration\Presenters\InformationPresenter
 		tags: [presenter, administration: [
-			link: 'Cms:Admin:Informations:'
+			link: 'Cms:Admin:Information:'
 			category: 'Website'
-			name: 'Basic meta informations'
-			description: 'Edit base meta informations about this website'
+			name: 'Basic meta information'
+			description: 'Edit basic meta information about this website'
 			priority: 155
 		]]
 

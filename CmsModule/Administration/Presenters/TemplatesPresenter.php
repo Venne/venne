@@ -160,7 +160,7 @@ class TemplatesPresenter extends BasePresenter
 
 	public function formSuccess($form)
 	{
-		$this->flashMessage('Layout has been added.', 'success');
+		$this->flashMessage($this->translator->translate('Layout has been added.'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('edit', array('key' => $form->data));
@@ -187,7 +187,7 @@ class TemplatesPresenter extends BasePresenter
 
 	public function formeditSuccess($form)
 	{
-		$this->flashMessage('Layout has been saved.', 'success');
+		$this->flashMessage($this->translator->translate('Layout has been saved.'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('edit', array('key' => $form->data));
@@ -214,9 +214,9 @@ class TemplatesPresenter extends BasePresenter
 		if (substr($path, -14) === '/@layout.latte') {
 			File::rmdir(dirname($path), TRUE);
 
-			$this->flashMessage('Layout has been removed.', 'success');
+			$this->flashMessage($this->translator->translate('Layout has been removed.'), 'success');
 		} else {
-			$this->flashMessage('Template has been removed.', 'success');
+			$this->flashMessage($this->translator->translate('Template has been removed.'), 'success');
 		}
 
 		if (!$this->isAjax()) {

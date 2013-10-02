@@ -11,8 +11,12 @@
 
 namespace CmsModule\Content;
 
+use Nette\Localization\ITranslator;
+
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @property-read ITranslator $translator
  */
 abstract class Control extends \Venne\Application\UI\Control
 {
@@ -25,6 +29,15 @@ abstract class Control extends \Venne\Application\UI\Control
 
 	/** @var array */
 	private $templateFiles = array();
+
+
+	/**
+	 * @return ITranslator
+	 */
+	public function getTranslator()
+	{
+		return $this->presenter->translator;
+	}
 
 
 	/**

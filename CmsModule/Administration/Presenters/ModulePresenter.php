@@ -75,7 +75,7 @@ class ModulePresenter extends BasePresenter
 	public function handleSync()
 	{
 		$this->moduleManager->update();
-		$this->flashMessage('Database has been refreshed.', 'success');
+		$this->flashMessage($this->translator->translate('Database has been refreshed.'), 'success');
 		$this->redirect('this');
 	}
 
@@ -116,10 +116,10 @@ class ModulePresenter extends BasePresenter
 		try {
 			foreach ($problem->getSolutions() as $job) {
 				$this->moduleManager->doAction($job->getAction(), $job->getModule());
-				$this->flashMessage("Module '{$job->getModule()->getName()}' has been installed.", 'success');
+				$this->flashMessage($this->translator->translate('Module \'%name%\' has been installed.', NULL, array('name' => $job->getModule()->getName())), 'success');
 			}
 			$this->moduleManager->install($module);
-			$this->flashMessage("Module '{$name}' has been installed.", 'success');
+			$this->flashMessage($this->translator->translate('Module \'%name%\' has been installed.', NULL, array('name' => $name)), 'success');
 		} catch (InvalidArgumentException $e) {
 			$this->flashMessage($e->getMessage(), 'warning');
 		}
@@ -153,10 +153,10 @@ class ModulePresenter extends BasePresenter
 		try {
 			foreach ($problem->getSolutions() as $job) {
 				$this->moduleManager->doAction($job->getAction(), $job->getModule());
-				$this->flashMessage("Module '{$job->getModule()->getName()}' has been installed.", 'success');
+				$this->flashMessage($this->translator->translate('Module \'%name%\' has been upgraded.', NULL, array('name' => $job->getModule()->getName())), 'success');
 			}
 			$this->moduleManager->upgrade($module);
-			$this->flashMessage("Module '{$name}' has been upgraded.", 'success');
+			$this->flashMessage($this->translator->translate('Module \'%name%\' has been upgraded.', NULL, array('name' => $name)), 'success');
 		} catch (InvalidArgumentException $e) {
 			$this->flashMessage($e->getMessage(), 'warning');
 		}
@@ -190,10 +190,10 @@ class ModulePresenter extends BasePresenter
 		try {
 			foreach ($problem->getSolutions() as $job) {
 				$this->moduleManager->doAction($job->getAction(), $job->getModule());
-				$this->flashMessage("Module '{$job->getModule()->getName()}' has been uninstalled.", 'success');
+				$this->flashMessage($this->translator->translate('Module \'%name%\' has been uninstalled.', NULL, array('name' => $job->getModule()->getName())), 'success');
 			}
 			$this->moduleManager->uninstall($module);
-			$this->flashMessage("Module '{$name}' has been uninstalled.", 'success');
+			$this->flashMessage($this->translator->translate('Module \'%name%\' has been uninstalled.', NULL, array('name' => $name)), 'success');
 		} catch (InvalidArgumentException $e) {
 			$this->flashMessage($e->getMessage(), 'warning');
 		}

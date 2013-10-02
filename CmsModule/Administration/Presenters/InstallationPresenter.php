@@ -160,7 +160,7 @@ class InstallationPresenter extends BasePresenter
 		$modules = array('iconv', 'json', "pdo");
 		foreach ($modules as $item) {
 			if (!extension_loaded($item)) {
-				$this->flashMessage("Module {$item} is not enabled.", 'warning');
+				$this->flashMessage($this->translator->translate('Module %name% is not enabled.', NULL, array('name' => $item)), 'warning');
 			}
 		}
 
@@ -168,7 +168,7 @@ class InstallationPresenter extends BasePresenter
 		$paths = array($this->resourcesDir, $this->dataDir, $this->configDir, $this->configDir . '/config.neon', $this->tempDir, $this->wwwCacheDir, $this->publicDir);
 		foreach ($paths as $item) {
 			if (!is_writable($item)) {
-				$this->flashMessage("Path {$item} is not writable.", 'warning');
+				$this->flashMessage($this->translator->translate('Path %name% is not writable.', NULL, array('name' => $item)), 'warning');
 			}
 		}
 	}

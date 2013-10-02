@@ -46,7 +46,7 @@ class DatabasePresenter extends BasePresenter
 
 	public function save()
 	{
-		$this->flashMessage("Database settings has been updated", "success");
+		$this->flashMessage($this->translator->translate('Database settings has been updated.'), 'success');
 		$this->redirect('this');
 	}
 

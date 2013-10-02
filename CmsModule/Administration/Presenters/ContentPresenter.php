@@ -148,13 +148,13 @@ class ContentPresenter extends BasePresenter
 		$entity = $this->getPageEntity();
 		$page = $entity->getPage();
 		if (!$page->getPublished() || !$page->getMainRoute()->getPublished()) {
-			$this->flashMessage('This page is not published!', 'warning', TRUE);
+			$this->flashMessage($this->translator->translate('This page is not published.'), 'warning', TRUE);
 		} else if ($page->getMainRoute()->getReleased() && $page->getMainRoute()->getReleased() > new \DateTime()) {
-			$this->flashMessage('Release date is already scheduled.', 'info', TRUE);
+			$this->flashMessage($this->translator->translate('Release date is already scheduled.'), 'info', TRUE);
 		} else if ($page->getMainRoute()->getExpired() && $page->getMainRoute()->getExpired() > new \DateTime()) {
-			$this->flashMessage('Expire date is already scheduled.', 'info', TRUE);
+			$this->flashMessage($this->translator->translate('Expire date is already scheduled.'), 'info', TRUE);
 		} else if ($page->getMainRoute()->getExpired() && $page->getMainRoute()->getExpired() < new \DateTime()) {
-			$this->flashMessage('This page expired.', 'warning', TRUE);
+			$this->flashMessage($this->translator->translate('This page expired.'), 'warning', TRUE);
 		}
 
 		$contentType = $this->getContentType();
@@ -236,7 +236,7 @@ class ContentPresenter extends BasePresenter
 		}
 
 		$this->pageRepository->delete($entity);
-		$this->flashMessage("Page `$entity` has been removed");
+		$this->flashMessage($this->translator->translate('Page \'%name%\' has been removed.', NULL, array('name' => (string)$entity)), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');
@@ -314,7 +314,7 @@ class ContentPresenter extends BasePresenter
 		$link = $this->link('this', array('key' => $entity->translationFor->id));
 
 		$this->pageRepository->delete($entity);
-		$this->flashMessage('Translation has been removed', 'success');
+		$this->flashMessage($this->translator->translate('Translation has been removed.'), 'success');
 		$this->redirectUrl($link);
 	}
 
@@ -416,7 +416,7 @@ class ContentPresenter extends BasePresenter
 
 	public function formSuccess($form)
 	{
-		$this->flashMessage('Page has been created');
+		$this->flashMessage($this->translator->translate('Page has been created.'), 'success');
 
 		$this->invalidateControl('content');
 		$this['panel']->invalidateControl('content');
@@ -474,7 +474,7 @@ class ContentPresenter extends BasePresenter
 
 	public function formEditSuccess()
 	{
-		$this->flashMessage('Page has been updated');
+		$this->flashMessage($this->translator->translate('Page has been updated.'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');

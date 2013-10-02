@@ -81,7 +81,7 @@ class CachePresenter extends BasePresenter
 			$this->cacheManager->cleanSessions();
 		}
 
-		$this->flashMessage('Cache has been cleared.', 'success');
+		$this->flashMessage($this->translator->translate('Cache has been cleared.'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');

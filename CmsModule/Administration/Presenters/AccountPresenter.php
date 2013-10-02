@@ -176,7 +176,7 @@ class AccountPresenter extends BasePresenter
 
 	public function accountFormSuccess()
 	{
-		$this->flashMessage('Account settings has been updated', 'success');
+		$this->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
 		$this->redirect('this');
 	}
 }

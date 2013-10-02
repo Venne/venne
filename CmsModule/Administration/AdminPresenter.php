@@ -44,7 +44,7 @@ abstract class AdminPresenter extends BasePresenter
 			$this->setView('account');
 			$this->__installation = TRUE;
 			$this->template->hideMenuItems = true;
-			$this->flashMessage('Please set administrator account.', 'warning', true);
+			$this->flashMessage($this->translator->translate('Please set administrator\'s account.'), 'warning', true);
 		} // end
 
 		// check login
@@ -54,7 +54,7 @@ abstract class AdminPresenter extends BasePresenter
 			}
 			$this->template->hideMenuItems = true;
 			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
-				$this->flashMessage('You have been logged out due to inactivity. Please login again.', 'info');
+				$this->flashMessage($this->translator->translate('You have been logged out due to inactivity. Please login again.'), 'info');
 			}
 		} else {
 
@@ -66,7 +66,7 @@ abstract class AdminPresenter extends BasePresenter
 							$this->redirect(':Cms:Admin:Module:');
 						}
 						$this->template->hideMenuItems = true;
-						$this->flashMessage('Please fix modules.', 'warning', true);
+						$this->flashMessage($this->translator->translate('Please fix modules.'), 'warning', true);
 						break;
 					}
 				}
@@ -80,7 +80,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->setView('database');
 				$this->__installation = TRUE;
 				$this->template->hideMenuItems = true;
-				$this->flashMessage('Database connection not found. Please fix it.', 'warning', true);
+				$this->flashMessage($this->translator->translate('Database connection not found. Please fix it.'), 'warning', true);
 			} // check languages
 			elseif ($this->context->schemaManager->tablesExist('users') && count($this->context->parameters['website']['languages']) == 0) {
 				if ($this->getName() != 'Cms:Admin:Installation') {
@@ -89,7 +89,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->setView('language');
 				$this->__installation = TRUE;
 				$this->template->hideMenuItems = true;
-				$this->flashMessage('Please enter at least one language.', 'warning', true);
+				$this->flashMessage($this->translator->translate('Please enter at least one language.'), 'warning', true);
 			}
 		}
 
@@ -111,7 +111,7 @@ abstract class AdminPresenter extends BasePresenter
 	public function handleLogout()
 	{
 		$this->user->logout(TRUE);
-		$this->flashMessage('Logout success');
+		$this->flashMessage($this->translator->translate('Logout success'), 'success');
 		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
 	}
 

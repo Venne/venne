@@ -112,7 +112,7 @@ class UsersPresenter extends BasePresenter
 		parent::startup();
 
 		if (($page = $this->pageRepository->findOneBy(array('special' => 'users'))) === NULL) {
-			$this->flashMessage('User page does not exist.', 'warning');
+			$this->flashMessage($this->translator->translate('User page does not exist.'), 'warning');
 		} else {
 			$this->extendedPage = $this->getEntityManager()->getRepository($page->class)->findOneBy(array('page' => $page));
 		}

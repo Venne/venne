@@ -20,7 +20,7 @@ use Nette\Callback;
  *
  * @secured
  */
-class InformationsPresenter extends BasePresenter
+class InformationPresenter extends BasePresenter
 {
 
 	/** @var WebsiteFormFactory */
@@ -73,7 +73,7 @@ class InformationsPresenter extends BasePresenter
 
 	public function formSuccess()
 	{
-		$this->flashMessage('Website has been saved', 'success');
+		$this->flashMessage($this->translator->translate('Website has been saved'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');

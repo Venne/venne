@@ -106,8 +106,8 @@ class ApplicationPresenter extends BasePresenter
 	{
 		$form = $this->applicationForm->invoke();
 		$form->onSuccess[] = function (Form $form) {
-			$form->getPresenter()->flashMessage("Application settings has been updated", "success");
-			$form->getPresenter()->redirect("this");
+			$form->getPresenter()->flashMessage($this->translator->translate('Application settings has been updated'), 'success');
+			$form->getPresenter()->redirect('this');
 		};
 		return $form;
 	}
@@ -117,8 +117,8 @@ class ApplicationPresenter extends BasePresenter
 	{
 		$form = $this->databaseForm->invoke();
 		$form->onSuccess[] = function (Form $form) {
-			$form->getPresenter()->flashMessage("Database settings has been updated", "success");
-			$form->getPresenter()->redirect("this");
+			$form->getPresenter()->flashMessage($this->translator->translate('Database settings has been updated'), 'success');
+			$form->getPresenter()->redirect('this');
 		};
 		return $form;
 	}
@@ -128,8 +128,8 @@ class ApplicationPresenter extends BasePresenter
 	{
 		$form = $this->accountForm->invoke();
 		$form->onSuccess[] = function (Form $form) {
-			$form->getPresenter()->flashMessage("Account settings has been updated", "success");
-			$form->getPresenter()->redirect("this");
+			$form->getPresenter()->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
+			$form->getPresenter()->redirect('this');
 		};
 		return $form;
 	}

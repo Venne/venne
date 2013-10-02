@@ -168,7 +168,7 @@ class FilesPresenter extends BasePresenter
 		$control->onError[] = function (AjaxFileUploaderControl $control) use ($_this) {
 			foreach ($control->getErrors() as $e) {
 				if ($e['class'] === 'Doctrine\DBAL\DBALException' && strpos($e['message'], 'Duplicate entry') !== false) {
-					$_this->flashMessage('Duplicate entry', 'warning');
+					$_this->flashMessage($this->translator->translate('Duplicate entry'), 'warning');
 				} else {
 					$_this->flashMessage($e['message']);
 				}
@@ -312,7 +312,7 @@ class FilesPresenter extends BasePresenter
 			$fileRepository->save($entity);
 		}
 
-		$this->flashMessage('File has been moved', 'success');
+		$this->flashMessage($this->translator->translate('File has been moved'), 'success');
 
 		if (!$this->isAjax()) {
 			$this->redirect('this');
@@ -330,9 +330,9 @@ class FilesPresenter extends BasePresenter
 		$repository->delete($repository->find(substr($key2, 2)));
 
 		if (substr($key2, 0, 1) == 'd') {
-			$this->flashMessage('Directory has been deleted', 'success');
+			$this->flashMessage($this->translator->translate('Directory has been deleted'), 'success');
 		} else {
-			$this->flashMessage('File has been deleted', 'success');
+			$this->flashMessage($this->translator->translate('File has been deleted'), 'success');
 		}
 
 		if (!$this->isAjax()) {
