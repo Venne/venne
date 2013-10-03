@@ -174,6 +174,14 @@ class InstallationPresenter extends BasePresenter
 	}
 
 
+	public function beforeRender()
+	{
+		parent::beforeRender();
+
+		$this->template->hideMenuItems = true;
+	}
+
+
 	public function handleInstall()
 	{
 		if ($this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {

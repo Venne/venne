@@ -60,14 +60,14 @@
 	{body}
 
 		{* Top navigation *}
-		<div class="navbar navbar-fixed-top navbar-inverse navigation" id="navigation">
+		<div class="navbar navbar-fixed-top navbar-inverse navigation" id="navigation" n:snippet="navigation">
 
 
 					<a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax {/if}navbar-brand" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" /></a>
 
 					<div class="navbar-collapse collapse">
 
-					{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
+						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 						<ul class="nav navbar-nav">
 						{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
 							{var $pages = $presenter->getContext()->cms->administrationManager->getAdministrationNavigation()}
@@ -94,16 +94,16 @@
 						{/if}
 						</ul>
 
-						<div n:snippet="navigation">
 						{if $presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
-							<ul class="nav navbar-nav">
-								<li>
-									<a id="venne-panel-button-edit" href="javascript:;"><span class="glyphicon glyphicon-edit glyphicon-white"></span> {_'Edit layout'}</a>
-								</li>
-								<li>
-									<a id="venne-panel-button-save" href="javascript:;"><span class="glyphicon glyphicon-ok glyphicon-white"></span> {_'Save layout'}</a>
-								</li>
-							</ul>
+						<ul class="nav navbar-nav">
+							<li>
+								<a id="venne-panel-button-edit" href="javascript:;"><span class="glyphicon glyphicon-edit glyphicon-white"></span> {_'Edit layout'}</a>
+							</li>
+							<li>
+								<a id="venne-panel-button-save" href="javascript:;"><span class="glyphicon glyphicon-ok glyphicon-white"></span> {_'Save layout'}</a>
+							</li>
+						</ul>
+						{/if}
 						{/if}
 
 						<ul class="nav navbar-nav navbar-right">
@@ -131,7 +131,7 @@
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user glyphicon-white"></span> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_'Actions'}</li>
-									<li n:if="$presenter->isAuthorized(':Cms:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Cms:Admin:Account:}"><i class="glyphicon glyphicon-user glyphicon-white"></i> {_'User card'}</a></li>
+									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Cms:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Cms:Admin:Account:}"><i class="glyphicon glyphicon-user glyphicon-white"></i> {_'User card'}</a></li>
 									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off glyphicon-white"></i> {_'Log out'}</a></li>
 								</ul>
 							</li>
@@ -143,11 +143,7 @@
 							{/if}
 
 						</ul>
-
-						</div>
-					{/if}
-
-					</div>
+			</div>
 		</div>
 
 		{* Center *}

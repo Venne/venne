@@ -36,6 +36,8 @@ abstract class AdminPresenter extends BasePresenter
 			$this->context->cms->pageListener->setLocale($this->contentLang);
 		}
 
+		parent::startup();
+
 		// check admin account
 		if (!$this->context->parameters['administration']['login']['name']) {
 			if ($this->getName() != 'Cms:Admin:Installation') {
@@ -43,7 +45,6 @@ abstract class AdminPresenter extends BasePresenter
 			}
 			$this->setView('account');
 			$this->__installation = TRUE;
-			$this->template->hideMenuItems = true;
 			$this->flashMessage($this->translator->translate('Please set administrator\'s account.'), 'warning', true);
 		} // end
 
@@ -52,7 +53,6 @@ abstract class AdminPresenter extends BasePresenter
 			if ($this->getName() != 'Cms:Admin:Login') {
 				$this->redirect(':Cms:Admin:Login:', array('backlink' => $this->storeRequest()));
 			}
-			$this->template->hideMenuItems = true;
 			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
 				$this->flashMessage($this->translator->translate('You have been logged out due to inactivity. Please login again.'), 'info');
 			}
@@ -65,7 +65,6 @@ abstract class AdminPresenter extends BasePresenter
 						if ($this->getName() != 'Cms:Admin:Module') {
 							$this->redirect(':Cms:Admin:Module:');
 						}
-						$this->template->hideMenuItems = true;
 						$this->flashMessage($this->translator->translate('Please fix modules.'), 'warning', true);
 						break;
 					}
@@ -79,7 +78,6 @@ abstract class AdminPresenter extends BasePresenter
 				}
 				$this->setView('database');
 				$this->__installation = TRUE;
-				$this->template->hideMenuItems = true;
 				$this->flashMessage($this->translator->translate('Database connection not found. Please fix it.'), 'warning', true);
 			} // check languages
 			elseif (count($this->context->parameters['website']['languages']) == 0 && $this->context->schemaManager->tablesExist('users')) {
@@ -88,12 +86,9 @@ abstract class AdminPresenter extends BasePresenter
 				}
 				$this->setView('language');
 				$this->__installation = TRUE;
-				$this->template->hideMenuItems = true;
 				$this->flashMessage($this->translator->translate('Please enter at least one language.'), 'warning', true);
 			}
 		}
-
-		parent::startup();
 
 		if ($this->isPanelOpened()) {
 			$this->invalidateControl('panel');

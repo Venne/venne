@@ -3,6 +3,10 @@
 {block toolbar}
 {/block}
 
+{block breadcrumb}
+	<li class="active">{_Installation}</li>
+{/block}
+
 {block content}
 {if count($flashes) == 1}
 	{control systemAccountForm}
