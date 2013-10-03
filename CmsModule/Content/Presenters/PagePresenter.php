@@ -192,7 +192,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			if (!isset($session->routes[$this->route->route->id])) {
 				throw new BadRequestException;
 			} else {
-				$this->flashMessage('This page is unpublished.', 'info');
+				$this->flashMessage($this->translator->translate('This page is unpublished.'), 'info');
 			}
 		}
 

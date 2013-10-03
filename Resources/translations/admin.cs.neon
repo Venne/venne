@@ -35,6 +35,7 @@ create template: vytvořit šablonu
 database: databáze
 database settings: nastavení databáze
 dates: data
+default language: výchozí jazyk
 default modules: výchozí moduly
 default presenter: výchozí prezenter
 default user: výchozí uživatel
@@ -50,6 +51,7 @@ e-mails: e-maily
 environments settings: nastavení prostředí
 elements: elementy
 expire: vypršet
+finish: dokončit
 file: soubor
 files: soubory
 files and attachements: soubory a přílohy
@@ -273,7 +275,7 @@ cache has been cleared.: cache byla vyprázdněna
 release date is already scheduled.: datum vydání je již naplánováno
 expire date is already scheduled.: datum vypršení je již naplánováno
 this page expired.: tato stránka vypršela
-"page '%name%' has been removed.": stránka byla odstraněna
+"page '%name%' has been removed.": stránka '%name%' byla odstraněna
 translation has been removed.: překlad byl odstraněn
 page has been created.: stránka byla vytvořena
 page has been updated.: stránka byla aktualizována
@@ -298,3 +300,23 @@ layout has been saved.: layout byl uložen
 layout has been removed.: layout byl odstraněn
 template has been removed.: šablona byla ostraněna
 user page does not exist.: uživatelská stránka neexistuje
+installation is complete: instalace je kompletní
+'now you can start to build a website structure. If you need help, you can use prepared structure.': 'Nyní můžete začít stavět stukturu webu. Pokud potřebujete pomoc, můžete použít připravenou strukturu.'
+interesting modules: zajímavé moduly
+look at next official modules. You can find them useful.: podívejte se na další oficiální moduly. Můžou být pro vás užitečné.
+create default structure by installator: vytvořte výchozí strukturu instalátorem
+basic website structure and access' list: základní struktura webu a list přístupů
+language has been saved: jazyk byl uložen
+items has been removed: položky byly ostraněny
+this page is unpublished: tato stránka není publikovaná
+role has been saved: role byla uložena
+user has been saved: uživatel byl uložen
+you are already logged in.: již jste přihlášen
+this page works only for regular account.: tato stránka je přístupná pouze pro regulární účet
+user's account has been updated.: účet uživatele byl aktualizován
+userform has not been set: formulář uživatele byl nastaven
+the user is already registered: tento uživatel již existuje
+your registration is complete: vaše registrace je kompletní
+administrator's account: administrátorský účet
+minimal length is 5 char: minimální délka je 5 znaků
+other: ostatní

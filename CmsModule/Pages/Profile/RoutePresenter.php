@@ -43,7 +43,7 @@ class RoutePresenter extends PagePresenter
 		}
 
 		if (!$this->user->identity instanceof UserEntity) {
-			$this->flashMessage('This page works only for regular account.', 'warning');
+			$this->flashMessage($this->translator->translate('This page works only for regular account.'), 'warning');
 		}
 	}
 
@@ -63,7 +63,7 @@ class RoutePresenter extends PagePresenter
 
 	public function formSuccess()
 	{
-		$this->flashMessage('User account has been updated.', 'success');
+		$this->flashMessage($this->translator->translate('User\'s account has been updated.'), 'success');
 		$this->redirect('this');
 	}
 }

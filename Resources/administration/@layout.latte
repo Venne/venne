@@ -127,7 +127,7 @@
 								</li>
 							{/if}
 
-							<li class="dropdown">
+							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user glyphicon-white"></span> <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_'Actions'}</li>

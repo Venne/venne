@@ -170,7 +170,7 @@ class CmsExtension extends CompilerExtension
 
 		$container->addDefinition($this->prefix('structureInstallatorManager'))
 			->setClass('CmsModule\Administration\StructureInstallatorManager')
-			->addSetup('registerInstallator', array($this->prefix('@administration.structureInstallator'), 'Basic website structure and access list'));
+			->addSetup('registerInstallator', array($this->prefix('@administration.structureInstallator'), 'basic website structure and access\' list'));
 	}
 
 

@@ -56,6 +56,6 @@ class UserSocialFormFactory extends FormFactory
 
 	public function handleSuccess(Form $form)
 	{
-		$form->getPresenter()->flashMessage('User has been saved', 'success');
+		$form->getPresenter()->flashMessage($form->presenter->translator->translate('User has been saved'), 'success');
 	}
 }

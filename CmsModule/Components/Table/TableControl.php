@@ -262,7 +262,7 @@ class TableControl extends Control
 		};
 		$control->onSuccess[] = function (TableControl $table) use ($_this) {
 			$presenter = $table->getPresenter();
-			$presenter->flashMessage('Items has been removed', 'success');
+			$presenter->flashMessage($presenter->translator->translate('Items has been removed'), 'success');
 
 			// list back
 			if ($_this->countItems() === 0 && $_this['vp']->page > 1) {

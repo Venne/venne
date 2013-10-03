@@ -62,6 +62,6 @@ class LanguageFormFactory extends FormFactory
 
 	public function handleSuccess(Form $form)
 	{
-		$form->getPresenter()->flashMessage('Language has been saved', 'success');
+		$form->getPresenter()->flashMessage($form->presenter->translator->translate('Language has been saved'), 'success');
 	}
 }

@@ -73,12 +73,12 @@ class RoutePresenter extends PagePresenter
 
 		if (!$this->pageRepository->findOneBy(array('special' => 'users'))) {
 			$this->template->hideForm = true;
-			$this->flashMessage('User page does not exist.', 'warning', false);
+			$this->flashMessage($this->translator->translate('User page does not exist.'), 'warning', false);
 		}
 
 		if (!$this->extendedPage->userType) {
 			$this->template->hideForm = true;
-			$this->flashMessage('Userform has not been set', 'warning', false);
+			$this->flashMessage($this->translator->translate('Userform has not been set'), 'warning', false);
 		}
 
 		if ($this->key) {
@@ -108,7 +108,7 @@ class RoutePresenter extends PagePresenter
 
 		if ($identity) {
 			$this->user->login(new Identity($identity->email, $identity->roles));
-			$this->flashMessage('User is already registered');
+			$this->flashMessage($this->translator->translate('The user is already registered'));
 			$this->redirect('this');
 		}
 
@@ -184,7 +184,7 @@ class RoutePresenter extends PagePresenter
 
 	public function processSuccess($form)
 	{
-		$this->flashMessage('Your registration is complete', 'success');
+		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
 
 		// email
 		if ($this->extendedPage->mode === PageEntity::MODE_MAIL || $this->extendedPage->mode === PageEntity::MODE_MAIL_CHECKUP) {
@@ -222,7 +222,7 @@ class RoutePresenter extends PagePresenter
 	public function renderDefault()
 	{
 		if ($this->user->isLoggedIn()) {
-			$this->flashMessage('You are already logged in.', 'info');
+			$this->flashMessage($this->translator->translate('You are already logged in.'), 'info');
 		}
 
 		$this->template->socialLogins = $this->securityManager->getSocialLogins();

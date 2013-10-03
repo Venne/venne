@@ -76,7 +76,7 @@ class RoutePresenter extends PagePresenter
 	public function renderDefault()
 	{
 		if ($this->user->isLoggedIn()) {
-			$this->flashMessage('You are already logged in.', 'info');
+			$this->flashMessage($this->translator->translate('You are already logged in.'), 'info');
 		}
 
 		$this->template->socialLogins = $this->securityManager->getSocialLogins();

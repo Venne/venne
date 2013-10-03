@@ -35,6 +35,6 @@ class RoleFormFactory extends FormFactory
 
 	public function handleSuccess(Form $form)
 	{
-		$form->getPresenter()->flashMessage('Role has been saved', 'success');
+		$form->getPresenter()->flashMessage($form->presenter->translator->translate('Role has been saved'), 'success');
 	}
 }
