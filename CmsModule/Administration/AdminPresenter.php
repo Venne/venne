@@ -73,7 +73,7 @@ abstract class AdminPresenter extends BasePresenter
 			}
 
 			// check database
-			if (!$this->context->createCheckConnection()) {
+			if (!$this->context->createCheckConnection() || (count($this->context->parameters['website']['languages']) == 0 && !$this->context->schemaManager->tablesExist('users'))) {
 				if ($this->getName() != 'Cms:Admin:Installation') {
 					$this->redirect(':Cms:Admin:Installation:');
 				}
@@ -82,7 +82,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->template->hideMenuItems = true;
 				$this->flashMessage($this->translator->translate('Database connection not found. Please fix it.'), 'warning', true);
 			} // check languages
-			elseif ($this->context->schemaManager->tablesExist('users') && count($this->context->parameters['website']['languages']) == 0) {
+			elseif (count($this->context->parameters['website']['languages']) == 0 && $this->context->schemaManager->tablesExist('users')) {
 				if ($this->getName() != 'Cms:Admin:Installation') {
 					$this->redirect(':Cms:Admin:Installation:');
 				}

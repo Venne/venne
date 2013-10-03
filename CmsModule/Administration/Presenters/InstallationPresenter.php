@@ -157,7 +157,7 @@ class InstallationPresenter extends BasePresenter
 		}
 
 		// Extensions
-		$modules = array('iconv', 'json', "pdo");
+		$modules = array('iconv', 'json', 'pdo');
 		foreach ($modules as $item) {
 			if (!extension_loaded($item)) {
 				$this->flashMessage($this->translator->translate('Module %name% is not enabled.', NULL, array('name' => $item)), 'warning');
