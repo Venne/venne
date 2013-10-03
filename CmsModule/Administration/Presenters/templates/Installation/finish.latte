@@ -26,5 +26,5 @@
 
 <h2>{_'Create default structure by installator'}</h2>
 
-<a n:foreach="$presenter->installatorManager->installators as $name=>$installer" n:if="$presenter->isEmptyStructure()" class="btn btn-lg btn-primary" n:href="createStructure! $name">{_$name}</a>
+<a n:foreach="$presenter->installatorManager->installators as $name=>$installer" n:if="$presenter->isEmptyStructure()" class="btn btn-lg btn-primary" n:href="createStructure! $name">{_ucfirst($name)}</a>
 <a class="btn btn-default btn-lg" n:href="Dashboard:">{_'Skip this step'}</a>

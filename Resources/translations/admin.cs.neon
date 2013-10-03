@@ -21,6 +21,8 @@ basic settings: základní nastavení
 basic setup: základní nastavení
 basic meta information: základní meta informace
 block by key: blokovat klíčem
+catch exceptions: zachytit výjimky
+cache type: typ cache
 cache strategy: cachovací strategie
 connection settings: nastavení připojení
 content: obsah
@@ -101,11 +103,13 @@ route: routa
 routes: routy
 routing: routování
 robots: roboti
+save path: destinace
 statistics: statistiky
 search: vyhledat
 search page: vyhledávací stránka
 set as root: jako hlavní
 save: uložit
+secure: zabezpečit
 security: zabezpečení
 sessions: relace
 sitemap: mapa webu
@@ -128,6 +132,7 @@ target module: cílový modul
 target layout: cílový layout
 templating: šablony
 templates: šablony
+use SMTP: použít SMTP
 up: nahoru
 upgrade: aktualizovat
 upload new file: nahrát nový soubor
@@ -320,3 +325,14 @@ your registration is complete: vaše registrace je kompletní
 administrator's account: administrátorský účet
 minimal length is 5 char: minimální délka je 5 znaků
 other: ostatní
+skip this step: přeskočit tento krok
+'hello, this is main page of website.': 'ahoj, toto je hlavní strana webu.'
+main page: hlavní strana
+list of users.: výpis uživatelů
+list of tags.: výpis tagů
+page not found: stránka nenalezena
+forbidden: neoprávněný přístup
+internal server error: interní chyba serveru
+site map: mapa webu
+manage roles and permissions: správa rolí a oprávnění
+clear cache: vyčistit cache

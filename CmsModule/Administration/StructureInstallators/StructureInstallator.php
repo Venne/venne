@@ -17,6 +17,7 @@ use CmsModule\Pages\Errors\Error500PageEntity;
 use CmsModule\Security\Entities\PermissionEntity;
 use CmsModule\Security\Entities\RoleEntity;
 use Doctrine\ORM\EntityManager;
+use Nette\Localization\ITranslator;
 use Nette\Object;
 
 /**
@@ -28,13 +29,18 @@ class StructureInstallator extends Object implements IStructureInstallator
 	/** @var EntityManager */
 	private $entityManager;
 
+	/** @var ITranslator */
+	private $translator;
+
 
 	/**
 	 * @param EntityManager $entityManager
+	 * @param ITranslator $translator
 	 */
-	public function __construct(EntityManager $entityManager)
+	public function __construct(EntityManager $entityManager, ITranslator $translator)
 	{
 		$this->entityManager = $entityManager;
+		$this->translator = $translator;
 	}
 
 
@@ -58,11 +64,11 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setPublished(TRUE);
 		$textPage
 			->getExtendedMainRoute()
-			->setName('Main page')
+			->setName($this->translator->translate('Main page'))
 			->getRoute()
 			->setCopyLayoutFromParent(FALSE)
 			->setLayout($layout)
-			->setText('Hello, this is main page of this website.')
+			->setText($this->translator->translate('Hello, this is main page of website.'))
 			->setPublished(TRUE);
 
 		$userPage = new \CmsModule\Pages\Users\PageEntity;
@@ -72,9 +78,9 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setParent($textPage->getPage());
 		$userPage
 			->getExtendedMainRoute()
-			->setName('Users')
+			->setName($this->translator->translate('Users'))
 			->getRoute()
-			->setText('List of users.')
+			->setText($this->translator->translate('List of users.'))
 			->setPublished(TRUE);
 
 		$tagsPage = new \CmsModule\Pages\Tags\PageEntity;
@@ -84,9 +90,9 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setParent($textPage->getPage());
 		$tagsPage
 			->getExtendedMainRoute()
-			->setName('Tags')
+			->setName($this->translator->translate('Tags'))
 			->getRoute()
-			->setText('List of tags.')
+			->setText($this->translator->translate('List of tags.'))
 			->setPublished(TRUE);
 
 		$error404Page = new  Error404PageEntity;
@@ -96,7 +102,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setParent($textPage->getPage());
 		$error404Page
 			->getExtendedMainRoute()
-			->setName('Page not found')
+			->setName($this->translator->translate('Page not found'))
 			->getRoute()
 			->setText('404')
 			->setPublished(TRUE);
@@ -108,7 +114,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setParent($textPage->getPage());
 		$error403Page
 			->getExtendedMainRoute()
-			->setName('Forbidden')
+			->setName($this->translator->translate('Forbidden'))
 			->getRoute()
 			->setText('403')
 			->setPublished(TRUE);
@@ -120,7 +126,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setParent($textPage->getPage());
 		$error500Page
 			->getExtendedMainRoute()
-			->setName('Internal server error')
+			->setName($this->translator->translate('Internal server error'))
 			->getRoute()
 			->setText('500')
 			->setPublished(TRUE);
@@ -132,7 +138,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->setParent($textPage->getPage());
 		$sitemapPage
 			->getExtendedMainRoute()
-			->setName('Site map')
+			->setName($this->translator->translate('Site map'))
 			->getRoute()
 			->setPublished(TRUE);
 

@@ -1,5 +1,6 @@
 {var $types = $presenter->context->cms->contentManager->getContentTypes()}
-{block header}{_'New page'} ({_end(explode('.', $types[$presenter->type]))}){/block}
+{var $type = explode('.', $types[$presenter->type])}
+{block header}{_'New page'} ({_end($type)}){/block}
 
 {block toolbar}
 {/block}
