@@ -362,15 +362,33 @@ span.dynatree-empty, span.dynatree-vline, span.dynatree-connector, span.dynatree
 
 
 /* Files */
-#sortable .ui-selected .thumbnail {
+#sortable {
+	display: inline-block;
+	width: 100%;
+}
+#sortable .item > a {
+	color: #000000;
+	width: 100px;
+	height: 117px;
+}
+#sortable .item > a.img-thumbnail:hover {
     background: #dddddd;
+	text-decoration: none;
 }
-#sortable .ui-selecting .thumbnail {
-    background: #eeeeee;
+#sortable .item > a div {
+	word-break: break-all;
+	margin-top: 5px;
 }
-
-
-
+#sortable .item {
+	height: 120px;
+	text-align: center;
+	margin: 0 10px 10px 0;
+	float: left;
+}
+#sortable .item > ul {
+	margin-top: -10px;
+	text-align: left;
+}
 
 
 

@@ -3,32 +3,28 @@
 {/if}
 
 		{foreach $control->getItems() as $item}
-
-		<div class="dropdown item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" style="text-align: center; margin: 0 10px 10px 0; display: inline-block;" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
-			<div href="#" class="img-thumbnail dropdown-toggle">
+		<div data-toggle="tooltip" title="" data-original-title="{$item->name}" class="dropdown item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
 				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
 					{var $type = 'folder'}
 				{else}
 					{var $type = 'text-plain'}
 				{/if}
 				{var $ext = substr($item->getName(), strrpos($item->getName(), '.') + 1)}
-				<a href="{if $type=='folder'}{=$control->presenter->link('changeDir!', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
+				<a class="img-thumbnail dropdown-toggle" href="{if $type=='folder'}{=$control->presenter->link('changeDir!', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
 					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
 						<img n:src="$item->getPath(), size=>'64x64', format=>8" alt="" />
 					{else}
 						<img src="{$basePath}/resources/cmsModule/admin/icons/places/64/{$type}.png" alt="">
 					{/if}
+					<div>{\Nette\Utils\Strings::truncate($item->name, 25)}</div>
 				</a>
-				<h5>{$item->name}</h5>
-			</div>
-			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" style="margin-top: -10px; text-align: left;">
+			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 				<li><a href="javascript:;" onClick="window.location = $(this).parent().parent().parent().find('a').attr('href');"><i class="glyphicon glyphicon-fullscreen"></i> {_Show}</a></li>
 				<li><a class="ajax" href="{if $item instanceof \CmsModule\Content\Entities\DirEntity}{$presenter['table']->link('doAction!', array('id' => $item->id, 'name' => 'editDir'))}{else}{$presenter['fileTable']->link('doAction!', array('id' => $item->id, 'name' => 'editFile'))}{/if}"><i class="glyphicon glyphicon-edit"></i> {_Edit}</a></li>
 				<li role="presentation" class="divider"></li>
 				<li><a class="ajax" href="{plink delete! key2=>(($item instanceof \CmsModule\Content\Entities\DirEntity ? 'd_' : 'f_') . $item->id)}"><i class="glyphicon glyphicon-trash"></i> {_Delete}</a></li>
 			</ul>
 		</div>
-
 		{/foreach}
 
 {snippet form}
