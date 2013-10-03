@@ -16,6 +16,7 @@ use CmsModule\Content\Repositories\LogRepository;
 use CmsModule\Forms\ILoggableForm;
 use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Nette\Callback;
 use Nette\Security\User;
 use Venne\Forms\Form;
@@ -38,19 +39,23 @@ class FormLogListener
 	/** @var callable */
 	private $checkConnection;
 
+	/** @var AbstractSchemaManager */
+	private $schemaManager;
 
-	public function __construct($checkConnection, User $user, UserRepository $userRepository, LogRepository $logRepository)
+
+	public function __construct($checkConnection, User $user, UserRepository $userRepository, LogRepository $logRepository, AbstractSchemaManager $schemaManager)
 	{
 		$this->user = $user;
 		$this->userRepository = $userRepository;
 		$this->logRepository = $logRepository;
 		$this->checkConnection = $checkConnection;
+		$this->schemaManager = $schemaManager;
 	}
 
 
 	public function onSuccess(Form $form)
 	{
-		if (!Callback::create($this->checkConnection)->invoke()) {
+		if (!Callback::create($this->checkConnection)->invoke() || !$this->schemaManager->tablesExist('users')) {
 			return;
 		}
 
