@@ -418,12 +418,27 @@ class ContentPresenter extends BasePresenter
 	{
 		$this->flashMessage($this->translator->translate('Page has been created.'), 'success');
 
+		if (!$this->isAjax()) {
+			if ($this->isAuthorized('edit')) {
+				$this->redirect('edit', array('type' => NULL, 'key' => $form->data->page->id, 'section' => NULL));
+			} else {
+				$this->redirect('default', array('type' => NULL, 'key' => NULL));
+			}
+		}
+
 		$this->invalidateControl('content');
 		$this['panel']->invalidateControl('content');
+
+		$this->section = NULL;
+		$this->type = NULL;
 		if ($this->isAuthorized('edit')) {
-			$this->ajaxRedirect('edit', array('type' => NULL, 'key' => $form->data->page->id, 'section' => NULL));
+			$this->setView('edit');
+			$this->key = $form->data->page->id;
+			$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->page->id, 'section' => NULL));
 		} else {
-			$this->ajaxRedirect('default', array('type' => NULL, 'key' => NULL));
+			$this->setView('default');
+			$this->key = NULL;
+			$this->payload->url = $this->link('default', array('type' => NULL, 'key' => NULL));
 		}
 	}
 
