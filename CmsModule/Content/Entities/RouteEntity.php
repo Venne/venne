@@ -311,7 +311,10 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		if (!$this->getParent()) {
 			$this->setTranslatedValue('url', '');
 		} else {
+			$l = $this->getParent()->getLocale();
+			$this->getParent()->setLocale($this->locale);
 			$this->setTranslatedValue('url', trim($this->getParent()->getUrl() . '/' . $this->getTranslatedValue('localUrl'), '/'));
+			$this->getParent()->setLocale($l);
 		}
 
 		if ($recursively) {
