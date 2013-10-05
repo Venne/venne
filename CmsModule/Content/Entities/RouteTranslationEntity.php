@@ -23,6 +23,8 @@ use Doctrine\ORM\Mapping as ORM;
 class RouteTranslationEntity extends \DoctrineModule\Entities\IdentifiedEntity
 {
 
+	const CACHE = 'Cms.RouteTranslationEntity';
+
 	/**
 	 * @var RouteEntity
 	 * @ORM\ManyToOne(targetEntity="\CmsModule\Content\Entities\RouteEntity", inversedBy="translations")
