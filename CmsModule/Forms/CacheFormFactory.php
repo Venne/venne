@@ -25,7 +25,7 @@ class CacheFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addGroup('Setup');
+		$form->addGroup('Options');
 		$form->addRadioList('section', 'Section', array('all' => 'All', 'namespace' => 'Namespace', 'sessions' => 'Sessions'))
 			->setDefaultValue('all')
 			->addCondition($form::EQUAL, 'namespace')->toggle('namespace');

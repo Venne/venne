@@ -69,7 +69,7 @@ class LoginFormFactory extends FormFactory
 			$identity = $socialLogin->authenticate(array());
 			$form->presenter->user->login(new Identity($identity->email, $identity->roles));
 		} catch (AuthenticationException $e) {
-			$form->getPresenter()->flashMessage($e->getMessage(), 'warning');
+			$form->getPresenter()->flashMessage($form->presenter->translator->translate($e->getMessage()), 'warning');
 		}
 	}
 
@@ -110,7 +110,7 @@ class LoginFormFactory extends FormFactory
 
 			$this->doRedirect($form);
 		} catch (AuthenticationException $e) {
-			$form->getPresenter()->flashMessage($e->getMessage(), 'warning');
+			$form->getPresenter()->flashMessage($form->presenter->translator->translate($e->getMessage()), 'warning');
 		}
 	}
 
