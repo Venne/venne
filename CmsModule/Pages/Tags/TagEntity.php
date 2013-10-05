@@ -84,8 +84,14 @@ class TagEntity extends ExtendedRouteEntity
 			$this->route->generateDate();
 		}
 
-		$this->name = $name;
-		$this->updateRoute();
+		if ($this->locale) {
+			$this->route->name = $name;
+			$this->route->title = $name;
+			$this->route->localUrl = Strings::webalize($name);
+		} else {
+			$this->name = $name;
+			$this->updateRoute();
+		}
 	}
 
 
@@ -100,9 +106,9 @@ class TagEntity extends ExtendedRouteEntity
 
 	protected function updateRoute()
 	{
-		$this->route->setValueForAllTranslations('name', $this->name);
-		$this->route->setValueForAllTranslations('title', $this->name);
-		$this->route->setValueForAllTranslations('localUrl', Strings::webalize($this->name));
+		$this->route->name = $this->name;
+		$this->route->title = $this->name;
+		$this->route->localUrl = Strings::webalize($this->name);
 	}
 }
 
