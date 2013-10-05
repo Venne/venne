@@ -27,17 +27,18 @@ class BasicFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$element = $form->addOne('element');
+		$form->addGroup();
 
-		$element->setCurrentGroup($form->addGroup());
-		$element->addSelect('langMode', 'Language mode', ElementEntity::getLangModes())
+		$langMode = $form->addSelect('langMode', 'Language mode', ElementEntity::getLangModes());
+		$langMode
 			->addCondition($form::EQUAL, ElementEntity::LANGMODE_SPLIT)->toggle('form-group-language');
 
-		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-language'));
-		$element->addManyToOne('language', 'Language');
+		$form->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-language'));
+		$form->addManyToOne('language', 'Language')
+			->addConditionOn($langMode, $form::EQUAL, ElementEntity::LANGMODE_SPLIT)->addRule($form::FILLED);
 
-		$element->setCurrentGroup($form->addGroup());
-		$mode = $element->addSelect('mode', 'Share data with', ElementEntity::getModes());
+		$form->addGroup();
+		$mode = $form->addSelect('mode', 'Share data with', ElementEntity::getModes());
 		$mode
 			->addCondition($form::IS_IN, array(1, 2, 4))->toggle('form-group-layout')
 			->endCondition()
@@ -45,18 +46,19 @@ class BasicFormFactory extends FormFactory
 			->endCondition()
 			->addCondition($form::EQUAL, 4)->toggle('form-group-route');
 
-		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-layout'));
-		$element->addManyToOne('layout', 'Layout');
+		$form->addGroup('Association with')->setOption('id', 'form-group-layout');
+		$form->addManyToOne('layout', 'Layout')
+			->addConditionOn($mode, $form::IS_IN, array(1, 2, 4))->addRule($form::FILLED);
 
-		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-page'));
-		$page = $element->addManyToOne('page', 'Page');
+		$form->addGroup()->setOption('id', 'form-group-page');
+		$page = $form->addManyToOne('page', 'Page');
 		$page
-			->addConditionOn($mode, $form::IS_IN, array(1, 2))->addRule($form::FILLED);
+			->addConditionOn($mode, $form::IS_IN, array(2, 4))->addRule($form::FILLED);
 
-		$element->setCurrentGroup($form->addGroup()->setOption('id', 'form-group-route'));
-		$element->addManyToOne('route', 'Route')
+		$form->addGroup()->setOption('id', 'form-group-route');
+		$form->addManyToOne('route', 'Route')
 			->setDependOn($page, 'page')
-			->addConditionOn($mode, $form::EQUAL, 2)->addRule($form::FILLED);
+			->addConditionOn($mode, $form::EQUAL, 4)->addRule($form::FILLED);
 
 
 		$form->addGroup();
