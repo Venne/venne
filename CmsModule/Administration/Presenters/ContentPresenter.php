@@ -433,6 +433,7 @@ class ContentPresenter extends BasePresenter
 		$this->type = NULL;
 		if ($this->isAuthorized('edit')) {
 			$this->setView('edit');
+			$this->changeAction('edit');
 			$this->key = $form->data->page->id;
 			$this->payload->url = $this->link('edit', array('type' => NULL, 'key' => $form->data->page->id, 'section' => NULL));
 		} else {
