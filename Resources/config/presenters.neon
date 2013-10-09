@@ -59,7 +59,7 @@ factories:
 		]]
 
 	cms.admin.loginPresenter:
-		class: CmsModule\Administration\Presenters\LoginPresenter
+		class: CmsModule\Administration\Presenters\LoginPresenter(@cms.admin.loginControlFactory)
 		tags: [presenter]
 
 	cms.admin.languagePresenter:

@@ -17,9 +17,9 @@ use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Pages\Users\ExtendedUserEntity;
 use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\SecurityManager;
+use Nette\Application\BadRequestException;
 use Nette\InvalidArgumentException;
 use Nette\Security\AuthenticationException;
-use Nette\Security\Identity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -107,14 +107,13 @@ class RoutePresenter extends PagePresenter
 		}
 
 		if ($identity) {
-			$this->user->login(new Identity($identity->email, $identity->roles));
 			$this->flashMessage($this->translator->translate('The user is already registered'));
 			$this->redirect('this');
 		}
 
 		$this->authorizatorFactory->clearPermissionSession();
 
-		$formFactory = $this->securityManager->getFormFactoryByEntity($this->extendedPage->userType);
+		$formFactory = $this->securityManager->getUserTypeByClass($this->extendedPage->userType)->getRegistrationFormFactory();
 
 		if (!$formFactory instanceof IRegistrationFormFactory) {
 			throw new InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \CmsModule\Content\IRegistrationFormFactory");
@@ -126,15 +125,16 @@ class RoutePresenter extends PagePresenter
 			$this->redirectUrl($socialLogin->getLoginUrl());
 		}
 
+		/** @var $form \Venne\Forms\Form */
+		$form = $this['form'];
+		$form->onSuccess = NULL;
+
 		if ($this->extendedPage->getSocialMode() === PageEntity::SOCIAL_MODE_LOAD_AND_SAVE) {
-			/** @var $form \Venne\Forms\Form */
-			$form = $this['form'];
-			$form->onSuccess = NULL;
 			$form->setSubmittedBy($form->getSaveButton());
 			$form->fireEvents();
 
 			if ($form->isValid()) {
-				$socialLogin->connectWithUser($form->getData());
+				$socialLogin->connectWithUser($form->getData()->user);
 
 				$identity = $socialLogin->authenticate(array());
 				if ($identity) {
@@ -149,25 +149,10 @@ class RoutePresenter extends PagePresenter
 	protected function createComponentForm()
 	{
 		$userType = $this->securityManager->getUserTypeByClass($this->extendedPage->userType);
-		$repository = $this->entityManager->getRepository($this->extendedPage->userType);
 		$formFactory = $userType->getRegistrationFormFactory();
 
-		/** @var $entity ExtendedUserEntity */
-		$entity = $repository->createNew();
-		if ($this->extendedPage->mode === PageEntity::MODE_BASIC) {
-			$entity->getUser()->getRoute()->setPublished(true);
-		} elseif ($this->extendedPage->mode === PageEntity::MODE_MAIL) {
-			$entity->getUser()->getRoute()->setPublished(true);
-			$entity->getUser()->disableByKey();
-		} elseif ($this->extendedPage->mode === PageEntity::MODE_MAIL_CHECKUP) {
-			$entity->getUser()->disableByKey();
-		}
-		foreach ($this->extendedPage->roles as $role) {
-			$entity->getUser()->roleEntities[] = $role;
-		}
-
 		$_this = $this;
-		$form = $formFactory->invoke($entity);
+		$form = $formFactory->invoke($this->createNewUser());
 		$form->onSuccess[] = $this->processSuccess;
 
 		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
@@ -182,9 +167,38 @@ class RoutePresenter extends PagePresenter
 	}
 
 
+	/**
+	 * @return ExtendedUserEntity
+	 */
+	protected function createNewUser()
+	{
+		$repository = $this->entityManager->getRepository($this->extendedPage->userType);
+
+		/** @var $entity ExtendedUserEntity */
+		$entity = $repository->createNew();
+		if ($this->extendedPage->mode === PageEntity::MODE_CHECKUP) {
+			$entity->getUser()->setPublished(false);
+		} elseif ($this->extendedPage->mode === PageEntity::MODE_MAIL) {
+			$entity->getUser()->disableByKey();
+		} elseif ($this->extendedPage->mode === PageEntity::MODE_MAIL_CHECKUP) {
+			$entity->getUser()->disableByKey();
+			$entity->getUser()->setPublished(false);
+		}
+		foreach ($this->extendedPage->roles as $role) {
+			$entity->getUser()->roleEntities[] = $role;
+		}
+
+		return $entity;
+	}
+
+
 	public function processSuccess($form)
 	{
 		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
+
+		if ($this->extendedPage->mode === PageEntity::MODE_BASIC) {
+			$this->user->login($form->getData()->user->email, $form['user']['password']->value);
+		}
 
 		// email
 		if ($this->extendedPage->mode === PageEntity::MODE_MAIL || $this->extendedPage->mode === PageEntity::MODE_MAIL_CHECKUP) {
@@ -200,19 +214,19 @@ class RoutePresenter extends PagePresenter
 		$user = $form->data;
 		$absoluteUrls = $this->absoluteUrls;
 		$this->absoluteUrls = true;
-		$link = $this->link("this", array("key" => $user->key));
+		$link = $this->link('this', array('key' => $user->user->key));
 		$this->absoluteUrls = $absoluteUrls;
 
 		$text = $this->extendedPage->email;
 		$text = strtr($text, array(
-			'{$email}' => $user->email,
-			'{$password}' => $form["password"]->value,
+			'{$email}' => $user->user->email,
+			'{$password}' => $form['user']['password']->value,
 			'{$link}' => '<a href="' . $link . '">' . $link . '</a>'
 		));
 
 		$mail = $this->context->nette->createMail();
 		$mail->setFrom("{$this->extendedPage->sender} <{$this->extendedPage->mailFrom}>")
-			->addTo($user->email)
+			->addTo($user->user->email)
 			->setSubject($this->extendedPage->subject)
 			->setHTMLBody($text)
 			->send();
@@ -232,10 +246,10 @@ class RoutePresenter extends PagePresenter
 	public function renderConfirm()
 	{
 		if ($this->extendedPage->mode === PageEntity::MODE_MAIL || $this->extendedPage->mode === PageEntity::MODE_MAIL_CHECKUP) {
-			$repository = $this->entityManager->getRepository($this->extendedPage->userType);
+			$repository = $this->entityManager->getRepository('CmsModule\Pages\Users\UserEntity');
 			$user = $repository->findOneByKey($this->key);
 			if (!$user) {
-				throw new \Nette\Application\BadRequestException;
+				throw new BadRequestException;
 			} else {
 				$user->enableByKey($this->key);
 				$repository->save($user);

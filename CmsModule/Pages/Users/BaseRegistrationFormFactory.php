@@ -11,13 +11,16 @@
 
 namespace CmsModule\Pages\Users;
 
+use CmsModule\Content\IRegistrationFormFactory;
+use CmsModule\Security\ISocialLogin;
 use DoctrineModule\Forms\FormFactory;
+use Nette\Utils\Strings;
 use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-abstract class BaseRegistrationFormFactory extends FormFactory
+abstract class BaseRegistrationFormFactory extends FormFactory implements IRegistrationFormFactory
 {
 
 	/**
@@ -41,6 +44,17 @@ abstract class BaseRegistrationFormFactory extends FormFactory
 
 	public function handleAttached(Form $form)
 	{
-		$form->addSaveButton('Save');
+		$form->addSaveButton('Sign up');
+	}
+
+
+	/**
+	 * @param Form $form
+	 * @param ISocialLogin $socialLogin
+	 */
+	public function setSocialData(Form $form, ISocialLogin $socialLogin)
+	{
+		$form['user']['email']->setValue($socialLogin->getEmail());
+		$form['user']['password_confirm']->value = $form['user']['password']->value = Strings::random();
 	}
 }

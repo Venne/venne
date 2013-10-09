@@ -341,9 +341,16 @@ language mode: jazykový mód
 reload: obnovit
 share: sdílet
 split: rozdělit
-the username is incorrect.: přihlašovací jméno není validní.
 section: sekce
 setup: nastavení
 clear: vyčistit
 options: možnosti
 langauge variants: jazykové varianty
+sign up: registrovat
+'if is set user cannot log in.': 'je-li nastaveno, uživatel je blokován'
+from: od
+'hello %user%. Your account has been activated.': 'ahoj %user%. Váš účet je aktivován.'
+'hello %user%. Your account has been confirmed, please wait for activation by administrator.': 'ahoj %user%. Váš účet je povolen, prosím vyčkejte na aktivaci administrátorem.'
+user does not exist.: uživatel neexistuje
+the password is incorrect.: heslo není správné.
+the username is incorrect.: přihlašovací jméno není validní.

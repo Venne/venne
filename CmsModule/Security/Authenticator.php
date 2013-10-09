@@ -13,6 +13,7 @@ namespace CmsModule\Security;
 
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Callback;
+use Nette\Localization\ITranslator;
 use Nette\Security\AuthenticationException;
 
 /**
@@ -27,19 +28,24 @@ class Authenticator extends \Venne\Security\Authenticator
 	/** @var Callback */
 	protected $checkConnection;
 
+	/** @var ITranslator */
+	protected $translator;
+
 
 	/**
 	 * @param $adminLogin
 	 * @param $adminPassword
 	 * @param $checkConnection
 	 * @param $userRepository
+	 * @param ITranslator $translator
 	 */
-	public function __construct($adminLogin, $adminPassword, $checkConnection, $userRepository)
+	public function __construct($adminLogin, $adminPassword, $checkConnection, $userRepository, ITranslator $translator)
 	{
 		parent::__construct($adminLogin, $adminPassword);
 
 		$this->userRepository = $userRepository;
 		$this->checkConnection = $checkConnection;
+		$this->translator = $translator;
 	}
 
 
@@ -61,11 +67,11 @@ class Authenticator extends \Venne\Security\Authenticator
 				$user = $this->userRepository->findOneBy(array('email' => $username, 'published' => 1));
 
 				if (!$user) {
-					throw $ex;
+					throw new AuthenticationException($this->translator->translate($ex->getMessage()), $ex->getCode());
 				}
 
 				if (!$user->verifyByPassword($password)) {
-					throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
+					throw new AuthenticationException($this->translator->translate('The password is incorrect.'), self::INVALID_CREDENTIAL);
 				}
 
 				return new Identity($username, $user->getRoles());

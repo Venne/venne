@@ -182,6 +182,9 @@ factories:
 		class: CmsModule\Content\Components\RouteControl
 		tags: [component]
 
+	cms.admin.loginControl:
+		class: CmsModule\Administration\Components\LoginControl
+
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
 		tags: [widget: head]

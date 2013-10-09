@@ -35,4 +35,7 @@ interface ISocialLogin extends \Nette\Security\IAuthenticator
 
 
 	public function connectWithUser(UserEntity $userEntity);
+
+
+	public function setRedirectUri($redirectUri);
 }

@@ -11,7 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use CmsModule\Forms\LoginFormFactory;
+use Nette\Callback;
 use Venne\Forms\Form;
 
 /**
@@ -23,15 +23,14 @@ class LoginPresenter extends BasePresenter
 	/** @persistent */
 	public $backlink;
 
-	/** @var LoginFormFactory */
+	/** @var Callback */
 	protected $form;
 
 
-	/**
-	 * @param LoginFormFactory $form
-	 */
-	public function injectForm(LoginFormFactory $form)
+	public function __construct($form)
 	{
+		parent::__construct();
+
 		$this->form = $form;
 	}
 

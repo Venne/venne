@@ -79,16 +79,14 @@ class LoginFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$_this = $this;
 		$form->addText('username', 'E-mail')->setRequired('Please provide a e-mail.');
 		$form->addPassword('password', 'Password')->setRequired('Please provide a password.');
 		$form->addCheckbox('remember', 'Remember me on this computer');
 		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
 
 		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)->onClick[] = function ($button) use ($_this, $socialLogin) {
-				$_this->handleLogin($button->form, $socialLogin);
-			};
+			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)
+				->setValidationScope(FALSE);
 		}
 	}
 

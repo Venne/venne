@@ -95,6 +95,14 @@ abstract class BaseAdminFormFactory extends FormFactory
 	}
 
 
+	public function handleLoad(Form $form)
+	{
+		if ($form->data->user->key) {
+			$form['user']['key_new']->value = TRUE;
+		}
+	}
+
+
 	public function handleSave(Form $form)
 	{
 		if ($form['user']['password_new']->value) {
