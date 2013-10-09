@@ -48,9 +48,9 @@ class PageEntity extends ExtendedPageEntity
 
 	/**
 	 * @var string
-	 * @ORM\Column(type="string", nullable=true)
+	 * @ORM\Column(type="string")
 	 */
-	protected $userType;
+	protected $userType = 'CmsModule\Pages\Users\DefaultUserEntity';
 
 	/**
 	 * @var string
