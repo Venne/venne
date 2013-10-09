@@ -108,9 +108,9 @@
 
 						<ul class="nav navbar-nav navbar-right">
 
-							{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
+							{if !isset($hideMenuItems)}
 								{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
-									<li><a href="{$basePath}/?do=openPanel"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'In-Site administration'}</a></li>
+									<li n:if="$presenter->user->isLoggedIn()"><a href="{$basePath}/?do=openPanel"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'In-Site administration'}</a></li>
 									<li><a href="{$basePath}/"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Frontend'}</a></li>
 								{else}
 									<li><a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':', array('mode'=>NULL))}"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Full administration'}</a></li>
@@ -128,7 +128,7 @@
 							{/if}
 
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user glyphicon-white"></span> <b class="caret"></b></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user glyphicon-white"></span> {if $presenter->user->identity instanceof \CmsModule\Pages\Users\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_'Actions'}</li>
 									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Cms:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Cms:Admin:Account:}"><i class="glyphicon glyphicon-user glyphicon-white"></i> {_'User card'}</a></li>
