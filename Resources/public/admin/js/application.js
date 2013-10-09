@@ -25,6 +25,11 @@ $(function () {
 		$(this).next().click();
 	});
 
+	// panel max height
+	$('#panel .panel-container').css('max-height', ($(window).height() - 120) + 'px');
+	$(window).on('resize', function(){
+		$('#panel .panel-container').css('max-height', ($(this).height() - 120) + 'px');
+	});
 
 	$('#button-fullscreen').on('click', function (event) {
 		if ($('#panel').data('state') != 'closed') {

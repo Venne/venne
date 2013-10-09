@@ -478,3 +478,8 @@ form fieldset:first-of-type legend {
 	max-width: inherit;
 	padding: 0;
 }
+
+#panel .panel-container {
+	padding-right: 0px;
+	overflow-y: auto;
+}
