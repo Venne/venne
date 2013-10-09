@@ -26,9 +26,9 @@ $(function () {
 	});
 
 	// panel max height
-	$('#panel .panel-container').css('max-height', ($(window).height() - 120) + 'px');
+	$('#panel .panel-container').css('max-height', ($(window).height() - 155) + 'px');
 	$(window).on('resize', function(){
-		$('#panel .panel-container').css('max-height', ($(this).height() - 120) + 'px');
+		$('#panel .panel-container').css('max-height', ($(this).height() - 155) + 'px');
 	});
 
 	$('#button-fullscreen').on('click', function (event) {
