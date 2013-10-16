@@ -96,7 +96,7 @@ $(function () {
 			target.find(this.selector).each(function () {
 				if (!$(this).data('ajaxTooltipCreated')) {
 					$(this).data('ajaxTooltipCreated', true);
-					$(this).tooltip();
+					$(this).tooltip({html: true});
 				}
 			});
 		},

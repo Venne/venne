@@ -11,6 +11,7 @@
 
 namespace CmsModule\Content\Entities;
 
+use CmsModule\Pages\Users\UserEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
@@ -45,6 +46,25 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $invisible = FALSE;
 
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime")
+	 */
+	protected $created;
+
+	/**
+	 * @var \DateTime
+	 * @ORM\Column(type="datetime")
+	 */
+	protected $updated;
+
+	/**
+	 * @var \CmsModule\Pages\Users\UserEntity
+	 * @ORM\ManyToOne(targetEntity="\CmsModule\Pages\Users\UserEntity")
+	 * @ORM\JoinColumn(onDelete="SET NULL")
+	 */
+	protected $author;
+
 	/** @var string */
 	protected $publicDir;
 
@@ -58,6 +78,15 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	protected $_oldPath;
 
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->created = new \DateTime;
+		$this->updated = new \DateTime;
+	}
+
+
 	/**
 	 * @param string $name
 	 */
@@ -69,6 +98,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 		$this->name = $name;
 		$this->generatePath();
+		$this->updated = new \DateTime;
 	}
 
 
@@ -107,6 +137,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function setInvisible($invisible)
 	{
 		$this->invisible = $invisible;
+		$this->updated = new \DateTime;
 	}
 
 
@@ -157,6 +188,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function setProtectedDir($protectedDir)
 	{
 		$this->protectedDir = $protectedDir;
+		$this->updated = new \DateTime;
 	}
 
 
@@ -172,5 +204,42 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function setPublicUrl($publicUrl)
 	{
 		$this->publicUrl = $publicUrl;
+	}
+
+
+	/**
+	 * @param UserEntity $author
+	 */
+	public function setAuthor(UserEntity $author = NULL)
+	{
+		$this->author = $author;
+		$this->updated = new \DateTime;
+	}
+
+
+	/**
+	 * @return UserEntity
+	 */
+	public function getAuthor()
+	{
+		return $this->author;
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getCreated()
+	{
+		return $this->created;
+	}
+
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getUpdated()
+	{
+		return $this->updated;
 	}
 }

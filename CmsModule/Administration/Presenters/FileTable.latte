@@ -3,7 +3,7 @@
 {/if}
 
 		{foreach $control->getItems() as $item}
-		<div data-toggle="tooltip" title="" data-original-title="{$item->name}" class="dropdown item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
+		<div data-toggle="tooltip" title="" data-original-title="<h5>{$item->name}</h5><strong>{_Created}:</strong>&nbsp;{$item->created|date:'%d.%m.%Y %H:%M:%S'}<br /><strong>{_Updated}:</strong>&nbsp;{$item->updated|date:'%d.%m.%Y %H:%M:%S'}{if $item->author}<br /><strong>{_Author}:</strong>&nbsp;{$item->author}{/if}" class="dropdown item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
 				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
 					{var $type = 'folder'}
 				{else}
@@ -20,7 +20,7 @@
 				</a>
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 				<li><a href="javascript:;" onClick="window.location = $(this).parent().parent().parent().find('a').attr('href');"><i class="glyphicon glyphicon-fullscreen"></i> {_Show}</a></li>
-				<li><a class="ajax" href="{if $item instanceof \CmsModule\Content\Entities\DirEntity}{$presenter['table']->link('doAction!', array('id' => $item->id, 'name' => 'editDir'))}{else}{$presenter['fileTable']->link('doAction!', array('id' => $item->id, 'name' => 'editFile'))}{/if}"><i class="glyphicon glyphicon-edit"></i> {_Edit}</a></li>
+				<li><a class="ajax" href="{if $item instanceof \CmsModule\Content\Entities\DirEntity}{$control->parent['table']->link('doAction!', array('id' => $item->id, 'name' => 'editDir'))}{else}{$control->parent['fileTable']->link('doAction!', array('id' => $item->id, 'name' => 'editFile'))}{/if}"><i class="glyphicon glyphicon-edit"></i> {_Edit}</a></li>
 				<li role="presentation" class="divider"></li>
 				<li><a class="ajax" href="{plink delete! key2=>(($item instanceof \CmsModule\Content\Entities\DirEntity ? 'd_' : 'f_') . $item->id)}"><i class="glyphicon glyphicon-trash"></i> {_Delete}</a></li>
 			</ul>

@@ -156,6 +156,8 @@ class FileEntity extends BaseFileEntity
 		}
 
 		$this->file = $file;
+
+		$this->updated = new \DateTime;
 	}
 
 

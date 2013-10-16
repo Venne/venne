@@ -255,11 +255,13 @@ class FilesPresenter extends BasePresenter
 		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($dirRepository, $_this) {
 			$entity = new FileEntity;
 			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
+			$entity->setAuthor($_this->user->identity instanceof \CmsModule\Pages\Users\UserEntity ? $_this->user->identity : NULL);
 			return $entity;
 		}, Form::TYPE_LARGE);
 		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
 			$entity = new DirEntity;
 			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
+			$entity->setAuthor($_this->user->identity instanceof \CmsModule\Pages\Users\UserEntity ? $_this->user->identity : NULL);
 			return $entity;
 		}, Form::TYPE_LARGE);
 
