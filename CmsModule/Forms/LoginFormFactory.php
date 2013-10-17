@@ -84,8 +84,9 @@ class LoginFormFactory extends FormFactory
 		$form->addCheckbox('remember', 'Remember me on this computer');
 		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
 
+		$socialButtons = $form->addContainer('socialButtons');
 		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)
+			$socialButtons->addSubmit('_submit_' . $socialLogin, $socialLogin)
 				->setValidationScope(FALSE);
 		}
 	}

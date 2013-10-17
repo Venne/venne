@@ -50,7 +50,7 @@ class LoginControl extends Control
 		$form = $this->loginFormFactory->invoke();
 
 		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$form['_submit_' . $socialLogin]->onClick[] = function () use ($_this, $socialLogin) {
+			$form['socialButtons']['_submit_' . $socialLogin]->onClick[] = function () use ($_this, $socialLogin) {
 				$_this->handleLogin($socialLogin);
 			};
 		}
