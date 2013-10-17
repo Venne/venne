@@ -60,6 +60,9 @@ abstract class BaseElement extends Control implements IElement
 	/** @var ExtendedElementEntity */
 	private $extendedElementEntity;
 
+	/** @var array */
+	private $defaults = array();
+
 
 	/**
 	 * @param EntityManager $entityManager
@@ -71,6 +74,15 @@ abstract class BaseElement extends Control implements IElement
 		$this->entityManager = $entityManager;
 		$this->_clearFormFactory = $clearFormFactory;
 		$this->_basicFormFactory = $basicFormFactory;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getDefaults()
+	{
+		return $this->defaults;
 	}
 
 
@@ -150,6 +162,11 @@ abstract class BaseElement extends Control implements IElement
 	{
 		$class = '\\' . $this->getEntityName();
 		$ret = new $class($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity, $this->languageEntity);
+		if ($this->defaults) {
+			foreach ($this->defaults as $key => $val) {
+				$ret->{$key} = $val;
+			}
+		}
 		return $ret;
 	}
 
@@ -242,6 +259,18 @@ abstract class BaseElement extends Control implements IElement
 			$this->extendedElementEntity = $this->entityManager->getRepository($element->getClass())->findOneBy(array('element' => $element->id));
 		}
 		return $this->extendedElementEntity;
+	}
+
+
+	public function __call($name, $args)
+	{
+		if ($name === 'render') {
+			if (isset($args[0]['defaults'])) {
+				$this->defaults = (array)$args[0]['defaults'];
+			}
+		}
+
+		return parent::__call($name, $args);
 	}
 
 
