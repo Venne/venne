@@ -1,0 +1,75 @@
+<script>
+// <![CDATA[
+	$(function () {
+
+		var shifted;
+		var clicked = false;
+		var moused = false;
+
+		$("#sortable").selectable();
+
+		$(document).mousedown(function (event) {
+			if(moused){
+				clicked = true;
+			}
+		});
+
+		$(document).mouseup(function (event) {
+			moused = true;
+			clicked = false;
+		});
+
+		$(document).bind('keydown keyup', function (e) {
+			if (e.keyCode == 16) {
+				shifted = !shifted;
+			}
+		});
+
+		$("#sortable > div.item").on("click", function (event) {
+
+			event.preventDefault();
+
+			if (!shifted) {
+				$(this).parent().find("li").each(function () {
+					$(this).removeClass('ui-selected');
+				});
+			}
+
+			$(this).removeClass('ui-selecting');
+			$(this).addClass('ui-selected');
+		});
+
+		$("#sortable > div.item.d").dblclick(function (event) {
+			$.nette.ajax({
+				url:$(this).find("a").attr("href"),
+				off: ['history']
+			});
+		});
+	});
+// ]]>
+</script>
+
+<div id="sortable" class="filebrowser">
+{control table}
+{control fileTable}
+</div>
+
+<script>
+	$(function () {
+		$('.dropdown-toggle').on('click',function(e){
+			e.preventDefault();
+		});
+		$('.dropdown-toggle').on('contextmenu',function(e){
+			var _this = $(this);
+			e.preventDefault();
+			_this.dropdown('toggle');
+
+			_this.parent().on('mouseleave', function(){
+				$(this).off('mouseleave');
+				$(this).removeClass('open');
+			});
+		});
+	});""
+</script>
+
+{control ajaxFileUploader}
