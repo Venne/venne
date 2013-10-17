@@ -148,6 +148,10 @@ services:
 		class: CmsModule\Administration\Components\AjaxFileUploaderControlFactory(%publicDir%/ajaxFileUpload, %publicDir%)
 
 
+	cms.admin.fileControlFactory:
+		class: CmsModule\Administration\Components\FileControlFactory(%modules.cms.path%/CmsModule/Administration/Presenters/FileTable.latte)
+
+
 factories:
 
 	cms.admin.basicForm:
