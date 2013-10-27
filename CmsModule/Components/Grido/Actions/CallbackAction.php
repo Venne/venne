@@ -54,16 +54,16 @@ class CallbackAction extends Href
 
 		if ($this->customHref) {
 			$el->href(callback($this->customHref)->invokeArgs(array($item)));
-		} else if ($this->getGrid()->getPropertyAccessor()->hasProperty($item, $pk)) {
+		} else {
 			$this->arguments[$pk] = $this->getGrid()->getPropertyAccessor()->getProperty($item, $pk);
 			$el->href($this->link('click!', $this->arguments[$pk]));
 		}
 
-		if ($this->confirm) {
+		if (($o = $this->getOption('confirm')) !== NULL) {
 			$el->attrs['data-grido-confirm'] = $this->translate(
-				is_callable($this->confirm)
-					? callback($this->confirm)->invokeArgs(array($item))
-					: $this->confirm
+				is_callable($o)
+					? callback($o)->invokeArgs(array($item))
+					: $o
 			);
 		}
 

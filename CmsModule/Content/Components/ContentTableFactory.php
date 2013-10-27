@@ -48,19 +48,19 @@ class ContentTableFactory extends Object
 
 		$table = $adminGrid->getTable();
 
-		$table->addColumn('name', 'Name')
+		$table->addColumnText('name', 'Name')
 			->setCustomRender(function ($entity) {
 				return $entity->mainRoute->name;
 			})
 			->setSortable()
-			->setFilter()
+			->setFilterText()
 				->setSuggestion(function($item) { return $item->mainRoute->name; });
 		$table->getColumn('name')->getCellPrototype()->width = '50%';
-		$table->addColumn('mainRoute', 'URL')
+		$table->addColumnText('mainRoute', 'URL')
 			->setSortable()
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 		$table->getColumn('mainRoute')->getCellPrototype()->width = '25%';
-		$table->addColumn('language', 'Language')
+		$table->addColumnText('language', 'Language')
 			->getCellPrototype()->width = '25%';
 
 		$adminGrid->onAttached[] = function (AdminGrid $table) use ($_this) {

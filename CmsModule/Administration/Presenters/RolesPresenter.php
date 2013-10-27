@@ -94,13 +94,13 @@ class RolesPresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->context->translator->translator);
-		$table->addColumn('name', 'Name')
+		$table->addColumnText('name', 'Name')
 			->setSortable()
 			->getCellPrototype()->width = '40%';
 		$table->getColumn('name')
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 
-		$table->addColumn('parent', 'Parent')
+		$table->addColumnText('parent', 'Parent')
 			->setSortable()
 			->getCellPrototype()->width = '60%';
 		$table->getColumn('parent')

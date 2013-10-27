@@ -166,14 +166,14 @@ class LayoutsPresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->context->translator->translator);
-		$table->addColumn('name', 'Name')
+		$table->addColumnText('name', 'Name')
 			->setSortable()
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 		$table->getColumn('name')->getCellPrototype()->width = '60%';
 
-		$table->addColumn('file', 'File')
+		$table->addColumnText('file', 'File')
 			->setSortable()
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 		$table->getColumn('file')->getCellPrototype()->width = '40%';
 
 		// actions
@@ -212,12 +212,12 @@ class LayoutsPresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->context->translator->translator);
-		$table->addColumn('nameRaw', 'Name')
+		$table->addColumnText('nameRaw', 'Name')
 			->setSortable()
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 		$table->getColumn('nameRaw')->getCellPrototype()->width = '23%';
 
-		$table->addColumn('mode', 'Mode')
+		$table->addColumnText('mode', 'Mode')
 			->setSortable()
 			->setCustomRender(function ($entity) {
 				$modes = ElementEntity::getModes();
@@ -225,7 +225,7 @@ class LayoutsPresenter extends BasePresenter
 			})
 			->getCellPrototype()->width = '12%';
 
-		$table->addColumn('langMode', 'Language mode')
+		$table->addColumnText('langMode', 'Language mode')
 			->setSortable()
 			->setCustomRender(function ($entity) {
 				$modes = ElementEntity::getLangModes();
@@ -233,21 +233,21 @@ class LayoutsPresenter extends BasePresenter
 			})
 			->getCellPrototype()->width = '12%';
 
-		$table->addColumn('page', 'Page')
+		$table->addColumnText('page', 'Page')
 			->setSortable()
 			->getCellPrototype()->width = '20%';
 
-		$table->addColumn('route', 'Route')
+		$table->addColumnText('route', 'Route')
 			->setSortable()
 			->getCellPrototype()->width = '20%';
 
-		$table->addColumn('language', 'Language')
+		$table->addColumnText('language', 'Language')
 			->setSortable()
 			->getCellPrototype()->width = '15%';
 
 		// filters
-		$table->addFilter('mode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getModes());
-		$table->addFilter('langMode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getLangModes());
+		$table->addFilterText('mode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getModes());
+		$table->addFilterText('langMode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getLangModes());
 
 		// actions
 		if ($this->isAuthorized('edit')) {

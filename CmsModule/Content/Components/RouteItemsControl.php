@@ -132,14 +132,14 @@ class RouteItemsControl extends Control
 				->setParameter('page', $this->extendedPage->id)
 		));
 
-		$table->addColumn('name', 'Name')
+		$table->addColumnText('name', 'Name')
 			->setCustomRender(function ($entity) {
 				return $entity->route->name;
 			})
 			->setSortable()
 			->getCellPrototype()->width = '100%';
 		$table->getColumn('name')
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 
 		// actions
 		$table->addAction('publish', 'Published')

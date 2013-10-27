@@ -91,15 +91,15 @@ class LanguagePresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->context->translator->translator);
-		$table->addColumn('name', 'Name')
+		$table->addColumnText('name', 'Name')
 			->setSortable()
 			->getCellPrototype()->width = '50%';
 
-		$table->addColumn('alias', 'Alias')
+		$table->addColumnText('alias', 'Alias')
 			->setSortable()
 			->getCellPrototype()->width = '20%';
 
-		$table->addColumn('short', 'Short')
+		$table->addColumnText('short', 'Short')
 			->setSortable()
 			->getCellPrototype()->width = '30%';
 

@@ -143,7 +143,7 @@ class AccountPresenter extends BasePresenter
 		$table->addColumnDate('created', 'Date')
 			->setSortable()
 			->getCellPrototype()->width = '40%';
-		$table->addColumn('sessionId', 'Session ID')
+		$table->addColumnText('sessionId', 'Session ID')
 			->getCellPrototype()->width = '50%';
 
 		// actions

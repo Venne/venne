@@ -165,16 +165,16 @@ class UsersPresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->context->translator->translator);
-		$table->addColumn('email', 'E-mail')
+		$table->addColumnText('email', 'E-mail')
 			->setCustomRender(function ($entity) {
 				return $entity->user->email;
 			})
 			->setSortable()
 			->getCellPrototype()->width = '60%';
 		$table->getColumn('email')
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 
-		$table->addColumn('roles', 'Roles')
+		$table->addColumnText('roles', 'Roles')
 			->setSortable()
 			->getCellPrototype()->width = '40%';
 		$table->getColumn('roles')

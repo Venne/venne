@@ -54,17 +54,17 @@ class RouteControl extends SectionControl
 				->setParameter('page', $this->entity->page->id)
 		));
 		$table->setTranslator($this->presenter->context->translator->translator);
-		$table->addColumn('title', 'Title')
+		$table->addColumnText('title', 'Title')
 			->setSortable()
 			->getCellPrototype()->width = '100%';
 		$table->getColumn('title')
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 
-		$table->addColumn('url', 'Url')
+		$table->addColumnText('url', 'Url')
 			->setSortable()
 			->getCellPrototype()->width = '100%';
 		$table->getColumn('url')
-			->setFilter()->setSuggestion();
+			->setFilterText()->setSuggestion();
 
 		// actions
 		$table->addAction('edit', 'Edit')
