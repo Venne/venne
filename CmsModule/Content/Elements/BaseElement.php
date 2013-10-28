@@ -163,11 +163,21 @@ abstract class BaseElement extends Control implements IElement
 		$class = '\\' . $this->getEntityName();
 		$ret = new $class($this->nameRaw, $this->layoutEntity, $this->pageEntity, $this->routeEntity, $this->languageEntity);
 		if ($this->defaults) {
-			foreach ($this->defaults as $key => $val) {
-				$ret->{$key} = $val;
-			}
+			$this->applyDefaults($ret, $this->defaults);
 		}
 		return $ret;
+	}
+
+
+	/**
+	 * @param ExtendedElementEntity $entity
+	 * @param array $defaults
+	 */
+	protected function applyDefaults(ExtendedElementEntity $entity, $defaults)
+	{
+		foreach ($defaults as $key => $val) {
+			$entity->{$key} = $val;
+		}
 	}
 
 
