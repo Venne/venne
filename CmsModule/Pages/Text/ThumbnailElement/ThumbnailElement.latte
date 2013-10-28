@@ -1,0 +1,3 @@
+<a n:if="$image" rel="lightbox" href="{$image->getFileUrl()}"{if $description} title="{$description}"{/if}>
+	<img n:src="$image->getFileUrl(true), size => (($width || $height) ? $width . 'x'. $height : NULL), format => $format, type => $type ? $type : 'default'"{if $alt} alt="{$alt}"{/if} />
+</a>

@@ -16,6 +16,11 @@ services:
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
+	cms.pages.text.thumbnailElement.thumbnailFormFactory:
+		class: CmsModule\Pages\Text\ThumbnailElement\ThumbnailFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 factories:
 	cms.pages.text.routePresenter:
 		class: CmsModule\Pages\Text\RoutePresenter
@@ -44,6 +49,12 @@ factories:
 		setup:
 			- injectSetupForm(...)
 		tags: [element: image]
+
+	cms.pages.text.thumbnailElement:
+		class: CmsModule\Pages\Text\ThumbnailElement\ThumbnailElement
+		setup:
+			- injectSetupForm(...)
+		tags: [element: thumbnail]
 
 	cms.pages.text.textareaElement.textFormFactory:
 		class: CmsModule\Pages\Text\TextElement\TextFormFactory
