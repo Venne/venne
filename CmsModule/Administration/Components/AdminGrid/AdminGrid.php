@@ -211,7 +211,7 @@ class AdminGrid extends Control
 			return 'Really delete?';
 		});
 
-		$this->getTable()->setOperations(array('delete' => 'Delete'), $this->tableDelete);
+		$this->getTable()->setOperation(array('delete' => 'Delete'), $this->tableDelete);
 		return $this;
 	}
 
