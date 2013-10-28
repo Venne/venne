@@ -12,7 +12,11 @@
 namespace CmsModule\Pages\Text\ImageElement;
 
 use CmsModule\Content\Elements\BaseElement;
+use CmsModule\Content\Elements\ExtendedElementEntity;
+use CmsModule\Content\Entities\FileEntity;
+use Nette\InvalidArgumentException;
 use Venne\Forms\FormFactory;
+use Venne\Module\Helpers;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,6 +26,18 @@ abstract class AbstractImageElement extends BaseElement
 
 	/** @var FormFactory */
 	protected $setupFormFactory;
+
+	/** @var Helpers */
+	protected $moduleHelpers;
+
+
+	/**
+	 * @param Helpers $moduleHelpers
+	 */
+	public function injectModuleHelpers(Helpers $moduleHelpers)
+	{
+		$this->moduleHelpers = $moduleHelpers;
+	}
 
 
 	/**
@@ -75,6 +91,25 @@ abstract class AbstractImageElement extends BaseElement
 	public function processForm()
 	{
 		$this->getPresenter()->redirect('refresh!');
+	}
+
+
+	protected function applyDefaults(ExtendedElementEntity $entity, $defaults)
+	{
+		if (isset($defaults['image']) && is_string($defaults['image'])) {
+			$file = $this->moduleHelpers->expandPath($defaults['image'], 'Resources/public');
+
+			if (!file_exists($file)) {
+				throw new InvalidArgumentException("Path '{$defaults['image']}' does not exist.");
+			}
+
+			$entity->image = new FileEntity;
+			$entity->image->setFile(new \SplFileInfo($file));
+
+			unset($defaults['image']);
+		}
+
+		parent::applyDefaults($entity, $defaults);
 	}
 
 }

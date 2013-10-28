@@ -48,12 +48,14 @@ factories:
 		class: CmsModule\Pages\Text\ImageElement\ImageElement
 		setup:
 			- injectSetupForm(...)
+			- injectModuleHelpers(...)
 		tags: [element: image]
 
 	cms.pages.text.thumbnailElement:
 		class: CmsModule\Pages\Text\ThumbnailElement\ThumbnailElement
 		setup:
 			- injectSetupForm(...)
+			- injectModuleHelpers(...)
 		tags: [element: thumbnail]
 
 	cms.pages.text.textareaElement.textFormFactory:
