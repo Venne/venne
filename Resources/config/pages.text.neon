@@ -11,6 +11,11 @@ services:
 			- injectFactory(@cms.admin.basicFormFactory)
 		tags: [component]
 
+	cms.pages.text.imageElement.imageFormFactory:
+		class: CmsModule\Pages\Text\ImageElement\ImageFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
 factories:
 	cms.pages.text.routePresenter:
 		class: CmsModule\Pages\Text\RoutePresenter
@@ -33,6 +38,12 @@ factories:
 		setup:
 			- injectSetupForm(@cms.pages.text.editorElement.editorFormFactory)
 		tags: [element: editor]
+
+	cms.pages.text.imageElement:
+		class: CmsModule\Pages\Text\ImageElement\ImageElement
+		setup:
+			- injectSetupForm(...)
+		tags: [element: image]
 
 	cms.pages.text.textareaElement.textFormFactory:
 		class: CmsModule\Pages\Text\TextElement\TextFormFactory
