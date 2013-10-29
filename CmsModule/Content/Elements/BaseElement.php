@@ -20,6 +20,7 @@ use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\IElement;
 use Doctrine\ORM\EntityManager;
+use Nette\InvalidStateException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -66,6 +67,8 @@ abstract class BaseElement extends Control implements IElement
 
 	/**
 	 * @param EntityManager $entityManager
+	 * @param ClearFormFactory $clearFormFactory
+	 * @param BasicFormFactory $basicFormFactory
 	 */
 	public function __construct(EntityManager $entityManager, ClearFormFactory $clearFormFactory, BasicFormFactory $basicFormFactory)
 	{
@@ -267,6 +270,10 @@ abstract class BaseElement extends Control implements IElement
 		if (!$this->extendedElementEntity) {
 			$element = $this->getElement();
 			$this->extendedElementEntity = $this->entityManager->getRepository($element->getClass())->findOneBy(array('element' => $element->id));
+
+			if (!is_a($this->extendedElementEntity, '\\' . $this->getEntityName())) {
+				throw new InvalidStateException("Key '$this->name' is reserved for another element type.");
+			}
 		}
 		return $this->extendedElementEntity;
 	}
@@ -275,12 +282,22 @@ abstract class BaseElement extends Control implements IElement
 	public function __call($name, $args)
 	{
 		if ($name === 'render') {
-			if (isset($args[0]['defaults'])) {
+			$c = TRUE;
+			try {
+				$this->getExtendedElement();
+			} catch (InvalidStateException $e) {
+				$c = FALSE;
+				echo $this['elementError']->render($this->name);
+			}
+
+			if ($c && isset($args[0]['defaults'])) {
 				$this->defaults = (array)$args[0]['defaults'];
 			}
 		}
 
-		return parent::__call($name, $args);
+		if ($c){
+			return parent::__call($name, $args);
+		}
 	}
 
 

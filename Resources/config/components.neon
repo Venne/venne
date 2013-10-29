@@ -245,3 +245,7 @@ factories:
 	cms.languageswitchControl:
 		class: CmsModule\Components\LanguageswitchControl
 		tags: [widget: languageswitch]
+
+	cms.elementErrorControl:
+		class: CmsModule\Content\Elements\Components\ElementErrorControl
+		tags: [widget: elementError]
