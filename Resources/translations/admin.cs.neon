@@ -354,3 +354,8 @@ from: od
 user does not exist.: uživatel neexistuje
 the password is incorrect.: heslo není správné.
 the username is incorrect.: přihlašovací jméno není validní.
+protected: chráněný
+owner: vlastník
+write: zápis
+read: čtení
+change recursively: změnit rekurzivně

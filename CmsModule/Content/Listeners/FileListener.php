@@ -16,13 +16,18 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
+use Nette\Application\Application;
 use Nette\DI\Container;
+use Nette\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class FileListener implements EventSubscriber
 {
+
+	/** @var Container|\SystemContainer */
+	protected $container;
 
 	/** @var string */
 	protected $publicDir;
@@ -42,6 +47,7 @@ class FileListener implements EventSubscriber
 	 */
 	public function __construct(Container $container, $publicDir, $protectedDir, $publicUrl)
 	{
+		$this->container = $container;
 		$this->publicDir = $publicDir;
 		$this->protectedDir = $protectedDir;
 		$this->publicUrl = $container->parameters['basePath'] . $publicUrl;
@@ -100,5 +106,6 @@ class FileListener implements EventSubscriber
 		$entity->setPublicDir($this->publicDir);
 		$entity->setPublicUrl($this->publicUrl);
 		$entity->setProtectedDir($this->protectedDir);
+		$entity->setUser($this->container->getByType('Nette\Security\User'));
 	}
 }

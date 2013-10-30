@@ -21,6 +21,7 @@ use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Repositories\DirRepository;
 use CmsModule\Content\Repositories\FileRepository;
 use Doctrine\ORM\QueryBuilder;
+use Nette\InvalidStateException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -52,6 +53,9 @@ class FileControl extends Control
 	/** @var AjaxFileUploaderControlFactory */
 	protected $ajaxFileUploaderFactory;
 
+	/** @var DirEntity|NULL */
+	protected $root;
+
 
 	public function __construct(
 		$filePath,
@@ -71,12 +75,56 @@ class FileControl extends Control
 	}
 
 
+	/**
+	 * @param DirEntity|NULL $root
+	 */
+	public function setRoot(DirEntity $root = NULL)
+	{
+		$this->root = $root;
+	}
+
+
+	/**
+	 * @return DirEntity|NULL
+	 */
+	public function getRoot()
+	{
+		return $this->root;
+	}
+
+
 	protected function startup()
 	{
 		parent::startup();
 
 		if (substr($this->key, 1, 1) == ':') {
 			$this->key = substr($this->key, 2);
+		}
+	}
+
+
+	protected function attached($presenter)
+	{
+		parent::attached($presenter);
+
+		if ($this->root) {
+			if ($this->key) {
+				$entity = $this->dirRepository->find($this->key);
+				$t = FALSE;
+				while ($entity) {
+					if ($entity->id === $this->key) {
+						$t = TRUE;
+						break;
+					}
+					$entity = $entity->parent;
+				}
+
+				if (!$t) {
+					throw new InvalidStateException("Current directory is not children of root directory.");
+				}
+			} else {
+				$this->key = $this->root->getId();
+			}
 		}
 	}
 
@@ -218,11 +266,11 @@ class FileControl extends Control
 			return $entity;
 		}, Form::TYPE_LARGE);
 
-			$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
-			$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
+		$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
+		$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
 
-			$table->addActionEdit('editDir', 'Edit', $dirForm);
-			$table->addActionEdit('editFile', 'Edit', $fileForm);
+		$table->addActionEdit('editDir', 'Edit', $dirForm);
+		$table->addActionEdit('editFile', 'Edit', $fileForm);
 
 		$table->setTemplateFile($this->filePath);
 

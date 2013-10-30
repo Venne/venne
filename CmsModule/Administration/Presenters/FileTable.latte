@@ -3,6 +3,8 @@
 {/if}
 
 		{foreach $control->getItems() as $item}
+		{continueIf !$item->isAllowedToRead()}
+
 		<div data-toggle="tooltip" title="" data-original-title="<h5>{$item->name}</h5><strong>{_Created}:</strong>&nbsp;{$item->created|date:'%d.%m.%Y %H:%M:%S'}<br /><strong>{_Updated}:</strong>&nbsp;{$item->updated|date:'%d.%m.%Y %H:%M:%S'}{if $item->author}<br /><strong>{_Author}:</strong>&nbsp;{$item->author}{/if}" class="dropdown item {if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}" id="{if $item instanceof \CmsModule\Content\Entities\DirEntity}d{else}f{/if}_{$item->id}">
 				{if $item instanceof \CmsModule\Content\Entities\DirEntity}
 					{var $type = 'folder'}

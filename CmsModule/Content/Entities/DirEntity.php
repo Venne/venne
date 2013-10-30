@@ -38,6 +38,20 @@ class DirEntity extends BaseFileEntity
 	 */
 	protected $files;
 
+	/**
+	 * @var RoleEntity[]
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity")
+	 * @ORM\JoinTable(name="dir_read")
+	 **/
+	protected $read;
+
+	/**
+	 * @var RoleEntity[]
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity")
+	 * @ORM\JoinTable(name="dir_write")
+	 **/
+	protected $write;
+
 
 	public function __construct()
 	{
@@ -125,7 +139,7 @@ class DirEntity extends BaseFileEntity
 
 
 	/**
-	 * @return \Doctrine\Common\Collections\ArrayCollection
+	 * @return DirEntity[]|ArrayCollection
 	 */
 	public function getChildren()
 	{
@@ -155,6 +169,40 @@ class DirEntity extends BaseFileEntity
 
 		foreach ($this->files as $item) {
 			$item->generatePath();
+		}
+	}
+
+
+	public function setPermissionRecursively()
+	{
+		foreach ($this->getChildren() as $dir) {
+			$dir->setProtected($this->protected);
+			$dir->getRead()->clear();
+			$dir->getWrite()->clear();
+
+			foreach ($this->read as $role) {
+				$dir->read[] = $role;
+			}
+
+			foreach ($this->write as $role) {
+				$dir->write[] = $role;
+			}
+
+			$dir->setPermissionRecursively();
+		}
+
+		foreach ($this->getFiles() as $file) {
+			$file->setProtected($this->protected);
+			$file->getRead()->clear();
+			$file->getWrite()->clear();
+
+			foreach ($this->read as $role) {
+				$file->read[] = $role;
+			}
+
+			foreach ($this->write as $role) {
+				$file->write[] = $role;
+			}
 		}
 	}
 }

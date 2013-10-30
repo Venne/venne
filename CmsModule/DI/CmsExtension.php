@@ -146,9 +146,13 @@ class CmsExtension extends CompilerExtension
 		}
 
 		// File route
+		$container->addDefinition($this->prefix("imageRoute"))
+			->setClass("CmsModule\Content\Routes\ImageRoute")
+			->addTag("route", array("priority" => 99999999));
+
 		$container->addDefinition($this->prefix("fileRoute"))
 			->setClass("CmsModule\Content\Routes\FileRoute")
-			->addTag("route", array("priority" => 99999999));
+			->addTag("route", array("priority" => 99999990));
 
 		// config manager
 		$container->addDefinition($this->prefix("configService"))

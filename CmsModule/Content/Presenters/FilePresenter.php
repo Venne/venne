@@ -11,7 +11,12 @@
 
 namespace CmsModule\Content\Presenters;
 
+use CmsModule\Content\Entities\FileEntity;
+use CmsModule\Content\PermissionDeniedException;
 use CmsModule\Content\Repositories\FileRepository;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
+use Nette\Application\Responses\FileResponse;
 use Nette\Image;
 use Venne\Application\UI\Presenter;
 
@@ -53,11 +58,40 @@ class FilePresenter extends Presenter
 	protected function startup()
 	{
 		parent::startup();
+
 		$this->size = $this->getParameter('size');
 		$this->format = $this->getParameter('format');
 		$this->type = $this->getParameter('type');
 		$this->url = $this->getParameter('url');
+	}
 
+
+	public function actionDefault()
+	{
+		if ((/** @var FileEntity $file */
+			$file = $this->fileRepository->findOneBy(array('path' => $this->url))) === NULL
+		) {
+			throw new BadRequestException;
+		}
+
+		try {
+			$file = $file->getFilePath();
+
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mime_type = finfo_file($finfo, $file);
+			finfo_close($finfo);
+
+			header('Content-type: ' . $mime_type);
+			echo file_get_contents($file);
+			$this->terminate();
+		} catch (PermissionDeniedException $e) {
+			throw new ForbiddenRequestException;
+		}
+	}
+
+
+	public function actionImage()
+	{
 		if (substr($this->url, 0, 7) === '_cache/') {
 			$this->cached = TRUE;
 			$this->url = substr($this->url, 7);

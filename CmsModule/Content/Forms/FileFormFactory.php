@@ -11,7 +11,11 @@
 
 namespace CmsModule\Content\Forms;
 
+use CmsModule\Content\PermissionDeniedException;
+use CmsModule\Pages\Users\UserEntity;
+use Doctrine\DBAL\DBALException;
 use DoctrineModule\Forms\FormFactory;
+use Nette\InvalidArgumentException;
 use Venne\Forms\Form;
 
 /**
@@ -25,6 +29,7 @@ class FileFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
+		$form->addGroup();
 		if ($form->data->id) {
 			$form->addText('name', 'Name')
 				->addCondition($form::FILLED);
@@ -37,7 +42,27 @@ class FileFormFactory extends FormFactory
 			->setCriteria(array('invisible' => FALSE))
 			->setOrderBy(array('path' => 'ASC'));
 
+		$form->addGroup('Permissions');
+		$form->addManyToOne('author', 'Owner');
+		$form->addManyToMany('write', 'Write');
+		$form->addCheckbox('protected', 'Protected')
+			->addCondition($form::EQUAL, TRUE)
+			->toggle('form-permissions');
+
+		$form->addGroup()->setOption('id', 'form-permissions');
+		$form->addManyToMany('read', 'Read');
+
+		$form->addGroup();
 		$form->addSaveButton('Save');
+	}
+
+
+	public function handleCatchError(Form $form, $e)
+	{
+		if ($e instanceof PermissionDeniedException) {
+			$form->addError('You have not writable permissions.');
+			return TRUE;
+		}
 	}
 
 

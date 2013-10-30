@@ -14,18 +14,7 @@ namespace CmsModule\Content\Repositories;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class DirRepository extends AbstractFileRepository
+class FileRepository extends AbstractFileRepository
 {
 
-	public function save($entity, $withoutFlush = self::FLUSH)
-	{
-		$parent = $entity;
-		while (($parent = $parent->parent) !== NULL) {
-			if ($entity->id === $parent->id) {
-				throw new \Nette\InvalidArgumentException('Cyclic association detected!');
-			}
-		}
-
-		return parent::save($entity, $withoutFlush);
-	}
 }

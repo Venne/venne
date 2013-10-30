@@ -11,6 +11,8 @@
 
 namespace CmsModule\Content\Entities;
 
+use CmsModule\Content\PermissionDeniedException;
+use CmsModule\Security\Entities\RoleEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Http\FileUpload;
 use Nette\InvalidArgumentException;
@@ -35,17 +37,12 @@ class FileEntity extends BaseFileEntity
 	 */
 	protected $parent;
 
-	/** @ORM\Column(type="boolean") */
-	protected $protected = FALSE;
-
-	/** @var FileUpload|\SplFileInfo */
-	protected $file;
-
-	/** @var bool */
-	protected $_oldProtected;
-
-	/** @var string */
-	protected $_oldPath;
+	/**
+	 * @var RoleEntity[]
+	 * @ORM\ManyToMany(targetEntity="\CmsModule\Security\Entities\RoleEntity")
+	 * @ORM\JoinTable(name="file_read")
+	 **/
+	protected $read;
 
 
 	/**
@@ -75,10 +72,11 @@ class FileEntity extends BaseFileEntity
 		}
 
 		if (
-			($this->_oldPath || $this->_oldProtected) &&
+			($this->_oldPath || $this->_oldProtected !== NULL) &&
 			($this->_oldPath != $this->path || $this->_oldProtected != $this->protected)
 		) {
-			$oldFilePath = $this->getFilePathBy($this->_oldProtected ? : $this->protected, $this->_oldPath ? : $this->path);
+			$oldFilePath = $this->getFilePathBy($this->_oldProtected !== NULL ? $this->_oldProtected : $this->protected, $this->_oldPath ? : $this->path);
+
 			if (file_exists($oldFilePath)) {
 				rename($oldFilePath, $this->getFilePath());
 			}
@@ -103,36 +101,32 @@ class FileEntity extends BaseFileEntity
 	}
 
 
-	public function setProtected($protected)
-	{
-		if (!$this->_oldProtected) {
-			$this->_oldProtected = $this->protected;
-		}
-
-		$this->protected = $protected;
-	}
-
-
-	public function getProtected()
-	{
-		return $this->protected;
-	}
-
-
 	public function getFilePathBy($protected, $path)
 	{
+		if (!$this->isAllowedToRead()) {
+			throw new PermissionDeniedException;
+		}
+
 		return ($protected ? $this->protectedDir : $this->publicDir) . '/' . $path;
 	}
 
 
 	public function getFilePath($withoutBasePath = FALSE)
 	{
+		if (!$this->isAllowedToRead()) {
+			throw new PermissionDeniedException;
+		}
+
 		return ($withoutBasePath ? '' : ($this->protected ? $this->protectedDir : $this->publicDir) . '/') . $this->path;
 	}
 
 
 	public function getFileUrl($withoutBasePath = FALSE)
 	{
+		if (!$this->isAllowedToRead()) {
+			throw new PermissionDeniedException;
+		}
+
 		return ($withoutBasePath ? '' : $this->publicUrl . '/') . $this->path;
 	}
 
@@ -166,6 +160,10 @@ class FileEntity extends BaseFileEntity
 	 */
 	public function getFile()
 	{
+		if (!$this->isAllowedToRead()) {
+			throw new PermissionDeniedException;
+		}
+
 		return $this->file;
 	}
 }

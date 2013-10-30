@@ -25,12 +25,29 @@ class DirFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
+		$form->addGroup();
 		$form->addText('name', 'Name');
 		$form->addManyToOne('parent', 'Parent')
 			->setCriteria(array('invisible' => FALSE))
 			->setOrderBy(array('path' => 'ASC'));
 
+		$form->addGroup('Permissions');
+		$form->addManyToOne('author', 'Owner');
+		$form->addManyToMany('write', 'Write');
+		$form->addManyToMany('read', 'Read');
+		$form->addCheckbox('protected', 'Protected');
+		$form->addCheckbox('permissionRecursively', 'Change recursively');
+
+		$form->addGroup();
 		$form->addSaveButton('Save');
+	}
+
+
+	public function handleSave(Form $form)
+	{
+		$form->data->setPermissionRecursively();
+
+		parent::handleSave($form);
 	}
 
 

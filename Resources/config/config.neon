@@ -76,11 +76,14 @@ services:
 	cms.fileRepository:
 		class: CmsModule\Content\Repositories\FileRepository
 		factory: @entityManager::getRepository('CmsModule\Content\Entities\FileEntity')
-		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
+		setup:
+			- injectContainer(@container)
 
 	cms.dirRepository:
 		class: CmsModule\Content\Repositories\DirRepository
 		factory: @entityManager::getRepository('CmsModule\Content\Entities\DirEntity')
+		setup:
+			- injectContainer(@container)
 
 	cms.logRepository:
 		class: CmsModule\Content\Repositories\LogRepository

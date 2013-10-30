@@ -18,14 +18,14 @@ use Nette\Application\Routers\Route;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FileRoute extends Route
+class ImageRoute extends Route
 {
 
 	public function __construct()
 	{
-		parent::__construct('public/media/<url .+>', array(
+		parent::__construct('public/media/_cache/<size>/<format>/<type>/<url .+>', array(
 			'presenter' => 'Cms:File',
-			'action' => 'default',
+			'action' => 'image',
 			'url' => array(
 				self::VALUE => '',
 				self::FILTER_IN => NULL,
