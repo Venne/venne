@@ -82,9 +82,11 @@ h6 {
 
 
 #navigation .container,
-#content.container
+#content.container,
+#content .container
 {
 	max-width: inherit;
+	width: inherit;
 }
 
 .nav-tabs > li > a {
@@ -483,6 +485,7 @@ form fieldset:first-of-type legend {
 	padding-right: 0px;
 	overflow: auto;
 	margin-top: 40px;
+	width: inherit;
 }
 #panel .btn-toolbar {
 	position: absolute;
