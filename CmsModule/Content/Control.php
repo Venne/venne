@@ -49,6 +49,12 @@ abstract class Control extends \Venne\Application\UI\Control
 	protected function formatTemplateFiles()
 	{
 		$list = parent::formatTemplateFiles();
+		if ($this->variant) {
+			$refl = $this->getReflection();
+			$list = array_merge(array(
+				dirname($refl->getFileName()) . '/' . $refl->getShortName() . '.' . $this->variant . '.latte',
+			), $list);
+		}
 		$name = ucfirst($this->name) . 'Control';
 		$ret = array();
 		$paths = array();
