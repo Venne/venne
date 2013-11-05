@@ -102,6 +102,7 @@ abstract class AbstractAjaxFileUploaderControlFactory extends Object
 		$fileEntity->setFile(new \SplFileInfo($this->ajaxDir . '/' . $fileName));
 		$fileEntity->setParent($this->parentDirectory);
 		$fileEntity->setAuthor($control->presenter->user->identity instanceof \CmsModule\Pages\Users\UserEntity ? $control->presenter->user->identity : NULL);
+		$fileEntity->copyPermission();
 		$this->fileRepository->save($fileEntity);
 	}
 

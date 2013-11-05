@@ -126,6 +126,35 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
+	 * @param BaseFileEntity $parent
+	 */
+	public function copyPermission(BaseFileEntity $parent = NULL)
+	{
+		$parent = $parent ?: $this->parent;
+
+		if ($parent === NULL) {
+			return;
+		}
+
+		if (!$this->user) {
+			$this->user = $parent->user;
+		}
+
+		$this->protected = $parent->protected;
+		$this->read->clear();
+		$this->write->clear();
+
+		foreach ($parent->read as $role) {
+			$this->read->add($role);
+		}
+
+		foreach ($parent->write as $role) {
+			$this->write->add($role);
+		}
+	}
+
+
+	/**
 	 * @param $name
 	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */

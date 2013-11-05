@@ -176,33 +176,12 @@ class DirEntity extends BaseFileEntity
 	public function setPermissionRecursively()
 	{
 		foreach ($this->getChildren() as $dir) {
-			$dir->setProtected($this->protected);
-			$dir->getRead()->clear();
-			$dir->getWrite()->clear();
-
-			foreach ($this->read as $role) {
-				$dir->read[] = $role;
-			}
-
-			foreach ($this->write as $role) {
-				$dir->write[] = $role;
-			}
-
+			$dir->copyPermission();
 			$dir->setPermissionRecursively();
 		}
 
 		foreach ($this->getFiles() as $file) {
-			$file->setProtected($this->protected);
-			$file->getRead()->clear();
-			$file->getWrite()->clear();
-
-			foreach ($this->read as $role) {
-				$file->read[] = $role;
-			}
-
-			foreach ($this->write as $role) {
-				$file->write[] = $role;
-			}
+			$dir->copyPermission();
 		}
 	}
 }

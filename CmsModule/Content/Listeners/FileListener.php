@@ -104,6 +104,9 @@ class FileListener implements EventSubscriber
 	}
 
 
+	/**
+	 * @param BaseFileEntity $entity
+	 */
 	protected function setup(BaseFileEntity $entity)
 	{
 		$entity->setPublicDir($this->publicDir);

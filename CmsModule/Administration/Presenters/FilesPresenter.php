@@ -15,6 +15,7 @@ use CmsModule\Administration\Components\AjaxFileUploaderControl;
 use CmsModule\Administration\Components\AjaxFileUploaderControlFactory;
 use CmsModule\Components\Table\Form;
 use CmsModule\Components\Table\TableControl;
+use CmsModule\Content\Entities\BaseFileEntity;
 use CmsModule\Content\Entities\DirEntity;
 use CmsModule\Content\Entities\FileEntity;
 use CmsModule\Content\Forms\DirFormFactory;
@@ -245,24 +246,17 @@ class FilesPresenter extends BasePresenter
 	protected function createTable()
 	{
 		$_this = $this;
-		$dirRepository = $this->dirRepository;
 
 		$table = new TableControl;
 		$table->setDefaultPerPage(99999999999);
 		$table->setTemplateConfigurator($this->templateConfigurator);
 
 		// forms
-		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($dirRepository, $_this) {
-			$entity = new FileEntity;
-			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
-			$entity->setAuthor($_this->user->identity instanceof \CmsModule\Pages\Users\UserEntity ? $_this->user->identity : NULL);
-			return $entity;
+		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($_this) {
+			return $_this->configureFileEntity(new FileEntity);
 		}, Form::TYPE_LARGE);
-		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($dirRepository, $_this) {
-			$entity = new DirEntity;
-			$entity->setParent($_this->key ? $dirRepository->find($_this->key) : NULL);
-			$entity->setAuthor($_this->user->identity instanceof \CmsModule\Pages\Users\UserEntity ? $_this->user->identity : NULL);
-			return $entity;
+		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($_this) {
+			return $_this->configureFileEntity(new DirEntity);
 		}, Form::TYPE_LARGE);
 
 		if (!$this->browserMode && $this->isAuthorized('create')) {
@@ -278,6 +272,19 @@ class FilesPresenter extends BasePresenter
 		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
 
 		return $table;
+	}
+
+
+	/**
+	 * @param BaseFileEntity $entity
+	 * @return BaseFileEntity
+	 */
+	public function configureFileEntity(BaseFileEntity $entity)
+	{
+		if ($this->key) {
+			$entity->copyPermission($this->dirRepository->find($this->key));
+		}
+		return $entity;
 	}
 
 
