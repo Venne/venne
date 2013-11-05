@@ -25,6 +25,7 @@ class CmsExtension extends CompilerExtension
 		'administration' => array(
 			'authentication' => array(
 				'autologin' => NULL,
+				'autoregistration' => NULL,
 			),
 			'registrations' => array(
 			),
@@ -166,6 +167,7 @@ class CmsExtension extends CompilerExtension
 		$container->addDefinition($this->prefix('admin.loginPresenter'))
 			->setClass('CmsModule\Administration\Presenters\LoginPresenter')
 			->addSetup('$service->setAutologin(?);', array($config['administration']['authentication']['autologin']))
+			->addSetup('$service->setAutoregistration(?);', array($config['administration']['authentication']['autoregistration']))
 			->addSetup('$service->setRegistrations(?);', array($config['administration']['registrations']))
 			->addTag('presenter');
 	}

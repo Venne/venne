@@ -27,6 +27,9 @@ class LoginControl extends Control
 	/** @var array */
 	public $onSuccess;
 
+	/** @var array */
+	public $onError;
+
 	/** @persistent */
 	public $provider;
 
@@ -110,7 +113,7 @@ class LoginControl extends Control
 			try {
 				$form->presenter->user->login($values->username, $values->password);
 			} catch (AuthenticationException $e) {
-				$form->getPresenter()->flashMessage($form->presenter->translator->translate($e->getMessage()), 'warning');
+				$this->onError($this, $e->getMessage());
 			}
 
 		} else {
@@ -165,7 +168,7 @@ class LoginControl extends Control
 			$identity = $login->authenticate(array());
 			$this->presenter->user->login($identity);
 		} catch (AuthenticationException $e) {
-			$this->getPresenter()->flashMessage($this->getPresenter()->translator->translate($e->getMessage()), 'warning');
+			$this->onError($this, $e->getMessage());
 		}
 
 		$this->redirect('this');

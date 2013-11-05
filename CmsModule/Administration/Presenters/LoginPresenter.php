@@ -34,6 +34,9 @@ class LoginPresenter extends BasePresenter
 	/** @var string */
 	protected $autologin;
 
+	/** @var string */
+	protected $autoregistration;
+
 	/** @var array */
 	protected $registrations = array();
 
@@ -56,8 +59,7 @@ class LoginPresenter extends BasePresenter
 	}
 
 
-
-		/**
+	/**
 	 * @param LoginControlFactory $form
 	 * @param SecurityManager $securityManager
 	 * @param RoleRepository $roleRepository
@@ -78,6 +80,15 @@ class LoginPresenter extends BasePresenter
 	public function setAutologin($autologin)
 	{
 		$this->autologin = $autologin;
+	}
+
+
+	/**
+	 * @param string $autoregistration
+	 */
+	public function setAutoregistration($autoregistration)
+	{
+		$this->autoregistration = $autoregistration;
 	}
 
 
@@ -117,8 +128,10 @@ class LoginPresenter extends BasePresenter
 			$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
 		}
 
-		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes && !$this['signInForm']->template->flashes) {
-			$this->redirect('this', array('do' => 'signInForm-login', 'signInForm-name' => $this->autologin));
+		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes) {
+			if (!$this['signInForm']->template->flashes) {
+				$this->redirect('this', array('do' => 'signInForm-login', 'signInForm-name' => $this->autologin));
+			}
 		}
 	}
 
@@ -132,6 +145,7 @@ class LoginPresenter extends BasePresenter
 	{
 		$form = $this->form->create();
 		$form->onSuccess[] = $this->formSuccess;
+		$form->onError[] = $this->formError;
 
 		return $form;
 	}
@@ -144,6 +158,18 @@ class LoginPresenter extends BasePresenter
 		}
 
 		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
+	}
+
+
+	public function formError($control, $message)
+	{
+		if ($this->autoregistration) {
+			$registration = str_replace(' ', '_', $this->autoregistration);
+			$this->redirect('this', array('do' => 'registration-' . $registration . '-load', 'registration-' . $registration . '-name' => $this->autologin));
+		}
+
+		$this->flashMessage($this->translator->translate($message), 'warning');
+		$this->redirect('this');
 	}
 
 

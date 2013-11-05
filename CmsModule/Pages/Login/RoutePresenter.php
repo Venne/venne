@@ -15,7 +15,6 @@ use CmsModule\Components\LoginControl;
 use CmsModule\Components\LoginControlFactory;
 use CmsModule\Content\Presenters\PagePresenter;
 use CmsModule\Security\SecurityManager;
-use Nette\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -55,6 +54,7 @@ class RoutePresenter extends PagePresenter
 	{
 		$form = $this->loginControlFactoy->create();
 		$form->onSuccess[] = $this->formSuccess;
+		$form->onError[] = $this->formError;
 
 		return $form;
 	}
@@ -70,6 +70,13 @@ class RoutePresenter extends PagePresenter
 			$this->redirect('this', array('route' => $this->extendedPage->page->mainRoute));
 		}
 
+		$this->redirect('this');
+	}
+
+
+	public function formError($control, $message)
+	{
+		$this->flashMessage($this->translator->translate($message), 'warning');
 		$this->redirect('this');
 	}
 
