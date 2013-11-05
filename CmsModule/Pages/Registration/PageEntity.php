@@ -28,7 +28,7 @@ class PageEntity extends ExtendedPageEntity
 
 	const MODE_MAIL = 'mail';
 
-	const MODE_MAIL_CHECKUP = 'mail & checkup';
+	const MODE_MAIL_CHECKUP = 'mail&checkup';
 
 	const SOCIAL_MODE_LOAD = 'load';
 

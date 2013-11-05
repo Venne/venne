@@ -12,6 +12,11 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Components\LoginControlFactory;
+use CmsModule\Components\RegistrationControl;
+use CmsModule\Components\RegistrationControlFactory;
+use CmsModule\Security\Repositories\RoleRepository;
+use CmsModule\Security\SecurityManager;
+use Nette\Application\UI\Multiplier;
 use Venne\Forms\Form;
 
 /**
@@ -29,15 +34,41 @@ class LoginPresenter extends BasePresenter
 	/** @var string */
 	protected $autologin;
 
+	/** @var array */
+	protected $registrations = array();
+
+	/** @var SecurityManager */
+	private $securityManager;
+
+	/** @var RoleRepository */
+	private $roleRepository;
+
+	/** @var RegistrationControlFactory */
+	protected $registrationControlFactory;
+
 
 	/**
-	 * @param LoginControlFactory $form
+	 * @param \CmsModule\Components\RegistrationControlFactory $registrationControlFactory
 	 */
-	public function __construct(LoginControlFactory $form)
+	public function injectRegistrationControlFactory(RegistrationControlFactory $registrationControlFactory)
+	{
+		$this->registrationControlFactory = $registrationControlFactory;
+	}
+
+
+
+		/**
+	 * @param LoginControlFactory $form
+	 * @param SecurityManager $securityManager
+	 * @param RoleRepository $roleRepository
+	 */
+	public function __construct(LoginControlFactory $form, SecurityManager $securityManager, RoleRepository $roleRepository)
 	{
 		parent::__construct();
 
 		$this->form = $form;
+		$this->securityManager = $securityManager;
+		$this->roleRepository = $roleRepository;
 	}
 
 
@@ -47,6 +78,30 @@ class LoginPresenter extends BasePresenter
 	public function setAutologin($autologin)
 	{
 		$this->autologin = $autologin;
+	}
+
+
+	/**
+	 * @param array $registrations
+	 */
+	public function setRegistrations($registrations)
+	{
+		$this->registrations = $registrations;
+
+		foreach ($this->registrations as $key => $reg) {
+			if (!isset($reg['enabled']) || !$reg['enabled']) {
+				unset($this->registrations[$key]);
+			}
+		}
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getRegistrations()
+	{
+		return $this->registrations;
 	}
 
 
@@ -90,4 +145,56 @@ class LoginPresenter extends BasePresenter
 
 		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
 	}
+
+
+	protected function createComponentRegistration()
+	{
+		return new Multiplier($this->createRegistration);
+	}
+
+
+	public function createRegistration($name)
+	{
+		$name = str_replace('_', ' ', $name);
+
+		/** @var RegistrationControl $control */
+		$control = $this->registrationControlFactory->invoke(
+			$this->registrations[$name]['userType'],
+			$this->registrations[$name]['mode'],
+			$this->registrations[$name]['loginProviderMode'],
+			$this->registrations[$name]['roles'],
+			$this->registrations[$name]['email']['sender'],
+			$this->registrations[$name]['email']['from'],
+			$this->registrations[$name]['email']['subject'],
+			$this->registrations[$name]['email']['text']
+		);
+
+		$control->onSuccess[] = $this->registrationSuccess;
+		$control->onEnable[] = $this->registrationEnable;
+		$control->onError[] = $this->registrationError;
+
+		return $control;
+	}
+
+
+	public function registrationSuccess()
+	{
+		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
+		$this->redirect('this');
+	}
+
+
+	public function registrationEnable()
+	{
+		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
+		$this->redirect('this');
+	}
+
+
+	public function registrationError($control, $message)
+	{
+		$this->flashMessage($this->translator->translate($message), 'warning');
+		$this->redirect('this');
+	}
+
 }

@@ -10,4 +10,30 @@
 
 {block #content}
 
-{control signInForm}
+{if count($presenter->registrations)}
+<!-- Nav tabs -->
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#login" data-toggle="tab">Home</a></li>
+
+	{foreach $presenter->registrations as $name => $values}
+	<li class="pull-right"><a href="#{str_replace(' ', '_', $name)}" data-toggle="tab">{_Registration}: {_$name}</a></li>
+	{/foreach}
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+
+	<div class="tab-pane active" id="login">
+		{control signInForm}
+	</div>
+
+	{foreach $presenter->registrations as $name => $values}
+		{var $name = str_replace(' ', '_', $name)}
+	<div class="tab-pane" id="{$name}">
+		{control registration-$name}
+	</div>
+	{/foreach}
+</div>
+{else}
+	{control signInForm}
+{/if}

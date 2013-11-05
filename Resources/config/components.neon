@@ -153,6 +153,9 @@ services:
 	cms.loginControlFactory:
 		class: CmsModule\Components\LoginControlFactory(@cms.factory.loginControlFactory)
 
+	cms.registrationControlFactory:
+		class: CmsModule\Components\RegistrationControlFactory(@cms.factory.registrationControlFactory)
+
 
 factories:
 
@@ -190,6 +193,15 @@ factories:
 
 	cms.factory.loginControl:
 		class: CmsModule\Components\LoginControl
+
+	cms.factory.registrationControl:
+		class: CmsModule\Components\RegistrationControl(%userType%, %mode%, %loginProviderMode%, %roles%, %emailSender%, %emailFrom%, %emailSubject%, %emailText)
+		parameters: [userType, mode, loginProviderMode, roles, emailSender, emailFrom, emailSubject, emailText]
+		setup:
+			- injectSecurityManager
+			- injectAuthorizatorFactory
+			- injectEntityManager
+			- injectRoleRepository
 
 	cms.headControl:
 		class: CmsModule\Components\HeadControl

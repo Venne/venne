@@ -69,7 +69,7 @@ class SecurityManager extends Object
 	public function getUserTypeByClass($class)
 	{
 		if (!isset($this->userTypes[$class])) {
-			throw new InvalidArgumentException("Type '$type' does not exist.");
+			throw new InvalidArgumentException("Type '$class' does not exist.");
 		}
 
 		return $this->userTypes[$class];
