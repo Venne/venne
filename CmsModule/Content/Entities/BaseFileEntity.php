@@ -378,8 +378,9 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 			return;
 		}
 
-		if ($this->getAuthor() === NULL && $user->identity instanceof UserEntity) {
-			$this->setAuthor($user->identity);
+		if ($this->author === NULL && $user->identity instanceof UserEntity) {
+			$this->author = $user->identity;
+			$this->updated = new \DateTime;
 		}
 
 		$this->user = $user;
