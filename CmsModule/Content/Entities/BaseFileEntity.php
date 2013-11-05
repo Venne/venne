@@ -126,7 +126,8 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param string $name
+	 * @param $name
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function setName($name)
 	{
@@ -146,6 +147,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return string
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getName()
 	{
@@ -158,7 +160,8 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param string $parent
+	 * @param DirEntity $parent
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function setParent(DirEntity $parent = NULL)
 	{
@@ -176,7 +179,8 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @return string
+	 * @return DirEntity
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getParent()
 	{
@@ -203,6 +207,10 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @return bool
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function getInvisible()
 	{
 		if (!$this->isAllowedToRead()) {
@@ -213,6 +221,10 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @param $protected
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function setProtected($protected)
 	{
 		if ($this->protected == $protected) {
@@ -231,6 +243,10 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @return bool
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function getProtected()
 	{
 		if (!$this->isAllowedToRead()) {
@@ -242,7 +258,8 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param RoleEntity[] $read
+	 * @param $read
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function setRead($read)
 	{
@@ -260,6 +277,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return \CmsModule\Security\Entities\RoleEntity[]|ArrayCollection
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getRead()
 	{
@@ -272,7 +290,8 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param RoleEntity[] $write
+	 * @param $write
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function setWrite($write)
 	{
@@ -290,6 +309,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return \CmsModule\Security\Entities\RoleEntity[]|ArrayCollection
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getWrite()
 	{
@@ -303,6 +323,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return string
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getPath()
 	{
@@ -314,6 +335,9 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	}
 
 
+	/**
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function generatePath()
 	{
 		if (!$this->isAllowedToWrite()) {
@@ -391,6 +415,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @param UserEntity $author
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function setAuthor(UserEntity $author = NULL)
 	{
@@ -409,6 +434,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return UserEntity
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getAuthor()
 	{
@@ -422,6 +448,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return \DateTime
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getCreated()
 	{
@@ -435,6 +462,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @return \DateTime
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getUpdated()
 	{
@@ -447,7 +475,6 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param User $user
 	 * @return bool
 	 */
 	public function isAllowedToRead()
@@ -473,7 +500,6 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @param User $user
 	 * @return bool
 	 */
 	public function isAllowedToWrite()
@@ -483,7 +509,7 @@ class BaseFileEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 			if (!$this->author) {
 				$this->_isAllowedToWrite = TRUE;
-			} else if ($this->user)  {
+			} else if ($this->user) {
 				if ($this->author === $this->user->identity) {
 					$this->_isAllowedToWrite = TRUE;
 				} else if ($this->user->isInRole('admin')) {

@@ -44,6 +44,9 @@ class FileEntity extends BaseFileEntity
 	 **/
 	protected $read;
 
+	/** @var FileUpload|\SplFileInfo */
+	protected $file;
+
 
 	/**
 	 * @ORM\PreFlush()
@@ -101,6 +104,12 @@ class FileEntity extends BaseFileEntity
 	}
 
 
+	/**
+	 * @param $protected
+	 * @param $path
+	 * @return string
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function getFilePathBy($protected, $path)
 	{
 		if (!$this->isAllowedToRead()) {
@@ -111,6 +120,11 @@ class FileEntity extends BaseFileEntity
 	}
 
 
+	/**
+	 * @param bool $withoutBasePath
+	 * @return string
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function getFilePath($withoutBasePath = FALSE)
 	{
 		if (!$this->isAllowedToRead()) {
@@ -121,6 +135,11 @@ class FileEntity extends BaseFileEntity
 	}
 
 
+	/**
+	 * @param bool $withoutBasePath
+	 * @return string
+	 * @throws \CmsModule\Content\PermissionDeniedException
+	 */
 	public function getFileUrl($withoutBasePath = FALSE)
 	{
 		if (!$this->isAllowedToRead()) {
@@ -132,7 +151,8 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
-	 * @param FileUpload|\SplFileInfo $file
+	 * @param $file
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function setFile($file)
 	{
@@ -157,6 +177,7 @@ class FileEntity extends BaseFileEntity
 
 	/**
 	 * @return FileUpload|\SplFileInfo
+	 * @throws \CmsModule\Content\PermissionDeniedException
 	 */
 	public function getFile()
 	{
