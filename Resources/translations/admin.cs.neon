@@ -124,7 +124,7 @@ shared: sdílený
 sign in: přihlásit se
 site tags: tagy webu
 site users: stránka uživatelů
-social logins: sociální přihlášení
+login providers: poskytovatelé přihlášení
 system: systém
 tags: tagy
 target: cíl
@@ -359,3 +359,4 @@ owner: vlastník
 write: zápis
 read: čtení
 change recursively: změnit rekurzivně
+connect with: spojit s

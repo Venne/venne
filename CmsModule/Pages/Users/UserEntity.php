@@ -13,7 +13,8 @@ namespace CmsModule\Pages\Users;
 
 use CmsModule\Content\Entities\ExtendedRouteEntity;
 use CmsModule\Content\Entities\RouteEntity;
-use CmsModule\Security\Entities\SocialLoginEntity;
+use CmsModule\Security\Entities\LoginEntity;
+use CmsModule\Security\Entities\LoginProviderEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Security\IIdentity;
@@ -28,7 +29,7 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 {
 
 	/**
-	 * @ORM\Column(type="string", unique=true, length=64)
+	 * @ORM\Column(type="string", nullable=true, unique=true, length=64)
 	 */
 	protected $email = '';
 
@@ -74,14 +75,16 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	protected $roleEntities;
 
 	/**
+	 * @var LoginEntity[]|ArrayCollection
 	 * @ORM\OneToMany(targetEntity="\CmsModule\Security\Entities\LoginEntity", mappedBy="user")
 	 */
 	protected $logins;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="\CmsModule\Security\Entities\SocialLoginEntity", mappedBy="user", cascade={"persist"})
+	 * @var LoginProviderEntity[]|ArrayCollection
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Security\Entities\LoginProviderEntity", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
 	 */
-	protected $socialLogins;
+	protected $loginProviders;
 
 	/**
 	 * @ORM\Column(type="string", nullable=true)
@@ -117,7 +120,7 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 
 		$this->roleEntities = new ArrayCollection;
 		$this->logins = new ArrayCollection;
-		$this->socialLogins = new ArrayCollection;
+		$this->loginProviders = new ArrayCollection;
 		$this->routes = new ArrayCollection;
 		$this->generateNewSalt();
 		$this->created = new \DateTime;
@@ -305,6 +308,22 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	}
 
 
+	/**
+	 * @param $service
+	 * @return bool
+	 */
+	public function hasLoginProvider($service)
+	{
+		foreach ($this->loginProviders as $login) {
+			if ($login->getType() === $service) {
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+
 	public function setPublished($published)
 	{
 		$this->route->published = $this->published = $published;
@@ -350,22 +369,25 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	}
 
 
-	public function addSocialLogin(SocialLoginEntity $socialLogin)
+	public function addLoginProvider(LoginProviderEntity $loginProvider)
 	{
-		$this->socialLogins[] = $socialLogin;
-		$socialLogin->setUser($this);
+		$this->loginProviders[] = $loginProvider;
+		$loginProvider->setUser($this);
 	}
 
 
-	public function setSocialLogins($socialLogins)
+	public function setLoginProviders($loginProviders)
 	{
-		$this->socialLogins = $socialLogins;
+		$this->loginProviders = $loginProviders;
 	}
 
 
-	public function getSocialLogins()
+	/**
+	 * @return LoginProviderEntity[]|ArrayCollection
+	 */
+	public function getLoginProviders()
 	{
-		return $this->socialLogins;
+		return $this->loginProviders;
 	}
 
 

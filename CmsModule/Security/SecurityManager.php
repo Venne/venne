@@ -28,8 +28,8 @@ class SecurityManager extends Object
 	/** @var UserType[] */
 	private $userTypes = array();
 
-	/** @var ISocialLogin[] */
-	protected $socialLogins = array();
+	/** @var ILoginProvider[] */
+	protected $loginProviders = array();
 
 
 	/**
@@ -78,40 +78,40 @@ class SecurityManager extends Object
 
 	/**
 	 * @param $name
-	 * @param ISocialLogin $socialLogin
+	 * @param ILoginProvider $loginProvider
 	 * @throws InvalidArgumentException
 	 */
-	public function addSocialLogin($name, $socialLoginFactoryName)
+	public function addLoginProvider($name, $loginProviderFactoryName)
 	{
-		if (isset($this->socialLogins[$name])) {
+		if (isset($this->loginProviders[$name])) {
 			throw new InvalidArgumentException("Social login name '{$name}' is already installed.");
 		}
 
-		$this->socialLogins[$name] = $socialLoginFactoryName;
+		$this->loginProviders[$name] = $loginProviderFactoryName;
 	}
 
 
 	/**
 	 * @param $name
-	 * @return ISocialLogin
+	 * @return ILoginProvider
 	 * @throws InvalidArgumentException
 	 */
-	public function getSocialLoginByName($name)
+	public function getLoginProviderByName($name)
 	{
-		if (!isset($this->socialLogins[$name])) {
+		if (!isset($this->loginProviders[$name])) {
 			throw new InvalidArgumentException("Social login name '{$name}' has not been registered.");
 		}
 
-		return $this->content->getService($this->socialLogins[$name]);
+		return $this->content->getService($this->loginProviders[$name]);
 	}
 
 
 	/**
-	 * @return array|ISocialLogin[]
+	 * @return array|ILoginProvider[]
 	 */
-	public function getSocialLogins()
+	public function getLoginProviders()
 	{
-		return array_keys($this->socialLogins);
+		return array_keys($this->loginProviders);
 	}
 
 

@@ -39,17 +39,17 @@ class UserSocialFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
+		$form->addGroup();
 		$user = $form->addOne('user');
-		$logins = $user->addMany('socialLogins', function (\Venne\Forms\Container $container) use ($form) {
+		$logins = $user->addMany('loginProviders', function (\Venne\Forms\Container $container) use ($form) {
 			$container->setCurrentGroup($form->addGroup($container->data->type));
-			$container->addSelect('type', 'Type')->setItems($this->securityManager->getSocialLogins(), false);
-			$container->addText('uniqueKey', 'Key');
+			$container->addSelect('type', 'Type')->setItems($this->securityManager->getLoginProviders(), false);
+			$container->addText('uid', 'UID');
 
 			$container->addSubmit('remove', 'Remove')->addRemoveOnClick();
 		});
 
-		$logins->addSubmit('add', 'Add')->addCreateOnClick();
-
+		$form->addGroup();
 		$form->addSaveButton('Save');
 	}
 

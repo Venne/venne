@@ -45,7 +45,7 @@
 		</div>
 		<div class="collapse navbar-collapse">
 			{control search}
-			{control login}
+			{control login config => [ variant => 'panel' ]}
 			{if count($presenter->context->parameters['website']['languages']) > 1}
 				{control languageswitch}
 			{/if}

@@ -1,56 +1,5 @@
-{if $presenter->user->isLoggedIn()}
-	<ul class="nav navbar-nav navbar-right">
-		<li class="dropdown">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-				<span class="glyphicon glyphicon-user"></span> {if $presenter->user->identity instanceof \CmsModule\Pages\Users\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b>
-			</a>
-			<ul class="dropdown-menu">
-				<li class="dropdown-header">{_Actions}</li>
-				<li n:ifPlinkExists="Route special=>'profile'"><a n:link><i class="glyphicon glyphicon-user"></i> {_'User card'}</a></li>
-				<li><a n:href="logout"><i class="glyphicon glyphicon-off"></i> {_'Log out'}</a></li>
-			</ul>
-		</li>
-	</ul>
+{if $control->provider}
+	{control providerForm}
 {else}
-	<ul class="nav navbar-nav navbar-right">
-		<li class="dropdown">
-			<a class="dropdown-toggle" href="#" data-toggle="dropdown">
-				<span class="glyphicon glyphicon-user"></span> {_'Sign in'} <b class="caret"></b>
-			</a>
-			<div class="dropdown-menu" style="padding: 17px; width: 500px;">
-				{form form class=>'form-horizontal'}
-					<div id="frmform-username-pair" class="form-group required">
-						<label class="required control-label col-lg-2" for="frmform-username">{label username /}</label>
-						<div class="col-lg-10">
-							{input username class=>'form-control'}
-						</div>
-					</div>
-
-					<div id="frmform-password-pair" class="form-group required">
-						<label class="required control-label col-lg-2" for="frmform-password">{label password /}</label>
-						<div class="col-lg-10">
-							{input password class=>'form-control'}
-						</div>
-					</div>
-
-					<div id="frmform-remember-pair" class="form-group">
-						<div class="col-lg-offset-2 col-lg-10">
-							<div class="checkbox">
-								<label>{input remember}{_$form['remember']->caption}</label>
-							</div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-lg-offset-2 col-lg-10">
-						{input _submit class => 'btn btn-default'}
-						{foreach $socialLogins as $name}
-							<a class="btn btn-default" n:href="login! name=>$name">{$name}</a>
-						{/foreach}
-						</div>
-					</div>
-				{/form}
-			</div>
-		</li>
-	</ul>
+	{control form}
 {/if}

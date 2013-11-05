@@ -13,8 +13,10 @@ namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
 use CmsModule\Forms\LoginFormFactory;
+use CmsModule\Forms\ProviderFormFactory;
 use CmsModule\Security\SecurityManager;
-use Nette\Forms\Form;
+use Nette\Security\AuthenticationException;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,8 +24,17 @@ use Nette\Forms\Form;
 class LoginControl extends Control
 {
 
+	/** @var array */
+	public $onSuccess;
+
+	/** @persistent */
+	public $provider;
+
 	/** @var LoginFormFactory */
 	protected $loginFormFactory;
+
+	/** @var ProviderFormFactory */
+	protected $providerFormFactory;
 
 	/** @var SecurityManager */
 	protected $securityManager;
@@ -31,61 +42,107 @@ class LoginControl extends Control
 
 	/**
 	 * @param LoginFormFactory $loginFormFactory
+	 * @param ProviderFormFactory $providerFormFactory
+	 * @param SecurityManager $securityManager
 	 */
-	public function injectLoginFormFactory(LoginFormFactory $loginFormFactory)
+	public function __construct(LoginFormFactory $loginFormFactory, ProviderFormFactory $providerFormFactory, SecurityManager $securityManager)
 	{
+		parent::__construct();
+
 		$this->loginFormFactory = $loginFormFactory;
+		$this->providerFormFactory = $providerFormFactory;
+		$this->securityManager = $securityManager;
 	}
 
 
 	/**
-	 * @param SecurityManager $securityManager
+	 * @return SecurityManager
 	 */
-	public function injectSecurityManager(SecurityManager $securityManager)
+	public function getSecurityManager()
 	{
-		$this->securityManager = $securityManager;
+		return $this->securityManager;
 	}
 
 
 	protected function createComponentForm()
 	{
-		$this->loginFormFactory->setRedirect(NULL);
+		$_this = $this;
 
 		$form = $this->loginFormFactory->invoke();
+
+		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {
+			$form['socialButtons'][str_replace(' ', '_', $loginProvider)]->onClick[] = function () use ($_this, $loginProvider) {
+				$_this->redirect('login!', $loginProvider);
+			};
+		}
+
 		$form->onSuccess[] = $this->formSuccess;
+		return $form;
+	}
+
+
+	protected function createComponentProviderForm()
+	{
+		$_this = $this;
+		$this->providerFormFactory->setProvider($this->provider);
+
+		$form = $this->providerFormFactory->invoke();
+		$form['cancel']->onClick[] = function () use ($_this) {
+			$_this->redirect('this', array('provider' => NULL));
+		};
+		$form->onSuccess[] = $this->providerFormSuccess;
 		return $form;
 	}
 
 
 	public function formSuccess(Form $form)
 	{
-		$this->redirect('this');
+		$values = $form->getValues();
+		$button = $form->isSubmitted();
+
+		if ($values->remember) {
+			$form->presenter->user->setExpiration('+ 14 days', FALSE);
+		} else {
+			$form->presenter->user->setExpiration('+ 20 minutes', TRUE);
+		}
+
+		if ($button === $form->getSaveButton()) {
+			try {
+				$form->presenter->user->login($values->username, $values->password);
+			} catch (AuthenticationException $e) {
+				$form->getPresenter()->flashMessage($form->presenter->translator->translate($e->getMessage()), 'warning');
+			}
+
+		} else {
+			$this->redirect('login!', str_replace('_', ' ', $button->name));
+		}
+
+		$this->onSuccess($this);
 	}
 
 
-	public function handleLogin($name)
+	public function providerFormSuccess(Form $form)
 	{
-		$socialLogin = $this->securityManager->getSocialLoginByName($name);
-		$data = $socialLogin->getData();
-
-		if (!$data) {
-			$this->presenter->redirectUrl($socialLogin->getLoginUrl());
-		}
-
-		try {
-			$identity = $socialLogin->authenticate(array());
-			$this->presenter->user->login($identity);
-		} catch (\Nette\Security\AuthenticationException $e) {
-			$this->getPresenter()->flashMessage($e->getMessage(), 'warning');
-		}
-
-		$this->redirect('this');
+		$this->redirect('login', array($form['provider']->value, json_encode((array)$form['parameters']->values)));
 	}
 
 
-	public function renderDefault()
+	public function handleLogin($name, $parameters = NULL)
 	{
-		$this->template->socialLogins = $this->securityManager->getSocialLogins();
+		$login = $this->securityManager->getLoginProviderByName($name);
+
+		if (($container = $login->getFormContainer()) !== NULL && $parameters == NULL) {
+			$this->redirect('this', array('provider' => $name));
+
+		} else {
+			if ($parameters) {
+				$parameters = json_decode($parameters, TRUE);
+			}
+
+			$this->authenticate($name, $parameters);
+		}
+
+		$this->onSuccess($this);
 	}
 
 
@@ -95,4 +152,23 @@ class LoginControl extends Control
 
 		$this->redirect('this');
 	}
+
+
+	private function authenticate($provider, $parameters = NULL)
+	{
+		$login = $this->securityManager->getLoginProviderByName($provider);
+
+		try {
+			if ($parameters) {
+				$login->setAuthenticationParameters($parameters);
+			}
+			$identity = $login->authenticate(array());
+			$this->presenter->user->login($identity);
+		} catch (AuthenticationException $e) {
+			$this->getPresenter()->flashMessage($this->getPresenter()->translator->translate($e->getMessage()), 'warning');
+		}
+
+		$this->redirect('this');
+	}
+
 }

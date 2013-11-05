@@ -11,7 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use Nette\Callback;
+use CmsModule\Components\LoginControlFactory;
 use Venne\Forms\Form;
 
 /**
@@ -26,12 +26,27 @@ class LoginPresenter extends BasePresenter
 	/** @var Callback */
 	protected $form;
 
+	/** @var string */
+	protected $autologin;
 
-	public function __construct($form)
+
+	/**
+	 * @param LoginControlFactory $form
+	 */
+	public function __construct(LoginControlFactory $form)
 	{
 		parent::__construct();
 
 		$this->form = $form;
+	}
+
+
+	/**
+	 * @param string $autologin
+	 */
+	public function setAutologin($autologin)
+	{
+		$this->autologin = $autologin;
 	}
 
 
@@ -46,6 +61,10 @@ class LoginPresenter extends BasePresenter
 		if ($this->user->isLoggedIn()) {
 			$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
 		}
+
+		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes && !$this['signInForm']->template->flashes) {
+			$this->redirect('this', array('do' => 'signInForm-login', 'signInForm-name' => $this->autologin));
+		}
 	}
 
 
@@ -56,7 +75,19 @@ class LoginPresenter extends BasePresenter
 	 */
 	protected function createComponentSignInForm()
 	{
-		$form = $this->form->invoke();
+		$form = $this->form->create();
+		$form->onSuccess[] = $this->formSuccess;
+
 		return $form;
+	}
+
+
+	public function formSuccess()
+	{
+		if ($this->backlink) {
+			$this->restoreRequest($this->backlink);
+		}
+
+		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
 	}
 }

@@ -13,7 +13,7 @@ services:
 		class: CmsModule\Forms\UserSocialFormFactory
 		setup:
 			- injectSecurityManager(...)
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.roleFormFactory:
 		class: CmsModule\Forms\RoleFormFactory
@@ -24,7 +24,12 @@ services:
 		class: CmsModule\Forms\LoginFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
-			- setRedirect(:Cms:Admin:%administration.defaultPresenter%)
+
+	cms.providerFormFactory:
+		class: CmsModule\Forms\ProviderFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+			- injectSecurityManager()
 
 	cms.applicationFormFactory:
 		class: CmsModule\Forms\SystemApplicationFormFactory
@@ -108,12 +113,6 @@ services:
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
-	cms.registrationFrontFormFactory:
-		class: CmsModule\Content\Forms\RegistrationFrontFormFactory
-		setup:
-			- injectFactory(@cms.admin.basicFormFactory)
-		tags: [component]
-
 	cms.specialFormFactory:
 		class: CmsModule\Content\Forms\SpecialFormFactory
 		setup:
@@ -151,6 +150,9 @@ services:
 	cms.admin.fileControlFactory:
 		class: CmsModule\Administration\Components\FileControlFactory(%modules.cms.path%/CmsModule/Administration/Presenters/FileTable.latte)
 
+	cms.loginControlFactory:
+		class: CmsModule\Components\LoginControlFactory(@cms.factory.loginControlFactory)
+
 
 factories:
 
@@ -186,8 +188,8 @@ factories:
 		class: CmsModule\Content\Components\RouteControl
 		tags: [component]
 
-	cms.admin.loginControl:
-		class: CmsModule\Administration\Components\LoginControl
+	cms.factory.loginControl:
+		class: CmsModule\Components\LoginControl
 
 	cms.headControl:
 		class: CmsModule\Components\HeadControl
@@ -235,11 +237,8 @@ factories:
 		class: CmsModule\Components\SearchControl
 		tags: [widget: search]
 
-	cms.loginControl:
+	cms.widget.loginControl:
 		class: CmsModule\Components\LoginControl
-		setup:
-			- injectLoginFormFactory(...)
-			- injectSecurityManager(...)
 		tags: [widget: login]
 
 	cms.languageswitchControl:

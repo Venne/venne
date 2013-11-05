@@ -67,15 +67,17 @@ class Authenticator extends \Venne\Security\Authenticator
 				$user = $this->userRepository->findOneBy(array('email' => $username, 'published' => 1));
 
 				if (!$user) {
-					throw new AuthenticationException($this->translator->translate($ex->getMessage()), $ex->getCode());
+					throw $ex;
 				}
 
 				if (!$user->verifyByPassword($password)) {
-					throw new AuthenticationException($this->translator->translate('The password is incorrect.'), self::INVALID_CREDENTIAL);
+					throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 				}
 
-				return new Identity($username, $user->getRoles());
+				return new Identity($user->id, $user->getRoles());
 			}
+
+			throw $ex;
 		}
 	}
 }

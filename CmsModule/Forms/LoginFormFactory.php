@@ -11,10 +11,7 @@
 
 namespace CmsModule\Forms;
 
-use CmsModule\Security\AuthorizatorFactory;
-use CmsModule\Security\Identity;
 use CmsModule\Security\SecurityManager;
-use Nette\Security\AuthenticationException;
 use Venne\Forms\Form;
 use Venne\Forms\FormFactory;
 
@@ -24,53 +21,16 @@ use Venne\Forms\FormFactory;
 class LoginFormFactory extends FormFactory
 {
 
-	/** @var string */
-	protected $redirect = 'this';
-
 	/** @var SecurityManager */
 	private $securityManager;
 
-	/** @var AuthorizatorFactory */
-	private $authorizatorFactory;
-
 
 	/**
-	 * @param AuthorizatorFactory $authorizatorFactory
 	 * @param SecurityManager $securityManager
 	 */
-	public function __construct(AuthorizatorFactory $authorizatorFactory, SecurityManager $securityManager)
+	public function __construct(SecurityManager $securityManager)
 	{
-		$this->authorizatorFactory = $authorizatorFactory;
 		$this->securityManager = $securityManager;
-	}
-
-
-	/**
-	 * @param string $redirect
-	 */
-	public function setRedirect($redirect)
-	{
-		$this->redirect = $redirect;
-	}
-
-
-	public function handleLogin($form, $name)
-	{
-		$socialLogin = $this->securityManager->getSocialLoginByName($name);
-		$data = $socialLogin->getData();
-
-		if (!$data) {
-			$form->presenter->redirectUrl($socialLogin->getLoginUrl());
-		}
-
-		$this->authorizatorFactory->clearPermissionSession();
-
-		try {
-			$identity = $socialLogin->authenticate(array());
-			$form->presenter->user->login(new Identity($identity->email, $identity->roles));
-		} catch (AuthenticationException $e) {
-			$form->getPresenter()->flashMessage($form->presenter->translator->translate($e->getMessage()), 'warning');
-		}
 	}
 
 
@@ -85,40 +45,10 @@ class LoginFormFactory extends FormFactory
 		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
 
 		$socialButtons = $form->addContainer('socialButtons');
-		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$socialButtons->addSubmit('_submit_' . $socialLogin, $socialLogin)
+		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {
+			$socialButtons->addSubmit(str_replace(' ', '_', $loginProvider), $loginProvider)
 				->setValidationScope(FALSE);
 		}
 	}
 
-
-	public function handleSuccess(Form $form)
-	{
-		try {
-			$values = $form->getValues();
-
-			if ($form->isSubmitted() === $form->getSaveButton()) {
-				$form->presenter->user->login($values->username, $values->password);
-			}
-
-			if ($values->remember) {
-				$form->presenter->user->setExpiration('+ 14 days', FALSE);
-			} else {
-				$form->presenter->user->setExpiration('+ 20 minutes', TRUE);
-			}
-
-			$this->doRedirect($form);
-		} catch (AuthenticationException $e) {
-			$form->getPresenter()->flashMessage($form->presenter->translator->translate($e->getMessage()), 'warning');
-		}
-	}
-
-
-	private function doRedirect($form)
-	{
-		if ($this->redirect) {
-			$form->presenter->restoreRequest($form->presenter->backlink);
-			$form->presenter->redirect($this->redirect . ':');
-		}
-	}
 }

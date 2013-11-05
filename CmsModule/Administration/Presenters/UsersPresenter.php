@@ -187,7 +187,7 @@ class UsersPresenter extends BasePresenter
 			$table->addAction('edit', 'Edit')
 				->getElementPrototype()->class[] = 'ajax';
 
-			$table->addAction('socialLogins', 'Social logins')
+			$table->addAction('loginProviders', 'Login providers')
 				->getElementPrototype()->class[] = 'ajax';
 
 			$extendedPage = $this->extendedPage;
@@ -195,10 +195,10 @@ class UsersPresenter extends BasePresenter
 			$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($extendedPage, $type) {
 				return new $type($extendedPage);
 			}, Form::TYPE_LARGE);
-			$socialForm = $admin->createForm($this->socialForm, 'Social logins', NULL, Form::TYPE_LARGE);
+			$socialForm = $admin->createForm($this->socialForm, 'Login providers', NULL, Form::TYPE_LARGE);
 
 			$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
-			$admin->connectFormWithAction($socialForm, $table->getAction('socialLogins'));
+			$admin->connectFormWithAction($socialForm, $table->getAction('loginProviders'));
 
 			// Toolbar
 			$toolbar = $admin->getNavbar();

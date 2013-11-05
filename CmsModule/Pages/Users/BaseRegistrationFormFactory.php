@@ -12,7 +12,7 @@
 namespace CmsModule\Pages\Users;
 
 use CmsModule\Content\IRegistrationFormFactory;
-use CmsModule\Security\ISocialLogin;
+use CmsModule\Security\ILoginProvider;
 use DoctrineModule\Forms\FormFactory;
 use Nette\Utils\Strings;
 use Venne\Forms\Form;
@@ -50,11 +50,13 @@ abstract class BaseRegistrationFormFactory extends FormFactory implements IRegis
 
 	/**
 	 * @param Form $form
-	 * @param ISocialLogin $socialLogin
+	 * @param ILoginProvider $loginProvider
 	 */
-	public function setSocialData(Form $form, ISocialLogin $socialLogin)
+	public function connectWithLoginProvider(Form $form, ILoginProvider $loginProvider)
 	{
-		$form['user']['email']->setValue($socialLogin->getEmail());
+		$loginProviderEntity = $loginProvider->getLoginProviderEntity();
+
+		$form['user']['email']->setValue($loginProviderEntity->email);
 		$form['user']['password_confirm']->value = $form['user']['password']->value = Strings::random();
 	}
 }

@@ -15,7 +15,6 @@ use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
 use Doctrine\DBAL\DBALException;
-use Nette\Callback;
 use Nette\Http\Session;
 
 /**
@@ -66,7 +65,7 @@ class UserStorage extends \Nette\Http\UserStorage
 		}
 
 		if (!isset($this->identities[$identity->id])) {
-			$this->identities[$identity->id] = $this->userRepository->findOneBy(array('email' => $identity->id, 'published' => 1));
+			$this->identities[$identity->id] = $this->userRepository->findOneBy(array('id' => $identity->id, 'published' => 1));
 		}
 
 		return $this->identities[$identity->id];

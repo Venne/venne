@@ -58,10 +58,6 @@ factories:
 			priority: 50
 		]]
 
-	cms.admin.loginPresenter:
-		class: CmsModule\Administration\Presenters\LoginPresenter(@cms.admin.loginControlFactory)
-		tags: [presenter]
-
 	cms.admin.languagePresenter:
 		class: CmsModule\Administration\Presenters\LanguagePresenter
 		tags: [presenter, administration: [

@@ -12,16 +12,20 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
+use CmsModule\Forms\ProviderFormFactory;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Pages\Users\AdminUserFormFactory;
 use CmsModule\Pages\Users\UserEntity;
+use CmsModule\Pages\Users\UsersEntity;
 use CmsModule\Security\SecurityManager;
 use CmsModule\Security\Entities\LoginEntity;
 use CmsModule\Security\Repositories\LoginRepository;
 use CmsModule\Security\Repositories\UserRepository;
+use Grido\DataSources\ArraySource;
 use Grido\DataSources\Doctrine;
 use Nette\Http\Session;
 use Nette\Utils\Html;
+use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -30,6 +34,9 @@ use Nette\Utils\Html;
  */
 class AccountPresenter extends BasePresenter
 {
+
+	/** @persistent */
+	public $provider;
 
 	/** @var UserRepository */
 	protected $userRepository;
@@ -42,6 +49,9 @@ class AccountPresenter extends BasePresenter
 
 	/** @var AdminUserFormFactory */
 	protected $userFormFactory;
+
+	/** @var ProviderFormFactory */
+	protected $providerFormFactory;
 
 	/** @var SecurityManager */
 	protected $securityManager;
@@ -87,6 +97,18 @@ class AccountPresenter extends BasePresenter
 
 
 	/**
+	 * @param \CmsModule\Forms\ProviderFormFactory $providerFormFactory
+	 */
+	public function injectProviderFormFactory(ProviderFormFactory $providerFormFactory)
+	{
+		$this->providerFormFactory = $providerFormFactory;
+	}
+
+
+
+
+
+	/**
 	 * @param SecurityManager $securityManager
 	 */
 	public function injectSecurityManager(SecurityManager $securityManager)
@@ -117,6 +139,122 @@ class AccountPresenter extends BasePresenter
 	 */
 	public function actionEdit()
 	{
+	}
+
+
+	public function handleConnect($service, $parameters = NULL)
+	{
+		$login = $this->securityManager->getLoginProviderByName($service);
+
+		if ($parameters) {
+			$login->setAuthenticationParameters(json_decode($parameters, TRUE));
+		}
+
+		$login->connectWithUser($this->extendedUser->getUser());
+
+		$this->redirect('this', array('provider' => NULL, 'loginTable-id' => NULL, 'loginTable-formName' => NULL));
+	}
+
+
+	public function handleDisconnect($service)
+	{
+		$user = $this->extendedUser->getUser();
+
+		foreach ($user->getLoginProviders() as $key => $item) {
+			if ($item->getType() === $service) {
+				$user->getLoginProviders()->remove($key);
+				break;
+			}
+		}
+
+		$this->userRepository->save($user);
+
+		$this->redirect('this', array('provider' => NULL));
+	}
+
+
+	public function renderDefault()
+	{
+		$this->template->securityManager = $this->securityManager;
+	}
+
+	protected function createComponentLoginTable()
+	{
+		$_this = $this;
+		$data = array();
+
+		foreach ($this->securityManager->getLoginProviders() as $name) {
+			$data[] = array(
+				'id' => str_replace(' ', '_', $name),
+				'name' => $name,
+			);
+		}
+
+		$admin = new AdminGrid($this->loginRepository);
+
+		// columns
+		$table = $admin->getTable();
+		$table->setModel(new ArraySource($data));
+		$table->setTranslator($this->context->translator->translator);
+		$table->addColumnText('name', 'Name')
+			->getCellPrototype()->width = '100%';
+
+
+		/** @var UserEntity $user */
+		$user = $this->user->identity;
+		$securityManager = $this->securityManager;
+		$providerFormFactory = $this->providerFormFactory;
+
+		// actions
+		$table->addAction('connect', 'Connect')
+			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
+				if ($user->hasLoginProvider($entity['name'])) {
+					$element->class[] = 'disabled';
+				} else {
+					$element->class[] = 'btn-primary';
+				}
+				return $element;
+			});
+		$table->getAction('connect')->onClick[] = function($button, $name) use ($_this, $securityManager, $providerFormFactory, $user) {
+			if (!$securityManager->getLoginProviderByName(str_replace('_', ' ', $name))->getFormContainer()) {
+				$_this->redirect('connect!', str_replace('_', ' ', $name));
+			} else {
+				$_this->provider = str_replace('_', ' ', $name);
+				$providerFormFactory->setProvider($_this->provider);
+			}
+		};
+		$table->getAction('connect');
+
+			$this->providerFormFactory->setUser($user);
+		if ($this->provider) {
+			$this->providerFormFactory->setProvider($this->provider);
+		}
+		$this->providerFormFactory->onSave[] = function(Form $form) use ($_this) {
+			$_this->redirect('connect!', array($form['provider']->value, json_encode($form['parameters']->values)));
+		};
+		$this->providerFormFactory->onSuccess[] = function($parameters) use ($_this) {
+			$_this->redirect('this');
+		};
+		$form = $admin->createForm($this->providerFormFactory, 'Provider');
+		$admin->connectFormWithAction($form, $table->getAction('connect'));
+
+
+		$table->addAction('disconnect', 'Disconnect')
+			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
+				if (!$user->hasLoginProvider($entity['name'])) {
+					$element->class[] = 'disabled';
+				};
+				return $element;
+			})
+			->setConfirm(function ($entity) {
+				return "Really disconnect from '{$entity['name']}'?";
+			});
+		$table->getAction('disconnect')->onClick[] = function($button, $name) use ($_this) {
+			$_this->handleDisconnect(str_replace('_', ' ', $name));
+		};
+		$table->getAction('disconnect')->getElementPrototype()->class[] = 'ajax';
+
+		return $admin;
 	}
 
 

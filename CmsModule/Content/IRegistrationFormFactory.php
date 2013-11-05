@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content;
 
-use CmsModule\Security\ISocialLogin;
+use CmsModule\Security\ILoginProvider;
 use Venne\Forms\Form;
 
 /**
@@ -22,7 +22,7 @@ interface IRegistrationFormFactory
 
 	/**
 	 * @param Form $form
-	 * @param ISocialLogin $socialLogin
+	 * @param ILoginProvider $loginProvider
 	 */
-	public function setSocialData(Form $form, ISocialLogin $socialLogin);
+	public function connectWithLoginProvider(Form $form, ILoginProvider $loginProvider);
 }

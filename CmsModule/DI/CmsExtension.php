@@ -20,29 +20,13 @@ use Venne\Config\CompilerExtension;
 class CmsExtension extends CompilerExtension
 {
 
+	/** @var array */
 	public $defaults = array(
 		'administration' => array(
-			'login' => array(
-				'name' => '',
-				'password' => '',
+			'authentication' => array(
+				'autologin' => NULL,
 			),
-			'routePrefix' => 'admin',
 		),
-		'website' => array(
-			'title' => '',
-			'titleSeparator' => '|',
-			'keywords' => '',
-			'description' => '',
-			'author' => '',
-			'routePrefix' => '',
-			'languages' => array(),
-			'defaultLanguage' => 'cs',
-			'defaultPresenter' => 'Homepage',
-			'errorPresenter' => 'Error',
-		),
-		'mediaDir' => NULL,
-		'mediaUrl' => NULL,
-		'protectedMediaDir' => NULL,
 	);
 
 
@@ -162,9 +146,9 @@ class CmsExtension extends CompilerExtension
 		$container->addDefinition($this->prefix('fileListener'))
 			->setClass('CmsModule\Content\Listeners\FileListener', array(
 				'@container',
-				$config['mediaDir'] ? : $container->parameters['publicDir'] . '/media',
-				$config['protectedMediaDir'] ? : $container->parameters['dataDir'] . '/media',
-				$config['mediaUrl'] ? : '/public/media',
+				$container->parameters['publicDir'] . '/media',
+				$container->parameters['dataDir'] . '/media',
+				'/public/media',
 			))
 			->addTag('listener');
 
@@ -175,6 +159,12 @@ class CmsExtension extends CompilerExtension
 		$container->addDefinition($this->prefix('structureInstallatorManager'))
 			->setClass('CmsModule\Administration\StructureInstallatorManager')
 			->addSetup('registerInstallator', array($this->prefix('@administration.structureInstallator'), 'basic website structure and access\' list'));
+
+
+		$container->addDefinition($this->prefix('admin.loginPresenter'))
+			->setClass('CmsModule\Administration\Presenters\LoginPresenter')
+			->addSetup('$service->setAutologin(?);', array($config['administration']['authentication']['autologin']))
+			->addTag('presenter');
 	}
 
 
@@ -184,6 +174,7 @@ class CmsExtension extends CompilerExtension
 		$this->registerAdministrationPages();
 		$this->registerElements();
 		$this->registerUsers();
+		$this->registerLoginProvider();
 	}
 
 
@@ -248,6 +239,20 @@ class CmsExtension extends CompilerExtension
 			);
 
 			$config->addSetup('addUserType', array("@{$item}"));
+		}
+	}
+
+
+	protected function registerLoginProvider()
+	{
+		$container = $this->getContainerBuilder();
+		$config = $container->getDefinition($this->prefix('securityManager'));
+
+		foreach ($container->findByTag('loginProvider') as $item => $tags) {
+			$class = '\\' . $container->getDefinition($item)->class;
+			$type = $class::getType();
+
+			$config->addSetup('addLoginProvider', array($type, "{$item}"));
 		}
 	}
 }

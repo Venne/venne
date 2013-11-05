@@ -11,6 +11,8 @@
 
 namespace CmsModule\Pages\Login;
 
+use CmsModule\Components\LoginControl;
+use CmsModule\Components\LoginControlFactory;
 use CmsModule\Content\Presenters\PagePresenter;
 use CmsModule\Security\SecurityManager;
 use Nette\Forms\Form;
@@ -24,19 +26,19 @@ class RoutePresenter extends PagePresenter
 	/** @persistent */
 	public $backlink;
 
-	/** @var \CmsModule\Forms\LoginFormFactory */
-	protected $loginFormFactory;
+	/** @var LoginControlFactory */
+	protected $loginControlFactoy;
 
 	/** @var SecurityManager */
 	protected $securityManager;
 
 
 	/**
-	 * @param \CmsModule\Forms\LoginFormFactory $loginFormFactory
+	 * @param LoginControl $loginControlFactoy
 	 */
-	public function injectLoginFormFactory(\CmsModule\Forms\LoginFormFactory $loginFormFactory)
+	public function injectLoginControlFactoy(LoginControlFactory $loginControlFactoy)
 	{
-		$this->loginFormFactory = $loginFormFactory;
+		$this->loginControlFactoy = $loginControlFactoy;
 	}
 
 
@@ -51,16 +53,14 @@ class RoutePresenter extends PagePresenter
 
 	protected function createComponentForm()
 	{
-		$this->loginFormFactory->setRedirect(NULL);
-
-		$form = $this->loginFormFactory->invoke();
+		$form = $this->loginControlFactoy->create();
 		$form->onSuccess[] = $this->formSuccess;
 
 		return $form;
 	}
 
 
-	public function formSuccess(Form $form)
+	public function formSuccess()
 	{
 		if ($this->backlink) {
 			$this->restoreRequest($this->backlink);
@@ -69,6 +69,7 @@ class RoutePresenter extends PagePresenter
 		if ($this->extendedPage->page) {
 			$this->redirect('this', array('route' => $this->extendedPage->page->mainRoute));
 		}
+
 		$this->redirect('this');
 	}
 
@@ -79,6 +80,6 @@ class RoutePresenter extends PagePresenter
 			$this->flashMessage($this->translator->translate('You are already logged in.'), 'info');
 		}
 
-		$this->template->socialLogins = $this->securityManager->getSocialLogins();
+		$this->template->loginProviders = $this->securityManager->getLoginProviders();
 	}
 }

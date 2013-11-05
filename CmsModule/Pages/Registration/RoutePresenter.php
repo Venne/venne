@@ -98,11 +98,11 @@ class RoutePresenter extends PagePresenter
 
 	public function handleLoad($name)
 	{
-		/** @var $socialLogin \CmsModule\Security\ISocialLogin */
-		$socialLogin = $this->securityManager->getSocialLoginByName($name);
+		/** @var $loginProvider \CmsModule\Security\ILoginProvider */
+		$loginProvider = $this->securityManager->getLoginProviderByName($name);
 
 		try {
-			$identity = $socialLogin->authenticate(array());
+			$identity = $loginProvider->authenticate(array());
 		} catch (AuthenticationException $e) {
 		}
 
@@ -119,11 +119,7 @@ class RoutePresenter extends PagePresenter
 			throw new InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \CmsModule\Content\IRegistrationFormFactory");
 		}
 
-		$formFactory->setSocialData($this['form'], $socialLogin);
-
-		if (!$socialLogin->getData()) {
-			$this->redirectUrl($socialLogin->getLoginUrl());
-		}
+		$formFactory->connectWithLoginProvider($this['form'], $loginProvider);
 
 		/** @var $form \Venne\Forms\Form */
 		$form = $this['form'];
@@ -134,9 +130,9 @@ class RoutePresenter extends PagePresenter
 			$form->fireEvents();
 
 			if ($form->isValid()) {
-				$socialLogin->connectWithUser($form->getData()->user);
+				$loginProvider->connectWithUser($form->getData()->user);
 
-				$identity = $socialLogin->authenticate(array());
+				$identity = $loginProvider->authenticate(array());
 				if ($identity) {
 					$this->user->login($identity);
 					$this->redirect('this');
@@ -155,11 +151,11 @@ class RoutePresenter extends PagePresenter
 		$form = $formFactory->invoke($this->createNewUser());
 		$form->onSuccess[] = $this->processSuccess;
 
-		foreach ($this->securityManager->getSocialLogins() as $socialLogin) {
-			$form->addSubmit('_submit_' . $socialLogin, $socialLogin)
+		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {
+			$form->addSubmit('_submit_' . str_replace(' ', '_', $loginProvider), $loginProvider)
 				->setValidationScope(FALSE)
-				->onClick[] = function () use ($_this, $socialLogin) {
-				$_this->handleLoad($socialLogin);
+				->onClick[] = function () use ($_this, $loginProvider) {
+				$_this->redirect('load!', array($loginProvider));
 			};
 		}
 
@@ -239,7 +235,7 @@ class RoutePresenter extends PagePresenter
 			$this->flashMessage($this->translator->translate('You are already logged in.'), 'info');
 		}
 
-		$this->template->socialLogins = $this->securityManager->getSocialLogins();
+		$this->template->loginProviders = $this->securityManager->getLoginProviders();
 	}
 
 
