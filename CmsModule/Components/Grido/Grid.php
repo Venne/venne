@@ -12,8 +12,8 @@
 namespace CmsModule\Components\Grido;
 
 use CmsModule\Components\Grido\Actions\CallbackAction;
-use DoctrineModule\Repositories\BaseRepository;
 use Grido\Components\Actions\Action;
+use Grido\Components\Filters\Filter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,16 +22,20 @@ class Grid extends \Grido\Grid
 {
 
 	/**
+	 * @return string
 	 * @internal
-	 * @param string $class
-	 * @return \Nette\Templating\FileTemplate
 	 */
-	public function createTemplate($class = NULL)
+	public function getFilterRenderType()
 	{
-		$template = parent::createTemplate($class);
-		$template->setFile(__DIR__ . '/Grid.latte');
-		return $template;
+		if ($this->filterRenderType !== NULL) {
+			return $this->filterRenderType;
+		}
+
+		$this->filterRenderType = Filter::RENDER_INNER;
+
+		return $this->filterRenderType;
 	}
+
 
 	/**
 	 * @return AdminGrid
@@ -58,7 +62,5 @@ class Grid extends \Grido\Grid
 		}
 		return $action;
 	}
-
-
 
 }
