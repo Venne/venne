@@ -38,6 +38,9 @@ class FileListener implements EventSubscriber
 	/** @var string */
 	protected $publicUrl;
 
+	/** @var User */
+	protected $_user;
+
 
 	/**
 	 * @param Container $container
@@ -106,6 +109,19 @@ class FileListener implements EventSubscriber
 		$entity->setPublicDir($this->publicDir);
 		$entity->setPublicUrl($this->publicUrl);
 		$entity->setProtectedDir($this->protectedDir);
-		$entity->setUser($this->container->getByType('Nette\Security\User'));
+		$entity->setUser($this->getUser());
+	}
+
+
+	/**
+	 * @return User
+	 */
+	protected function getUser()
+	{
+		if (!$this->_user) {
+			$this->_user = $this->container->getByType('Nette\Security\User');
+		}
+
+		return $this->_user;
 	}
 }
