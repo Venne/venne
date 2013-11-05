@@ -16,14 +16,10 @@
 </div>
 
 <div class="col-md-4">
-	<div class="well container">
-		<div class="row">
-			<div class="col-md-12">
-				{block #panel}
-				<h2><a href="{plink this special=>'tags'}">{_Tags}</a></h2>
-				{control tagCloud}
-				{/block}
-			</div>
-		</div>
+	<div class="well">
+		{block #panel}
+		<h2><a href="{plink this special=>'tags'}">{_Tags}</a></h2>
+		{control tagCloud}
+		{/block}
 	</div>
 </div>
