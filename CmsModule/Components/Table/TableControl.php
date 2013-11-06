@@ -30,6 +30,12 @@ class TableControl extends Control
 
 	const SORT_DESC = 'DESC';
 
+	/** @var array */
+	public $onFormSuccess;
+
+	/** @var array */
+	public $onFormError;
+
 	/** @persistent */
 	public $sort = array();
 
@@ -600,6 +606,8 @@ class TableControl extends Control
 
 	public function formEditSuccess(\Venne\Forms\Form $form)
 	{
+		$this->onFormSuccess($form);
+
 		if ($form->hasSaveButton() && $form->isSubmitted() === $form->getSaveButton()) {
 			if (!$this->presenter->isAjax()) {
 				$this->redirect('edit!', array('editForm' => NULL, 'editId' => NULL));
@@ -653,6 +661,8 @@ class TableControl extends Control
 
 	public function formError(\Venne\Forms\Form $form)
 	{
+		$this->onFormError($form);
+
 		if ($form->hasSaveButton() && $form->isSubmitted() === $form->getSaveButton()) {
 			$this->invalidateControl('form');
 		} else {
