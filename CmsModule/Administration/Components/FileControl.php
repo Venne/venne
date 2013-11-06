@@ -281,7 +281,8 @@ class FileControl extends Control
 	public function configureFileEntity(BaseFileEntity $entity)
 	{
 		if ($this->key) {
-			$entity->copyPermission($this->dirRepository->find($this->key));
+			$entity->setParent($this->dirRepository->find($this->key));
+			$entity->copyPermission();
 		}
 		return $entity;
 	}
