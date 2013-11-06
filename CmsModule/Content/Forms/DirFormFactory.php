@@ -52,11 +52,4 @@ class DirFormFactory extends FormFactory
 		parent::handleSave($form);
 	}
 
-
-	public function handleSuccess(Form $form)
-	{
-		if (isset($form->presenter['panel'])) {
-			$form->presenter['panel']->invalidateControl('content');
-		}
-	}
 }

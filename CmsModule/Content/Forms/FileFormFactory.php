@@ -12,10 +12,7 @@
 namespace CmsModule\Content\Forms;
 
 use CmsModule\Content\PermissionDeniedException;
-use CmsModule\Pages\Users\UserEntity;
-use Doctrine\DBAL\DBALException;
 use DoctrineModule\Forms\FormFactory;
-use Nette\InvalidArgumentException;
 use Venne\Forms\Form;
 
 /**
@@ -65,11 +62,4 @@ class FileFormFactory extends FormFactory
 		}
 	}
 
-
-	public function handleSuccess(Form $form)
-	{
-		if (isset($form->presenter['panel'])) {
-			$form->presenter['panel']->invalidateControl('content');
-		}
-	}
 }
