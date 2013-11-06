@@ -36,7 +36,7 @@ class DirFormFactory extends FormFactory
 		$form->addManyToMany('write', 'Write');
 		$form->addManyToMany('read', 'Read');
 		$form->addCheckbox('protected', 'Protected');
-		$form->addCheckbox('permissionRecursively', 'Change recursively');
+		$form->addCheckbox('recursively', 'Change recursively');
 
 		$form->addGroup();
 		$form->addSaveButton('Save');
@@ -45,7 +45,9 @@ class DirFormFactory extends FormFactory
 
 	public function handleSave(Form $form)
 	{
-		$form->data->setPermissionRecursively();
+		if ($form['recursively']->value) {
+			$form->data->setPermissionRecursively();
+		}
 
 		parent::handleSave($form);
 	}
