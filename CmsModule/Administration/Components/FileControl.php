@@ -113,7 +113,7 @@ class FileControl extends Control
 				$entity = $this->dirRepository->find($this->key);
 				$t = FALSE;
 				while ($entity) {
-					if ($entity->id === $this->key) {
+					if ($entity->id === $this->root->id) {
 						$t = TRUE;
 						break;
 					}
