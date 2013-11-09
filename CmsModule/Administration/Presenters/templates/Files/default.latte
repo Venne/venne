@@ -5,110 +5,11 @@
 {block toolbar}
 {/block}
 
-{block breadcrumb-item}
-	{if $entity->parent}{include #breadcrumb-item, entity=>$entity->parent, ok=>true}{/if}
-	<li{if !isset($ok)} class="active"{/if}>
-		{if isset($ok)}<a class="ajax"
-														 href="{link :Cms:Admin:Files: key=>$entity->id, do=>changeDir}">{/if}{$entity->name}{if isset($ok)}</a>{/if}
-	</li>
-{/block}
-
 {block breadcrumb}
 	{include #parent}
-	{var $entity = $presenter->key ? $dirRepository->find($presenter->key) : NULL}
-	<li{if !$entity} class="active"{/if}>{if $entity}<a class="ajax" n:href="this key=>NULL, do=>changeDir">{/if}{include #header}{if $entity}</a>{/if}</li>
-	{if $entity}{include #breadcrumb-item, entity=>$entity}{/if}
+	<li class="active">{include #header}</li>
 {/block}
 
 {block content}
-<script>
-// <![CDATA[
-	$(function () {
 
-		var shifted;
-		var clicked = false;
-		var moused = false;
-
-		$("#sortable").selectable();
-
-		$(document).mousedown(function (event) {
-			if(moused){
-				clicked = true;
-			}
-		});
-
-		$(document).mouseup(function (event) {
-			moused = true;
-			clicked = false;
-		});
-
-		$(document).bind('keydown keyup', function (e) {
-			if (e.keyCode == 16) {
-				shifted = !shifted;
-			}
-		});
-
-		$("#sortable > div.item").on("click", function (event) {
-
-			event.preventDefault();
-
-			if (!shifted) {
-				$(this).parent().find("li").each(function () {
-					$(this).removeClass('ui-selected');
-				});
-			}
-
-			$(this).removeClass('ui-selecting');
-			$(this).addClass('ui-selected');
-		});
-
-		$("#sortable > div.item.d").dblclick(function (event) {
-			$.nette.ajax({
-				url:$(this).find("a").attr("href"),
-				off: ['history']
-			});
-		});
-
-	{if $presenter->browserMode}
-		// Helper function to get parameters from the query string.
-		function getUrlParam(paramName) {
-			var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i');
-			var match = window.location.search.match(reParam);
-
-			return (match && match.length > 1) ? match[1] : '';
-		}
-
-		$("#sortable > div.item.f").dblclick(function () {
-			var funcNum = getUrlParam('CKEditorFuncNum');
-			window.opener.CKEDITOR.tools.callFunction(funcNum, $(this).find('a').attr('href'));
-			window.close();
-		});
-	{/if}
-	});
-// ]]>
-</script>
-
-<div id="sortable" class="filebrowser">
-{control table}
-{control fileTable}
-</div>
-
-<script>
-	$(function () {
-		$('.dropdown-toggle').on('click',function(e){
-			e.preventDefault();
-		});
-		$('.dropdown-toggle').on('contextmenu',function(e){
-			var _this = $(this);
-			e.preventDefault();
-			_this.dropdown('toggle');
-
-			_this.parent().on('mouseleave', function(){
-				$(this).off('mouseleave');
-				$(this).removeClass('open');
-			});
-		});
-	});""
-</script>
-
-{control ajaxFileUploader}
+{control fileBrowser}

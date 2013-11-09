@@ -9,8 +9,9 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Administration\Components;
+namespace CmsModule\Administration\Components\FileBrowser;
 
+use CmsModule\Administration\Components\AjaxFileUploaderControlFactory;
 use CmsModule\Content\Forms\DirFormFactory;
 use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Repositories\DirRepository;
@@ -20,7 +21,7 @@ use Nette\Object;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FileControlFactory extends Object
+class FileBrowserControlFactory extends Object
 {
 
 	/** @var string */
@@ -41,9 +42,12 @@ class FileControlFactory extends Object
 	/** @var AjaxFileUploaderControlFactory */
 	protected $ajaxFileUploaderFactory;
 
+	/** @var FileControlFactory  */
+	protected $fileControlFactory;
+
 
 	/**
-	 * @param $filePath
+	 * @param FileControlFactory $fileControlFactory
 	 * @param FileRepository $fileRepository
 	 * @param DirRepository $dirRepository
 	 * @param FileFormFactory $fileForm
@@ -51,7 +55,7 @@ class FileControlFactory extends Object
 	 * @param AjaxFileUploaderControlFactory $ajaxFileUploaderFactory
 	 */
 	public function __construct(
-		$filePath,
+		FileControlFactory $fileControlFactory,
 		FileRepository $fileRepository,
 		DirRepository $dirRepository,
 		FileFormFactory $fileForm,
@@ -59,7 +63,7 @@ class FileControlFactory extends Object
 		AjaxFileUploaderControlFactory $ajaxFileUploaderFactory
 	)
 	{
-		$this->filePath = $filePath;
+		$this->fileControlFactory = $fileControlFactory;
 		$this->fileRepository = $fileRepository;
 		$this->dirRepository = $dirRepository;
 		$this->fileFormFactory = $fileForm;
@@ -69,12 +73,12 @@ class FileControlFactory extends Object
 
 
 	/**
-	 * @return FileControl
+	 * @return FileBrowserControl
 	 */
 	public function create()
 	{
-		$control = new FileControl(
-			$this->filePath,
+		$control = new FileBrowserControl(
+			$this->fileControlFactory,
 			$this->fileRepository,
 			$this->dirRepository,
 			$this->fileFormFactory,
@@ -86,7 +90,7 @@ class FileControlFactory extends Object
 
 
 	/**
-	 * @return FileControl
+	 * @return FileBrowserControl
 	 */
 	public function __invoke()
 	{

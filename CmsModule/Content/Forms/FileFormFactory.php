@@ -35,9 +35,11 @@ class FileFormFactory extends FormFactory
 				->addCondition($form::FILLED);
 		}
 
-		$form->addManyToOne('parent', 'Parent')
-			->setCriteria(array('invisible' => FALSE))
-			->setOrderBy(array('path' => 'ASC'));
+		if ($form->data->id) {
+			$form->addManyToOne('parent', 'Parent')
+				->setCriteria(array('invisible' => FALSE))
+				->setOrderBy(array('path' => 'ASC'));
+		}
 
 		$form->addGroup('Permissions');
 		$form->addManyToOne('author', 'Owner');

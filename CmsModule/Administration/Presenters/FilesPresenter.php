@@ -11,19 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
-use CmsModule\Administration\Components\AjaxFileUploaderControl;
-use CmsModule\Administration\Components\AjaxFileUploaderControlFactory;
-use CmsModule\Components\Table\Form;
-use CmsModule\Components\Table\TableControl;
-use CmsModule\Content\Entities\BaseFileEntity;
-use CmsModule\Content\Entities\DirEntity;
-use CmsModule\Content\Entities\FileEntity;
-use CmsModule\Content\Forms\DirFormFactory;
-use CmsModule\Content\Forms\FileFormFactory;
-use CmsModule\Content\Repositories\DirRepository;
-use CmsModule\Content\Repositories\FileRepository;
-use Doctrine\ORM\QueryBuilder;
-use DoctrineModule\Repositories\BaseRepository;
+use CmsModule\Administration\Components\FileBrowser\FileBrowserControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -34,62 +22,29 @@ class FilesPresenter extends BasePresenter
 {
 
 	/** @persistent */
-	public $key;
-
-	/** @persistent */
 	public $edit;
 
 	/** @persistent */
 	public $browserMode;
 
-	/** @var DirRepository */
-	protected $dirRepository;
-
-	/** @var FileRepository */
-	protected $fileRepository;
-
-	/** @var DirFormFactory */
-	protected $dirFormFactory;
-
-	/** @var FileFormFactory */
-	protected $fileFormFactory;
-
-	/** @var AjaxFileUploaderControlFactory */
-	protected $ajaxFileUploaderFactory;
+	/** @var FileBrowserControlFactory */
+	protected $fileBrowserControlFactory;
 
 
-	public function __construct(FileRepository $fileRepository, DirRepository $dirRepository)
+	/**
+	 * @param FileBrowserControlFactory $fileBrowserControlFactory
+	 */
+	public function inject(FileBrowserControlFactory $fileBrowserControlFactory)
 	{
-		$this->fileRepository = $fileRepository;
-		$this->dirRepository = $dirRepository;
+		$this->fileBrowserControlFactory = $fileBrowserControlFactory;
 	}
 
 
-	public function injectFileForm(FileFormFactory $fileForm)
+	public function createComponentFileBrowser()
 	{
-		$this->fileFormFactory = $fileForm;
-	}
-
-
-	public function injectDirForm(DirFormFactory $dirForm)
-	{
-		$this->dirFormFactory = $dirForm;
-	}
-
-
-	public function injectAjaxFileUploaderFactory(AjaxFileUploaderControlFactory $ajaxFileUploaderFactory)
-	{
-		$this->ajaxFileUploaderFactory = $ajaxFileUploaderFactory;
-	}
-
-
-	protected function startup()
-	{
-		parent::startup();
-
-		if (substr($this->key, 1, 1) == ':') {
-			$this->key = substr($this->key, 2);
-		}
+		$control = $this->fileBrowserControlFactory->create();
+		$control->setBrowserMode((bool)$this->browserMode);
+		return $control;
 	}
 
 
@@ -122,169 +77,6 @@ class FilesPresenter extends BasePresenter
 	 */
 	public function actionRemove()
 	{
-	}
-
-
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function handleChangeDir()
-	{
-		if (!$this->isAjax()) {
-			$this->redirect('this');
-		}
-
-		$this->invalidateControl('content');
-		$this->invalidateControl('header');
-		$this->payload->url = $this->link('this');
-	}
-
-
-	/**
-	 * @secured(privilege="create")
-	 */
-	public function handleDir($id)
-	{
-		if (!$this->isAjax()) {
-			$this['table-navbar']->redirect('click!', array('id' => $id));
-		}
-
-		$this->invalidateControl('content');
-		$this['table-navbar']->handleClick($id);
-
-		$this->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
-	}
-
-
-	protected function createComponentAjaxFileUploader()
-	{
-		$_this = $this;
-
-		$this->ajaxFileUploaderFactory->setParentDirectory($this->key ? $this->dirRepository->find($this->key) : NULL);
-
-		$control = $this->ajaxFileUploaderFactory->invoke($this->template->basePath);
-		$control->onSuccess[] = function () use ($_this) {
-			$_this->invalidateControl('content');
-		};
-		$control->onError[] = function (AjaxFileUploaderControl $control) use ($_this) {
-			foreach ($control->getErrors() as $e) {
-				if ($e['class'] === 'Doctrine\DBAL\DBALException' && strpos($e['message'], 'Duplicate entry') !== false) {
-					$_this->flashMessage($this->translator->translate('Duplicate entry'), 'warning');
-				} else {
-					$_this->flashMessage($e['message']);
-				}
-			}
-			$_this->invalidateControl('content');
-		};
-		return $control;
-	}
-
-
-	protected function createComponentTable()
-	{
-		$_this = $this;
-		$parent = $this->key;
-		$dirRepository = $this->dirRepository;
-
-		$table = $this->createTable();
-		$table->setRepository($this->dirRepository);
-
-		$dql = function ($parent) {
-			return function (QueryBuilder $dql) use ($parent) {
-				$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
-				if ($parent === NULL) {
-					return $dql->andWhere('a.parent IS NULL');
-				}
-				return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
-			};
-		};
-
-		// navbar
-		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function () use ($_this, $dirRepository, $dql) {
-			$parent = $dirRepository->find($_this->key)->getParent();
-
-			if (!$_this->getPresenter()->isAjax()) {
-				$_this->redirect('this', array('key' => $parent ? $parent->id : NULL));
-			}
-
-			$_this->getPresenter()->invalidateControl('content');
-			$_this->getPresenter()->payload->url = $_this->link('this', array('key' => $parent ? $parent->id : NULL));
-			$_this->key = $parent ? $parent->id : NULL;
-			$_this['table']->setDql($dql($parent));
-		};
-
-		$table->setDql($dql($parent));
-
-		return $table;
-	}
-
-
-	protected function createComponentFileTable()
-	{
-		$table = $this->createTable();
-		$table->setRepository($this->fileRepository);
-
-		$parent = $this->key;
-
-		$table->setDql(function (QueryBuilder $dql) use ($parent) {
-			$dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
-			if ($parent === NULL) {
-				return $dql->andWhere('a.parent IS NULL');
-			}
-			return $dql->andWhere('a.parent = :par')->setParameter('par', $parent);
-		});
-
-		$table->setNavbar();
-
-		return $table;
-	}
-
-
-	/**
-	 * @return \CmsModule\Components\Table\TableControl
-	 */
-	protected function createTable()
-	{
-		$_this = $this;
-
-		$table = new TableControl;
-		$table->setDefaultPerPage(99999999999);
-		$table->setTemplateConfigurator($this->templateConfigurator);
-
-		// forms
-		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($_this) {
-			return $_this->configureFileEntity(new FileEntity);
-		}, Form::TYPE_LARGE);
-		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($_this) {
-			return $_this->configureFileEntity(new DirEntity);
-		}, Form::TYPE_LARGE);
-
-		if (!$this->browserMode && $this->isAuthorized('create')) {
-			$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
-			$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
-		}
-
-		if ($this->isAuthorized('edit')) {
-			$table->addActionEdit('editDir', 'Edit', $dirForm);
-			$table->addActionEdit('editFile', 'Edit', $fileForm);
-		}
-
-		$table->setTemplateFile(__DIR__ . '/FileTable.latte');
-
-		return $table;
-	}
-
-
-	/**
-	 * @param BaseFileEntity $entity
-	 * @return BaseFileEntity
-	 */
-	public function configureFileEntity(BaseFileEntity $entity)
-	{
-		if ($this->key) {
-			$entity->copyPermission($this->dirRepository->find($this->key));
-		}
-		return $entity;
 	}
 
 
@@ -362,9 +154,4 @@ class FilesPresenter extends BasePresenter
 		parent::beforeRender();
 	}
 
-
-	public function renderDefault()
-	{
-		$this->template->dirRepository = $this->dirRepository;
-	}
 }

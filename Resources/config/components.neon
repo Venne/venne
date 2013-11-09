@@ -59,7 +59,7 @@ services:
 	cms.dirFormFactory:
 		class: CmsModule\Content\Forms\DirFormFactory
 		setup:
-			- injectFactory(@cms.admin.ajaxFormFactory)
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.fileFormFactory:
 		class: CmsModule\Content\Forms\FileFormFactory
@@ -146,9 +146,11 @@ services:
 	cms.admin.ajaxFileUploaderFactory:
 		class: CmsModule\Administration\Components\AjaxFileUploaderControlFactory(%publicDir%/ajaxFileUpload, %publicDir%)
 
-
 	cms.admin.fileControlFactory:
-		class: CmsModule\Administration\Components\FileControlFactory(%modules.cms.path%/CmsModule/Administration/Presenters/FileTable.latte)
+		class: CmsModule\Administration\Components\FileBrowser\FileControlFactory
+
+	cms.admin.fileBrowserControlFactory:
+		class: CmsModule\Administration\Components\FileBrowser\FileBrowserControlFactory
 
 	cms.loginControlFactory:
 		class: CmsModule\Components\LoginControlFactory(@cms.factory.loginControlFactory)

@@ -20,19 +20,6 @@ use Venne\Forms\Form;
 class DirFormFactory extends FormFactory
 {
 
-	/** @var bool */
-	private $showParent = TRUE;
-
-
-	/**
-	 * @param boolean $showParent
-	 */
-	public function setShowParent($showParent)
-	{
-		$this->showParent = $showParent;
-	}
-
-
 	/**
 	 * @param Form $form
 	 */
@@ -41,7 +28,7 @@ class DirFormFactory extends FormFactory
 		$form->addGroup();
 		$form->addText('name', 'Name');
 
-		if ($this->showParent) {
+		if ($form->data->id) {
 			$form->addManyToOne('parent', 'Parent')
 				->setCriteria(array('invisible' => FALSE))
 				->setOrderBy(array('path' => 'ASC'));

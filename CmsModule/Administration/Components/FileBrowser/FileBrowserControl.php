@@ -9,10 +9,10 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace CmsModule\Administration\Components;
+namespace CmsModule\Administration\Components\FileBrowser;
 
-use CmsModule\Components\Table\Form;
-use CmsModule\Components\Table\TableControl;
+use CmsModule\Administration\Components\AjaxFileUploaderControl;
+use CmsModule\Administration\Components\AjaxFileUploaderControlFactory;
 use CmsModule\Content\Control;
 use CmsModule\Content\Entities\BaseFileEntity;
 use CmsModule\Content\Entities\DirEntity;
@@ -22,22 +22,19 @@ use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Repositories\DirRepository;
 use CmsModule\Content\Repositories\FileRepository;
 use Doctrine\ORM\QueryBuilder;
-use Nette\InvalidStateException;
+use Nette\Application\BadRequestException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FileControl extends Control
+class FileBrowserControl extends Control
 {
 
 	/** @persistent */
 	public $key;
 
-	/** @persistent */
-	public $edit;
-
-	/** @var string */
-	protected $filePath;
+	/** @var bool */
+	protected $browserMode = FALSE;
 
 	/** @var DirRepository */
 	protected $dirRepository;
@@ -54,12 +51,15 @@ class FileControl extends Control
 	/** @var AjaxFileUploaderControlFactory */
 	protected $ajaxFileUploaderFactory;
 
+	/** @var FileControlFactory */
+	protected $fileControlFactory;
+
 	/** @var DirEntity|NULL */
 	protected $root;
 
 
 	public function __construct(
-		$filePath,
+		FileControlFactory $fileControlFactory,
 		FileRepository $fileRepository,
 		DirRepository $dirRepository,
 		FileFormFactory $fileForm,
@@ -67,7 +67,7 @@ class FileControl extends Control
 		AjaxFileUploaderControlFactory $ajaxFileUploaderFactory
 	)
 	{
-		$this->filePath = $filePath;
+		$this->fileControlFactory = $fileControlFactory;
 		$this->fileRepository = $fileRepository;
 		$this->dirRepository = $dirRepository;
 		$this->fileFormFactory = $fileForm;
@@ -94,6 +94,24 @@ class FileControl extends Control
 	}
 
 
+	/**
+	 * @param boolean $browserMode
+	 */
+	public function setBrowserMode($browserMode)
+	{
+		$this->browserMode = $browserMode;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getBrowserMode()
+	{
+		return $this->browserMode;
+	}
+
+
 	protected function startup()
 	{
 		parent::startup();
@@ -108,9 +126,24 @@ class FileControl extends Control
 	{
 		parent::attached($presenter);
 
+		if ($this->root && !$this->key) {
+			$this->key = $this->root->getId();
+		}
+
+		if (!$this->checkCurrentDir()) {
+			throw new BadRequestException;
+		}
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function checkCurrentDir()
+	{
 		if ($this->root) {
 			if ($this->key) {
-				$entity = $this->dirRepository->find($this->key);
+				$entity = $this->getCurrentDir();
 				$t = FALSE;
 				while ($entity) {
 					if ($entity->id === $this->root->id) {
@@ -121,12 +154,14 @@ class FileControl extends Control
 				}
 
 				if (!$t) {
-					throw new InvalidStateException("Current directory is not children of root directory.");
+					return FALSE;
 				}
 			} else {
-				$this->key = $this->root->getId();
+				return FALSE;
 			}
 		}
+
+		return TRUE;
 	}
 
 
@@ -139,7 +174,11 @@ class FileControl extends Control
 			$this->redirect('this');
 		}
 
-		$this->payload->url = $this->link('this');
+		$this->invalidateControl('content');
+
+		if (!$this->browserMode) {
+			$this->presenter->payload->url = $this->link('this');
+		}
 	}
 
 
@@ -155,7 +194,9 @@ class FileControl extends Control
 		$this->invalidateControl('content');
 		$this['table-navbar']->handleClick($id);
 
-		$this->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
+		if (!$this->browserMode) {
+			$this->presenter->payload->url = $this['table-navbar']->link('click!', array('id' => $id));
+		}
 	}
 
 
@@ -163,7 +204,7 @@ class FileControl extends Control
 	{
 		$_this = $this;
 
-		$this->ajaxFileUploaderFactory->setParentDirectory($this->key ? $this->dirRepository->find($this->key) : NULL);
+		$this->ajaxFileUploaderFactory->setParentDirectory($this->getCurrentDir());
 
 		$control = $this->ajaxFileUploaderFactory->invoke($this->template->basePath);
 		$control->onSuccess[] = function () use ($_this) {
@@ -204,15 +245,22 @@ class FileControl extends Control
 
 		// navbar
 		$table->addButton('up', 'Up', 'arrow-up')->onClick[] = function () use ($_this, $dirRepository, $dql) {
-			$parent = $dirRepository->find($_this->key)->getParent();
+			$parent = $_this->getCurrentDir()->getParent();
 
 			if (!$_this->getPresenter()->isAjax()) {
 				$_this->redirect('this', array('key' => $parent ? $parent->id : NULL));
 			}
 
-			$_this->getPresenter()->invalidateControl('content');
-			$_this->getPresenter()->payload->url = $_this->link('this', array('key' => $parent ? $parent->id : NULL));
+			$_this->invalidateControl('content');
 			$_this->key = $parent ? $parent->id : NULL;
+			if (!$_this->checkCurrentDir()) {
+				throw new BadRequestException;
+			}
+
+			if (!$_this->browserMode) {
+				$_this->presenter->payload->url = $_this->link('this', array('key' => $parent ? $parent->id : NULL));
+			}
+
 			$_this['table']->setDql($dql($parent));
 		};
 
@@ -248,29 +296,32 @@ class FileControl extends Control
 	 */
 	protected function createTable()
 	{
-		$_this = $this;
-
-		$table = new TableControl;
-		$table->setDefaultPerPage(99999999999);
+		/** @var FileControl $table */
+		$table = $this->fileControlFactory->create();
 		$table->setTemplateConfigurator($this->templateConfigurator);
-
-		// forms
-		$fileForm = $table->addForm($this->fileFormFactory, 'File', function () use ($_this) {
-			return $_this->configureFileEntity(new FileEntity);
-		}, Form::TYPE_LARGE);
-		$dirForm = $table->addForm($this->dirFormFactory, 'Directory', function () use ($_this) {
-			return $_this->configureFileEntity(new DirEntity);
-		}, Form::TYPE_LARGE);
-
-		$table->addButtonCreate('directory', 'New directory', $dirForm, 'folder-open');
-		$table->addButtonCreate('upload', 'Upload file', $fileForm, 'upload');
-
-		$table->addActionEdit('editDir', 'Edit', $dirForm);
-		$table->addActionEdit('editFile', 'Edit', $fileForm);
-
-		$table->setTemplateFile($this->filePath);
-
+		$table->getFileForm()->setEntityFactory($this->createFileEntity);
+		$table->getDirForm()->setEntityFactory($this->createDirEntity);
 		return $table;
+	}
+
+
+	/**
+	 * @return FileEntity
+	 */
+	public function createFileEntity()
+	{
+		$entity = new FileEntity;
+		return $this->configureFileEntity($entity);
+	}
+
+
+	/**
+	 * @return DirEntity
+	 */
+	public function createDirEntity()
+	{
+		$entity = new DirEntity;
+		return $this->configureFileEntity($entity);
 	}
 
 
@@ -281,51 +332,10 @@ class FileControl extends Control
 	public function configureFileEntity(BaseFileEntity $entity)
 	{
 		if ($this->key) {
-			$entity->setParent($this->dirRepository->find($this->key));
+			$entity->setParent($this->getCurrentDir());
 			$entity->copyPermission();
 		}
 		return $entity;
-	}
-
-
-	/**
-	 * @secured(privilege="edit")
-	 */
-	public function handleSetParent($from, $to, $dropmode)
-	{
-		$dirRepository = $this->dirRepository;
-		$fileRepository = $this->fileRepository;
-
-		$fromType = substr($from, 0, 1);
-		$from = substr($from, 2);
-
-		$toType = substr($to, 0, 1);
-		$to = substr($to, 2);
-
-		$entity = $fromType == 'd' ? $dirRepository->find($from) : $fileRepository->find($from);
-		$target = $toType == 'd' ? $dirRepository->find($to) : $fileRepository->find($to);
-
-		if ($dropmode == "before" || $dropmode == "after") {
-			$entity->setParent(
-				$target->parent ? : NULL,
-				TRUE,
-				$dropmode == "after" ? $target : $target->previous
-			);
-		} else {
-			$entity->setParent($target);
-		}
-
-		if ($fromType == 'd') {
-			$dirRepository->save($entity);
-		} else {
-			$fileRepository->save($entity);
-		}
-
-		$this->flashMessage($this->translator->translate('File has been moved'), 'success');
-
-		if (!$this->isAjax()) {
-			$this->redirect('this');
-		}
 	}
 
 
@@ -343,9 +353,23 @@ class FileControl extends Control
 			$this->flashMessage($this->translator->translate('File has been deleted'), 'success');
 		}
 
-		if (!$this->isAjax()) {
+		if (!$this->presenter->isAjax()) {
 			$this->redirect('this');
 		}
-		$this->payload->url = $this->link('this');
+
+		$this->invalidateControl('content');
+
+		if (!$this->browserMode) {
+			$this->presenter->payload->url = $this->link('this');
+		}
+	}
+
+
+	/**
+	 * @return null|DirEntity
+	 */
+	public function getCurrentDir()
+	{
+		return $this->key ? $this->dirRepository->find($this->key) : NULL;
 	}
 }
