@@ -113,8 +113,8 @@ abstract class AbstractAjaxFileUploaderControlFactory extends Object
 	 */
 	public function handleFileUploadUnlink(AjaxFileUploaderControl $control, $fileName)
 	{
-		unlink($this->ajaxDir . '/' . $fileName);
-		unlink($this->ajaxDir . '/thumbnail/' . $fileName);
+		@unlink($this->ajaxDir . '/' . $fileName);
+		@unlink($this->ajaxDir . '/thumbnail/' . $fileName);
 	}
 
 
