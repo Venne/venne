@@ -148,13 +148,13 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 	/**
 	 * @var PermissionEntity[]|ArrayCollection
-	 * @ORM\OneToMany(targetEntity="PermissionEntity", mappedBy="page", indexBy="name", fetch="EXTRA_LAZY", orphanRemoval=true, cascade={"all"})
+	 * @ORM\OneToMany(targetEntity="PermissionEntity", mappedBy="page", indexBy="name", orphanRemoval=true, cascade={"all"})
 	 */
 	protected $permissions;
 
 	/**
 	 * @var AdminPermissionEntity[]|ArrayCollection
-	 * @ORM\OneToMany(targetEntity="AdminPermissionEntity", mappedBy="page", indexBy="name", fetch="EXTRA_LAZY", orphanRemoval=true, cascade={"all"})
+	 * @ORM\OneToMany(targetEntity="AdminPermissionEntity", mappedBy="page", indexBy="name", orphanRemoval=true, cascade={"all"})
 	 */
 	protected $adminPermissions;
 
