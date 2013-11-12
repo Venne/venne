@@ -292,7 +292,16 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			if (!$this->route->layout) {
 				$this->_layoutFile = FALSE;
 			} else {
-				$this->_layoutFile = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources/layouts');
+				if (isset($this->context->parameters['website']['theme']) && $this->context->parameters['website']['theme']) {
+					$extendedLayout = explode('/', $this->route->getLayout()->getFile(), 2);
+					$extendedLayout = '@' . $this->context->parameters['website']['theme'] . 'Module/' . $extendedLayout[1];
+
+					$this->_layoutFile = $this->moduleHelpers->expandPath($extendedLayout, 'Resources/layouts');
+				}
+
+				if ($this->_layoutFile == NULL || !file_exists($this->_layoutFile)) {
+					$this->_layoutFile = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources/layouts');
+				}
 			}
 		}
 
@@ -319,7 +328,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function formatTemplateFiles()
 	{
 		$ret = parent::formatTemplateFiles();
-		$presenter = str_replace(":", ".", $this->name);
+		$presenter = str_replace(':', '.', $this->name);
 
 		$path = dirname($this->getLayoutFile());
 		if ($path) {
