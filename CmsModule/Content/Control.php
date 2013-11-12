@@ -55,7 +55,8 @@ abstract class Control extends \Venne\Application\UI\Control
 				dirname($refl->getFileName()) . '/' . $refl->getShortName() . '.' . $this->variant . '.latte',
 			), $list);
 		}
-		$name = ucfirst($this->name) . 'Control';
+
+		$name = $this->getUniqueId() . 'Control';
 		$ret = array();
 		$paths = array();
 
@@ -87,7 +88,8 @@ abstract class Control extends \Venne\Application\UI\Control
 			$ret[] = dirname($path) . '/' . $name . '.latte';
 		}
 
-		return array_merge($ret, $list);
+		$ret = array_merge($ret, $list);
+		return $ret;
 	}
 
 

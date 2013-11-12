@@ -50,7 +50,7 @@ class RoutePresenter extends PagePresenter
 	}
 
 
-	protected function createComponentForm()
+	protected function createComponentLogin()
 	{
 		$form = $this->loginControlFactoy->create();
 		$form->onSuccess[] = $this->formSuccess;
