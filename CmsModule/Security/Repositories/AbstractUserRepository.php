@@ -12,12 +12,11 @@
 namespace CmsModule\Security\Repositories;
 
 use DoctrineModule\Repositories\BaseRepository;
-use Nette;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class UserRepository extends BaseRepository
+abstract class AbstractUserRepository extends BaseRepository
 {
 
 	public function createNew($arguments = array())
