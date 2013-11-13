@@ -27,8 +27,7 @@ class CmsExtension extends CompilerExtension
 				'autologin' => NULL,
 				'autoregistration' => NULL,
 			),
-			'registrations' => array(
-			),
+			'registrations' => array(),
 		),
 	);
 
@@ -46,6 +45,13 @@ class CmsExtension extends CompilerExtension
 
 		$container = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
+
+		foreach ($config['administration']['registrations'] as $key => $values) {
+			if (isset($values['name']) && $values['name']) {
+				$config['administration']['registrations'][$values['name']] = $values;
+				unset($config['administration']['registrations'][$key]);
+			}
+		}
 
 		$container->addDependency($container->parameters["tempDir"] . "/installed");
 
@@ -163,6 +169,9 @@ class CmsExtension extends CompilerExtension
 			->setClass('CmsModule\Administration\StructureInstallatorManager')
 			->addSetup('registerInstallator', array($this->prefix('@administration.structureInstallator'), 'basic website structure and access\' list'));
 
+		$container->addDefinition($this->prefix('authenticationFormFactory'))
+			->setClass('CmsModule\Forms\SystemAuthenticationFormFactory', array($config['administration']['registrations']))
+			->addSetup('injectFactory', array('@cms.admin.loggableAjaxFormFactory'));
 
 		$container->addDefinition($this->prefix('admin.loginPresenter'))
 			->setClass('CmsModule\Administration\Presenters\LoginPresenter')

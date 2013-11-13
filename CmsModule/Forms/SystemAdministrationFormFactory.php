@@ -33,11 +33,11 @@ class SystemAdministrationFormFactory extends FormFactory
 
 
 	/**
+	 * @param $routePrefix
 	 * @param ConfigMapper $mapper
 	 * @param Request $httpRequest
-	 * @param string $routePrefix
 	 */
-	public function __construct(ConfigMapper $mapper, Request $httpRequest, $routePrefix)
+	public function __construct($routePrefix, ConfigMapper $mapper, Request $httpRequest)
 	{
 		$this->mapper = $mapper;
 		$this->httpRequest = $httpRequest;

@@ -361,3 +361,16 @@ read: čtení
 change recursively: změnit rekurzivně
 connect with: spojit s
 module width theme: modul s tématem
+auto login: automatické přihlášení
+auto registration: automatická registrace
+deactivated: deaktivováno
+login provider mode: mód poskytovatele přihlášení
+basic registration: základní registrace
+registration with admin confirmation: registrace s potvrzením administrátora
+registration with e-mail confirmation: registrace s potvrzením přes e-mail
+registration with e-mail and admin confirmation: registrace s potvrzením přes e-mail a s povolením administrátora
+only load user data: pouze načíst uživatelská data
+load user data and save: nahrád uživatelská data a uložit
+enabled: povoleno
+registration settings has been updated: nastavení registrace bylo uloženo
+authentication settings has been updated: nastavení ověření bylo uloženo

@@ -195,11 +195,18 @@ class LoginPresenter extends BasePresenter
 			$this->registrations[$name]['email']['text']
 		);
 
+		$control->onLoad[] = $this->registrationLoad;
 		$control->onSuccess[] = $this->registrationSuccess;
 		$control->onEnable[] = $this->registrationEnable;
 		$control->onError[] = $this->registrationError;
 
 		return $control;
+	}
+
+
+	public function registrationLoad(RegistrationControl $control)
+	{
+		$this->template->regLoad = $control->name;
 	}
 
 

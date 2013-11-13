@@ -7,6 +7,12 @@
 	<li n:if="$presenter->isAuthorized('Application:account')"{if $presenter->isLinkCurrent("Application:account")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:account}">{_'Admin account'}</a>
 	</li>
+	<li n:if="$presenter->isAuthorized('Application:authentication')"{if $presenter->isLinkCurrent("Application:authentication")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:authentication}">{_'Authentication'}</a>
+	</li>
+	<li n:if="$presenter->isAuthorized('Application:registration')"{if $presenter->isLinkCurrent("Application:registration")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:registration}">{_'Registration'}</a>
+	</li>
 	<li n:if="$presenter->isAuthorized('Application:admin')"{if $presenter->isLinkCurrent("Application:admin")} class="active"{/if}>
 		<a class="ajax" href="{plink Application:admin}">{_'Administration'}</a>
 	</li>

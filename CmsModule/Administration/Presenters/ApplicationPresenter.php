@@ -14,9 +14,10 @@ namespace CmsModule\Administration\Presenters;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemAdministrationFormFactory;
 use CmsModule\Forms\SystemApplicationFormFactory;
+use CmsModule\Forms\SystemAuthenticationFormFactory;
 use CmsModule\Forms\SystemDatabaseFormFactory;
 use CmsModule\Forms\SystemMailerFormFactory;
-use Nette\Callback;
+use CmsModule\Forms\SystemRegistrationFormFactory;
 use Venne\Forms\Form;
 
 /**
@@ -42,33 +43,29 @@ class ApplicationPresenter extends BasePresenter
 	/** @var SystemMailerFormFactory */
 	protected $mailerForm;
 
+	/** @var SystemRegistrationFormFactory */
+	protected $registrationForm;
 
-	public function injectApplicationForm(SystemApplicationFormFactory $applicationForm)
+	/** @var SystemAuthenticationFormFactory */
+	protected $authenticationForm;
+
+
+	public function inject(
+		SystemApplicationFormFactory $applicationForm,
+		SystemDatabaseFormFactory $databaseForm,
+		SystemAccountFormFactory $accountForm,
+		SystemAdministrationFormFactory $systemForm,
+		SystemMailerFormFactory $mailerForm,
+		SystemRegistrationFormFactory $registrationForm,
+		SystemAuthenticationFormFactory $authenticationForm
+	)
 	{
+		$this->registrationForm = $registrationForm;
+		$this->authenticationForm = $authenticationForm;
 		$this->applicationForm = $applicationForm;
-	}
-
-
-	public function injectDatabaseForm(SystemDatabaseFormFactory $databaseForm)
-	{
 		$this->databaseForm = $databaseForm;
-	}
-
-
-	public function injectAccountForm(SystemAccountFormFactory $accountForm)
-	{
 		$this->accountForm = $accountForm;
-	}
-
-
-	public function injectAdministrationForm(SystemAdministrationFormFactory $systemForm)
-	{
 		$this->systemForm = $systemForm;
-	}
-
-
-	public function injectMailerForm(SystemMailerFormFactory $mailerForm)
-	{
 		$this->mailerForm = $mailerForm;
 	}
 
@@ -109,6 +106,21 @@ class ApplicationPresenter extends BasePresenter
 	 * @secured
 	 */
 	public function actionMailer()
+	{
+	}
+
+	/**
+	 * @secured
+	 */
+	public function actionRegistration()
+	{
+	}
+
+
+	/**
+	 * @secured
+	 */
+	public function actionAuthentication()
 	{
 	}
 
@@ -158,6 +170,30 @@ class ApplicationPresenter extends BasePresenter
 		$form = $this->mailerForm->invoke();
 		$form->onSuccess[] = function (Form $form) {
 			$form->getPresenter()->flashMessage($this->translator->translate('Mailer settings has been updated'), 'success');
+			$form->getPresenter()->redirect('this');
+		};
+		return $form;
+	}
+
+
+	protected function createComponentRegistrationForm()
+	{
+		$form = $this->registrationForm->invoke();
+		$form->onSuccess[] = function (Form $form) {
+			if ($form->isSubmitted() === $form->getSaveButton()) {
+				$form->getPresenter()->flashMessage($this->translator->translate('Registration settings has been updated'), 'success');
+				$form->getPresenter()->redirect('this');
+			}
+		};
+		return $form;
+	}
+
+
+	protected function createComponentAuthenticationForm()
+	{
+		$form = $this->authenticationForm->invoke();
+		$form->onSuccess[] = function (Form $form) {
+			$form->getPresenter()->flashMessage($this->translator->translate('Authentication settings has been updated'), 'success');
 			$form->getPresenter()->redirect('this');
 		};
 		return $form;

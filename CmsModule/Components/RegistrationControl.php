@@ -39,6 +39,9 @@ class RegistrationControl extends Control
 	/** @var array */
 	public $onError;
 
+	/** @var array */
+	public $onLoad;
+
 	/** @var string */
 	protected $userType;
 
@@ -180,6 +183,8 @@ class RegistrationControl extends Control
 					$this->redirect('this');
 				}
 			}
+		} else if ($this->loginProviderMode === 'load') {
+			$this->onLoad($this);
 		}
 	}
 
