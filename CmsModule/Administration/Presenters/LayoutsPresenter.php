@@ -246,8 +246,8 @@ class LayoutsPresenter extends BasePresenter
 			->getCellPrototype()->width = '15%';
 
 		// filters
-		$table->addFilterText('mode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getModes());
-		$table->addFilterText('langMode', 'Mode', Filter::TYPE_SELECT, array('' => '') + ElementEntity::getLangModes());
+		$table->addFilterSelect('mode', 'Mode', array('' => '') + ElementEntity::getModes());
+		$table->addFilterSelect('langMode', 'Mode', array('' => '') + ElementEntity::getLangModes());
 
 		// actions
 		if ($this->isAuthorized('edit')) {
