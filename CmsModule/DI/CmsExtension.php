@@ -26,6 +26,13 @@ class CmsExtension extends CompilerExtension
 			'authentication' => array(
 				'autologin' => NULL,
 				'autoregistration' => NULL,
+				'forgotPassword'=> array(
+					'enabled' => FALSE,
+					'emailSubject' => 'Password reset',
+					'emailText' => 'Reset your passord on address \%link\%.',
+					'emailSender' => 'Venne:CMS',
+					'emailFrom' => 'info@venne.cz',
+				),
 			),
 			'registrations' => array(),
 		),
@@ -178,6 +185,7 @@ class CmsExtension extends CompilerExtension
 			->addSetup('$service->setAutologin(?);', array($config['administration']['authentication']['autologin']))
 			->addSetup('$service->setAutoregistration(?);', array($config['administration']['authentication']['autoregistration']))
 			->addSetup('$service->setRegistrations(?);', array($config['administration']['registrations']))
+			->addSetup('$service->setReset(?);', array($config['administration']['authentication']['forgotPassword']))
 			->addTag('presenter');
 	}
 

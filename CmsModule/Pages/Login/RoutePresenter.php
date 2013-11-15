@@ -56,6 +56,15 @@ class RoutePresenter extends PagePresenter
 		$form->onSuccess[] = $this->formSuccess;
 		$form->onError[] = $this->formError;
 
+		if ($this->extendedPage->resetEnabled) {
+			$form->setResetEmail(
+				$this->extendedPage->resetSubject,
+				$this->extendedPage->resetText,
+				$this->extendedPage->resetSender,
+				$this->extendedPage->resetFrom
+			);
+		}
+
 		return $form;
 	}
 

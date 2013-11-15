@@ -75,8 +75,10 @@ class ProviderFormFactory extends FormFactory
 			->getLoginProviderByName($this->provider)
 			->getFormContainer();
 
-		$form->addSaveButton('Sign in')->getControlPrototype()->class[] = 'btn-primary';
-		$form->addSubmit('cancel', 'Cancel');
+		$form->addSaveButton('Sign in')
+			->getControlPrototype()->class[] = 'btn-primary';
+		$form->addSubmit('cancel', 'Cancel')
+			->setValidationScope(FALSE);
 	}
 
 

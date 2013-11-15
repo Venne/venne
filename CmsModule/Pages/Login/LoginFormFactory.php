@@ -26,8 +26,25 @@ class LoginFormFactory extends FormFactory
 	public function configure(Form $form)
 	{
 		$form->addGroup('Settings');
-		//$form->addManyToOne('page', 'Redirect to');
 		$form->addManyToOne('registration', 'Register by');
+
+		$form->addGroup('Forgot password');
+		$enabled = $form->addCheckbox('resetEnabled', 'Enabled');
+		$enabled->addCondition($form::EQUAL, TRUE)->toggle('form-reset');
+
+		$form->addGroup()->setOption('id', 'form-reset');
+		$form->addText('resetSubject', 'Subject')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED);
+		$form->addText('resetSender', 'Sender')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED);
+		$form->addText('resetFrom', 'From')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED)->addRule($form::EMAIL);
+		$form->addTextArea('resetText', 'Text')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED);
 
 		$form->addSaveButton('Save');
 	}

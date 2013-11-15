@@ -70,6 +70,25 @@ class SystemAuthenticationFormFactory extends FormFactory
 			->setPrompt('Deactivated')
 			->setItems(array_keys($this->registrations), FALSE);
 
+		$forgotPassword = $form->addContainer('forgotPassword');
+		$forgotPassword->setCurrentGroup($form->addGroup('Forgot password'));
+		$enabled = $forgotPassword->addCheckbox('enabled', 'Enabled');
+		$enabled->addCondition($form::EQUAL, TRUE)->toggle('form-reset');
+
+		$forgotPassword->setCurrentGroup($form->addGroup()->setOption('id', 'form-reset'));
+		$forgotPassword->addText('emailSubject', 'Subject')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED);
+		$forgotPassword->addText('emailSender', 'Sender')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED);
+		$forgotPassword->addText('emailFrom', 'From')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED)->addRule($form::EMAIL);
+		$forgotPassword->addTextArea('emailText', 'Text')
+			->addConditionOn($enabled, $form::EQUAL, TRUE)
+			->addRule($form::FILLED);
+
 		$form->addGroup();
 		$form->addSubmit('_submit', 'Save');
 	}

@@ -25,11 +25,24 @@ services:
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 
+	cms.loginControlFactory:
+		class: CmsModule\Components\LoginControlFactory(@cms.factory.loginControlFactory)
+
 	cms.providerFormFactory:
 		class: CmsModule\Forms\ProviderFormFactory
 		setup:
 			- injectFactory(@cms.admin.basicFormFactory)
 			- injectSecurityManager()
+
+	cms.resetFormFactory:
+		class: CmsModule\Forms\ResetFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.confirmFormFactory:
+		class: CmsModule\Forms\ConfirmFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
 
 	cms.applicationFormFactory:
 		class: CmsModule\Forms\SystemApplicationFormFactory
@@ -157,11 +170,13 @@ services:
 	cms.admin.fileBrowserControlFactory:
 		class: CmsModule\Administration\Components\FileBrowser\FileBrowserControlFactory
 
-	cms.loginControlFactory:
-		class: CmsModule\Components\LoginControlFactory(@cms.factory.loginControlFactory)
-
 	cms.registrationControlFactory:
 		class: CmsModule\Components\RegistrationControlFactory(@cms.factory.registrationControlFactory)
+
+	cms.admin.mailFormFactory:
+		class: CmsModule\Administration\Forms\MailFormFactory
+		setup:
+			- injectFactory(@cms.admin.ajaxFormFactory)
 
 
 factories:

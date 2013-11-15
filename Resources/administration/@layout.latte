@@ -184,12 +184,7 @@
 							{* content *}
 							<div class="well" n:snippet="content">
 
-								{foreach $flashes as $flash}
-									<div class="alert alert-{$flash->type}">
-										<a class="close" data-dismiss="alert">×</a>
-										{$flash->message}
-									</div>
-								{/foreach}
+								{control flashMessage TRUE}
 
 								{block #toolbar}
 								<ul id="toolbar" class="nav nav-tabs">

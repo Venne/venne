@@ -30,6 +30,37 @@ class PageEntity extends ExtendedPageEntity
 	protected $registration;
 
 
+	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	protected $resetEnabled = FALSE;
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	protected $resetSubject = 'Password reset';
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	protected $resetText = 'Reset your passord on address %link%.';
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	protected $resetSender = 'Venne:CMS';
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	protected $resetFrom = 'info@venne.cz';
+
+
 	protected function getSpecial()
 	{
 		return 'login';
@@ -52,4 +83,95 @@ class PageEntity extends ExtendedPageEntity
 	{
 		return $this->registration;
 	}
+
+
+	/**
+	 * @param boolean $resetEnabled
+	 */
+	public function setResetEnabled($resetEnabled)
+	{
+		$this->resetEnabled = $resetEnabled;
+	}
+
+
+	/**
+	 * @return boolean
+	 */
+	public function getResetEnabled()
+	{
+		return $this->resetEnabled;
+	}
+
+
+	/**
+	 * @param string $resetFrom
+	 */
+	public function setResetFrom($resetFrom)
+	{
+		$this->resetFrom = $resetFrom;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getResetFrom()
+	{
+		return $this->resetFrom;
+	}
+
+
+	/**
+	 * @param string $resetSender
+	 */
+	public function setResetSender($resetSender)
+	{
+		$this->resetSender = $resetSender;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getResetSender()
+	{
+		return $this->resetSender;
+	}
+
+
+	/**
+	 * @param string $resetSubject
+	 */
+	public function setResetSubject($resetSubject)
+	{
+		$this->resetSubject = $resetSubject;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getResetSubject()
+	{
+		return $this->resetSubject;
+	}
+
+
+	/**
+	 * @param string $resetText
+	 */
+	public function setResetText($resetText)
+	{
+		$this->resetText = $resetText;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getResetText()
+	{
+		return $this->resetText;
+	}
+
 }

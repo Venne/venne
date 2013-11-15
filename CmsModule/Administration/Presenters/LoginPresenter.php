@@ -38,6 +38,9 @@ class LoginPresenter extends BasePresenter
 	protected $autoregistration;
 
 	/** @var array */
+	protected $reset;
+
+	/** @var array */
 	protected $registrations = array();
 
 	/** @var SecurityManager */
@@ -80,6 +83,15 @@ class LoginPresenter extends BasePresenter
 	public function setAutologin($autologin)
 	{
 		$this->autologin = $autologin;
+	}
+
+
+	/**
+	 * @param array $reset
+	 */
+	public function setReset($reset)
+	{
+		$this->reset = $reset;
 	}
 
 
@@ -146,6 +158,15 @@ class LoginPresenter extends BasePresenter
 		$form = $this->form->create();
 		$form->onSuccess[] = $this->formSuccess;
 		$form->onError[] = $this->formError;
+
+		if ($this->reset['enabled']) {
+			$form->setResetEmail(
+				$this->reset['emailSubject'],
+				$this->reset['emailText'],
+				$this->reset['emailSender'],
+				$this->reset['emailFrom']
+			);
+		}
 
 		return $form;
 	}

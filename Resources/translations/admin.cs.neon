@@ -374,3 +374,6 @@ load user data and save: nahrád uživatelská data a uložit
 enabled: povoleno
 registration settings has been updated: nastavení registrace bylo uloženo
 authentication settings has been updated: nastavení ověření bylo uloženo
+new password has been sended: nové heslo bylo odesláno
+reset password: resetovat heslo
+forgot password: zapomenuté heslo

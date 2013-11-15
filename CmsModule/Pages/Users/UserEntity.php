@@ -113,6 +113,11 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	 */
 	protected $class;
 
+	/**
+	 * @ORM\Column(type="string", nullable=true)
+	 */
+	protected $resetKey;
+
 
 	protected function startup()
 	{
@@ -175,8 +180,6 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 
 	/**
 	 * Disable user and verify by key.
-	 *
-	 * @param $key
 	 */
 	public function disableByKey()
 	{
@@ -188,6 +191,7 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	 * Verify user by key.
 	 *
 	 * @param $key
+	 * @return bool
 	 */
 	public function enableByKey($key)
 	{
@@ -196,6 +200,21 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 			return TRUE;
 		}
 		return FALSE;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function resetPassword()
+	{
+		return $this->resetKey = Strings::random(30);
+	}
+
+
+	public function removeResetKey()
+	{
+		$this->resetKey = NULL;
 	}
 
 

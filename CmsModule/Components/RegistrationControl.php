@@ -234,10 +234,10 @@ class RegistrationControl extends Control
 	}
 
 
-	public function sendEmail($form)
+	private function sendEmail($form)
 	{
 		$user = $form->data;
-		$absoluteUrls = $this->absoluteUrls;
+		$absoluteUrls = $this->presenter->absoluteUrls;
 		$this->presenter->absoluteUrls = true;
 		$link = $this->link('this', array('key' => $user->user->key));
 		$this->presenter->absoluteUrls = $absoluteUrls;
@@ -249,7 +249,7 @@ class RegistrationControl extends Control
 			'{$link}' => '<a href="' . $link . '">' . $link . '</a>'
 		));
 
-		$mail = $this->context->nette->createMail();
+		$mail = $this->presenter->context->nette->createMail();
 		$mail->setFrom("{$this->emailSender} <{$this->emailFrom}>")
 			->addTo($user->user->email)
 			->setSubject($this->emailSubject)
