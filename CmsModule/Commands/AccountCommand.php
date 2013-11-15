@@ -28,7 +28,7 @@ class AccountCommand extends Command
 	protected $config;
 
 
-	function __construct(ConfigBuilder $config)
+	public function __construct(ConfigBuilder $config)
 	{
 		parent::__construct();
 
