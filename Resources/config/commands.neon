@@ -10,3 +10,7 @@ services:
 	cms.languageCommand:
 		class: CmsModule\Commands\LanguageCommand
 		tags: [command]
+
+	cms.websiteCommand:
+		class: CmsModule\Commands\WebsiteCommand
+		tags: [command]
