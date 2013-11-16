@@ -315,14 +315,14 @@ abstract class BaseElement extends Control implements IElement
 
 	protected function createComponentClearForm()
 	{
-		$form = $this->_clearFormFactory->invoke($this->getExtendedElement());
+		$form = $this->_clearFormFactory->invoke($this->getElement());
 		return $form;
 	}
 
 
 	protected function createComponentBasicForm()
 	{
-		$form = $this->_basicFormFactory->invoke($this->getExtendedElement());
+		$form = $this->_basicFormFactory->invoke($this->getElement());
 		return $form;
 	}
 }

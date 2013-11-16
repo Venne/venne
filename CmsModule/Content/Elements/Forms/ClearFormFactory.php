@@ -11,9 +11,8 @@
 
 namespace CmsModule\Content\Elements\Forms;
 
-use CmsModule\Content\Repositories\PageRepository;
+use DoctrineModule\Forms\FormFactory;
 use Venne\Forms\Form;
-use Venne\Forms\FormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -31,7 +30,7 @@ class ClearFormFactory extends FormFactory
 	}
 
 
-	public function handleSave($form)
+	public function handleSave(Form $form)
 	{
 		if ($form['use']->value) {
 			$this->mapper->getEntityManager()->getRepository(get_class($form->data))->delete($form->data);
