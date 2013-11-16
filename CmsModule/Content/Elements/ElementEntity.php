@@ -39,6 +39,20 @@ class ElementEntity extends IdentifiedEntity
 	const LANGMODE_SPLIT = 1;
 
 	/** @var array */
+	protected static $humanModes = array(
+		'website' => self::MODE_WEBSITE,
+		'layout' => self::MODE_LAYOUT,
+		'page' => self::MODE_PAGE,
+		'route' => self::MODE_ROUTE,
+	);
+
+	/** @var array */
+	protected static $humanLangModes = array(
+		'share' => self::LANGMODE_SHARE,
+		'split' => self::LANGMODE_SPLIT,
+	);
+
+	/** @var array */
 	protected static $modes = array(
 		self::MODE_WEBSITE => 'Website',
 		self::MODE_LAYOUT => 'Layout',
@@ -131,17 +145,17 @@ class ElementEntity extends IdentifiedEntity
 	}
 
 
-
 	/**
-	 * @param int $mode
+	 * @param int|string $mode
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function setMode($mode)
 	{
-		if (!isset(self::$modes[$mode])) {
+		if (!isset(self::$modes[$mode]) && !isset(self::$humanModes[$mode])) {
 			throw new \Nette\InvalidArgumentException;
 		}
 
-		$this->mode = $mode;
+		$this->mode = (intval($mode) == $mode) ? $mode : self::$humanModes[$mode];
 	}
 
 
@@ -263,11 +277,16 @@ class ElementEntity extends IdentifiedEntity
 
 
 	/**
-	 * @param int $langMode
+	 * @param int|string $langMode
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function setLangMode($langMode)
 	{
-		$this->langMode = $langMode;
+		if (!isset(self::$langModes[$langMode]) && !isset(self::$humanLangModes[$langMode])) {
+			throw new \Nette\InvalidArgumentException;
+		}
+
+		$this->langMode = (intval($langMode) == $langMode) ? $langMode : self::$humanLangModes[$langMode];
 	}
 
 

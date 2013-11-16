@@ -64,6 +64,12 @@ abstract class BaseElement extends Control implements IElement
 	/** @var array */
 	private $defaults = array();
 
+	/** @var string|int|NULL */
+	private $defaultMode;
+
+	/** @var string|int|NULL */
+	private $defaultLangMode;
+
 
 	/**
 	 * @param EntityManager $entityManager
@@ -168,6 +174,12 @@ abstract class BaseElement extends Control implements IElement
 		if ($this->defaults) {
 			$this->applyDefaults($ret, $this->defaults);
 		}
+		if ($this->defaultMode) {
+			$ret->element->mode = $this->defaultMode;
+		}
+		if ($this->defaultLangMode) {
+			$ret->element->langMode = $this->defaultLangMode;
+		}
 		return $ret;
 	}
 
@@ -202,19 +214,19 @@ abstract class BaseElement extends Control implements IElement
 
 			foreach ($data as $i) {
 				$this->element = $this->getElementRepository()->findOneBy(array(
-					'name' => $this->name,
-					'mode' => ElementEntity::MODE_WEBSITE,
-				) + $i);
+						'name' => $this->name,
+						'mode' => ElementEntity::MODE_WEBSITE,
+					) + $i);
 
 				if ($this->element) {
 					break;
 				}
 
 				$this->element = $this->getElementRepository()->findOneBy(array(
-					'name' => $this->name,
-					'layout' => $this->layoutEntity->id,
-					'mode' => ElementEntity::MODE_LAYOUT,
-				) + $i);
+						'name' => $this->name,
+						'layout' => $this->layoutEntity->id,
+						'mode' => ElementEntity::MODE_LAYOUT,
+					) + $i);
 
 				if ($this->element) {
 					break;
@@ -222,11 +234,11 @@ abstract class BaseElement extends Control implements IElement
 
 				if ($this->pageEntity) {
 					$this->element = $this->getElementRepository()->findOneBy(array(
-						'name' => $this->name,
-						'layout' => $this->layoutEntity->id,
-						'page' => $this->pageEntity->id,
-						'mode' => ElementEntity::MODE_PAGE,
-					) + $i);
+							'name' => $this->name,
+							'layout' => $this->layoutEntity->id,
+							'page' => $this->pageEntity->id,
+							'mode' => ElementEntity::MODE_PAGE,
+						) + $i);
 
 					if ($this->element) {
 						break;
@@ -235,12 +247,12 @@ abstract class BaseElement extends Control implements IElement
 
 				if ($this->pageEntity && $this->routeEntity) {
 					$this->element = $this->getElementRepository()->findOneBy(array(
-						'name' => $this->name,
-						'layout' => $this->layoutEntity->id,
-						'page' => $this->pageEntity->id,
-						'route' => $this->routeEntity->id,
-						'mode' => ElementEntity::MODE_ROUTE,
-					) + $i);
+							'name' => $this->name,
+							'layout' => $this->layoutEntity->id,
+							'page' => $this->pageEntity->id,
+							'route' => $this->routeEntity->id,
+							'mode' => ElementEntity::MODE_ROUTE,
+						) + $i);
 
 					if ($this->element) {
 						break;
@@ -264,6 +276,7 @@ abstract class BaseElement extends Control implements IElement
 
 	/**
 	 * @return ExtendedElementEntity
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function getExtendedElement()
 	{
@@ -282,6 +295,18 @@ abstract class BaseElement extends Control implements IElement
 	public function __call($name, $args)
 	{
 		if ($name === 'render') {
+			if (isset($args[0]['mode'])) {
+				$this->defaultMode = $args[0]['mode'];
+			}
+
+			if (isset($args[0]['langMode'])) {
+				$this->defaultLangMode = $args[0]['langMode'];
+			}
+
+			if (isset($args[0]['defaults'])) {
+				$this->defaults = (array)$args[0]['defaults'];
+			}
+
 			$c = TRUE;
 			try {
 				$this->getExtendedElement();
@@ -290,14 +315,12 @@ abstract class BaseElement extends Control implements IElement
 				echo $this['elementError']->render($this->name);
 			}
 
-			if ($c && isset($args[0]['defaults'])) {
-				$this->defaults = (array)$args[0]['defaults'];
+			if (!$c) {
+				return;
 			}
 		}
 
-		if ($c){
-			return parent::__call($name, $args);
-		}
+		return parent::__call($name, $args);
 	}
 
 
