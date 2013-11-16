@@ -124,7 +124,7 @@ services:
 	cms.clearFormFactory:
 		class: CmsModule\Content\Elements\Forms\ClearFormFactory
 		setup:
-			- injectFactory(@cms.admin.loggableAjaxFormFactory)
+			- injectFactory(@cms.admin.loggableFormFactory)
 
 	cms.basicFormFactory:
 		class: CmsModule\Content\Elements\Forms\BasicFormFactory
