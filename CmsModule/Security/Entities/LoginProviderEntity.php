@@ -181,15 +181,6 @@ class LoginProviderEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 
 	/**
-	 * @return int|string
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
-
-
-	/**
 	 * @param string $address
 	 */
 	public function setAddress($address)
