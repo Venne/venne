@@ -56,7 +56,7 @@ abstract class Control extends \Venne\Application\UI\Control
 			), $list);
 		}
 
-		$name = $this->getUniqueId() . 'Control';
+		$name = ucfirst($this->getUniqueId()) . 'Control';
 		$ret = array();
 		$paths = array();
 
