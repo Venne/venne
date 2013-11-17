@@ -12,6 +12,7 @@
 namespace CmsModule\Content;
 
 use CmsModule\Content\Entities\ExtendedPageEntity;
+use CmsModule\Content\Entities\ExtendedRouteEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,23 +21,69 @@ class SectionControl extends \Venne\Application\UI\Control implements ISectionCo
 {
 
 	/** @var ExtendedPageEntity */
-	protected $entity;
+	protected $extendedPage;
+
+	/** @var ExtendedRouteEntity */
+	protected $extendedRoute;
 
 
 	/**
-	 * @param ExtendedPageEntity $entity
+	 * @param ExtendedPageEntity $extendedPage
+	 * @deprecated
 	 */
-	public function setEntity(ExtendedPageEntity $entity)
+	public function setEntity(ExtendedPageEntity $extendedPage)
 	{
-		$this->entity = $entity;
+		trigger_error(__METHOD__ . '() is deprecated, use setExtendedPage() instead.', E_USER_WARNING);
+
+		$this->setExtendedPage($extendedPage);
+	}
+
+
+	/**
+	 * @return ExtendedPageEntity
+	 * @deprecated
+	 */
+	public function getEntity()
+	{
+		trigger_error(__METHOD__ . '() is deprecated, use getExtendedPage() instead.', E_USER_WARNING);
+
+		return $this->getExtendedPage();
+	}
+
+
+	/**
+	 * @param ExtendedPageEntity $extendedPage
+	 */
+	public function setExtendedPage(ExtendedPageEntity $extendedPage)
+	{
+		$this->extendedPage = $extendedPage;
 	}
 
 
 	/**
 	 * @return ExtendedPageEntity
 	 */
-	public function getEntity()
+	public function getExtendedPage()
 	{
-		return $this->entity;
+		return $this->extendedPage;
 	}
+
+
+	/**
+	 * @param ExtendedRouteEntity $extendedRoute
+	 */
+	public function setExtendedRoute(ExtendedRouteEntity $extendedRoute)
+	{
+		$this->extendedRoute = $extendedRoute;
+	}
+
+
+	/**
+	 * @return ExtendedRouteEntity
+	 */
+	public function getExtendedRoute()
+	{
+		return $this->extendedRoute;
+	}
+
 }

@@ -477,7 +477,7 @@ class ContentPresenter extends BasePresenter
 		}
 
 		if ($form instanceof ISectionControl) {
-			$form->setEntity($entity);
+			$form->setExtendedPage($entity);
 		} else if ($form instanceof Form) {
 			$form->onSuccess[] = $this->formEditSuccess;
 			$form->onError[] = $this->formError;

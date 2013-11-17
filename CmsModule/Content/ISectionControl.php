@@ -12,6 +12,7 @@
 namespace CmsModule\Content;
 
 use CmsModule\Content\Entities\ExtendedPageEntity;
+use CmsModule\Content\Entities\ExtendedRouteEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,13 +21,25 @@ interface ISectionControl
 {
 
 	/**
-	 * @param ExtendedPageEntity $entity
+	 * @param ExtendedPageEntity $extendedPage
 	 */
-	public function setEntity(ExtendedPageEntity $entity);
+	public function setExtendedPage(ExtendedPageEntity $extendedPage);
 
 
 	/**
-	 * @return mixed
+	 * @return ExtendedPageEntity
 	 */
-	public function getEntity();
+	public function getExtendedPage();
+
+
+	/**
+	 * @param ExtendedRouteEntity $extendedRoute
+	 */
+	public function setExtendedRoute(ExtendedRouteEntity $extendedRoute);
+
+
+	/**
+	 * @return ExtendedRouteEntity
+	 */
+	public function getExtendedRoute();
 }
