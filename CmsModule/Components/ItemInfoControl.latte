@@ -2,14 +2,17 @@
 
 {cache [$hideAuthor, $hideTags, $hideDates, $route->id, $presenter->lang], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
 
-{if !$hideAuthor && $route->author} &nbsp; · &nbsp; <span class="glyphicon glyphicon-user"></span> <a href="{plink Route route=>$route->author}">{$route->author}</a>{/if}
+{if !$hideAuthor && $route->author}{var $__itemInfo = TRUE} &nbsp; · &nbsp; <span class="glyphicon glyphicon-user"></span> <a href="{plink Route route=>$route->author}">{$route->author}</a>{/if}
 {if !$hideTags && count($route->tags)} &nbsp; · &nbsp; <strong><span class="glyphicon glyphicon-tag"></span> {_Tags}:</strong>
 	{foreach $route->tags as $tag}
 		<a href="{plink this route=>$tag}">{$tag}</a>{sep}, {/sep}
 	{/foreach}
 {/if}
-{if !$hideDates && isset($route->created) && $route->created} &nbsp; · &nbsp; <span class="glyphicon glyphicon-calendar"></span> {$route->created|date: "%d.%m.%Y"}{/if}
-{if !$hideDates && isset($route->updated) && $route->updated} &nbsp; · &nbsp; <strong>{_updated}:</strong> {$route->updated|date: "%d.%m.%Y"}{/if}
+{if !$hideDates} &nbsp; · &nbsp; <span class="glyphicon glyphicon-calendar"></span> {$route->released|date: "%d.%m.%Y"}{/if}
+{if !$hideDates && $route->updated} &nbsp; · &nbsp; <strong>{_updated}:</strong> {$route->updated|date: "%d.%m.%Y"}{/if}
+{if isset($__itemInfo)}
+{?unset($__itemInfo);}
 &nbsp; · &nbsp;
+{/if}
 
 {/cache}

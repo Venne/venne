@@ -20,18 +20,18 @@
 					<a href="{plink Route route=>$route}">{$route->name ?: $route}</a>
 				</h4>
 
-				<p class="muted">
-					<small>
-						{control itemInfo $route, tags=>FALSE}
-					</small>
-				</p>
+				{capture $__itemList}{control itemInfo $route, tags=>FALSE}{/capture}
+				<small n:if="trim($__itemList)" class="muted">
+					{!$__itemList}
+				</small>
 
 				<p n:if="isset($route->notation)">
 					{!$route->notation}
 				</p>
 
-				<small class="muted">
-					{control itemInfo $route, author=>FALSE, dates=>FALSE}
+				{capture $__itemList}{control itemInfo $route, author=>FALSE, dates=>FALSE}{/capture}
+				<small n:if="trim($__itemList)" class="muted">
+					{!$__itemList}
 				</small>
 
 			</div>
