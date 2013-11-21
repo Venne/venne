@@ -51,7 +51,7 @@ class RouteControl extends SectionControl
 		$table = $admin->getTable();
 		$table->setModel(new Doctrine($this->routeRepository->createQueryBuilder('a')
 				->andWhere('a.page = :page')
-				->setParameter('page', $this->entity->page->id)
+				->setParameter('page', $this->extendedPage->page->id)
 		));
 		$table->setTranslator($this->presenter->context->translator->translator);
 		$table->addColumnText('title', 'Title')
