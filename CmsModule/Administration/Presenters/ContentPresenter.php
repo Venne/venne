@@ -149,7 +149,7 @@ class ContentPresenter extends BasePresenter
 		$page = $entity->getPage();
 		if (!$page->getPublished() || !$page->getMainRoute()->getPublished()) {
 			$this->flashMessage($this->translator->translate('This page is not published.'), 'warning', TRUE);
-		} else if ($page->getMainRoute()->getReleased() && $page->getMainRoute()->getReleased() > new \DateTime()) {
+		} else if ($page->getMainRoute()->getReleased() > new \DateTime()) {
 			$this->flashMessage($this->translator->translate('Release date is already scheduled.'), 'info', TRUE);
 		} else if ($page->getMainRoute()->getExpired() && $page->getMainRoute()->getExpired() > new \DateTime()) {
 			$this->flashMessage($this->translator->translate('Expire date is already scheduled.'), 'info', TRUE);
@@ -209,7 +209,7 @@ class ContentPresenter extends BasePresenter
 			throw new ForbiddenRequestException;
 		}
 
-		if (!$entity->published || !$route->published || ($route->released && $route->released > new \DateTime)) {
+		if (!$entity->published || !$route->published || ($route->released > new \DateTime)) {
 			$session = $this->getSession(self::PREVIEW_SESSION);
 			$session->setExpiration('+ 2 minutes');
 			if (!isset($session->routes)) {

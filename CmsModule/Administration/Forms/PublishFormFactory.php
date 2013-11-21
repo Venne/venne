@@ -39,7 +39,8 @@ class PublishFormFactory extends FormFactory
 		$mainRoute->setCurrentGroup($form->addGroup());
 
 		$mainRoute->addCheckbox('published', 'Publish');
-		$mainRoute->addDateTime('released', 'Release');
+		$mainRoute->addDateTime('released', 'Release')
+			->addRule($form::FILLED);
 		$mainRoute->addDateTime('expired', 'Expire');
 
 		$form->addGroup();

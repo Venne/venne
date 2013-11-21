@@ -175,7 +175,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 
 	/**
 	 * @var \DateTime
-	 * @ORM\Column(type="datetime", nullable=true)
+	 * @ORM\Column(type="datetime")
 	 */
 	protected $released;
 
@@ -276,6 +276,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->translations = new ArrayCollection;
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
 		$this->created = new \DateTime;
+		$this->released = new \DateTime;
 	}
 
 

@@ -76,7 +76,8 @@ class RouteFormFactory extends FormFactory
 		$form->addGroup('Dates');
 		$form->addDateTime('created', 'Created')->setDisabled(TRUE);
 		$form->addDateTime('updated', 'Updated')->setDisabled(TRUE);
-		$form->addDateTime('released', 'Released');
+		$form->addDateTime('released', 'Released')
+			->addRule($form::FILLED);
 		$form->addDateTime('expired', 'Expired');
 
 		$form->addGroup('Tags');

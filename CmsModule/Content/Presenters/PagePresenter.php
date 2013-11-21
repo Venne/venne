@@ -186,7 +186,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 		}
 
 		// preview
-		if (!$this->route->page->published || !$this->route->route->published || ($this->route->route->released && $this->route->route->released > new \DateTime)) {
+		if (!$this->route->page->published || !$this->route->route->published || $this->route->route->released > new \DateTime) {
 			$session = $this->getSession(ContentPresenter::PREVIEW_SESSION);
 
 			if (!isset($session->routes[$this->route->route->id])) {

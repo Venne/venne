@@ -68,12 +68,12 @@ abstract class ItemsPresenter extends PagePresenter
 				->join('a.route', 'r')
 				->andWhere('r.published = :true')->setParameter('true', TRUE)
 				->andWhere('r.page = :page')->setParameter('page', $this->page->id)
-				->andWhere('r.released <= :released OR r.released IS NULL')->setParameter('released', new \Nette\DateTime())
+				->andWhere('r.released <= :released')->setParameter('released', new \Nette\DateTime())
 				->andWhere('(r.expired >= :expired OR r.expired IS NULL)')->setParameter('expired', new \Nette\DateTime());
 		} else {
 			$qb
 				->andWhere('a.published = :true')->setParameter('true', TRUE)
-				->andWhere('a.released <= :released OR a.released IS NULL')->setParameter('released', new \Nette\DateTime())
+				->andWhere('a.released <= :released')->setParameter('released', new \Nette\DateTime())
 				->andWhere('(a.expired >= :expired OR a.expired IS NULL)')->setParameter('expired', new \Nette\DateTime());
 		}
 
