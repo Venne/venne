@@ -151,7 +151,7 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	protected function getEntityName()
 	{
-		return static::getReflection()->getNamespaceName() . '\TextEntity';
+		return substr(static::getReflection()->getName(), 0, -7) . 'Entity';
 	}
 
 
