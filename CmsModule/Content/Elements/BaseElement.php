@@ -12,6 +12,7 @@
 namespace CmsModule\Content\Elements;
 
 use CmsModule\Content\Control;
+use CmsModule\Content\ElementManager;
 use CmsModule\Content\Elements\Forms\BasicFormFactory;
 use CmsModule\Content\Elements\Forms\ClearFormFactory;
 use CmsModule\Content\Entities\LanguageEntity;
@@ -83,6 +84,21 @@ abstract class BaseElement extends Control implements IElement
 		$this->entityManager = $entityManager;
 		$this->_clearFormFactory = $clearFormFactory;
 		$this->_basicFormFactory = $basicFormFactory;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	protected function getTemplateNames()
+	{
+		$name = explode('_', str_replace(ElementManager::ELEMENT_PREFIX, '', $this->getUniqueId()));
+		$name = end($name);
+
+		return array(
+			ucfirst($this->getUniqueId()) . 'Control',
+			ucfirst($name) . 'Element',
+		);
 	}
 
 

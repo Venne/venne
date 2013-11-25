@@ -17,6 +17,7 @@ use Nette\Localization\ITranslator;
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @property-read ITranslator $translator
+ * @property-read string $templateName
  */
 abstract class Control extends \Venne\Application\UI\Control
 {
@@ -41,6 +42,18 @@ abstract class Control extends \Venne\Application\UI\Control
 
 
 	/**
+	 * @return array
+	 */
+	protected function getTemplateNames()
+	{
+		return array(
+			ucfirst($this->getUniqueId()) . 'Control',
+			ucfirst($this->getName()) . 'Control',
+		);
+	}
+
+
+	/**
 	 * Formats component template files
 	 *
 	 * @param string
@@ -56,7 +69,7 @@ abstract class Control extends \Venne\Application\UI\Control
 			), $list);
 		}
 
-		$name = ucfirst($this->getUniqueId()) . 'Control';
+		$names = $this->getTemplateNames();
 		$ret = array();
 		$paths = array();
 
@@ -76,16 +89,24 @@ abstract class Control extends \Venne\Application\UI\Control
 
 		foreach ($paths as $path) {
 			if ($this->variant) {
-				$ret[] = $path . '/' . $name . '.' . $this->variant . '.latte';
+				foreach ($names as $name) {
+					$ret[] = $path . '/' . $name . '.' . $this->variant . '.latte';
+				}
 			}
-			$ret[] = $path . '/' . $name . '.latte';
+			foreach ($names as $name) {
+				$ret[] = $path . '/' . $name . '.latte';
+			}
 		}
 
 		foreach ($paths as $path) {
 			if ($this->variant) {
-				$ret[] = dirname($path) . '/' . $name . '.' . $this->variant . '.latte';
+				foreach ($names as $name) {
+					$ret[] = dirname($path) . '/' . $name . '.' . $this->variant . '.latte';
+				}
 			}
-			$ret[] = dirname($path) . '/' . $name . '.latte';
+			foreach ($names as $name) {
+				$ret[] = dirname($path) . '/' . $name . '.latte';
+			}
 		}
 
 		$ret = array_merge($ret, $list);
