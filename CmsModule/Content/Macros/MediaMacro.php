@@ -15,6 +15,7 @@ use DoctrineModule\Repositories\BaseRepository;
 use Nette\Latte\CompileException;
 use Nette\Latte\Compiler;
 use Nette\Latte\MacroNode;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -107,7 +108,8 @@ class MediaMacro extends \Nette\Latte\Macros\MacroSet
 		$format = isset($args['format']) ? $args['format'] : 'default';
 		$type = isset($args['type']) ? $args['type'] : 'default';
 
-		$ext = str_replace('jpg', 'jpeg', substr($path, strrpos($path, '.') + 1));
+		$ext = new \SplFileInfo($path);
+		$ext = str_replace('jpg', 'jpeg', Strings::lower($ext->getExtension()));
 
 		if (array_search($ext, self::$imageExtensions) === false || ($type !== 'default' && array_search($type, self::$imageExtensions) === false)) {
 			throw new CompileException("Bad extension of file '{$path}'. You can use only: " . implode(', ', self::$imageExtensions));
