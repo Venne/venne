@@ -93,7 +93,7 @@ class AdminGrid extends Control
 	protected $actionForms = array();
 
 
-	public function __construct(BaseRepository $repository)
+	public function __construct(BaseRepository $repository = NULL)
 	{
 		parent::__construct();
 
@@ -350,7 +350,9 @@ class AdminGrid extends Control
 			$grid->addAction('_groupstart', 'Group start')->setCustomRender(function () {
 				return '<div class="btn-group">';
 			});
-			$grid->setModel(new Doctrine($this->repository->createQueryBuilder('a')));
+			if ($this->repository) {
+				$grid->setModel(new Doctrine($this->repository->createQueryBuilder('a')));
+			}
 		}
 
 		return $grid;

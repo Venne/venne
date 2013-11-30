@@ -28,6 +28,16 @@ factories:
 			priority: 5
 		]]
 
+	cms.admin.backupsPresenter:
+		class: CmsModule\Administration\Presenters\BackupsPresenter
+		tags: [presenter, administration: [
+			link: 'Cms:Admin:Backups:'
+			category: 'System'
+			name: 'Backups'
+			description: 'Back up your database structure and data'
+			priority: 15
+		]]
+
 	cms.admin.usersPresenter:
 		class: CmsModule\Administration\Presenters\UsersPresenter
 		tags: [presenter, administration: [
