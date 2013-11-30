@@ -1,7 +1,0 @@
-{define #page-content}
-
-	{control vp}
-	{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult()}
-	{control vp}
-
-{/define}

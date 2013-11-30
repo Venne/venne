@@ -11,7 +11,7 @@
 
 namespace CmsModule\Content\Presenters;
 
-use CmsModule\Components\VisualPaginator;
+use CmsModule\Components\PaginationControl;
 use CmsModule\Content\Repositories\RouteRepository;
 use DoctrineModule\Repositories\BaseRepository;
 
@@ -47,7 +47,7 @@ abstract class ItemsPresenter extends PagePresenter
 			$qb = $qb->setMaxResults($limit);
 		}
 
-		$offset = $this['vp']->getPaginator()->getOffset();
+		$offset = $this['pagination']->getPaginator()->getOffset();
 		if ($offset) {
 			$qb = $qb->setFirstResult($offset);
 		}
@@ -88,11 +88,11 @@ abstract class ItemsPresenter extends PagePresenter
 
 
 	/**
-	 * @return VisualPaginator
+	 * @return PaginationControl
 	 */
-	protected function createComponentVp()
+	protected function createComponentPagination()
 	{
-		$vp = new VisualPaginator;
+		$vp = new PaginationControl;
 		$pg = $vp->getPaginator();
 		$pg->setItemCount($this->getCountItems());
 		if (($itemsPerPage = $this->getItemsPerPage()) !== NULL) {

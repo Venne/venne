@@ -474,7 +474,7 @@ class TableControl extends Control
 
 	protected function createComponentVp()
 	{
-		$vp = new \CmsModule\Components\VisualPaginator;
+		$vp = new \CmsModule\Components\PaginationControl;
 		$pg = $vp->getPaginator();
 		$pg->setItemsPerPage($this->perPage ? $this->perPage : $this->defaultPerPage);
 		$pg->setItemCount($this->getRawQueryBuilder()->select("COUNT(a.{$this->primaryColumn})")->getQuery()->getSingleScalarResult());

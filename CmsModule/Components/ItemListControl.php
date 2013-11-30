@@ -22,6 +22,7 @@ class ItemListControl extends Control
 
 	public function renderDefault($route = NULL)
 	{
-		$this->template->routes = (isset($route[0]) && is_array($route[0])) ? $route[0] : $route;
+		$this->template->routes = (isset($route[0]) && (is_array($route[0]) || $route[0] instanceof \Traversable)) ? $route[0] : $route;
 	}
+
 }

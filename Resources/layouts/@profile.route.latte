@@ -1,0 +1,11 @@
+{block #page-content}
+
+{if $presenter->user->identity instanceof CmsModule\Pages\Users\UserEntity}
+	{control item $presenter->getUser()->identity, config => [ variant => '@profile.route' ]}
+
+	<hr>
+
+	<h2>{_'Profile settings'}</h2>
+
+	{control form}
+{/if}

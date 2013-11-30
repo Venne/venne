@@ -1,0 +1,11 @@
+{block #page-content}
+
+{control form}
+
+{if $presenter->search}
+	<h2>{_Results}</h2>
+
+	{control pagination, config => [ variant => '@search.route' ]}
+	{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@search.route' ]}
+	{control pagination, config => [ variant => '@search.route' ]}
+{/if}

@@ -1,0 +1,5 @@
+{block #page-content}
+
+{if !$presenter->user->isLoggedIn() && !isset($hideForm)}
+	{control registration, config => [ variant => '@registration.route' ]}
+{/if}

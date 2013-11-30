@@ -76,7 +76,7 @@
 		{var $_form = $control['actionForm']}
         <tr>
             <td colspan="{=count($columns) + 1 + (count($globalActions) > 0 ? 1 : 0)}">
-				{control vp}
+				{control pagination}
 				<div class="pull-right input-group">{input perPage class=>'input-mini ajax'} {input perPageSubmit class=>'btn btn-default btn-sm'}</div>
 				{if count($globalActions) > 0}
 				<div class="pull-left input-group">{input _action class=>'input-sm ajax'} {input _submit class=>'btn btn-default btn-sm'}</div>

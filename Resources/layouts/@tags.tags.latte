@@ -1,0 +1,5 @@
+{block #page-content}
+
+{control pagination, config => [ variant => '@tags.tags' ]}
+{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@tags.tags' ]}
+{control pagination, config => [ variant => '@tags.tags' ]}

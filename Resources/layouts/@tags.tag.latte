@@ -1,7 +1,5 @@
-{define #page-content}
+{block #page-content}
 
-	{control vp}
-	{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult()}
-	{control vp}
-
-{/define}
+{control pagination, config => [ variant => '@tags.tag' ]}
+{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@tags.tag' ]}
+{control pagination, config => [ variant => '@tags.tag' ]}

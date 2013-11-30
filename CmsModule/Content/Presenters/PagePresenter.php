@@ -27,6 +27,7 @@ use Nette\Application;
 use Nette\Application\Responses;
 use Nette\Caching\Cache;
 use Nette\InvalidArgumentException;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -327,16 +328,31 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function formatTemplateFiles()
 	{
-		$ret = parent::formatTemplateFiles();
-		$presenter = str_replace(':', '.', $this->name);
+		$ret = array();
 
-		$path = dirname($this->getLayoutFile());
-		if ($path) {
-			$ret = array_merge(array(
-				"$path/$presenter.$this->view.latte",
-				dirname($path) . "/$presenter.$this->view.latte",
-			), $ret);
+		$template = explode('\\', $this->reflection->name);
+		array_shift($template);
+		array_shift($template);
+		$template = Strings::lower(substr('@' . implode('.', $template), 0, -9));
+
+		if ($this->action !== 'default') {
+			$template .= '.' . $this->action;
 		}
+
+		$layoutPath = dirname($this->getLayoutFile());
+		$globalLayoutPath = dirname(dirname(dirname(dirname($this->reflection->getFileName())))) . '/Resources/layouts';
+
+		if ($layoutPath) {
+			$ret = array(
+				"$layoutPath/$template.latte",
+				dirname($layoutPath) . "/$template.latte",
+			);
+		}
+
+		$ret = array_merge($ret, array(
+			"$globalLayoutPath/$template.latte",
+		));
+
 		return $ret;
 	}
 

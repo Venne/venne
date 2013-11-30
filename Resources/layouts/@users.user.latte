@@ -1,11 +1,9 @@
-{define #page-content}
+{block #page-content}
 
-	{control item $presenter->extendedRoute}
-	<hr />
+{control item $presenter->extendedRoute, config => [ variant => '@users.user' ]}
+<hr />
 
-	<h2>{_Contents}</h2>
-	{control vp}
-	{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult()}
-	{control vp}
-
-{/define}
+<h2>{_Contents}</h2>
+{control pagination, config => [ variant => '@users.user' ]}
+{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@users.user' ]}
+{control pagination, config => [ variant => '@users.user' ]}

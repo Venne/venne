@@ -21,7 +21,7 @@ use Nette\Utils\Paginator;
  * @author     David Grudl
  * @copyright  Copyright (c) 2009 David Grudl
  */
-class VisualPaginator extends Control
+class PaginationControl extends Control
 {
 
 	/** @var Paginator */
@@ -82,26 +82,4 @@ class VisualPaginator extends Control
 		$this->getPaginator()->page = $this->page;
 	}
 
-
-	/**
-	 * Formats component template files
-	 *
-	 * @param string
-	 * @return array
-	 */
-	protected function formatTemplateFiles()
-	{
-		if (!$this->presenter instanceof PagePresenter) {
-			return parent::formatTemplateFiles();
-		}
-
-		$list = parent::formatTemplateFiles();
-		$refl = $this->getReflection();
-		$path = dirname($this->getPresenter()->getLayoutFile());
-
-		return array_merge(array(
-			dirname($path) . '/' . $refl->getShortName() . '.latte',
-			$path . '/' . $refl->getShortName() . '.latte',
-		), $list);
-	}
 }

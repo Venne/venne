@@ -1,0 +1,7 @@
+{block #page-content}
+
+{if $entity->mode === CmsModule\Pages\Registration\PageEntity::MODE_MAIL}
+	<h2>{_'Hello %user%. Your account has been activated.', NULL, array('user' => $user)}</h2>
+{else}
+	<h2>{_'Hello %user%. Your account has been confirmed, please wait for activation by administrator.', NULL, array('user' => $user)}</h2>
+{/if}

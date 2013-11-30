@@ -1,0 +1,5 @@
+{block #page-content}
+
+{if !$presenter->user->isLoggedIn()}
+	{control login, config => [ variant => '@login.route' ]}
+{/if}
