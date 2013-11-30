@@ -1,21 +1,25 @@
-{if $control->provider}
-	{control providerForm}
-{elseif $control->reset}
-	{control resetForm}
-{elseif $control->key}
-	{control confirmForm}
-{else}
-	{control form}
-{/if}
+{if $control->isConnected()}
+	{if $control->provider}
+		{control providerForm}
+	{elseif $control->reset}
+		{control resetForm}
+	{elseif $control->key}
+		{control confirmForm}
+	{else}
+		{control form}
+	{/if}
 
-{if isset($forgotPassword) && !$control->key && !$control->reset}
-<hr />
+	{if isset($forgotPassword) && !$control->key && !$control->reset}
+	<hr />
 
-<div class="container">
-	<div class="row">
-		<div class="col-lg-10 col-lg-offset-2">
-			<a n:href="this reset => TRUE">{_'forgot password'}</a>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-10 col-lg-offset-2">
+				<a n:href="this reset => TRUE">{_'forgot password'}</a>
+			</div>
 		</div>
 	</div>
-</div>
+	{/if}
+{else}
+	{control form}
 {/if}

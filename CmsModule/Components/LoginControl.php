@@ -19,6 +19,7 @@ use CmsModule\Forms\ResetFormFactory;
 use CmsModule\Pages\Users\UserEntity;
 use CmsModule\Security\Repositories\UserRepository;
 use CmsModule\Security\SecurityManager;
+use DoctrineModule\DI\ConnectionCheckerFactory;
 use Nette\Application\BadRequestException;
 use Nette\Security\AuthenticationException;
 use Venne\Forms\Form;
@@ -74,6 +75,9 @@ class LoginControl extends Control
 	/** @var string */
 	protected $emailFrom;
 
+	/** @var ConnectionCheckerFactory */
+	protected $connectionChecker;
+
 
 	/**
 	 * @param LoginFormFactory $loginFormFactory
@@ -82,6 +86,7 @@ class LoginControl extends Control
 	 * @param ConfirmFormFactory $confirmFormFactory
 	 * @param SecurityManager $securityManager
 	 * @param UserRepository $userRepository
+	 * @param ConnectionCheckerFactory $connectionChecker
 	 */
 	public function __construct(
 		LoginFormFactory $loginFormFactory,
@@ -89,7 +94,8 @@ class LoginControl extends Control
 		ResetFormFactory $resetFormFactory,
 		ConfirmFormFactory $confirmFormFactory,
 		SecurityManager $securityManager,
-		UserRepository $userRepository
+		UserRepository $userRepository,
+		ConnectionCheckerFactory $connectionChecker
 	)
 	{
 		parent::__construct();
@@ -100,6 +106,13 @@ class LoginControl extends Control
 		$this->confirmFormFactory = $confirmFormFactory;
 		$this->securityManager = $securityManager;
 		$this->userRepository = $userRepository;
+		$this->connectionChecker = $connectionChecker;;
+	}
+
+
+	public function isConnected()
+	{
+		return $this->connectionChecker->invoke();
 	}
 
 

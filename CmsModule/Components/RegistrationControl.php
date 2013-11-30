@@ -18,6 +18,7 @@ use CmsModule\Security\AuthorizatorFactory;
 use CmsModule\Security\Repositories\RoleRepository;
 use CmsModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManager;
+use DoctrineModule\DI\ConnectionCheckerFactory;
 use Nette\InvalidArgumentException;
 use Nette\Security\AuthenticationException;
 
@@ -78,6 +79,9 @@ class RegistrationControl extends Control
 	/** @var RoleRepository */
 	protected $roleRepository;
 
+	/** @var ConnectionCheckerFactory */
+	protected $connectionChecker;
+
 
 	/**
 	 * @param string $userType
@@ -107,37 +111,23 @@ class RegistrationControl extends Control
 
 	/**
 	 * @param SecurityManager $securityManager
-	 */
-	public function injectSecurityManager(SecurityManager $securityManager)
-	{
-		$this->securityManager = $securityManager;
-	}
-
-
-	/**
 	 * @param AuthorizatorFactory $authorizatorFactory
+	 * @param EntityManager $entityManager
+	 * @param RoleRepository $roleRepository
+	 * @param ConnectionCheckerFactory $connectionChecker
 	 */
-	public function injectAuthorizatorFactory(AuthorizatorFactory $authorizatorFactory)
-	{
+	public function inject(
+		SecurityManager $securityManager,
+		AuthorizatorFactory $authorizatorFactory,
+		EntityManager $entityManager,
+		RoleRepository $roleRepository,
+		ConnectionCheckerFactory $connectionChecker
+	){
+		$this->securityManager = $securityManager;
 		$this->authorizatorFactory = $authorizatorFactory;
-	}
-
-
-	/**
-	 * @param \Doctrine\ORM\EntityManager $entityManager
-	 */
-	public function injectEntityManager(EntityManager $entityManager)
-	{
 		$this->entityManager = $entityManager;
-	}
-
-
-	/**
-	 * @param \CmsModule\Security\Repositories\RoleRepository $roleRepository
-	 */
-	public function injectRoleRepository(RoleRepository $roleRepository)
-	{
 		$this->roleRepository = $roleRepository;
+		$this->connectionChecker = $connectionChecker;
 	}
 
 	public function handleLoad($name)

@@ -220,10 +220,7 @@ factories:
 		class: CmsModule\Components\RegistrationControl(%userType%, %mode%, %loginProviderMode%, %roles%, %emailSender%, %emailFrom%, %emailSubject%, %emailText)
 		parameters: [userType, mode, loginProviderMode, roles, emailSender, emailFrom, emailSubject, emailText]
 		setup:
-			- injectSecurityManager
-			- injectAuthorizatorFactory
-			- injectEntityManager
-			- injectRoleRepository
+			- inject
 
 	cms.headControl:
 		class: CmsModule\Components\HeadControl

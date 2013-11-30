@@ -16,6 +16,7 @@ use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Forms\LanguageFormFactory;
 use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemDatabaseFormFactory;
+use DeploymentModule\DeploymentManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
@@ -30,6 +31,9 @@ use Venne\Security\Authenticator;
  */
 class InstallationPresenter extends BasePresenter
 {
+
+	/** @persistent */
+	public $backup;
 
 	/** @var string */
 	protected $appDir;
@@ -75,6 +79,9 @@ class InstallationPresenter extends BasePresenter
 
 	/** @var StructureInstallatorManager */
 	protected $installatorManager;
+
+	/** @var DeploymentManager */
+	protected $deploymentManager;
 
 
 	/**
@@ -132,15 +139,21 @@ class InstallationPresenter extends BasePresenter
 
 
 	/**
+	 * @param \DeploymentModule\DeploymentManager $deploymentManager
+	 */
+	public function injectDeploymentManager(DeploymentManager $deploymentManager)
+	{
+		$this->deploymentManager = $deploymentManager;
+	}
+
+
+	/**
 	 * @return StructureInstallatorManager
 	 */
 	public function getInstallatorManager()
 	{
 		return $this->installatorManager;
 	}
-
-
-
 
 
 	public function startup()
@@ -185,31 +198,38 @@ class InstallationPresenter extends BasePresenter
 	public function handleInstall()
 	{
 		if ($this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {
-			/** @var $em \Doctrine\ORM\EntityManager */
-			$em = $this->context->entityManager;
-			$tool = new SchemaTool($em);
 
-			$robotLoader = new RobotLoader;
-			$robotLoader->setCacheStorage(new MemoryStorage);
-			$robotLoader->addDirectory($this->context->parameters['modules']['cms']['path'] . '/CmsModule');
-			$robotLoader->register();
+			if ($this->backup) {
+				$this->deploymentManager->loadBackup($this->backup);
 
-			$classes = array();
-			foreach ($robotLoader->getIndexedClasses() as $item => $a) {
-				$ref = ClassType::from($item);
-				if ($ref->hasAnnotation('ORM\Entity')) {
-					$classes[] = $em->getClassMetadata('\\' . $item);
+			} else {
+				/** @var $em \Doctrine\ORM\EntityManager */
+				$em = $this->context->entityManager;
+				$tool = new SchemaTool($em);
+
+				$robotLoader = new RobotLoader;
+				$robotLoader->setCacheStorage(new MemoryStorage);
+				$robotLoader->addDirectory($this->context->parameters['modules']['cms']['path'] . '/CmsModule');
+				$robotLoader->register();
+
+				$classes = array();
+				foreach ($robotLoader->getIndexedClasses() as $item => $a) {
+					$ref = ClassType::from($item);
+					if ($ref->hasAnnotation('ORM\Entity')) {
+						$classes[] = $em->getClassMetadata('\\' . $item);
+					}
 				}
+
+				$tool->createSchema($classes);
+
+				/** @var $installer CmsInstaller */
+				$installer = $this->context->createInstance('CmsModule\Module\Installers\CmsInstaller');
+				$installer->install($this->context->venne->moduleManager->modules['cms']);
+
 			}
-
-			$tool->createSchema($classes);
-
-			/** @var $installer CmsInstaller */
-			$installer = $this->context->createInstance('CmsModule\Module\Installers\CmsInstaller');
-			$installer->install($this->context->venne->moduleManager->modules['cms']);
 		}
 
-		$this->redirect('Installation:');
+		$this->redirect('Installation:', array('backup' => NULL));
 	}
 
 
@@ -280,8 +300,12 @@ class InstallationPresenter extends BasePresenter
 	}
 
 
-	public function databaseFormSuccess()
+	public function databaseFormSuccess($form)
 	{
+		if (isset($form['_backup']) && $form['_backup']->value) {
+			$this->redirect('install!', array('backup' => $form['_backup']->value));
+		}
+
 		$this->redirect('install!');
 	}
 

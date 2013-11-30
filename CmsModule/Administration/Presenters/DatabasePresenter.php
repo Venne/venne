@@ -12,11 +12,7 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Forms\SystemDatabaseFormFactory;
-use CmsModule\Module\Installers\CmsInstaller;
-use Doctrine\ORM\Tools\SchemaTool;
-use Nette\Caching\Storages\MemoryStorage;
-use Nette\Loaders\RobotLoader;
-use Nette\Reflection\ClassType;
+use DeploymentModule\DeploymentManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -26,30 +22,58 @@ use Nette\Reflection\ClassType;
 class DatabasePresenter extends BasePresenter
 {
 
+	/** @persistent */
+	public $backup;
+
 	/** @var SystemDatabaseFormFactory */
 	protected $databaseForm;
 
+	/** @var DeploymentManager */
+	protected $deploymentManager;
 
-	function injectDatabaseForm(SystemDatabaseFormFactory $databaseForm)
+
+	public function injectDatabaseForm(SystemDatabaseFormFactory $databaseForm)
 	{
 		$this->databaseForm = $databaseForm;
+	}
+
+
+	/**
+	 * @param \DeploymentModule\DeploymentManager $deploymentManager
+	 */
+	public function injectDeploymentManager(DeploymentManager $deploymentManager)
+	{
+		$this->deploymentManager = $deploymentManager;
+	}
+
+
+	public function handleLoad()
+	{
+		if ($this->backup && $this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {
+			$this->deploymentManager->loadBackup($this->backup);
+		}
+
+
+		$this->redirect('this', array('backup' => NULL));
 	}
 
 
 	protected function createComponentSystemDatabaseForm()
 	{
 		$form = $this->databaseForm->invoke();
-		$form->onSuccess[] = $this->save;
+		$form->onSuccess[] = $this->systemDatabaseForm;
 		return $form;
 	}
 
 
-	public function save()
+	public function systemDatabaseForm($form)
 	{
+		if (isset($form['_backup']) && $form['_backup']->value) {
+			$this->redirect('load!', array('backup' => $form['_backup']->value));
+		}
+
 		$this->flashMessage($this->translator->translate('Database settings has been updated.'), 'success');
 		$this->redirect('this');
 	}
-
-
 
 }

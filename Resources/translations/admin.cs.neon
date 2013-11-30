@@ -382,4 +382,6 @@ untitled: nepojmenovaný
 create backup: vytvořit zálohu
 backups: zálohy
 backup: záloha
+backup name: jméno zálohy
 back up your database structure and data: zálohujte strukturu a data databáze
+restore from backup: obnovit ze zálohy

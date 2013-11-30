@@ -11,6 +11,7 @@
 
 namespace CmsModule\Forms;
 
+use DeploymentModule\DeploymentManager;
 use FormsModule\Mappers\ConfigMapper;
 use Venne\Forms\Form;
 use Venne\Forms\FormFactory;
@@ -34,13 +35,18 @@ class SystemDatabaseFormFactory extends FormFactory
 	/** @var ConfigMapper */
 	protected $mapper;
 
+	/** @var DeploymentManager */
+	protected $deploymentManager;
+
 
 	/**
 	 * @param ConfigMapper $mapper
+	 * @param DeploymentManager $deploymentManager
 	 */
-	public function __construct(ConfigMapper $mapper)
+	public function __construct(ConfigMapper $mapper, DeploymentManager $deploymentManager)
 	{
 		$this->mapper = $mapper;
+		$this->deploymentManager = $deploymentManager;
 	}
 
 
@@ -90,7 +96,26 @@ class SystemDatabaseFormFactory extends FormFactory
 		$form->addGroup()->setOption('id', 'group-charset');
 		$form->addTextWithSelect('charset', 'Charset')->setItems(array('utf8'), false);
 
+		$backups = $this->getBackups();
+
+		if (count($backups)) {
+			$form->addGroup('Restore from backup');
+			$form->addSelect('_backup', 'Backup name', $backups)->setPrompt('--------');
+		}
+
 		$form->addGroup();
 		$form->addSubmit('_submit', 'Save');
+	}
+
+
+	protected function getBackups()
+	{
+		$ret = array();
+
+		foreach ($this->deploymentManager->getBackups() as $name => $backup) {
+			$ret[$name] = $name . ' (' . $backup['date']->format('Y-m-d H:i:s') . ')';
+		}
+
+		return $ret;
 	}
 }

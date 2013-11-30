@@ -10,7 +10,7 @@
 
 {block #content}
 
-{if count($presenter->registrations)}
+{if $presenter['signInForm']->isConnected() && count($presenter->registrations)}
 <!-- Nav tabs -->
 <ul class="nav nav-tabs">
 	<li n:class="!isset($regLoad) ? active"><a href="#login" data-toggle="tab">Home</a></li>
