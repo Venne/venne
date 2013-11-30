@@ -259,6 +259,10 @@ factories:
 		class: CmsModule\Components\ItemInfoControl
 		tags: [widget: itemInfo]
 
+	cms.itemThumbnailControl:
+		class: CmsModule\Components\ItemThumbnailControl
+		tags: [widget: itemThumbnail]
+
 	cms.itemListControl:
 		class: CmsModule\Components\ItemListControl
 		tags: [widget: itemList]

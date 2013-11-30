@@ -33,6 +33,15 @@ abstract class Control extends \Venne\Application\UI\Control
 
 
 	/**
+	 * @return string
+	 */
+	public function getVariant()
+	{
+		return $this->variant;
+	}
+
+
+	/**
 	 * @return ITranslator
 	 */
 	public function getTranslator()

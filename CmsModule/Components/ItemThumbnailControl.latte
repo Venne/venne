@@ -1,0 +1,13 @@
+{if $route instanceof CmsModule\Content\Entities\ExtendedRouteEntity}{var $route = $route->route}{/if}
+
+{cache [$route->id, $presenter->lang], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
+
+{var $thumbnail = (isset($thumbnail) ? $thumbnail : '96x')}
+
+{if $route->photo}
+	<img n:src="$route->photo->getFileUrl(true), size=>$thumbnail" alt="{$route->name}" />
+{else}
+	<img src="holder.js/96x60" alt="{$route->name}"/>
+{/if}
+
+{/cache}

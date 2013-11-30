@@ -14,16 +14,16 @@ namespace CmsModule\Components;
 use CmsModule\Content\Control;
 use CmsModule\Content\Entities\ExtendedRouteEntity;
 use CmsModule\Content\Entities\RouteEntity;
-use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ItemControl extends Control
+class ItemThumbnailControl extends Control
 {
 
 	public function renderDefault($route = NULL)
 	{
 		$this->template->route = (isset($route[0]) && ($route[0] instanceof RouteEntity || $route[0] instanceof ExtendedRouteEntity)) ? $route[0] : $route;
 	}
+
 }
