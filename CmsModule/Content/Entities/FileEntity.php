@@ -49,15 +49,56 @@ class FileEntity extends BaseFileEntity
 
 
 	/**
+	 * @param string $path
+	 * @param string $basename
+	 * @return string
+	 */
+	private function suggestName($path, $basename)
+	{
+		$pathName = new \SplFileInfo($path . '/' . $basename);
+		$extension = $pathName->getExtension();
+		$basename = $pathName->getBasename('.' . $extension);
+
+		if (!file_exists($path . '/' . $basename . '.' . $extension)) {
+			return $basename . '.' . $extension;
+		}
+
+		$basename = explode('-', $basename);
+
+		if (count($basename) > 1) {
+			$last = end($basename);
+			$i = intval($last);
+
+			if ($last && (string)$i == $last) {
+				do {
+					$basename[count($basename) -1 ] = (string)(++$i);
+					$b = implode('-', $basename);
+					$file = $path . '/' . $b . '.' . $extension;
+				} while(file_exists($file));
+				return $b . '.' . $extension;
+			}
+		}
+
+		return $this->suggestName($path, implode('-', $basename) . '-1' . '.' . $extension);
+	}
+
+
+	/**
 	 * @ORM\PreFlush()
 	 */
 	public function preUpload()
 	{
 		if ($this->file) {
 			if ($this->file instanceof FileUpload) {
-				$this->setName($this->file->getSanitizedName());
+				$basename = $this->file->getSanitizedName();
+				$basename = $this->suggestName($this->getFilePath(), $basename);
+				$this->setName($basename);
+
 			} else {
-				$this->setName(trim(Strings::webalize($this->file->getBasename(), '.', FALSE), '.-'));
+				$basename = trim(Strings::webalize($this->file->getBasename(), '.', FALSE), '.-');
+				$basename = $this->suggestName(dirname($this->file->getPathname()), $basename);
+				$this->setName($basename);
+
 			}
 
 			$this->generatePath();
