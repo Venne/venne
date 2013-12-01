@@ -3,6 +3,25 @@
 {/block}
 
 {block toolbar}
+	{if $presenter->route || $presenter->page}{include #parent}{/if}
+{/block}
+
+{block toolbar-items}
+	{if $presenter->route || $presenter->page}
+	<li {if $presenter->type === NULL} class="active"{/if}>
+		<a class="ajax" href="{plink this type => NULL}">{_'Global'}</a>
+	</li>
+	{/if}
+	{if $presenter->route}
+		<li {if $presenter->type == 'route'} class="active"{/if}>
+			<a class="ajax" href="{plink this type => route}">{_'Route'}</a>
+		</li>
+	{/if}
+	{if $presenter->page}
+		<li {if $presenter->type == 'page'} class="active"{/if}>
+			<a class="ajax" href="{plink this type => page}">{_'Page'}</a>
+		</li>
+	{/if}
 {/block}
 
 {block breadcrumb}

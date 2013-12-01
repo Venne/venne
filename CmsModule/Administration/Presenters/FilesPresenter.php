@@ -12,6 +12,8 @@
 namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Administration\Components\FileBrowser\FileBrowserControlFactory;
+use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Content\Repositories\RouteRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -22,21 +24,44 @@ class FilesPresenter extends BasePresenter
 {
 
 	/** @persistent */
+	public $route;
+
+	/** @persistent */
+	public $page;
+
+	/** @persistent */
+	public $type;
+
+	/** @persistent */
 	public $edit;
 
 	/** @persistent */
 	public $browserMode;
 
 	/** @var FileBrowserControlFactory */
-	protected $fileBrowserControlFactory;
+	private $fileBrowserControlFactory;
+
+	/** @var RouteRepository */
+	private $routeRepository;
+
+	/** @var PageRepository */
+	private $pageRepository;
 
 
 	/**
 	 * @param FileBrowserControlFactory $fileBrowserControlFactory
+	 * @param PageRepository $pageRepository
+	 * @param RouteRepository $routeRepository
 	 */
-	public function inject(FileBrowserControlFactory $fileBrowserControlFactory)
+	public function inject(
+		FileBrowserControlFactory $fileBrowserControlFactory,
+		PageRepository $pageRepository,
+		RouteRepository $routeRepository
+	)
 	{
 		$this->fileBrowserControlFactory = $fileBrowserControlFactory;
+		$this->pageRepository = $pageRepository;
+		$this->routeRepository = $routeRepository;
 	}
 
 
@@ -44,6 +69,15 @@ class FilesPresenter extends BasePresenter
 	{
 		$control = $this->fileBrowserControlFactory->create();
 		$control->setBrowserMode((bool)$this->browserMode);
+
+		if ($this->type) {
+			if ($this->type == 'page') {
+				$control->setRoot($this->pageRepository->find($this->page)->dir);
+			} elseif ($this->type == 'route') {
+				$control->setRoot($this->routeRepository->find($this->route)->dir);
+			}
+		}
+
 		return $control;
 	}
 
