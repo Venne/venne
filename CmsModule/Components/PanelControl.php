@@ -271,7 +271,8 @@ class PanelControl extends Control
 		$fileRepository = $this->getPresenter()->getContext()->cms->fileRepository;
 		$data = array();
 
-		$dql = $dirRepository->createQueryBuilder('a');
+		$dql = $dirRepository->createQueryBuilder('a')
+			->orderBy('a.name', 'ASC');
 		if ($parent) {
 			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
 		} else {
@@ -296,7 +297,8 @@ class PanelControl extends Control
 			$data[] = $item;
 		}
 
-		$dql = $fileRepository->createQueryBuilder('a');
+		$dql = $fileRepository->createQueryBuilder('a')
+			->orderBy('a.name', 'ASC');
 		if ($parent) {
 			$dql = $dql->andWhere('a.parent = ?1')->setParameter(1, $parent);
 		} else {
@@ -353,11 +355,7 @@ class PanelControl extends Control
 		$target = $toType == 'd' ? $dirRepository->find($to) : $fileRepository->find($to);
 
 		if ($dropmode == "before" || $dropmode == "after") {
-			$entity->setParent(
-				$target->parent ? : NULL,
-				TRUE,
-				$dropmode == "after" ? $target : $target->previous
-			);
+			$entity->setParent($target->parent);
 		} else {
 			$entity->setParent($target);
 		}

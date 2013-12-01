@@ -232,6 +232,7 @@ class FileBrowserControl extends Control
 
 		$table = $this->createTable();
 		$table->setRepository($this->dirRepository);
+		$table->setDefaultSort(array('name' => 'ASC'));
 
 		$dql = function ($parent) {
 			return function (QueryBuilder $dql) use ($parent) {
@@ -274,6 +275,7 @@ class FileBrowserControl extends Control
 	{
 		$table = $this->createTable();
 		$table->setRepository($this->fileRepository);
+		$table->setDefaultSort(array('name' => 'ASC'));
 
 		$parent = $this->key;
 
