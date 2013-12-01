@@ -16,6 +16,7 @@ use CmsModule\Pages\Users\UserEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\InvalidArgumentException;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -251,6 +252,13 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $class;
 
+	/**
+	 * @var DirEntity
+	 * @ORM\OneToOne(targetEntity="\CmsModule\Content\Entities\DirEntity", cascade={"all"})
+	 * @ORM\JoinColumn(onDelete="SET NULL")
+	 */
+	protected $dir;
+
 
 	/**
 	 * @return string
@@ -277,6 +285,11 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
 		$this->created = new \DateTime;
 		$this->released = new \DateTime;
+
+		$this->dir = new DirEntity;
+		$this->dir->setParent($this->page->getDir());
+		$this->dir->setInvisible(TRUE);
+		$this->dir->setName(Strings::webalize(get_class($this)) . Strings::random());
 	}
 
 
@@ -882,7 +895,7 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->photo = $photo;
 
 		if ($this->photo) {
-			$this->photo->setParent($this->page->getDir());
+			$this->photo->setParent($this->getDir());
 			$this->photo->setInvisible(TRUE);
 		}
 	}
@@ -930,6 +943,15 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	public function getLocale()
 	{
 		return $this->locale;
+	}
+
+
+	/**
+	 * @return DirEntity
+	 */
+	public function getDir()
+	{
+		return $this->dir;
 	}
 
 
