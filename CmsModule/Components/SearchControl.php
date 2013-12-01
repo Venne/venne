@@ -40,24 +40,24 @@ class SearchControl extends Control
 	{
 		$results = array();
 		foreach (array('name', 'title', 'notation', 'text') as $column) {
+			$qb = $routes = $this->routeRepository->createQueryBuilder('r')
+				->andWhere('r.published = :true')->setParameter('true', TRUE)
+				->andWhere('r.released < :now')->setParameter('now', new \DateTime)
+				->setParameter('query', "%{$query}%")
+				->setMaxResults($limit);
+
 			if ($this->presenter->context->parameters['website']['defaultLanguage'] !== $this->presenter->lang) {
-				$routes = $this->routeRepository->createQueryBuilder('b')
-					->leftJoin('b.translations', 'a')
-					->where('a.language = :langId')
+				$qb
+					->leftJoin('r.translations', 'a')
+					->andWhere('a.language = :langId')
 					->andWhere('(a.' . $column . ' LIKE :query)')
-					->setMaxResults($limit)
-					->setParameter('query', "%{$query}%")
-					->setParameter('langId', $this->presenter->language->id)
-					->getQuery()->getResult();
+					->setParameter('langId', $this->presenter->language->id);
 			} else {
-				$routes = $this->routeRepository->createQueryBuilder('a')
-					->andWhere('a.' . $column . ' LIKE :query')
-					->setMaxResults($limit)
-					->setParameter('query', "%{$query}%")
-					->getQuery()->getResult();
+				$qb
+					->andWhere('r.' . $column . ' LIKE :query');
 			}
 
-			foreach ($routes as $route) {
+			foreach ($qb->getQuery()->getResult() as $route) {
 				$text = strip_tags(html_entity_decode($route->{$column}));
 				if (($len = strlen($text)) > 40) {
 					$pos = stripos($text, $query);
