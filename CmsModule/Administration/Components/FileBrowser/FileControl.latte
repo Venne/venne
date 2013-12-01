@@ -11,7 +11,7 @@
 				{else}
 					{var $type = 'text-plain'}
 				{/if}
-				{var $ext = substr($item->getName(), strrpos($item->getName(), '.') + 1)}
+				{var $ext = \Nette\Utils\Strings::lower(substr($item->getName(), strrpos($item->getName(), '.') + 1))}
 				<a class="img-thumbnail dropdown-toggle" href="{if $type=='folder'}{=$control->parent->link('changeDir!', array('key'=>$item->id))}{else}{$basePath}/public/media/{$item->path}{/if}">
 					{if $type=='text-plain' && ($ext=='png' || $ext=='jpg' || $ext=='gif')}
 						<img n:src="$item->getPath(), size=>'64x64', format=>8" alt="" />
