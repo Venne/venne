@@ -115,7 +115,7 @@ class ContentPresenter extends BasePresenter
 		if ($this->contentLang) {
 			$this->languageEntity = $this->languageRepository->findOneBy(array('alias' => $this->contentLang));
 		} else {
-			$this->languageEntity = $this->languageRepository->findOneBy(array('short' => $this->context->parameters['website']['defaultLanguage']));
+			$this->languageEntity = $this->languageRepository->findOneBy(array('alias' => $this->context->parameters['website']['defaultLanguage']));
 		}
 	}
 
