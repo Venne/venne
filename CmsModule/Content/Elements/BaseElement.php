@@ -92,12 +92,9 @@ abstract class BaseElement extends Control implements IElement
 	 */
 	protected function getTemplateNames()
 	{
-		$name = explode('_', str_replace(ElementManager::ELEMENT_PREFIX, '', $this->getUniqueId()));
-		$name = end($name);
-
 		return array(
 			ucfirst($this->getUniqueId()) . 'Control',
-			ucfirst($name) . 'Element',
+			$this->reflection->getShortName(),
 		);
 	}
 
