@@ -73,9 +73,9 @@ class SearchControl extends Control
 				}
 				$results[$route->id] = array(
 					'url' => $this->presenter->link('Route', array('route' => $route)),
-					'name' => $this->highlightText($route->name, $query),
-					'value' => $route->name,
-					'description' => $this->highlightText($text, $query),
+					'name' => mb_convert_encoding($this->highlightText($route->name, $query), 'UTF-8', 'UTF-8'),
+					'value' => mb_convert_encoding($route->name, 'UTF-8', 'UTF-8'),
+					'description' => mb_convert_encoding($this->highlightText($text, $query), 'UTF-8', 'UTF-8'),
 					'photo' => $route->photo ? $this->template->basePath . \CmsModule\Content\Macros\MediaMacro::proccessImage($route->photo->getFileUrl(true), array('size' => 'x48')) : NULL,
 				);
 			}
