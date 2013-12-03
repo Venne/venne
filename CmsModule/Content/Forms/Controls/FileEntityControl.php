@@ -75,13 +75,13 @@ class FileEntityControl extends \Nette\Forms\Controls\UploadControl
 			if ($values) {
 				if ($this->multi) {
 					for ($i = 0; $i < 20; $i++) {
-						if ($values[$this->name . '-' . $i]->isOk()) {
+						if ($values[$this->name . '-' . $i] && $values[$this->name . '-' . $i]->isOk()) {
 							$this->fileEntity[] = $entity = new FileEntity();
 							$entity->setFile($values[$this->name . '-' . $i]);
 						}
 					}
 				} else {
-					if ($values[$this->name]->isOk()) {
+					if ($values[$this->name] && $values[$this->name]->isOk()) {
 						$this->fileEntity = $entity = new FileEntity();
 						$entity->setFile($values[$this->name]);
 					}
