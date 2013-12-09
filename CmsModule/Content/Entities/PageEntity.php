@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\UnitOfWork;
 use DoctrineModule\Entities\IdentifiedEntity;
+use Nette\Callback;
 use Nette\InvalidArgumentException;
 use Nette\Security\User;
 use Nette\Utils\Strings;
@@ -22,6 +23,7 @@ use Nette\Utils\Strings;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\PageRepository")
+ * @ORM\EntityListeners({"\CmsModule\Content\Listeners\ExtendedPageListener"})
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="page", indexes={
  * @ORM\Index(name="special_idx", columns={"special"}),
@@ -164,6 +166,16 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 	/** @var array */
 	protected $_isAllowedInAdmin = array();
 
+	/**
+	 * @var ExtendedRouteEntity
+	 */
+	protected $extendedPage;
+
+	/**
+	 * @var callable
+	 */
+	private $extendedPageCallback;
+
 
 	/**
 	 * @param ExtendedPageEntity $page
@@ -192,6 +204,28 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 	public function __toString()
 	{
 		return $this->getMainRoute()->getName() . ' (' . $this->getMainRoute()->getUrl() . ')';
+	}
+
+
+	/**
+	 * @param callable $extendedPageCallback
+	 */
+	public function setExtendedPageCallback($extendedPageCallback)
+	{
+		$this->extendedPageCallback = $extendedPageCallback;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\ExtendedPageEntity
+	 */
+	public function getExtendedPage()
+	{
+		if (!$this->extendedPage) {
+			$this->extendedPage = Callback::create($this->extendedPageCallback)->invoke();
+		}
+
+		return $this->extendedPage;
 	}
 
 

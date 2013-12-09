@@ -15,12 +15,14 @@ use CmsModule\Pages\Tags\TagEntity;
 use CmsModule\Pages\Users\UserEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Nette\Callback;
 use Nette\InvalidArgumentException;
 use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Content\Repositories\RouteRepository")
+ * @ORM\EntityListeners({"\CmsModule\Content\Listeners\ExtendedRouteListener"})
  * @ORM\Table(name="route", indexes={
  * @ORM\Index(name="type_idx", columns={"type"}),
  * @ORM\Index(name="url_idx", columns={"url"}),
@@ -259,6 +261,16 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	protected $dir;
 
+	/**
+	 * @var ExtendedRouteEntity
+	 */
+	protected $extendedRoute;
+
+	/**
+	 * @var callable
+	 */
+	private $extendedRouteCallback;
+
 
 	/**
 	 * @return string
@@ -290,6 +302,28 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->dir->setParent($this->page->getDir());
 		$this->dir->setInvisible(TRUE);
 		$this->dir->setName(Strings::webalize(get_class($this)) . Strings::random());
+	}
+
+
+	/**
+	 * @param callable $extendedRouteCallback
+	 */
+	public function setExtendedRouteCallback($extendedRouteCallback)
+	{
+		$this->extendedRouteCallback = $extendedRouteCallback;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\ExtendedRouteEntity
+	 */
+	public function getExtendedRoute()
+	{
+		if (!$this->extendedRoute) {
+			$this->extendedRoute = Callback::create($this->extendedRouteCallback)->invoke();
+		}
+
+		return $this->extendedRoute;
 	}
 
 

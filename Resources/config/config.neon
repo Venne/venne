@@ -94,6 +94,14 @@ services:
 		class: CmsModule\Content\Listeners\PageListener
 		tags: [listener]
 
+	cms.extendedPageListener:
+		class: CmsModule\Content\Listeners\ExtendedPageListener
+		tags: [listener]
+
+	cms.extendedRouteListener:
+		class: CmsModule\Content\Listeners\ExtendedRouteListener
+		tags: [listener]
+
 	cms.logListener:
 		class: CmsModule\Content\Listeners\LogListener
 		tags: [listener]
