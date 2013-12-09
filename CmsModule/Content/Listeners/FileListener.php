@@ -16,7 +16,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
-use Nette\Application\Application;
 use Nette\DI\Container;
 use Nette\Security\User;
 
