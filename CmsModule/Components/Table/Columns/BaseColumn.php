@@ -144,7 +144,7 @@ class BaseColumn extends Component implements IColumn
 	 */
 	public function setFilter($type = self::FILTER_TEXT)
 	{
-		$type = '\\' . trim($type, '\\');
+		$type = '\\' . ltrim($type, '\\');
 		return $this->filter = $type ? new $type($this) : NULL;
 	}
 

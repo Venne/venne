@@ -204,7 +204,7 @@ class TableControl extends Control
 	 */
 	public function addColumn($name, $title, $type = self::TYPE_TEXT)
 	{
-		$type = '\\' . trim($type, '\\');
+		$type = '\\' . ltrim($type, '\\');
 		return $this->columns[$name] = new $type($this, $name, $title);
 	}
 
