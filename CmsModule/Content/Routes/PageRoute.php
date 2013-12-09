@@ -20,6 +20,7 @@ use Doctrine\ORM\NoResultException;
 use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\Request;
 use Nette\Application\Routers\Route;
+use Nette\Caching\Cache;
 use Nette\Callback;
 use Nette\Http\Url;
 
@@ -28,6 +29,8 @@ use Nette\Http\Url;
  */
 class PageRoute extends Route
 {
+
+	const CACHE = 'Venne.routing';
 
 	const DEFAULT_MODULE = 'Cms';
 
@@ -47,11 +50,11 @@ class PageRoute extends Route
 	/** @var string */
 	protected $defaultLanguage;
 
-	/** @var \Nette\Caching\Cache */
-	protected $_templateCache;
-
 	/** @var bool */
 	protected $_defaultLang = FALSE;
+
+	/** @var Cache */
+	private $cache;
 
 
 	/**
@@ -66,7 +69,7 @@ class PageRoute extends Route
 	public function __construct(\Nette\DI\Container $container, \Nette\Caching\IStorage $cache, Callback $checkConnectionFactory, $prefix, $parameters, $languages, $defaultLanguage, $oneWay = FALSE)
 	{
 		$this->container = $container;
-		$this->_templateCache = new \Nette\Caching\Cache($cache, \CmsModule\Content\Presenters\PagePresenter::CACHE_OUTPUT);
+		$this->cache = new Cache($cache, self::CACHE);
 
 		$this->checkConnectionFactory = $checkConnectionFactory;
 		$this->languages = $languages;
@@ -112,11 +115,12 @@ class PageRoute extends Route
 	 */
 	public function match(\Nette\Http\IRequest $httpRequest)
 	{
-		if (!$this->checkConnectionFactory->invoke()) {
+		if (($request = parent::match($httpRequest)) === NULL || !array_key_exists('url', $request->parameters)) {
 			return NULL;
 		}
 
-		if (($request = parent::match($httpRequest)) === NULL || !array_key_exists('url', $request->parameters)) {
+
+		if (!$this->checkConnectionFactory->invoke()) {
 			return NULL;
 		}
 
@@ -134,22 +138,14 @@ class PageRoute extends Route
 			$this->_defaultLang = TRUE;
 		}
 
-		// Cache
-		$key = $httpRequest->getUrl()->getAbsoluteUrl() . ($this->container->user->isLoggedIn() ? '|logged' : '');
-		$output = $this->_templateCache->load($key);
-		if ($output) {
-			return new Request(
-				'Cms:Cached',
-				$httpRequest->getMethod(),
-				array(),
-				$httpRequest->getPost(),
-				$httpRequest->getFiles(),
-				array(Request::SECURED => $httpRequest->isSecured())
-			);
+		$key = array($httpRequest->getUrl()->getAbsoluteUrl(), $parameters['lang']);
+		$data = $this->cache->load($key);
+		if ($data) {
+			return $this->modifyMatchRequest($request, $data[0], $data[1], $data[2], $parameters);
 		}
 
 		if (count($this->languages) > 1) {
-			try{
+			try {
 				$tr = $this->container->entityManager->getRepository('CmsModule\Content\Entities\RouteTranslationEntity')->createQueryBuilder('a')
 					->leftJoin('a.language', 'l')
 					->andWhere('a.url = :url')->setParameter('url', $parameters['url'])
@@ -185,12 +181,8 @@ class PageRoute extends Route
 			}
 		}
 
-		if (($route = $this->container->entityManager->getRepository($route->class)->findOneBy(array('route' => $route->id))) === NULL) {
-			return NULL;
-		}
-
-
-		return $this->modifyMatchRequest($request, $route, $parameters);
+		$this->cache->save($key, array($route->id, $route->type, $route->params));
+		return $this->modifyMatchRequest($request, $route, $route->type, $route->params, $parameters);
 	}
 
 
@@ -201,11 +193,17 @@ class PageRoute extends Route
 	 * @param PageEntity $page
 	 * @return \Nette\Application\Request
 	 */
-	protected function modifyMatchRequest(\Nette\Application\Request $appRequest, ExtendedRouteEntity $route, $parameters)
+	protected function modifyMatchRequest(\Nette\Application\Request $appRequest, $route, $routeType, $routeParameters, $parameters)
 	{
-		$parameters = $route->route->params + $parameters;
-		$parameters['route'] = $route;
-		$type = explode(':', $route->route->type);
+		if (is_object($route)) {
+			$parameters['routeId'] = $route->id;
+			$parameters['_route'] = $route;
+		} else {
+			$parameters['routeId'] = $route;
+		}
+
+		$parameters = $routeParameters + $parameters;
+		$type = explode(':', $routeType);
 		$parameters['action'] = $type[count($type) - 1];
 		$parameters['lang'] = $appRequest->parameters['lang'] ? : $this->defaultLanguage;
 		unset($type[count($type) - 1]);
@@ -283,11 +281,18 @@ class PageRoute extends Route
 				}
 			}
 		} elseif (isset($parameters['route'])) {
-			$route = $parameters['route'];
+			$route = $parameters['route'] instanceof RouteEntity ? $parameters['route'] : $this->getRouteRepository()->find($parameters['route']);
 			unset($parameters['route']);
+		} elseif (isset($parameters['_route'])) {
+			$route = $parameters['_route'];
+		} elseif (isset($parameters['routeId'])) {
+			$route = $this->getRouteRepository()->find($parameters['routeId']);
 		} else {
 			return NULL;
 		}
+
+		unset($parameters['_route']);
+		unset($parameters['routeId']);
 
 		$this->modifyConstructRequest($appRequest, $route, $parameters);
 		return parent::constructUrl($appRequest, $refUrl);
@@ -303,18 +308,14 @@ class PageRoute extends Route
 	 */
 	protected function modifyConstructRequest(Request $request, $route, $parameters)
 	{
-		if ($route instanceof ExtendedRouteEntity) {
-			$route = $route->route;
-		}
-
 		$request->setPresenterName(self::DEFAULT_MODULE . ':' . self::DEFAULT_PRESENTER);
 		$request->setParameters(array(
-			'module' => self::DEFAULT_MODULE,
-			'presenter' => self::DEFAULT_PRESENTER,
-			'action' => self::DEFAULT_ACTION,
-			'lang' => isset($parameters['lang']) ? $parameters['lang'] : ($route->page->language ? $route->page->language->alias : $this->defaultLanguage),
-			'url' => $route->getUrl(),
-		) + $parameters);
+				'module' => self::DEFAULT_MODULE,
+				'presenter' => self::DEFAULT_PRESENTER,
+				'action' => self::DEFAULT_ACTION,
+				'lang' => isset($parameters['lang']) ? $parameters['lang'] : ($route->page->language ? $route->page->language->alias : $this->defaultLanguage),
+				'url' => $route->getUrl(),
+			) + $parameters);
 		return $request;
 	}
 }

@@ -178,10 +178,6 @@ factories:
 		class: CmsModule\Administration\Presenters\PanelPresenter
 		tags: [presenter]
 
-	cms.cachedPresenter:
-		class: CmsModule\Content\Presenters\CachedPresenter
-		tags: [presenter]
-
 	cms.errorPresenter:
 		class: CmsModule\Presenters\ErrorPresenter
 		tags: [presenter]

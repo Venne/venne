@@ -13,6 +13,7 @@ namespace CmsModule\Content\Presenters;
 
 use CmsModule\Administration\Presenters\ContentPresenter;
 use CmsModule\Content\ElementManager;
+use CmsModule\Content\Elements\BaseElement;
 use CmsModule\Content\Entities\ExtendedPageEntity;
 use CmsModule\Content\Entities\ExtendedRouteEntity;
 use CmsModule\Content\Entities\LanguageEntity;
@@ -25,8 +26,7 @@ use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application;
 use Nette\Application\Responses;
-use Nette\Caching\Cache;
-use Nette\InvalidArgumentException;
+use Nette\ComponentModel\IComponent;
 use Nette\Utils\Strings;
 
 /**
@@ -44,31 +44,23 @@ use Nette\Utils\Strings;
 class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 {
 
-	const CACHE_OUTPUT = 'Venne.Output';
+	/**
+	 * @persistent
+	 * @var int
+	 */
+	public $routeId;
 
 	/**
 	 * @persistent
 	 * @var RouteEntity
 	 */
-	public $route;
-
-	/** @var ExtendedRouteEntity */
-	private $extendedRoute;
-
-	/** @var PageEntity */
-	private $page;
-
-	/** @var ExtendedPageEntity */
-	private $extendedPage;
+	public $_route;
 
 	/** @var LanguageEntity */
 	private $language;
 
 	/** @var string */
 	protected $_layoutFile;
-
-	/** @var \Nette\Caching\Cache */
-	protected $_templateCache;
 
 	/** @var \Venne\Module\Helpers */
 	protected $moduleHelpers;
@@ -86,53 +78,25 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	private $elementManager;
 
 
-	public function injectTemplateCache(\Nette\Caching\IStorage $cache)
-	{
-		$this->_templateCache = new Cache($cache, self::CACHE_OUTPUT);
-	}
-
-
 	/**
 	 * @param \Venne\Module\Helpers $moduleHelpers
-	 */
-	public function injectModulesHelper(\Venne\Module\Helpers $moduleHelpers)
-	{
-		$this->moduleHelpers = $moduleHelpers;
-	}
-
-
-	/**
 	 * @param PageRepository $pageRepository
-	 */
-	public function injectPageRepository(PageRepository $pageRepository)
-	{
-		$this->pageRepository = $pageRepository;
-	}
-
-
-	/**
 	 * @param LanguageRepository $languageRepository
-	 */
-	public function injectLanguageRepository(LanguageRepository $languageRepository)
-	{
-		$this->languageRepository = $languageRepository;
-	}
-
-
-	/**
 	 * @param RouteRepository $routeRepository
-	 */
-	public function injectRouteRepository(RouteRepository $routeRepository)
-	{
-		$this->routeRepository = $routeRepository;
-	}
-
-
-	/**
 	 * @param ElementManager $elementManager
 	 */
-	public function injectElementManager(ElementManager $elementManager)
+	public function injectDefaultsInPagePresenter(
+		\Venne\Module\Helpers $moduleHelpers,
+		PageRepository $pageRepository,
+		LanguageRepository $languageRepository,
+		RouteRepository $routeRepository,
+		ElementManager $elementManager
+	)
 	{
+		$this->moduleHelpers = $moduleHelpers;
+		$this->pageRepository = $pageRepository;
+		$this->languageRepository = $languageRepository;
+		$this->routeRepository = $routeRepository;
 		$this->elementManager = $elementManager;
 	}
 
@@ -174,41 +138,50 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 
 	/**
-	 * @return void
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 * @throws \Nette\Application\BadRequestException
 	 */
 	protected function startup()
 	{
-		if (!$this->route) {
+		if (!$this->routeId) {
 			throw new BadRequestException;
 		}
 
-		if (!$this->route instanceof ExtendedRouteEntity) {
-			throw new InvalidArgumentException("Route must be instance of 'CmsModule\Content\Entities\ExtendedRouteEntity'. '" . get_class($this->route) . "' is given.");
-		}
+		parent::startup();
+	}
 
-		// preview
-		if (!$this->route->page->published || !$this->route->route->published || $this->route->route->released > new \DateTime) {
-			$session = $this->getSession(ContentPresenter::PREVIEW_SESSION);
 
-			if (!isset($session->routes[$this->route->route->id])) {
+	/**
+	 * @return RouteEntity
+	 * @throws \Nette\Application\BadRequestException
+	 */
+	public function getRoute()
+	{
+		if (!$this->_route) {
+			if (($this->_route = $this->routeRepository->find($this->routeId)) === NULL) {
 				throw new BadRequestException;
-			} else {
-				$this->flashMessage($this->translator->translate('This page is unpublished.'), 'info');
+			}
+
+			// preview
+			if (!$this->_route->page->published || !$this->_route->published || $this->_route->released > new \DateTime) {
+				$session = $this->getSession(ContentPresenter::PREVIEW_SESSION);
+
+				if (!isset($session->routes[$this->_route->route->id])) {
+					throw new BadRequestException;
+				} else {
+					$this->flashMessage($this->translator->translate('This page is unpublished.'), 'info');
+				}
+			}
+
+			if ($this->getPage()->secured && !$this->user->isLoggedIn()) {
+				$this->redirect('Route', array('special' => 'login', 'backlink' => $this->storeRequest()));
+			}
+
+			if (!$this->isAllowed('show')) {
+				throw new ForbiddenRequestException;
 			}
 		}
-
-		$this->extendedRoute = $this->route;
-		$this->route = $this->route->route;
-
-		if ($this->getPage()->secured && !$this->user->isLoggedIn()) {
-			$this->redirect('Route', array('special' => 'login', 'backlink' => $this->storeRequest()));
-		}
-
-		if (!$this->isAllowed('show')) {
-			throw new ForbiddenRequestException;
-		}
-
-		parent::startup();
+		return $this->_route;
 	}
 
 
@@ -217,10 +190,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function getPage()
 	{
-		if (!$this->page) {
-			$this->page = $this->route->page;
-		}
-		return $this->page;
+		return $this->getRoute()->page;
 	}
 
 
@@ -229,10 +199,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function getExtendedPage()
 	{
-		if (!$this->extendedPage) {
-			$this->extendedPage = $this->extendedRoute->extendedPage;
-		}
-		return $this->extendedPage;
+		return $this->getRoute()->page->extendedPage;
 	}
 
 
@@ -241,7 +208,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function getExtendedRoute()
 	{
-		return $this->extendedRoute;
+		return $this->getRoute()->extendedRoute;
 	}
 
 
@@ -265,8 +232,8 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function handleChangeLanguage($alias)
 	{
 		if (!$this->getPage()->getLanguage()) {
-			$this->route->locale = $this->languageRepository->findOneBy(array('alias' => $alias));
-			$this->redirect('this', array('route' => $this->route, 'lang' => $alias));
+			$this->getRoute()->locale = $this->languageRepository->findOneBy(array('alias' => $alias));
+			$this->redirect('this', array('route' => $this->getRoute(), 'lang' => $alias));
 		}
 
 		$page = $this->getPage()->parent;
@@ -289,24 +256,24 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function getLayoutFile()
 	{
-		if ($this->_layoutFile === NULL) {
-			if (!$this->route->layout) {
-				$this->_layoutFile = FALSE;
-			} else {
-				if (isset($this->context->parameters['website']['theme']) && $this->context->parameters['website']['theme']) {
-					$extendedLayout = explode('/', $this->route->getLayout()->getFile(), 2);
-					$extendedLayout = '@' . $this->context->parameters['website']['theme'] . 'Module/' . $extendedLayout[1];
+		$layout = NULL;
 
-					$this->_layoutFile = $this->moduleHelpers->expandPath($extendedLayout, 'Resources/layouts');
-				}
-
-				if ($this->_layoutFile == NULL || !file_exists($this->_layoutFile)) {
-					$this->_layoutFile = $this->moduleHelpers->expandPath($this->route->getLayout()->getFile(), 'Resources/layouts');
-				}
-			}
+		if (!$this->getRoute()->layout) {
+			return $layout;
 		}
 
-		return $this->_layoutFile === FALSE ? NULL : $this->_layoutFile;
+		if (isset($this->context->parameters['website']['theme']) && $this->context->parameters['website']['theme']) {
+			$extendedLayout = explode('/', $this->getRoute()->getLayout()->getFile(), 2);
+			$extendedLayout = '@' . $this->context->parameters['website']['theme'] . 'Module/' . $extendedLayout[1];
+
+			$layout = $this->moduleHelpers->expandPath($extendedLayout, 'Resources/layouts');
+		}
+
+		if ($layout == NULL || !file_exists($layout)) {
+			$layout = $this->moduleHelpers->expandPath($this->getRoute()->getLayout()->getFile(), 'Resources/layouts');
+		}
+
+		return $layout;
 	}
 
 
@@ -368,6 +335,10 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	}
 
 
+	/**
+	 * @param $name
+	 * @return BaseElement|IComponent
+	 */
 	protected function createComponent($name)
 	{
 		if (strpos($name, \CmsModule\Content\ElementManager::ELEMENT_PREFIX) === 0) {
@@ -377,7 +348,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			unset($name[count($name) - 1]);
 			$name = implode('_', $name);
 			$component = $this->elementManager->createInstance($id);
-			$component->setRoute($this->route);
+			$component->setRoute($this->getRoute());
 			$component->setName($name);
 			$component->setLanguage($this->getLanguage());
 			return $component;
@@ -411,61 +382,14 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	}
 
 
-	/**
-	 * Common render method.
-	 *
-	 * @return void
-	 */
-	public function beforeRender()
-	{
-		// Cache all page
-		if (!$this->isAuthorized(':Cms:Admin:Panel:') && $this->route->getCacheMode()) {
-			$presenter = $this;
-			$templateCache = $this->_templateCache;
-			$key = $this->getHttpRequest()->getUrl()->getAbsoluteUrl() . ($this->getUser()->isLoggedIn() ? '|logged' : '');
-			$this->getApplication()->onResponse[] = function () {
-				ob_start();
-			};
-			$this->getApplication()->onShutdown[] = function () use ($presenter, $templateCache, $key) {
-				$output = ob_get_clean();
-
-				if ($presenter instanceof PagePresenter) {
-					$parameters = array(
-						Cache::TAGS => array(
-							'route' => $presenter->route->id,
-							'page' => $presenter->page->id,
-						),
-					);
-
-					if ($presenter->route->getCacheMode() == RouteEntity::DEFAULT_CACHE_MODE) {
-						$cacheMode = $presenter->context->parameters['website']['cacheMode'];
-					} else {
-						$cacheMode = $presenter->route->getCacheMode();
-					}
-
-					if ($cacheMode) {
-						if ($cacheMode === RouteEntity::CACHE_MODE_TIME) {
-							$parameters[Cache::EXPIRE] = '+ ' . $presenter->context->parameters['website']['cacheValue'] . ' minutes';
-						}
-						$templateCache->save($key, $output, $parameters);
-					}
-				}
-				echo $output;
-			};
-		}
-
-		parent::beforeRender();
-	}
-
-
 	protected function createComponentHead()
 	{
 		$head = $this->getWidgetManager()->getWidget('head')->invoke();
-		$head->setTitle($this->route->title);
-		$head->setRobots($this->route->robots);
-		$head->setKeywords($this->route->keywords);
-		$head->setDescription($this->route->description);
-		$head->setAuthor($this->route->author);
+		$head->setTitle($this->getRoute()->title);
+		$head->setRobots($this->getRoute()->robots);
+		$head->setKeywords($this->getRoute()->keywords);
+		$head->setDescription($this->getRoute()->description);
+		$head->setAuthor($this->getRoute()->author);
 		return $head;
 	}
 }
