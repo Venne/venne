@@ -303,6 +303,7 @@ class FileBrowserControl extends Control
 		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->getFileForm()->setEntityFactory($this->createFileEntity);
 		$table->getDirForm()->setEntityFactory($this->createDirEntity);
+		$table->setDefaultPerPage(99999999999);
 		return $table;
 	}
 
