@@ -304,6 +304,7 @@ class PanelControl extends Control
 		} else {
 			$dql = $dql->andWhere('a.parent IS NULL');
 		}
+		$dql = $dql->andWhere('a.invisible = :invisible')->setParameter('invisible', FALSE);
 
 		foreach ($dql->getQuery()->getResult() as $page) {
 			$item = array('title' => $page->name, 'key' => 'f:' . $page->id);
