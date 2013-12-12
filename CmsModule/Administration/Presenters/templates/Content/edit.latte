@@ -15,27 +15,27 @@
 	<?php unset($nullLinkParams['contentLang']); ?>
 
 	{foreach $contentType->sections as $name=>$item}
-		<li{if $section == $name} class="active"{/if}><a class="ajax" href="{first}{$presenter->link('this', array('section'=>NULL) + $nullLinkParams)}{else}{$presenter->link('this', array('section'=>$name) + $nullLinkParams)}{/first}">{_$name}</a></li>
+		<li n:class="$section == $name ? active"><a class="ajax" href="{first}{$presenter->link('this', array('section'=>NULL) + $nullLinkParams)}{else}{$presenter->link('this', array('section'=>$name) + $nullLinkParams)}{/first}">{_$name}</a></li>
 	{/foreach}
 
-	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_BASE)" {if 'basic' == $section} class="active"{/if}><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">{_'Basic setup'}</a></li>
+	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_BASE)" n:class="'basic' == $section ? active"><a class="ajax" href="{$presenter->link('this', array('section'=>'basic') + $nullLinkParams)}">{_'Basic setup'}</a></li>
 
 	<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_PUBLICATION)" class="dropdown pull-right">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-globe glyphicon-white"></span> {_publication} <b class="caret"></b></a>
 		<div class="dropdown-menu pull-right" style="padding: 17px; width: 250px;">
 			{form publishForm}
 				<div id="frmform-password-pair" class="form-group required">
-					<label class="required" for="frmform-password">{label page-mainRoute-released /}</label>
+					{label page-mainRoute-released /}
 					{input page-mainRoute-released placeholder => 'Just now', class => 'form-control'}
 				</div>
 
 				<div id="frmform-password-pair" class="form-group required">
-					<label class="required" for="frmform-password">{label page-mainRoute-expired /}</label>
+					{label page-mainRoute-expired /}
 					{input page-mainRoute-expired placeholder => 'Never', class => 'form-control'}
 				</div>
 
 				<div id="frmform-password-pair" class="checkbox required">
-					<label class="required" for="frmform-password">{label page-mainRoute-published /}</label>
+					{label page-mainRoute-published /}
 					{input page-mainRoute-published}
 				</div>
 
@@ -54,7 +54,7 @@
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-wrench glyphicon-white"></span> <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
 			<li role="presentation" class="dropdown-header">{_Advanced}</li>
-			<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_ROUTES)" class="{if 'routes' == $section} active{/if}"><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}"><span class="glyphicon glyphicon-road"></span> {_'Routes'}</a></li>
+			<li n:if="$entity->isAllowedInBackend($presenter->user, CmsModule\Content\Entities\ExtendedPageEntity::ADMIN_PRIVILEGE_ROUTES)" n:class="'routes' == $section ? active"><a class="ajax" href="{$presenter->link('this', array('section'=>'routes') + $nullLinkParams)}"><span class="glyphicon glyphicon-road"></span> {_'Routes'}</a></li>
 			<li role="presentation" class="divider"></li>
 			<li role="presentation" class="dropdown-header">{_Permissions}</li>
 			<li><a class="ajax" href="{$presenter->link('this', array('section'=>'permissions') + $nullLinkParams)}"><span class="glyphicon glyphicon-lock"></span> {_'Frontend permissions'}</a></li>
@@ -62,8 +62,7 @@
 		</ul>
 	</li>
 
-	{if !$entity->page->language && count($presenter->context->parameters['website']['languages']) > 1}
-	<li style="margin-right: 8px;" class="dropdown pull-right">
+	<li style="margin-right: 8px;" n:if="!$entity->page->language && count($presenter->context->parameters['website']['languages']) > 1" class="dropdown pull-right">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-flag glyphicon-white"></span> {$presenter->languageEntity} <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
 			{foreach $languageRepository->findAll() as $language}
@@ -71,7 +70,6 @@
 			{/foreach}
 		</ul>
 	</li>
-	{/if}
 
 {/block}
 
