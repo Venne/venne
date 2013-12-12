@@ -281,7 +281,7 @@ class PageRoute extends Route
 				}
 			}
 		} elseif (isset($parameters['route'])) {
-			$route = $parameters['route'] instanceof RouteEntity ? $parameters['route'] : $this->getRouteRepository()->find($parameters['route']);
+			$route = is_object($parameters['route']) ? $parameters['route'] : $this->getRouteRepository()->find($parameters['route']);
 			unset($parameters['route']);
 		} elseif (isset($parameters['_route'])) {
 			$route = $parameters['_route'];
@@ -294,7 +294,7 @@ class PageRoute extends Route
 		unset($parameters['_route']);
 		unset($parameters['routeId']);
 
-		$this->modifyConstructRequest($appRequest, $route, $parameters);
+		$this->modifyConstructRequest($appRequest, $route instanceof ExtendedRouteEntity ? $route->route : $route, $parameters);
 		return parent::constructUrl($appRequest, $refUrl);
 	}
 
