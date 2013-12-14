@@ -12,8 +12,8 @@
 namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
-use CmsModule\Content\Entities\RedirectPageEntity;
 use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Pages\Redirect\PageEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -56,7 +56,7 @@ class NavigationControl extends Control
 
 	public function getLink(\CmsModule\Content\Entities\PageEntity $entity)
 	{
-		if ($entity instanceof RedirectPageEntity) {
+		if ($entity instanceof PageEntity) {
 			if ($entity->page) {
 				return $this->presenter->link('Route', array('route' => $entity->page->mainRoute));
 			} else {
