@@ -142,6 +142,30 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->getRoute()
 			->setPublished(TRUE);
 
+		$loginPage = new \CmsModule\Pages\Login\PageEntity;
+		$loginPage
+			->getPage()
+			->setPublished(TRUE)
+			->setNavigationShow(FALSE)
+			->setParent($textPage->getPage());
+		$loginPage
+			->getExtendedMainRoute()
+			->setName($this->translator->translate('Login page'))
+			->getRoute()
+			->setPublished(TRUE);
+
+		$profilePage = new \CmsModule\Pages\Profile\PageEntity;
+		$profilePage
+			->getPage()
+			->setPublished(TRUE)
+			->setNavigationShow(FALSE)
+			->setParent($textPage->getPage());
+		$profilePage
+			->getExtendedMainRoute()
+			->setName($this->translator->translate('User profile'))
+			->getRoute()
+			->setPublished(TRUE);
+
 		$em->persist($textPage);
 		$em->persist($userPage);
 		$em->persist($tagsPage);
@@ -149,6 +173,8 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$em->persist($error404Page);
 		$em->persist($error500Page);
 		$em->persist($sitemapPage);
+		$em->persist($loginPage);
+		$em->persist($profilePage);
 		$em->flush();
 	}
 
