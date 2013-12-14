@@ -1,5 +1,5 @@
 {block #page-content}
 
 {if !$presenter->user->isLoggedIn()}
-	{control login, config => [ variant => '@login.route' ]}
+	{control loginForm, config => [ variant => '@login.route' ]}
 {/if}
