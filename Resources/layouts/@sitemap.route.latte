@@ -1,11 +1,12 @@
 {block #page-content}
-	{include #page-item items => array($presenter->getRootPage()), floor => 1}
+	{include #page-item items => array($presenter->getRootPage()), floor => 1, skip => ['403', '404', '500']}
 {/block}
 
 
 {define #page-item}
+	{dump $skip}
 	<ul n:inner-foreach="$items as $item">
-		{continueIf !$item->mainRoute->published}
+		{continueIf !$item->mainRoute->published || in_array($item->special, $skip)}
 
 		<li>
 			<a n:href="Route route=>$item->mainRoute">{$item->mainRoute->name}</a>
