@@ -8,4 +8,8 @@
 
 	{control js}
 
+	{cache tags => [\CmsModule\Pages\Rss\RssEntity::CACHE]}
+	<link n:foreach="$control->feeds as $link => $title" rel="alternate" title="{$title}" href="{$link}" type="application/rss+xml" />
+	{/cache}
+
 	<title>{strtr($control->titleTemplate, array("%s" => (!$control->title ? "" : $control->titleSeparator), "%t" => $control->title, "%n" => $control->websiteName))}</title>

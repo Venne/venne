@@ -1,0 +1,3 @@
+{block #page-content}
+
+{control itemList $control->getItemsBuilder()->orderBy('r.released', 'ASC')->getQuery()->getResult(), config => [ variant => '@rss.route' ]}

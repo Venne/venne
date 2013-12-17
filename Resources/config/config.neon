@@ -165,4 +165,5 @@ includes:
 	- pages.search.neon
 	- pages.sitemap.neon
 	- pages.profile.neon
+	- pages.rss.neon
 	- users.default.neon

@@ -1,0 +1,28 @@
+{extends NULL}
+{contentType application/xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+	<channel>
+		<title>{$presenter->extendedRoute->name}</title>
+		<link>{$scheme}://{$host}{$basePath}/</link>
+		<description>{$presenter->route->notation}</description>
+		<language>{$presenter->language->short}</language>
+		<pubDate>{=new \DateTime|date:\Datetime::RSS}</pubDate>
+
+		{foreach $presenter->itemsBuilder->getQuery()->getResult() as $route}
+			{include #item route => $route}
+		{/foreach}
+
+	</channel>
+</rss>
+
+{define #item}
+		<item>
+			<title>{$route->name}</title>
+			<link>{plink //:Cms:Pages:Text:Route:default route=>$route, lang=>$presenter->lang}</link>
+			<description>{$route->notation}</description>
+			<author n:if="$route->author">{$route->author->email} ({$route->author})</author>
+			<pubDate>{$route->released|date:\Datetime::RSS}</pubDate>
+			<guid isPermaLink="false">{$host}{$basePath}-{$route->id}</guid>
+		</item>
+{/define}

@@ -12,6 +12,7 @@
 namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
+use CmsModule\Content\Presenters\PagePresenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -51,6 +52,9 @@ class HeadControl extends Control
 	/** @var string */
 	protected $titleSeparator;
 
+	/** @var array */
+	protected $feeds = array();
+
 
 	protected function startup()
 	{
@@ -62,11 +66,6 @@ class HeadControl extends Control
 		$this->author = $this->presenter->context->parameters['website']['author'];
 		$this->keywords = $this->presenter->context->parameters['website']['keywords'];
 		$this->description = $this->presenter->context->parameters['website']['description'];
-	}
-
-
-	public function renderDefault()
-	{
 	}
 
 
@@ -214,4 +213,31 @@ class HeadControl extends Control
 	{
 		return $this->titleTemplate;
 	}
+
+
+	/**
+	 * @param $link
+	 * @param $title
+	 */
+	public function addFeed($link, $title)
+	{
+		$this->feeds[$link] = $title;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getFeeds()
+	{
+		if ($this->presenter instanceof PagePresenter) {
+			$repository = $this->presenter->getEntityManager()->getRepository('CmsModule\Pages\Rss\RssEntity');
+			foreach ($repository->findAll() as $tag) {
+				$this->addFeed($this->presenter->link('Route', array('route' => $tag)), $tag->name);
+			}
+		}
+
+		return $this->feeds;
+	}
+
 }

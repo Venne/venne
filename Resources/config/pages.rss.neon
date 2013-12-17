@@ -1,0 +1,36 @@
+services:
+	cms.pages.rssContent:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Rss\PageEntity')
+		setup:
+			- addSection('Settings', @cms.pages.rss.tableControlFactory)
+		tags: [contentType: 'website lists.list of rss']
+
+	cms.pages.rss.rssFormFactory:
+		class: CmsModule\Pages\Rss\RssFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+
+	cms.pages.rss.pageRepository:
+		class: CmsModule\Pages\Rss\PageRepository
+		factory: @entityManager::getRepository('CmsModule\Pages\Rss\PageEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
+
+	cms.pages.rss.rssRepository:
+		class: CmsModule\Pages\Rss\RssRepository
+		factory: @entityManager::getRepository('CmsModule\Pages\Rss\RssEntity')
+		tags: [proxy: DoctrineModule\Repositories\BaseRepository]
+
+factories:
+	cms.pages.rss.tableControl:
+		class: CmsModule\Pages\Rss\TableControl
+		setup:
+			- inject
+		tags: [component]
+
+	cms.pages.rss.routePresenter:
+		class: CmsModule\Pages\Rss\RoutePresenter
+		tags: [presenter]
+
+	cms.pages.rss.rssPresenter:
+		class: CmsModule\Pages\Rss\RssPresenter
+		tags: [presenter]
