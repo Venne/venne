@@ -86,6 +86,7 @@
 		<p>
 			&copy; Company 2013 &nbsp;
 			{ifLinkExists Route special=>'sitemap'}{isPublished}· &nbsp; <a n:link>{_Sitemap}</a> &nbsp;{/isPublished}{/ifLinkExists}
+			{ifLinkExists Route special=>'rss'}{isPublished}· &nbsp; <a n:link>RSS</a> &nbsp;{/isPublished}{/ifLinkExists}
 			· &nbsp; <a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a>
 		</p>
 	</footer>
