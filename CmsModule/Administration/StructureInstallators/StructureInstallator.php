@@ -166,6 +166,18 @@ class StructureInstallator extends Object implements IStructureInstallator
 			->getRoute()
 			->setPublished(TRUE);
 
+		$rssPage = new \CmsModule\Pages\Rss\PageEntity;
+		$rssPage
+			->getPage()
+			->setPublished(TRUE)
+			->setNavigationShow(FALSE)
+			->setParent($textPage->getPage());
+		$rssPage
+			->getExtendedMainRoute()
+			->setName('RSS')
+			->getRoute()
+			->setPublished(TRUE);
+
 		$em->persist($textPage);
 		$em->persist($userPage);
 		$em->persist($tagsPage);
@@ -175,6 +187,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$em->persist($sitemapPage);
 		$em->persist($loginPage);
 		$em->persist($profilePage);
+		$em->persist($rssPage);
 		$em->flush();
 	}
 
