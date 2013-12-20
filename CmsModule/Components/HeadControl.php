@@ -13,6 +13,8 @@ namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
 use CmsModule\Content\Presenters\PagePresenter;
+use CmsModule\Content\WebsiteManager;
+use Nette\ComponentModel\IContainer;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -29,43 +31,57 @@ class HeadControl extends Control
 	const ROBOTS_NOFOLLOW = 8;
 
 	/** @var string */
-	protected $keywords;
+	private $keywords;
 
 	/** @var string */
-	protected $description;
+	private $description;
 
 	/** @var string */
-	protected $robots;
+	private $robots;
 
 	/** @var string */
-	protected $websiteName;
+	private $websiteName;
 
 	/** @var string */
-	protected $author;
+	private $author;
 
 	/** @var string */
-	protected $title;
+	private $title;
 
 	/** @var string */
-	protected $titleTemplate;
+	private $titleTemplate;
 
 	/** @var string */
-	protected $titleSeparator;
+	private $titleSeparator;
 
 	/** @var array */
-	protected $feeds = array();
+	private $feeds = array();
+
+	/** @var WebsiteManager */
+	private $websiteManager;
+
+
+	/**
+	 * @param WebsiteManager $websiteManager
+	 */
+	public function __construct(WebsiteManager $websiteManager)
+	{
+		parent::__construct();
+
+		$this->websiteManager = $websiteManager;
+	}
 
 
 	protected function startup()
 	{
 		parent::startup();
 
-		$this->websiteName = $this->presenter->context->parameters['website']['name'];
-		$this->titleTemplate = $this->presenter->context->parameters['website']['title'];
-		$this->titleSeparator = $this->presenter->context->parameters['website']['titleSeparator'];
-		$this->author = $this->presenter->context->parameters['website']['author'];
-		$this->keywords = $this->presenter->context->parameters['website']['keywords'];
-		$this->description = $this->presenter->context->parameters['website']['description'];
+		$this->websiteName = $this->websiteManager->name;
+		$this->titleTemplate = $this->websiteManager->title;
+		$this->titleSeparator = $this->websiteManager->titleSeparator;
+		$this->author = $this->websiteManager->author;
+		$this->keywords = $this->websiteManager->keywords;
+		$this->description = $this->websiteManager->description;
 	}
 
 

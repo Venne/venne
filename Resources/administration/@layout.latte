@@ -64,7 +64,7 @@
 		<div class="navbar navbar-fixed-top navbar-inverse navigation" id="navigation" n:snippet="navigation">
 
 
-					<a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax {/if}navbar-brand" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" /></a>
+					<a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax {/if}navbar-brand" href="{$presenter->link(':Cms:Admin:' . $presenter->administrationManager->defaultPresenter . ':')}"><img src="{$basePath}/resources/cmsModule/admin/images/logo-panel.png" alt="Venne:CMS" /></a>
 
 					<div class="navbar-collapse collapse">
 
@@ -114,7 +114,7 @@
 									<li n:if="$presenter->user->isLoggedIn()"><a href="{$basePath}/?do=openPanel"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'In-Site administration'}</a></li>
 									<li><a href="{$basePath}/"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Frontend'}</a></li>
 								{else}
-									<li><a href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':', array('mode'=>NULL))}"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Full administration'}</a></li>
+									<li><a href="{$presenter->link(':Cms:Admin:' . $presenter->administrationManager->defaultPresenter . ':', array('mode'=>NULL))}"><span class="glyphicon glyphicon-refresh glyphicon-white"></span> {_'Full administration'}</a></li>
 								{/if}
 							{/if}
 
@@ -171,7 +171,7 @@
 											{block #breadcrumb-container}
 											<ul class="breadcrumb pull-right" style="padding: 8px 15px 12px 15px; background-color: #ffffff;">
 												{block #breadcrumb}
-												<li><span class="divider">{_Path}:</span> <a class="ajax" href="{$presenter->link(':Cms:Admin:' . $presenter->context->parameters['administration']['defaultPresenter'] . ':')}"><span class="glyphicon glyphicon-globe"></span> {_Dashboard}</a></li>
+												<li><span class="divider">{_Path}:</span> <a class="ajax" href="{$presenter->link(':Cms:Admin:' . $presenter->administrationManager->defaultPresenter . ':')}"><span class="glyphicon glyphicon-globe"></span> {_Dashboard}</a></li>
 												{/block}
 											</ul>
 											{/block}

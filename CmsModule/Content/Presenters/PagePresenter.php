@@ -213,12 +213,12 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 
 
 	/**
-	 * @return LanguageEntity
+	 * @return \CmsModule\Content\Entities\LanguageEntity
 	 */
 	public function getLanguage()
 	{
 		if (!$this->language) {
-			$this->language = $this->languageRepository->findOneBy(array('alias' => $this->lang ? $this->lang : $this->context->parameters['website']['defaultLanguage']));
+			$this->language = $this->languageRepository->findOneBy(array('alias' => $this->lang ? $this->lang : $this->websiteManager->defaultLanguage));
 		}
 		return $this->language;
 	}
@@ -262,9 +262,9 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 			return $layout;
 		}
 
-		if (isset($this->context->parameters['website']['theme']) && $this->context->parameters['website']['theme']) {
+		if ($this->websiteManager->theme) {
 			$extendedLayout = explode('/', $this->getRoute()->getLayout()->getFile(), 2);
-			$extendedLayout = '@' . $this->context->parameters['website']['theme'] . 'Module/' . $extendedLayout[1];
+			$extendedLayout = '@' . $this->websiteManager->theme . 'Module/' . $extendedLayout[1];
 
 			$layout = $this->moduleHelpers->expandPath($extendedLayout, 'Resources/layouts');
 		}

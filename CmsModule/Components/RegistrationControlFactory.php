@@ -12,12 +12,12 @@
 namespace CmsModule\Components;
 
 use Nette\Callback;
-use Nette\Object;
+use Venne\BaseFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationControlFactory extends Object
+class RegistrationControlFactory extends BaseFactory
 {
 
 	/** @var Callback */
@@ -36,15 +36,9 @@ class RegistrationControlFactory extends Object
 	/**
 	 * @return RegistrationControl
 	 */
-	public function create($userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText)
+	public function invoke($userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText)
 	{
 		return Callback::create($this->factory)->invoke($userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText);
-	}
-
-
-	public function invoke()
-	{
-		return call_user_func_array(array($this, 'create'), func_get_args());
 	}
 
 }

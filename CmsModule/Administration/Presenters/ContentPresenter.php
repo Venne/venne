@@ -23,8 +23,8 @@ use CmsModule\Content\Forms\PermissionsFormFactory;
 use CmsModule\Content\ISectionControl;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Content\WebsiteManager;
 use CmsModule\Pages\Users\UserEntity;
-use DoctrineModule\Repositories\BaseRepository;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\InvalidLinkException;
@@ -83,8 +83,11 @@ class ContentPresenter extends BasePresenter
 	/** @var ExtendedPageEntity */
 	private $_pageEntity;
 
+	/** @var WebsiteManager */
+	private $websiteManager;
 
-	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory, AdminPermissionsFormFactory $adminPermissionsFormFactory, PublishFormFactory $publishFormFactory)
+
+	public function __construct(PageRepository $pageRepository, LanguageRepository $languageRepository, ContentManager $contentManager, ContentTableFactory $contentTableFactory, $routeControlFactory, PermissionsFormFactory $permissionsFormFactory, AdminPermissionsFormFactory $adminPermissionsFormFactory, PublishFormFactory $publishFormFactory, WebsiteManager $websiteManager)
 	{
 		parent::__construct();
 
@@ -96,6 +99,7 @@ class ContentPresenter extends BasePresenter
 		$this->permissionsFormFactory = $permissionsFormFactory;
 		$this->adminPermissionsFormFactory = $adminPermissionsFormFactory;
 		$this->publishFormFactory = $publishFormFactory;
+		$this->websiteManager = $websiteManager;
 	}
 
 
@@ -108,6 +112,24 @@ class ContentPresenter extends BasePresenter
 	}
 
 
+	/**
+	 * @return \CmsModule\Content\ContentManager
+	 */
+	public function getContentManager()
+	{
+		return $this->contentManager;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Repositories\PageRepository
+	 */
+	public function getPageRepository()
+	{
+		return $this->pageRepository;
+	}
+
+
 	protected function startup()
 	{
 		parent::startup();
@@ -115,7 +137,7 @@ class ContentPresenter extends BasePresenter
 		if ($this->contentLang) {
 			$this->languageEntity = $this->languageRepository->findOneBy(array('alias' => $this->contentLang));
 		} else {
-			$this->languageEntity = $this->languageRepository->findOneBy(array('alias' => $this->context->parameters['website']['defaultLanguage']));
+			$this->languageEntity = $this->languageRepository->findOneBy(array('alias' => $this->websiteManager->defaultLanguage));
 		}
 	}
 
@@ -322,7 +344,7 @@ class ContentPresenter extends BasePresenter
 	protected function createComponentTable()
 	{
 		$_this = $this;
-		$adminGrid = $this->contentTableFactory->create();
+		$adminGrid = $this->contentTableFactory->invoke();
 		$table = $adminGrid->getTable();
 		$table->setTranslator($this->presenter->context->translator->translator);
 
@@ -510,11 +532,11 @@ class ContentPresenter extends BasePresenter
 				throw new BadRequestException;
 			}
 
-			if (!$this->_pageEntity = $this->context->entityManager->getRepository($this->_pageEntity->class)->findOneBy(array('page' => $this->_pageEntity->id))) {
+			if (!$this->_pageEntity = $this->getEntityManager()->getRepository($this->_pageEntity->class)->findOneBy(array('page' => $this->_pageEntity->id))) {
 				throw new BadRequestException;
 			}
 
-			if ($this->context->parameters['website']['defaultLanguage'] !== $this->languageEntity->alias) {
+			if ($this->websiteManager->defaultLanguage !== $this->languageEntity->alias) {
 				$this->_pageEntity->page->mainRoute->locale = $this->languageEntity;
 			}
 		}

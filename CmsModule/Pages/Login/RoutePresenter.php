@@ -52,7 +52,7 @@ class RoutePresenter extends PagePresenter
 
 	protected function createComponentLoginForm()
 	{
-		$form = $this->loginControlFactoy->create();
+		$form = $this->loginControlFactoy->invoke();
 		$form->onSuccess[] = $this->formSuccess;
 		$form->onError[] = $this->formError;
 

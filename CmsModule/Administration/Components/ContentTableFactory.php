@@ -13,13 +13,12 @@ namespace CmsModule\Administration\Components;
 
 use CmsModule\Administration\Components\AdminGrid\AdminGrid;
 use CmsModule\Content\Repositories\PageRepository;
-use Nette\Callback;
-use Nette\Object;
+use Venne\BaseFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ContentTableFactory extends Object
+class ContentTableFactory extends BaseFactory
 {
 
 	/** @var array */
@@ -41,7 +40,7 @@ class ContentTableFactory extends Object
 	/**
 	 * @return AdminGrid
 	 */
-	public function create()
+	public function invoke()
 	{
 		$_this = $this;
 		$adminGrid = new AdminGrid($this->pageRepository);

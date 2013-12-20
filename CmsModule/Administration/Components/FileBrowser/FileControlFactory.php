@@ -13,12 +13,12 @@ namespace CmsModule\Administration\Components\FileBrowser;
 
 use CmsModule\Content\Forms\DirFormFactory;
 use CmsModule\Content\Forms\FileFormFactory;
-use Nette\Object;
+use Venne\BaseFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FileControlFactory extends Object
+class FileControlFactory extends BaseFactory
 {
 
 	/** @var DirFormFactory */
@@ -45,7 +45,7 @@ class FileControlFactory extends Object
 	/**
 	 * @return FileControl
 	 */
-	public function create()
+	public function invoke()
 	{
 		$control = new FileControl(
 			$this->dirFormFactory,
@@ -54,12 +54,4 @@ class FileControlFactory extends Object
 		return $control;
 	}
 
-
-	/**
-	 * @return FileControl
-	 */
-	public function __invoke()
-	{
-		return $this->create();
-	}
 }

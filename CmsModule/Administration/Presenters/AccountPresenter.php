@@ -195,7 +195,7 @@ class AccountPresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setModel(new ArraySource($data));
-		$table->setTranslator($this->context->translator->translator);
+		$table->setTranslator($this->translator);
 		$table->addColumnText('name', 'Name')
 			->getCellPrototype()->width = '100%';
 
@@ -270,7 +270,7 @@ class AccountPresenter extends BasePresenter
 		} else {
 			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user IS NULL')));
 		}
-		$table->setTranslator($this->context->translator->translator);
+		$table->setTranslator($this->translator);
 		$table->addColumnDate('current', 'Current')
 			->setCustomRender(function (LoginEntity $entity) use ($session) {
 				$el = Html::el('span');

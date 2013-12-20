@@ -16,12 +16,12 @@ use CmsModule\Content\Forms\DirFormFactory;
 use CmsModule\Content\Forms\FileFormFactory;
 use CmsModule\Content\Repositories\DirRepository;
 use CmsModule\Content\Repositories\FileRepository;
-use Nette\Object;
+use Venne\BaseFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FileBrowserControlFactory extends Object
+class FileBrowserControlFactory extends BaseFactory
 {
 
 	/** @var string */
@@ -42,7 +42,7 @@ class FileBrowserControlFactory extends Object
 	/** @var AjaxFileUploaderControlFactory */
 	protected $ajaxFileUploaderFactory;
 
-	/** @var FileControlFactory  */
+	/** @var FileControlFactory */
 	protected $fileControlFactory;
 
 
@@ -75,7 +75,7 @@ class FileBrowserControlFactory extends Object
 	/**
 	 * @return FileBrowserControl
 	 */
-	public function create()
+	public function invoke()
 	{
 		$control = new FileBrowserControl(
 			$this->fileControlFactory,
@@ -88,12 +88,4 @@ class FileBrowserControlFactory extends Object
 		return $control;
 	}
 
-
-	/**
-	 * @return FileBrowserControl
-	 */
-	public function __invoke()
-	{
-		return $this->create();
-	}
 }

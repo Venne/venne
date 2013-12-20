@@ -23,10 +23,16 @@ class CmsExtension extends CompilerExtension
 	/** @var array */
 	public $defaults = array(
 		'administration' => array(
+			'login' => array(
+				'name' => '',
+				'password' => ''
+			),
+			'routePrefix' => 'admin',
+			'defaultPresenter' => 'Dashboard',
 			'authentication' => array(
 				'autologin' => NULL,
 				'autoregistration' => NULL,
-				'forgotPassword'=> array(
+				'forgotPassword' => array(
 					'enabled' => FALSE,
 					'emailSubject' => 'Password reset',
 					'emailText' => 'Reset your passord on address \%link\%.',
@@ -35,6 +41,25 @@ class CmsExtension extends CompilerExtension
 				),
 			),
 			'registrations' => array(),
+			'theme' => 'cms',
+		),
+		'website' => array(
+			'name' => 'Blog',
+			'title' => '%n %s %t',
+			'titleSeparator' => '|',
+			'keywords' => '',
+			'description' => '',
+			'author' => '',
+			'routePrefix' => '',
+			'oneWayRoutePrefix' => '',
+			'languages' => array(),
+			'defaultLanguage' => 'cs',
+			'defaultPresenter' => 'Homepage',
+			'errorPresenter' => 'Cms=>Error',
+			'layout' => '@cms/bootstrap',
+			'cacheMode' => '',
+			'cacheValue' => '10',
+			'theme' => '',
 		),
 	);
 
@@ -60,7 +85,7 @@ class CmsExtension extends CompilerExtension
 			}
 		}
 
-		$container->addDependency($container->parameters["tempDir"] . "/installed");
+		$container->addDependency($container->parameters['tempDir'] . '/installed');
 
 		// http
 		$httpResponse = $container->getDefinition('httpResponse');
@@ -76,87 +101,112 @@ class CmsExtension extends CompilerExtension
 
 		// Application
 		$application = $container->getDefinition('application');
-		$application->addSetup('$service->errorPresenter = ?', $container->parameters['website']['errorPresenter']);
+		$application->addSetup('$service->errorPresenter = ?', $config['website']['errorPresenter']);
 
-		$container->addDefinition("authorizatorFactory")
-			->setFactory("CmsModule\Security\AuthorizatorFactory", array('@nette.presenterFactory', '@cms.roleRepository', '@session', '@doctrine.checkConnectionFactory'))
+		$container->addDefinition('authorizatorFactory')
+			->setFactory('CmsModule\Security\AuthorizatorFactory', array('@nette.presenterFactory', '@cms.roleRepository', '@session', '@doctrine.checkConnectionFactory'))
 			->addSetup('setReader');
 
 		$container->getDefinition('venne.moduleManager')
 			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array('@authorizatorFactory'))
 			->addSetup('$service->onUninstall[] = ?->clearPermissionSession', array('@authorizatorFactory'));
 
-		$container->addDefinition("authorizator")
-			->setClass("Nette\Security\Permission")
-			->setFactory("@authorizatorFactory::getPermissionsByUser", array('@user', TRUE));
+		$container->addDefinition('authorizator')
+			->setClass('Nette\Security\Permission')
+			->setFactory('@authorizatorFactory::getPermissionsByUser', array('@user', TRUE));
 
-		$container->addDefinition("authenticator")
-			->setClass("CmsModule\Security\Authenticator", array("%administration.login.name%", "%administration.login.password%", "@doctrine.checkConnectionFactory", "@cms.userRepository"));
+		$container->addDefinition('authenticator')
+			->setClass('CmsModule\Security\Authenticator', array($config['administration']['login']['name'], $config['administration']['login']['password'], '@doctrine.checkConnectionFactory', '@cms.userRepository'));
 
 		// detect prefix
-		$prefix = $container->parameters["website"]["routePrefix"];
-		$adminPrefix = $container->parameters["administration"]["routePrefix"];
-		$languages = $container->parameters["website"]["languages"];
+		$prefix = $config['website']['routePrefix'];
+		$adminPrefix = $config['administration']['routePrefix'];
+		$languages = $config['website']['languages'];
 		$prefix = str_replace('<lang>/', '<lang ' . implode('|', $languages) . '>/', $prefix);
 
 		// parameters
 		$parameters = array();
-		$parameters["lang"] = count($languages) > 1 || $container->parameters["website"]["routePrefix"] ? NULL : $container->parameters["website"]["defaultLanguage"];
+		$parameters['lang'] = count($languages) > 1 || $config['website']['routePrefix'] ? NULL : $config['website']['defaultLanguage'];
 
 		// Sitemap
-		$container->addDefinition($this->prefix("robotsRoute"))
-			->setClass("Nette\Application\Routers\Route", array('robots.txt',
+		$container->addDefinition($this->prefix('robotsRoute'))
+			->setClass('Nette\Application\Routers\Route', array('robots.txt',
 				array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => NULL)
 			))
-			->addTag("route", array("priority" => 999999999));
-		$container->addDefinition($this->prefix("sitemapRoute"))
-			->setClass("Nette\Application\Routers\Route", array('[lang-<lang>/][page-<page>/]sitemap.xml',
+			->addTag('route', array('priority' => 999999999));
+		$container->addDefinition($this->prefix('sitemapRoute'))
+			->setClass('Nette\Application\Routers\Route', array('[lang-<lang>/][page-<page>/]sitemap.xml',
 				array('presenter' => 'Cms:Sitemap', 'action' => 'sitemap',)
 			))
-			->addTag("route", array("priority" => 999999998));
+			->addTag('route', array('priority' => 999999998));
 
 		// Administration
-		$container->addDefinition($this->prefix("adminRoute"))
-			->setClass("CmsModule\Administration\Routes\Route", array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/]<presenter>[/<action>[/<id>]]',
-				array('module' => 'Cms:Admin', 'presenter' => $container->parameters['administration']['defaultPresenter'], 'action' => 'default',)
+		$container->addDefinition($this->prefix('adminRoute'))
+			->setClass('CmsModule\Administration\Routes\Route', array($adminPrefix . '[' . ($adminPrefix ? '/' : '') . '<lang>/]<presenter>[/<action>[/<id>]]',
+				array('module' => 'Cms:Admin', 'presenter' => $config['administration']['defaultPresenter'], 'action' => 'default',)
 			))
 			->addSetup('injectLanguageRepository', array('@cms.languageRepository'))
 			->addSetup('injectPageListener', array('@cms.pageListener'))
-			->addSetup('injectDefaultLanguage', array('%website.defaultLanguage%'))
-			->addTag("route", array("priority" => 100000));
+			->addSetup('injectDefaultLanguage', array($config['website']['defaultLanguage']))
+			->addTag('route', array('priority' => 100000));
 
 		// installation
-		if (!$container->parameters['administration']['login']['name']) {
-			$container->addDefinition($this->prefix("installationRoute"))
-				->setClass("Nette\Application\Routers\Route", array('', "Cms:Admin:{$container->parameters['administration']['defaultPresenter']}:", Route::ONE_WAY))
-				->addTag("route", array("priority" => -1));
+		if (!$config['administration']['login']['name']) {
+			$container->addDefinition($this->prefix('installationRoute'))
+				->setClass('Nette\Application\Routers\Route', array('', "Cms:Admin:{$config['administration']['defaultPresenter']}:", Route::ONE_WAY))
+				->addTag('route', array('priority' => -1));
 		}
 
 		// CMS route
-		$container->addDefinition($this->prefix("pageRoute"))
-			->setClass("CmsModule\Content\Routes\PageRoute", array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', $prefix, $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"])
+		$container->addDefinition($this->prefix('pageRoute'))
+			->setClass('CmsModule\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', $prefix, $parameters, $config['website']['languages'], $config['website']['defaultLanguage'])
 			)
-			->addTag("route", array("priority" => 100));
+			->addTag('route', array('priority' => 100));
 
-		if (isset($container->parameters['website']['oneWayRoutePrefix'])) {
-			$container->addDefinition($this->prefix("oneWayPageRoute"))
-				->setClass("CmsModule\Content\Routes\PageRoute", array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', $container->parameters['website']['oneWayRoutePrefix'], $parameters, $container->parameters["website"]["languages"], $container->parameters["website"]["defaultLanguage"], TRUE)
+		if ($config['website']['oneWayRoutePrefix']) {
+			$container->addDefinition($this->prefix('oneWayPageRoute'))
+				->setClass('CmsModule\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnectionFactory', $config['website']['oneWayRoutePrefix'], $parameters, $config['website']['languages'], $config['website']['defaultLanguage'], TRUE)
 				)
-				->addTag("route", array("priority" => 99));
+				->addTag('route', array('priority' => 99));
 		}
 
 		// File route
-		$container->addDefinition($this->prefix("imageRoute"))
-			->setClass("CmsModule\Content\Routes\ImageRoute")
-			->addTag("route", array("priority" => 99999999));
+		$container->addDefinition($this->prefix('imageRoute'))
+			->setClass('CmsModule\Content\Routes\ImageRoute')
+			->addTag('route', array('priority' => 99999999));
 
-		$container->addDefinition($this->prefix("fileRoute"))
-			->setClass("CmsModule\Content\Routes\FileRoute")
-			->addTag("route", array("priority" => 99999990));
+		$container->addDefinition($this->prefix('fileRoute'))
+			->setClass('CmsModule\Content\Routes\FileRoute')
+			->addTag('route', array('priority' => 99999990));
 
 		// config manager
-		$container->addDefinition($this->prefix("configService"))
-			->setClass("CmsModule\Services\ConfigBuilder", array("%configDir%/config.neon"));
+		$container->addDefinition($this->prefix('configService'))
+			->setClass('CmsModule\Services\ConfigBuilder', array('%configDir%/config.neon'));
+
+		$container->addDefinition($this->prefix('administrationManager'))
+			->setClass('CmsModule\Administration\AdministrationManager', array(
+				$config['administration']['routePrefix'],
+				$config['administration']['defaultPresenter'],
+				$config['administration']['login'],
+				$config['administration']['theme']
+			));
+
+		$container->addDefinition($this->prefix('websiteManager'))
+			->setClass('CmsModule\Content\WebsiteManager', array(
+				$config['website']['author'],
+				$config['website']['defaultLanguage'],
+				$config['website']['defaultPresenter'],
+				$config['website']['description'],
+				$config['website']['errorPresenter'],
+				$config['website']['keywords'],
+				$config['website']['languages'],
+				$config['website']['name'],
+				$config['website']['oneWayRoutePrefix'],
+				$config['website']['routePrefix'],
+				$config['website']['theme'],
+				$config['website']['title'],
+				$config['website']['titleSeparator']
+			));
 
 		// listeners
 		$container->addDefinition($this->prefix('fileListener'))

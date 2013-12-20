@@ -116,7 +116,7 @@ class TagPresenter extends BasePresenter
 
 		// columns
 		$table = $admin->getTable();
-		$table->setTranslator($this->context->translator->translator);
+		$table->setTranslator($this->translator);
 		$table->addColumnText('name', 'Name')
 			->setSortable()
 			->getCellPrototype()->width = '100%';

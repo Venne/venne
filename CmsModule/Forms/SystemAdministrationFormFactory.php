@@ -11,6 +11,7 @@
 
 namespace CmsModule\Forms;
 
+use CmsModule\Content\WebsiteManager;
 use FormsModule\Mappers\ConfigMapper;
 use Nette\Http\Request;
 use Venne\Forms\Form;
@@ -28,27 +29,27 @@ class SystemAdministrationFormFactory extends FormFactory
 	/** @var Request */
 	protected $httpRequest;
 
-	/** @var string */
-	protected $routePrefix;
+	/** @var WebsiteManager */
+	protected $websiteManager;
 
 
 	/**
-	 * @param $routePrefix
+	 * @param WebsiteManager $websiteManager
 	 * @param ConfigMapper $mapper
 	 * @param Request $httpRequest
 	 */
-	public function __construct($routePrefix, ConfigMapper $mapper, Request $httpRequest)
+	public function __construct(WebsiteManager $websiteManager, ConfigMapper $mapper, Request $httpRequest)
 	{
 		$this->mapper = $mapper;
 		$this->httpRequest = $httpRequest;
-		$this->routePrefix = $routePrefix;
+		$this->websiteManager = $websiteManager;
 	}
 
 
 	protected function getMapper()
 	{
 		$mapper = clone $this->mapper;
-		$mapper->setRoot('parameters.administration');
+		$mapper->setRoot('cms.administration');
 		return $mapper;
 	}
 
@@ -58,8 +59,8 @@ class SystemAdministrationFormFactory extends FormFactory
 	 */
 	protected function configure(Form $form)
 	{
-		$form->addGroup("Administration settings");
-		$form->addText("routePrefix", "Route prefix");
+		$form->addGroup('Administration settings');
+		$form->addText('routePrefix', 'Route prefix');
 		$form->addText('defaultPresenter', 'Default presenter');
 
 		$form->addSubmit('_submit', 'Save');
@@ -73,18 +74,18 @@ class SystemAdministrationFormFactory extends FormFactory
 
 		$path = "{$url->scheme}://{$url->host}{$url->scriptPath}";
 
-		$oldPath = $path . $this->routePrefix;
+		$oldPath = $path . $this->websiteManager->routePrefix;
 		$newPath = $path . $form['routePrefix']->getValue();
 
 		if ($form['routePrefix']->getValue() == '') {
 			$oldPath .= '/';
 		}
 
-		if ($this->routePrefix == '') {
+		if ($this->websiteManager->routePrefix == '') {
 			$newPath .= '/';
 		}
 
-		$form->getPresenter()->flashMessage("Administration settings has been updated", "success");
+		$form->getPresenter()->flashMessage('Administration settings has been updated', 'success');
 		$form->getPresenter()->redirectUrl(str_replace($oldPath, $newPath, $form->getPresenter()->link('this')));
 	}
 }

@@ -33,20 +33,20 @@ class LanguageFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addTextWithSelect("name", "Name")
-			->setItems(array("English", "Deutsch", "Čeština"), false)
-			->setOption("description", "(english, deutsch,...)")
-			->addRule($form::FILLED, "Please set name");
+		$form->addTextWithSelect('name', 'Name')
+			->setItems(array('English', 'Deutsch', 'Čeština'), false)
+			->setOption('description', '(english, deutsch,...)')
+			->addRule($form::FILLED, 'Please set name');
 
-		$form->addTextWithSelect("short", "Short")
-			->setItems(array("en", "de", "cs"), false)
-			->setOption("description", "(en, de,...)")
-			->addRule($form::FILLED, "Please set short");
+		$form->addTextWithSelect('short', 'Short')
+			->setItems(array('en', 'de', 'cs'), false)
+			->setOption('description', '(en, de,...)')
+			->addRule($form::FILLED, 'Please set short');
 
-		$form->addTextWithSelect("alias", "Alias")
-			->setItems(array("en", "de", "cs", "www"), false)
-			->setOption("description", "(www, en, de,...)")
-			->addRule($form::FILLED, "Please set alias");
+		$form->addTextWithSelect('alias', 'Alias')
+			->setItems(array('en', 'de', 'cs', 'www'), false)
+			->setOption('description', '(www, en, de,...)')
+			->addRule($form::FILLED, 'Please set alias');
 
 		$form->addSaveButton('Save');
 	}

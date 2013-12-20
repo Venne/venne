@@ -13,6 +13,7 @@ namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
 use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Content\WebsiteManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,18 +21,22 @@ use CmsModule\Content\Repositories\PageRepository;
 class BreadcrumbControl extends Control
 {
 
-	/** @var string */
-	protected $routePrefix;
+	/** @var WebsiteManager */
+	protected $websiteManager;
 
 	/** @var PageRepository */
 	protected $pageRepository;
 
 
-	public function __construct($routePrefix, PageRepository $pageRepository)
+	/**
+	 * @param WebsiteManager $websiteManager
+	 * @param PageRepository $pageRepository
+	 */
+	public function __construct(WebsiteManager $websiteManager, PageRepository $pageRepository)
 	{
 		parent::__construct();
 
-		$this->routePrefix = $routePrefix;
+		$this->websiteManager = $websiteManager;
 		$this->pageRepository = $pageRepository;
 	}
 
@@ -39,7 +44,7 @@ class BreadcrumbControl extends Control
 	public function renderDefault()
 	{
 		$cacheKey = array(
-			$this->presenter->route->id, $this->routePrefix, $this->getPresenter()->lang
+			$this->presenter->route->id, $this->websiteManager->routePrefix, $this->getPresenter()->lang
 		);
 
 		$this->template->cacheKey = implode('|', $cacheKey);

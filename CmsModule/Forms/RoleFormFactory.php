@@ -26,8 +26,8 @@ class RoleFormFactory extends FormFactory
 	 */
 	public function configure(Form $form)
 	{
-		$form->addText("name", "Name");
-		$form->addManyToOne("parent", "Parent")->setPrompt("root");
+		$form->addText('name', 'Name');
+		$form->addManyToOne('parent', 'Parent')->setPrompt('root');
 
 		$form->addSaveButton('Save');
 	}

@@ -67,7 +67,7 @@ class FilesPresenter extends BasePresenter
 
 	public function createComponentFileBrowser()
 	{
-		$control = $this->fileBrowserControlFactory->create();
+		$control = $this->fileBrowserControlFactory->invoke();
 		$control->setBrowserMode((bool)$this->browserMode);
 
 		if ($this->type) {

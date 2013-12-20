@@ -43,7 +43,7 @@ class WebsiteFormFactory extends FormFactory
 	protected function getMapper()
 	{
 		$mapper = clone $this->mapper;
-		$mapper->setRoot('parameters.website');
+		$mapper->setRoot('cms.website');
 		return $mapper;
 	}
 

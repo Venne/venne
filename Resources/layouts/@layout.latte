@@ -46,7 +46,7 @@
 		<div class="collapse navbar-collapse">
 			{control search}
 			{control login config => [ variant => 'panel' ]}
-			{if count($presenter->context->parameters['website']['languages']) > 1}
+			{if count($presenter->websiteManager->languages) > 1}
 				{control languageswitch}
 			{/if}
 		</div>
@@ -83,11 +83,16 @@
 	<hr />
 
 	<footer>
-		<p>
-			&copy; Company 2013 &nbsp;
-			{ifLinkExists Route special=>'sitemap'}{isPublished}· &nbsp; <a n:link>{_Sitemap}</a> &nbsp;{/isPublished}{/ifLinkExists}
+		<p class="pull-left">
+			&copy; Company {=date('Y')} &nbsp;
+			· &nbsp; Venne:CMS &nbsp;
+			· &nbsp; <a rel="nofollow" href="{$basePath}/{$presenter->administrationManager->routePrefix}">{_Administration}</a>
+		</p>
+
+		<p class="pull-right">
+			{ifLinkExists Route special=>'sitemap'}{isPublished}<a n:link>{_Sitemap}</a> &nbsp;{/isPublished}{/ifLinkExists}
 			{ifLinkExists Route special=>'rss'}{isPublished}· &nbsp; <a n:link>RSS</a> &nbsp;{/isPublished}{/ifLinkExists}
-			· &nbsp; <a rel="nofollow" href="{$basePath}/{$presenter->context->parameters['administration']['routePrefix']}">{_Administration}</a>
+			· &nbsp; <a href="#">{_'Back to Top'}</a>
 		</p>
 	</footer>
 

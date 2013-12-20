@@ -37,7 +37,7 @@ class SystemAccountFormFactory extends FormFactory
 	protected function getMapper()
 	{
 		$mapper = clone $this->mapper;
-		$mapper->setRoot('parameters.administration.login');
+		$mapper->setRoot('venne.administration.login');
 		return $mapper;
 	}
 
@@ -48,13 +48,13 @@ class SystemAccountFormFactory extends FormFactory
 	protected function configure(Form $form)
 	{
 		$form->addGroup('Admin account');
-		$form->addText("name", "Name");
-		$form->addPassword("password", "Password")->setOption("description", "minimal length is 5 char");
-		$form->addPassword("_password", "Confirm password");
+		$form->addText('name', 'Name');
+		$form->addPassword('password', 'Password')->setOption('description', 'minimal length is 5 char');
+		$form->addPassword('_password', 'Confirm password');
 
-		$form["name"]->addRule($form::FILLED, 'Enter name');
-		$form["password"]->addRule($form::FILLED, 'Enter password')->addRule($form::MIN_LENGTH, 'Password is short', 5);
-		$form["_password"]->addRule($form::EQUAL, 'Invalid re password', $form['password']);
+		$form['name']->addRule($form::FILLED, 'Enter name');
+		$form['password']->addRule($form::FILLED, 'Enter password')->addRule($form::MIN_LENGTH, 'Password is short', 5);
+		$form['_password']->addRule($form::EQUAL, 'Invalid re password', $form['password']);
 
 		$form->addSubmit('_submit', 'Save');
 	}

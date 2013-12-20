@@ -12,12 +12,12 @@
 namespace CmsModule\Components;
 
 use Nette\Callback;
-use Nette\Object;
+use Venne\BaseFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginControlFactory extends Object
+class LoginControlFactory extends BaseFactory
 {
 
 	/** @var Callback */
@@ -36,7 +36,7 @@ class LoginControlFactory extends Object
 	/**
 	 * @return LoginControl
 	 */
-	public function create()
+	public function invoke()
 	{
 		return Callback::create($this->loginControlFactory)->invoke();
 	}

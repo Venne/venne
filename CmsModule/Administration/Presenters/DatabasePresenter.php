@@ -13,6 +13,7 @@ namespace CmsModule\Administration\Presenters;
 
 use CmsModule\Forms\SystemDatabaseFormFactory;
 use DeploymentModule\DeploymentManager;
+use DoctrineModule\DI\ConnectionCheckerFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -31,25 +32,29 @@ class DatabasePresenter extends BasePresenter
 	/** @var DeploymentManager */
 	protected $deploymentManager;
 
-
-	public function injectDatabaseForm(SystemDatabaseFormFactory $databaseForm)
-	{
-		$this->databaseForm = $databaseForm;
-	}
+	/** @var ConnectionCheckerFactory */
+	protected $connectionCheckerFactory;
 
 
 	/**
-	 * @param \DeploymentModule\DeploymentManager $deploymentManager
+	 * @param SystemDatabaseFormFactory $databaseForm
+	 * @param DeploymentManager $deploymentManager
+	 * @param ConnectionCheckerFactory $connectionCheckerFactory
 	 */
-	public function injectDeploymentManager(DeploymentManager $deploymentManager)
-	{
+	public function inject(
+		SystemDatabaseFormFactory $databaseForm,
+		DeploymentManager $deploymentManager,
+		ConnectionCheckerFactory $connectionCheckerFactory
+	){
+		$this->databaseForm = $databaseForm;
 		$this->deploymentManager = $deploymentManager;
+		$this->connectionCheckerFactory = $connectionCheckerFactory;
 	}
 
 
 	public function handleLoad()
 	{
-		if ($this->backup && $this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {
+		if ($this->backup && $this->connectionCheckerFactory->invoke() && count($this->getEntityManager()->getConnection()->getSchemaManager()->listTables()) == 0) {
 			$this->deploymentManager->loadBackup($this->backup);
 		}
 

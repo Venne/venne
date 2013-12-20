@@ -100,7 +100,7 @@ class BackupsPresenter extends BasePresenter
 		// columns
 		$table = $admin->getTable();
 		$table->setModel(new ArraySource($this->getBackups()));
-		$table->setTranslator($this->context->translator->translator);
+		$table->setTranslator($this->translator);
 		$table->addColumnText('name', 'Name')
 			->setCustomRender(function ($items) use ($_this) {
 				return $items['name'] ? : $_this->translator->translate('untitled');

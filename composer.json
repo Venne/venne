@@ -57,34 +57,6 @@
 		},
 		"venne": {
 			"configuration": {
-				"parameters": {
-					"administration": {
-						"login": {
-							"name": "",
-							"password": ""
-						},
-						"routePrefix": "admin",
-						"defaultPresenter": "Dashboard"
-					},
-					"website": {
-						"name": "Blog",
-						"title": "%n %s %t",
-						"titleSeparator": "|",
-						"keywords": "",
-						"description": "",
-						"author": "",
-						"routePrefix": "",
-						"oneWayRoutePrefix": "",
-						"languages": {},
-						"defaultLanguage": "cs",
-						"defaultPresenter": "Homepage",
-						"errorPresenter": "Cms:Error",
-						"layout": "@cms/bootstrap",
-						"cacheMode": "",
-						"cacheValue": "10",
-						"theme": ""
-					}
-				},
 				"extensions": {
 					"cms": "CmsModule\\DI\\CmsExtension"
 				}

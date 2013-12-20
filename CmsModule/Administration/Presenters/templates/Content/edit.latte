@@ -62,11 +62,11 @@
 		</ul>
 	</li>
 
-	<li style="margin-right: 8px;" n:if="!$entity->page->language && count($presenter->context->parameters['website']['languages']) > 1" class="dropdown pull-right">
+	<li style="margin-right: 8px;" n:if="!$entity->page->language && count($presenter->websiteManager->languages) > 1" class="dropdown pull-right">
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-flag glyphicon-white"></span> {$presenter->languageEntity} <b class="caret"></b></a>
 		<ul class="dropdown-menu pull-right">
 			{foreach $languageRepository->findAll() as $language}
-				<li><a class="ajax" href="{link this contentLang=>($language->alias !== $languageRepository->findOneBy(array('alias' => $presenter->context->parameters['website']['defaultLanguage']))->alias ? $language->alias : NULL)}">{$language}</a></li>
+				<li><a class="ajax" href="{link this contentLang=>($language->alias !== $languageRepository->findOneBy(array('alias' => $presenter->websiteManager->defaultLanguage))->alias ? $language->alias : NULL)}">{$language}</a></li>
 			{/foreach}
 		</ul>
 	</li>

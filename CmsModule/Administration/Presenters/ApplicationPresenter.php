@@ -157,6 +157,10 @@ class ApplicationPresenter extends BasePresenter
 	protected function createComponentAccountForm()
 	{
 		$form = $this->accountForm->invoke();
+		$form->setDefaults(array(
+			'routePrefix' => $this->administrationManager->routePrefix,
+			'defaultPresenter' => $this->administrationManager->defaultPresenter,
+		));
 		$form->onSuccess[] = function (Form $form) {
 			$form->getPresenter()->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
 			$form->getPresenter()->redirect('this');

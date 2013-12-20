@@ -1,11 +1,11 @@
 factories:
 
 	cms.sitemapPresenter:
-		class: CmsModule\Presenters\SitemapPresenter(%administration.routePrefix%, %website.defaultLanguage%)
+		class: CmsModule\Presenters\SitemapPresenter
 		tags: [presenter]
 
 	cms.admin.installationPresenter:
-		class: CmsModule\Administration\Presenters\InstallationPresenter(..., %administration%, %appDir%, %wwwDir%, %tempDir%, %dataDir%, %resourcesDir%, %configDir%, %wwwCacheDir%, %publicDir%)
+		class: CmsModule\Administration\Presenters\InstallationPresenter(%appDir%, %wwwDir%, %tempDir%, %dataDir%, %resourcesDir%, %configDir%, %wwwCacheDir%, %publicDir%)
 		tags: [presenter]
 
 	cms.admin.cachePresenter:

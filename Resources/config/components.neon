@@ -70,7 +70,7 @@ services:
 			- injectFactory(@cms.admin.loggableFormFactory)
 
 	cms.systemFormFactory:
-		class: CmsModule\Forms\SystemAdministrationFormFactory(%administration.routePrefix%)
+		class: CmsModule\Forms\SystemAdministrationFormFactory
 		setup:
 			- injectFactory(@cms.admin.loggableAjaxFormFactory)
 
@@ -233,11 +233,11 @@ factories:
 		tags: [widget: panel]
 
 	cms.navigationControl:
-		class: CmsModule\Components\NavigationControl(%website.routePrefix%)
+		class: CmsModule\Components\NavigationControl
 		tags: [widget: navigation]
 
 	cms.breadcrumbControl:
-		class: CmsModule\Components\BreadcrumbControl(%website.routePrefix%)
+		class: CmsModule\Components\BreadcrumbControl
 		tags: [widget: breadcrumb]
 
 	cms.tagCloudControl:

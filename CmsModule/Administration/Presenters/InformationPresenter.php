@@ -51,7 +51,17 @@ class InformationPresenter extends BasePresenter
 
 	protected function createComponentWebsiteForm()
 	{
-		$form = $this->form->createForm();
+		$form = $this->form->invoke();
+		$form->setDefaults(array(
+			'name' => $this->websiteManager->name,
+			'title' => $this->websiteManager->title,
+			'titleSeparator' => $this->websiteManager->titleSeparator,
+			'keywords' => $this->websiteManager->keywords,
+			'description' => $this->websiteManager->description,
+			'author' => $this->websiteManager->author,
+			'routePrefix' => $this->websiteManager->routePrefix,
+			'oneWayRoutePrefix' => $this->websiteManager->oneWayRoutePrefix,
+		));
 		$form->onSuccess[] = $this->formSuccess;
 
 		// permissions

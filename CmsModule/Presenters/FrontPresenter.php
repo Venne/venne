@@ -13,6 +13,8 @@ namespace CmsModule\Presenters;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @property-read string $defaultLanguageAlias
  */
 abstract class FrontPresenter extends BasePresenter
 {
@@ -30,12 +32,12 @@ abstract class FrontPresenter extends BasePresenter
 
 	protected function checkLanguage()
 	{
-		if (count($this->context->parameters['website']['languages']) > 1) {
+		if (count($this->websiteManager->languages) > 1) {
 			if (!$this->lang && !$this->getParameter('lang')) {
 				$this->lang = $this->getDefaultLanguageAlias();
 			}
 		} else {
-			$this->lang = $this->context->parameters['website']['defaultLanguage'];
+			$this->lang = $this->websiteManager->defaultLanguage;
 		}
 	}
 
@@ -47,9 +49,9 @@ abstract class FrontPresenter extends BasePresenter
 	{
 		$httpRequest = $this->context->httpRequest;
 
-		$lang = $httpRequest->detectLanguage($this->context->parameters['website']['languages']);
+		$lang = $httpRequest->detectLanguage($this->websiteManager->languages);
 		if (!$lang) {
-			$lang = $this->context->parameters['website']['defaultLanguage'];
+			$lang = $this->websiteManager->defaultLanguage;
 		}
 		return $lang;
 	}

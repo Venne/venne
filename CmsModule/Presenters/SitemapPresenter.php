@@ -17,6 +17,7 @@ use CmsModule\Content\Listeners\PageListener;
 use CmsModule\Content\Repositories\LanguageRepository;
 use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Content\Repositories\RouteRepository;
+use CmsModule\Content\WebsiteManager;
 use Venne\Application\UI\Presenter;
 
 /**
@@ -31,48 +32,43 @@ class SitemapPresenter extends Presenter
 	/** @persistent */
 	public $lang;
 
-	/** @var string */
-	protected $routePrefix;
-
 	/** @var LanguageRepository */
-	protected $languageRepository;
+	private $languageRepository;
 
 	/** @var PageRepository */
-	protected $pageRepository;
+	private $pageRepository;
 
 	/** @var RouteRepository */
-	protected $routeRepository;
+	private $routeRepository;
 
 	/** @var PageListener */
-	protected $pageListener;
-
-	/** @var string */
-	protected $defaultLanguage;
+	private $pageListener;
 
 	/** @var int */
-	protected $itemsLimit = 100;
+	private $itemsLimit = 100;
 
 	/** @var LanguageEntity */
 	private $_language;
 
+	/** @var WebsiteManager */
+	private $websiteManager;
+
 
 	/**
-	 * @param $routePrefix
-	 * @param $defaultLanguage
+	 * @param WebsiteManager $websiteManager
 	 * @param PageListener $pageListener
 	 * @param LanguageRepository $languageRepository
 	 * @param PageRepository $pageRepository
 	 * @param RouteRepository $routeRepository
 	 */
-	public function __construct($routePrefix, $defaultLanguage, PageListener $pageListener, LanguageRepository $languageRepository, PageRepository $pageRepository, RouteRepository $routeRepository)
+	public function __construct(WebsiteManager $websiteManager, PageListener $pageListener, LanguageRepository $languageRepository, PageRepository $pageRepository, RouteRepository $routeRepository)
 	{
 		parent::__construct();
 
-		$this->routePrefix = $routePrefix;
+		$this->websiteManager = $websiteManager;
 		$this->languageRepository = $languageRepository;
 		$this->pageRepository = $pageRepository;
 		$this->routeRepository = $routeRepository;
-		$this->defaultLanguage = $defaultLanguage;
 		$this->pageListener = $pageListener;
 
 
@@ -86,7 +82,7 @@ class SitemapPresenter extends Presenter
 	{
 		parent::startup();
 
-		if ($this->lang !== $this->defaultLanguage) {
+		if ($this->lang !== $this->websiteManager->defaultLanguage) {
 			$this->pageListener->setLocale($this->getLanguage());
 		}
 	}
@@ -96,11 +92,11 @@ class SitemapPresenter extends Presenter
 	{
 		parent::beforeRender();
 
-		$this->template->routePrefix = $this->routePrefix;
+		$this->template->routePrefix = $this->websiteManager->routePrefix;
 		$this->template->languageRepository = $this->languageRepository;
 		$this->template->pageRepository = $this->pageRepository;
 		$this->template->itemsLimit = $this->itemsLimit;
-		$this->template->defaultLanguage = $this->defaultLanguage;
+		$this->template->defaultLanguage = $this->websiteManager->defaultLanguage;
 	}
 
 

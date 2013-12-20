@@ -11,6 +11,7 @@
 
 namespace CmsModule\Administration\Presenters;
 
+use CmsModule\Administration\AdministrationManager;
 use CmsModule\Administration\StructureInstallatorManager;
 use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Forms\LanguageFormFactory;
@@ -18,6 +19,7 @@ use CmsModule\Forms\SystemAccountFormFactory;
 use CmsModule\Forms\SystemDatabaseFormFactory;
 use DeploymentModule\DeploymentManager;
 use Doctrine\ORM\Tools\SchemaTool;
+use DoctrineModule\DI\ConnectionCheckerFactory;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Caching\Storages\MemoryStorage;
@@ -36,59 +38,65 @@ class InstallationPresenter extends BasePresenter
 	public $backup;
 
 	/** @var string */
-	protected $appDir;
+	private $appDir;
 
 	/** @var string */
-	protected $wwwDir;
+	private $wwwDir;
 
 	/** @var string */
-	protected $tempDir;
+	private $tempDir;
 
 	/** @var string */
-	protected $dataDir;
+	private $dataDir;
 
 	/** @var string */
-	protected $resourcesDir;
+	private $resourcesDir;
 
 	/** @var string */
-	protected $configDir;
+	private $configDir;
 
 	/** @var string */
-	protected $wwwCacheDir;
+	private $wwwCacheDir;
 
 	/** @var string */
-	protected $publicDir;
+	private $publicDir;
 
 	/** @var array */
-	protected $administration;
+	private $administration;
 
 	/** @var SystemAccountFormFactory */
-	protected $accountForm;
+	private $accountForm;
 
 	/** @var IStorage */
-	protected $cacheStorage;
+	private $cacheStorage;
 
 	/** @var bool */
-	protected $confirmation = false;
+	private $confirmation = false;
 
 	/** @var LanguageFormFactory */
-	protected $languageFormFactory;
+	private $languageFormFactory;
 
 	/** @var SystemDatabaseFormFactory */
-	protected $databaseFormFactory;
+	private $databaseFormFactory;
 
 	/** @var StructureInstallatorManager */
-	protected $installatorManager;
+	private $installatorManager;
 
 	/** @var DeploymentManager */
-	protected $deploymentManager;
+	private $deploymentManager;
+
+	/** @var ConnectionCheckerFactory */
+	private $connectionCheckerFactory;
+
+	/** @var AdministrationManager */
+	private $administrationManager;
 
 
 	/**
 	 * @param IStorage $cacheStorage
 	 * @param $parameters
 	 */
-	public function __construct(IStorage $cacheStorage, $administration, $appDir, $wwwDir, $tempDir, $dataDir, $resourcesDir, $configDir, $wwwCacheDir, $publicDir)
+	public function __construct($appDir, $wwwDir, $tempDir, $dataDir, $resourcesDir, $configDir, $wwwCacheDir, $publicDir, ConnectionCheckerFactory $connectionCheckerFactory, IStorage $cacheStorage, AdministrationManager $administrationManager)
 	{
 		parent::__construct();
 
@@ -101,48 +109,29 @@ class InstallationPresenter extends BasePresenter
 		$this->wwwCacheDir = $wwwCacheDir;
 		$this->publicDir = $publicDir;
 		$this->cacheStorage = $cacheStorage;
-		$this->administration = $administration;
+		$this->connectionCheckerFactory = $connectionCheckerFactory;
+		$this->administrationManager = $administrationManager;
 	}
 
 
 	/**
 	 * @param StructureInstallatorManager $installatorManager
-	 */
-	public function injectInstallatorManager(StructureInstallatorManager $installatorManager)
-	{
-		$this->installatorManager = $installatorManager;
-	}
-
-
-	public function injectAccountForm(SystemAccountFormFactory $accountForm)
-	{
-		$this->accountForm = $accountForm;
-	}
-
-
-	/**
+	 * @param SystemAccountFormFactory $accountForm
 	 * @param LanguageFormFactory $languageFormFactory
-	 */
-	public function injectLanguageFormFactory(LanguageFormFactory $languageFormFactory)
-	{
-		$this->languageFormFactory = $languageFormFactory;
-	}
-
-
-	/**
 	 * @param SystemDatabaseFormFactory $databaseFormFactory
+	 * @param DeploymentManager $deploymentManager
 	 */
-	public function injectDatabaseFormFactory(SystemDatabaseFormFactory $databaseFormFactory)
-	{
+	public function inject(
+		StructureInstallatorManager $installatorManager,
+		SystemAccountFormFactory $accountForm,
+		LanguageFormFactory $languageFormFactory,
+		SystemDatabaseFormFactory $databaseFormFactory,
+		DeploymentManager $deploymentManager
+	) {
+		$this->installatorManager = $installatorManager;
+		$this->accountForm = $accountForm;
+		$this->languageFormFactory = $languageFormFactory;
 		$this->databaseFormFactory = $databaseFormFactory;
-	}
-
-
-	/**
-	 * @param \DeploymentModule\DeploymentManager $deploymentManager
-	 */
-	public function injectDeploymentManager(DeploymentManager $deploymentManager)
-	{
 		$this->deploymentManager = $deploymentManager;
 	}
 
@@ -197,14 +186,14 @@ class InstallationPresenter extends BasePresenter
 
 	public function handleInstall()
 	{
-		if ($this->context->doctrine->createCheckConnection() && count($this->context->schemaManager->listTables()) == 0) {
+		if ($this->connectionCheckerFactory->invoke() && count($this->getEntityManager()->getConnection()->getSchemaManager()->listTables()) == 0) {
 
 			if ($this->backup) {
 				$this->deploymentManager->loadBackup($this->backup);
 
 			} else {
 				/** @var $em \Doctrine\ORM\EntityManager */
-				$em = $this->context->entityManager;
+				$em = $this->getEntityManager();
 				$tool = new SchemaTool($em);
 
 				$robotLoader = new RobotLoader;
@@ -235,7 +224,7 @@ class InstallationPresenter extends BasePresenter
 
 	public function handleCreateStructure($name)
 	{
-		$em = $this->context->entityManager;
+		$em = $this->entityManager;
 
 		if (!$this->isEmptyStructure()) {
 			throw new InvalidArgumentException("Page structure must be empty");
@@ -256,7 +245,7 @@ class InstallationPresenter extends BasePresenter
 	 */
 	public function isEmptyStructure()
 	{
-		return !$this->context->entityManager->getRepository('CmsModule\Content\Entities\RouteEntity')->createQueryBuilder('a')->select('COUNT(a.id)')->getQuery()->getSingleScalarResult();
+		return !$this->entityManager->getRepository('CmsModule\Content\Entities\RouteEntity')->createQueryBuilder('a')->select('COUNT(a.id)')->getQuery()->getSingleScalarResult();
 	}
 
 
@@ -312,6 +301,9 @@ class InstallationPresenter extends BasePresenter
 
 	public function languageFormSuccess()
 	{
+		$cache = new Cache($this->cacheStorage, 'Nette.Configurator');
+		$cache->clean();
+
 		$this->redirect('Installation:');
 	}
 }

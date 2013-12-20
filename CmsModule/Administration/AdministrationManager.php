@@ -11,26 +11,88 @@
 
 namespace CmsModule\Administration;
 
-use Nette\Callback;
 use Nette\DI\Container;
 use Nette\Object;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @property-read string $routePrefix
+ * @property-read string $defaultPresenter
+ * @property-read array $login
  */
 class AdministrationManager extends Object
 {
 
 	/** @var Container */
-	protected $context;
+	private $context;
 
 	/** @var array */
-	protected $administrationPages = array();
+	private $administrationPages = array();
+
+	/** @var string */
+	private $routePrefix;
+
+	/** @var string */
+	private $defaultPresenter;
+
+	/** @var array */
+	private $login;
+
+	/** @var string */
+	private $theme;
 
 
-	public function __construct(Container $context)
+	/**
+	 * @param $routePrefix
+	 * @param $defaultPresenter
+	 * @param $login
+	 * @param $theme
+	 * @param Container $context
+	 */
+	public function __construct($routePrefix, $defaultPresenter, $login, $theme, Container $context)
 	{
+		$this->routePrefix = $routePrefix;
+		$this->defaultPresenter = $defaultPresenter;
+		$this->login = $login;
+		$this->theme = $theme;
 		$this->context = $context;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getDefaultPresenter()
+	{
+		return $this->defaultPresenter;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getRoutePrefix()
+	{
+		return $this->routePrefix;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getLogin()
+	{
+		return $this->login;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getTheme()
+	{
+		return $this->theme;
 	}
 
 

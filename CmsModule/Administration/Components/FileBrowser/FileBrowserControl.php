@@ -299,7 +299,7 @@ class FileBrowserControl extends Control
 	protected function createTable()
 	{
 		/** @var FileControl $table */
-		$table = $this->fileControlFactory->create();
+		$table = $this->fileControlFactory->invoke();
 		$table->setTemplateConfigurator($this->templateConfigurator);
 		$table->getFileForm()->setEntityFactory($this->createFileEntity);
 		$table->getDirForm()->setEntityFactory($this->createDirEntity);

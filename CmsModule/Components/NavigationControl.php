@@ -13,6 +13,7 @@ namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
 use CmsModule\Content\Repositories\PageRepository;
+use CmsModule\Content\WebsiteManager;
 use CmsModule\Pages\Redirect\PageEntity;
 
 /**
@@ -21,18 +22,22 @@ use CmsModule\Pages\Redirect\PageEntity;
 class NavigationControl extends Control
 {
 
-	/** @var string */
-	protected $routePrefix;
+	/** @var WebsiteManager */
+	protected $websiteManager;
 
 	/** @var PageRepository */
 	protected $pageRepository;
 
 
-	public function __construct($routePrefix, PageRepository $pageRepository)
+	/**
+	 * @param WebsiteManager $websiteManager
+	 * @param PageRepository $pageRepository
+	 */
+	public function __construct(WebsiteManager $websiteManager, PageRepository $pageRepository)
 	{
 		parent::__construct();
 
-		$this->routePrefix = $routePrefix;
+		$this->websiteManager = $websiteManager;
 		$this->pageRepository = $pageRepository;
 	}
 
@@ -71,7 +76,7 @@ class NavigationControl extends Control
 	public function renderDefault($startDepth = NULL, $maxDepth = NULL, $followActive = NULL)
 	{
 		$cacheKey = array(
-			$this->presenter->page->id, $this->routePrefix, $startDepth, $maxDepth, $followActive, $this->getPresenter()->lang
+			$this->presenter->page->id, $this->websiteManager->routePrefix, $startDepth, $maxDepth, $followActive, $this->getPresenter()->lang
 		);
 
 		$this->template->startDepth = $startDepth ? : 0;

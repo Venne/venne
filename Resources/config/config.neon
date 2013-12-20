@@ -20,9 +20,6 @@ services:
 	cms.elementManager:
 		class: CmsModule\Content\ElementManager
 
-	cms.administrationManager:
-		class: CmsModule\Administration\AdministrationManager
-
 	cms.layoutManager:
 		class: CmsModule\Content\LayoutManager(@cms.layoutRepository)
 

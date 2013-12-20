@@ -39,7 +39,7 @@ abstract class AdminPresenter extends BasePresenter
 		parent::startup();
 
 		// check admin account
-		if (!$this->context->parameters['administration']['login']['name']) {
+		if (!$this->administrationManager->login['name']) {
 			if ($this->getName() != 'Cms:Admin:Installation') {
 				$this->redirect(':Cms:Admin:Installation:');
 			}
@@ -72,7 +72,7 @@ abstract class AdminPresenter extends BasePresenter
 			}
 
 			// check database
-			if (!$this->context->createCheckConnection() || (count($this->context->parameters['website']['languages']) == 0 && !$this->context->schemaManager->tablesExist('users'))) {
+			if (!$this->context->createCheckConnection() || (count($this->websiteManager->languages) == 0 && !$this->getEntityManager()->getConnection()->getSchemaManager()->tablesExist('users'))) {
 				if ($this->getName() != 'Cms:Admin:Installation') {
 					$this->redirect(':Cms:Admin:Installation:');
 				}
@@ -80,7 +80,7 @@ abstract class AdminPresenter extends BasePresenter
 				$this->__installation = TRUE;
 				$this->flashMessage($this->translator->translate('Database connection not found. Please fix it.'), 'warning', true);
 			} // check languages
-			elseif (count($this->context->parameters['website']['languages']) == 0 && $this->context->schemaManager->tablesExist('users')) {
+			elseif (count($this->websiteManager->languages) == 0 && $this->entityManager->getConnection()->getSchemaManager()->tablesExist('users')) {
 				if ($this->getName() != 'Cms:Admin:Installation') {
 					$this->redirect(':Cms:Admin:Installation:');
 				}
@@ -107,7 +107,7 @@ abstract class AdminPresenter extends BasePresenter
 	{
 		$this->user->logout(TRUE);
 		$this->flashMessage($this->translator->translate('Logout success'), 'success');
-		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
+		$this->redirect(':Cms:Admin:' . $this->administrationManager->defaultPresenter . ':');
 	}
 
 
@@ -139,11 +139,8 @@ abstract class AdminPresenter extends BasePresenter
 	 */
 	public function formatLayoutTemplateFiles()
 	{
-		$parameters = $this->getContext()->parameters;
-		$module = isset($parameters['administration']['theme']) ? $parameters['administration']['theme'] : 'cms';
-
 		return array(
-			$this->getContext()->parameters['modules'][$module]['path'] . '/Resources/administration/@layout.latte',
+			$this->getContext()->parameters['modules'][$this->administrationManager->theme]['path'] . '/Resources/administration/@layout.latte',
 		);
 	}
 

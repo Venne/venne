@@ -137,7 +137,7 @@ class LoginPresenter extends BasePresenter
 		}
 
 		if ($this->user->isLoggedIn()) {
-			$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
+			$this->redirect(':Cms:Admin:' . $this->administrationManager->defaultPresenter . ':');
 		}
 
 		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes) {
@@ -155,7 +155,7 @@ class LoginPresenter extends BasePresenter
 	 */
 	protected function createComponentSignInForm()
 	{
-		$form = $this->form->create();
+		$form = $this->form->invoke();
 		$form->onSuccess[] = $this->formSuccess;
 		$form->onError[] = $this->formError;
 
@@ -178,7 +178,7 @@ class LoginPresenter extends BasePresenter
 			$this->restoreRequest($this->backlink);
 		}
 
-		$this->redirect(':Cms:Admin:' . $this->context->parameters['administration']['defaultPresenter'] . ':');
+		$this->redirect(':Cms:Admin:' . $this->administrationManager->defaultPresenter . ':');
 	}
 
 

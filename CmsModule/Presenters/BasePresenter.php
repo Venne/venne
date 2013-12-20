@@ -11,6 +11,8 @@
 
 namespace CmsModule\Presenters;
 
+use CmsModule\Administration\AdministrationManager;
+use CmsModule\Content\WebsiteManager;
 use CmsModule\Pages\Users\ExtendedUserEntity;
 use CmsModule\Pages\Users\UserEntity;
 use Doctrine\ORM\EntityManager;
@@ -24,6 +26,8 @@ use Venne\Application\UI\Presenter;
  * @property-read EntityManager $entityManager
  * @property-read ExtendedUserEntity $extendedUser
  * @property-read ITranslator $translator
+ * @property-read WebsiteManager $websiteManager
+ * @property-read AdministrationManager $administrationManager
  */
 abstract class BasePresenter extends Presenter
 {
@@ -42,6 +46,48 @@ abstract class BasePresenter extends Presenter
 
 	/** @var bool|NULL */
 	private $_isPanelOpened;
+
+	/** @var WebsiteManager */
+	private $websiteManager;
+
+	/** @var AdministrationManager */
+	private $administrationManager;
+
+
+	/**
+	 * @param \CmsModule\Content\WebsiteManager $websiteManager
+	 */
+	public function injectWebsiteManager(WebsiteManager $websiteManager)
+	{
+		$this->websiteManager = $websiteManager;
+	}
+
+
+	/**
+	 * @param \CmsModule\Administration\AdministrationManager $administrationManager
+	 */
+	public function injectAdministrationManager(AdministrationManager $administrationManager)
+	{
+		$this->administrationManager = $administrationManager;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\WebsiteManager
+	 */
+	public function getWebsiteManager()
+	{
+		return $this->websiteManager;
+	}
+
+
+	/**
+	 * @return \CmsModule\Administration\AdministrationManager
+	 */
+	public function getAdministrationManager()
+	{
+		return $this->administrationManager;
+	}
 
 
 	public function handleOpenPanel()

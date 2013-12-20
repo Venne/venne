@@ -164,7 +164,7 @@ class UsersPresenter extends BasePresenter
 
 		// columns
 		$table = $admin->getTable();
-		$table->setTranslator($this->context->translator->translator);
+		$table->setTranslator($this->translator);
 		$table->addColumnText('email', 'E-mail')
 			->setCustomRender(function ($entity) {
 				return $entity->user->email;

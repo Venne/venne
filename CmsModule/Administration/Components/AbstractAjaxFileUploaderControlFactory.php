@@ -17,12 +17,12 @@ use CmsModule\Content\Repositories\FileRepository;
 use Nette\Http\FileUpload;
 use Nette\Http\Session;
 use Nette\InvalidArgumentException;
-use Nette\Object;
+use Venne\BaseFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-abstract class AbstractAjaxFileUploaderControlFactory extends Object
+abstract class AbstractAjaxFileUploaderControlFactory extends BaseFactory
 {
 
 	/** @var FileRepository */
@@ -64,7 +64,7 @@ abstract class AbstractAjaxFileUploaderControlFactory extends Object
 	/**
 	 * @return AjaxFileUploaderControl
 	 */
-	public function createControl($basePath)
+	public function invoke($basePath)
 	{
 		$control = new AjaxFileUploaderControl($this->ajaxDir, $basePath . $this->getRelativeAjaxPath(), $this->session->getSection('ajaxFileUploader'));
 		$control->onFileUpload[] = $this->handleFileUpload;
@@ -115,15 +115,6 @@ abstract class AbstractAjaxFileUploaderControlFactory extends Object
 	{
 		@unlink($this->ajaxDir . '/' . $fileName);
 		@unlink($this->ajaxDir . '/thumbnail/' . $fileName);
-	}
-
-
-	/**
-	 * @return AjaxFileUploaderControl
-	 */
-	public function invoke()
-	{
-		return call_user_func_array(array($this, 'createControl'), func_get_args());
 	}
 
 

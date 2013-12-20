@@ -85,7 +85,7 @@ class RoutePresenter extends ItemsPresenter
 	 */
 	public function getQueryBuilder()
 	{
-		if ($this->context->parameters['website']['defaultLanguage'] !== $this->lang) {
+		if ($this->websiteManager->defaultLanguage !== $this->lang) {
 			return parent::getQueryBuilder()
 				->leftJoin('a.translations', 'b')
 				->andwhere('b.language = :langId')
