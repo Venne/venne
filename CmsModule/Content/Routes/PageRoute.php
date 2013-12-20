@@ -181,7 +181,9 @@ class PageRoute extends Route
 			}
 		}
 
-		$this->cache->save($key, array($route->id, $route->type, $route->params));
+		$this->cache->save($key, array($route->id, $route->type, $route->params), array(
+			Cache::TAGS => array(RouteEntity::CACHE),
+		));
 		return $this->modifyMatchRequest($request, $route, $route->type, $route->params, $parameters);
 	}
 
