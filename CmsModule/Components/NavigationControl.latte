@@ -9,8 +9,7 @@
 	{foreach $items as $item}
 
 		{var $entity = $item}
-		{continueIf $entity===NULL}
-		{continueIf !$entity->mainRoute->published}
+		{continueIf $entity===NULL || !$entity->mainRoute->published || ($entity->mainRoute->language && $entity->mainRoute->language != $presenter->lang)}
 
 		{var $active = $control->isActive($entity)}
 		{var $link = $control->getLink($entity)}
