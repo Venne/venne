@@ -20,6 +20,7 @@ use CmsModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManager;
 use DoctrineModule\DI\ConnectionCheckerFactory;
 use Nette\InvalidArgumentException;
+use Nette\Mail\IMailer;
 use Nette\Security\AuthenticationException;
 
 /**
@@ -82,6 +83,9 @@ class RegistrationControl extends Control
 	/** @var ConnectionCheckerFactory */
 	protected $connectionChecker;
 
+	/** @var IMailer */
+	private $mailer;
+
 
 	/**
 	 * @param string $userType
@@ -115,19 +119,22 @@ class RegistrationControl extends Control
 	 * @param EntityManager $entityManager
 	 * @param RoleRepository $roleRepository
 	 * @param ConnectionCheckerFactory $connectionChecker
+	 * @param IMailer $mailer
 	 */
 	public function inject(
 		SecurityManager $securityManager,
 		AuthorizatorFactory $authorizatorFactory,
 		EntityManager $entityManager,
 		RoleRepository $roleRepository,
-		ConnectionCheckerFactory $connectionChecker
+		ConnectionCheckerFactory $connectionChecker,
+		IMailer $mailer
 	){
 		$this->securityManager = $securityManager;
 		$this->authorizatorFactory = $authorizatorFactory;
 		$this->entityManager = $entityManager;
 		$this->roleRepository = $roleRepository;
 		$this->connectionChecker = $connectionChecker;
+		$this->mailer = $mailer;
 	}
 
 	public function handleLoad($name)
@@ -243,8 +250,8 @@ class RegistrationControl extends Control
 		$mail->setFrom("{$this->emailSender} <{$this->emailFrom}>")
 			->addTo($user->user->email)
 			->setSubject($this->emailSubject)
-			->setHTMLBody($text)
-			->send();
+			->setHTMLBody($text);
+		$this->mailer->send($mail);
 	}
 
 

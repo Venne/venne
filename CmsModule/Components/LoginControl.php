@@ -21,6 +21,7 @@ use CmsModule\Security\Repositories\UserRepository;
 use CmsModule\Security\SecurityManager;
 use DoctrineModule\DI\ConnectionCheckerFactory;
 use Nette\Application\BadRequestException;
+use Nette\Mail\IMailer;
 use Nette\Security\AuthenticationException;
 use Venne\Forms\Form;
 
@@ -78,6 +79,9 @@ class LoginControl extends Control
 	/** @var ConnectionCheckerFactory */
 	protected $connectionChecker;
 
+	/** @var IMailer */
+	protected $mailer;
+
 
 	/**
 	 * @param LoginFormFactory $loginFormFactory
@@ -87,6 +91,7 @@ class LoginControl extends Control
 	 * @param SecurityManager $securityManager
 	 * @param UserRepository $userRepository
 	 * @param ConnectionCheckerFactory $connectionChecker
+	 * @param IMailer $mailer
 	 */
 	public function __construct(
 		LoginFormFactory $loginFormFactory,
@@ -95,7 +100,8 @@ class LoginControl extends Control
 		ConfirmFormFactory $confirmFormFactory,
 		SecurityManager $securityManager,
 		UserRepository $userRepository,
-		ConnectionCheckerFactory $connectionChecker
+		ConnectionCheckerFactory $connectionChecker,
+		IMailer $mailer
 	)
 	{
 		parent::__construct();
@@ -106,7 +112,8 @@ class LoginControl extends Control
 		$this->confirmFormFactory = $confirmFormFactory;
 		$this->securityManager = $securityManager;
 		$this->userRepository = $userRepository;
-		$this->connectionChecker = $connectionChecker;;
+		$this->connectionChecker = $connectionChecker;
+		$this->mailer = $mailer;
 	}
 
 
@@ -335,8 +342,7 @@ class LoginControl extends Control
 			->addTo($user->email)
 			->setSubject($this->emailSubject)
 			->setHTMLBody($text);
-		dump($mail);
-		$mail->send();
+		$this->mailer->send($mail);
 	}
 
 }
