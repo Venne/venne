@@ -70,11 +70,19 @@ abstract class ItemsPresenter extends PagePresenter
 				->andWhere('r.page = :page')->setParameter('page', $this->page->id)
 				->andWhere('r.released <= :released')->setParameter('released', new \Nette\DateTime())
 				->andWhere('(r.expired >= :expired OR r.expired IS NULL)')->setParameter('expired', new \Nette\DateTime());
+
+			if (count($this->websiteManager->languages) > 1) {
+				$qb->andWhere('(r.language IS NULL OR r.language = :language)')->setParameter('language', $this->getLanguage()->id);
+			}
 		} else {
 			$qb
 				->andWhere('a.published = :true')->setParameter('true', TRUE)
 				->andWhere('a.released <= :released')->setParameter('released', new \Nette\DateTime())
 				->andWhere('(a.expired >= :expired OR a.expired IS NULL)')->setParameter('expired', new \Nette\DateTime());
+
+			if (count($this->websiteManager->languages) > 1) {
+				$qb->andWhere('(a.language IS NULL OR a.language = :language)')->setParameter('language', $this->getLanguage()->id);
+			}
 		}
 
 		return $qb;
