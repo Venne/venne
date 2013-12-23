@@ -672,17 +672,18 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 				$cache[$user->id] = array();
 			}
 
+			if ($user->isInRole('admin')) {
+				$cache[$user->id][$permission] = TRUE;
+				return TRUE;
+
+			}
+
 			if (isset($source[$permission])) {
 				$permissionEntity = $source[$permission];
 
 				if (!$user->isLoggedIn()) {
 					$cache[$user->id][$permission] = FALSE;
 					return FALSE;
-				}
-
-				if ($user->isInRole('admin')) {
-					$cache[$user->id][$permission] = TRUE;
-					return TRUE;
 				}
 
 				if ($permissionEntity->getAll()) {
