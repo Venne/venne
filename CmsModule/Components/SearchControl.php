@@ -13,6 +13,7 @@ namespace CmsModule\Components;
 
 use CmsModule\Content\Control;
 use CmsModule\Content\Repositories\RouteRepository;
+use CmsModule\Content\WebsiteManager;
 use Nette\Application\Responses\JsonResponse;
 
 /**
@@ -24,15 +25,20 @@ class SearchControl extends Control
 	/** @var RouteRepository */
 	private $routeRepository;
 
+	/** @var WebsiteManager */
+	private $websiteManager;
+
 
 	/**
 	 * @param RouteRepository $routeRepository
+	 * @param WebsiteManager $websiteManager
 	 */
-	public function __construct(RouteRepository $routeRepository)
+	public function __construct(RouteRepository $routeRepository, WebsiteManager $websiteManager)
 	{
 		parent::__construct();
 
 		$this->routeRepository = $routeRepository;
+		$this->websiteManager = $websiteManager;
 	}
 
 
@@ -46,7 +52,7 @@ class SearchControl extends Control
 				->setParameter('query', "%{$query}%")
 				->setMaxResults($limit);
 
-			if ($this->presenter->context->parameters['website']['defaultLanguage'] !== $this->presenter->lang) {
+			if ($this->websiteManager->defaultLanguage !== $this->presenter->lang) {
 				$qb
 					->leftJoin('r.translations', 'a')
 					->andWhere('a.language = :langId')
