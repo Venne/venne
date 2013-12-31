@@ -282,6 +282,10 @@ class InstallationPresenter extends BasePresenter
 		$user->setAuthenticator(new Authenticator($values['name'], $values['password']));
 		$user->login($values['name'], $values['password']);
 
+		if (function_exists('opcache_reset')) {
+			opcache_reset();
+		}
+
 		$cache = new Cache($this->cacheStorage, 'Nette.Configurator');
 		$cache->clean();
 
@@ -291,6 +295,10 @@ class InstallationPresenter extends BasePresenter
 
 	public function databaseFormSuccess($form)
 	{
+		if (function_exists('opcache_reset')) {
+			opcache_reset();
+		}
+
 		if (isset($form['_backup']) && $form['_backup']->value) {
 			$this->redirect('install!', array('backup' => $form['_backup']->value));
 		}
@@ -301,6 +309,10 @@ class InstallationPresenter extends BasePresenter
 
 	public function languageFormSuccess()
 	{
+		if (function_exists('opcache_reset')) {
+			opcache_reset();
+		}
+
 		$cache = new Cache($this->cacheStorage, 'Nette.Configurator');
 		$cache->clean();
 
