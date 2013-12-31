@@ -66,13 +66,18 @@ class LanguageRepository extends BaseRepository
 		$config = $this->configBuilder;
 		$languages = array();
 		$i = 0;
+
+		if (!isset($config['cms']['website'])) {
+			$config['cms']['website'] = \Nette\ArrayHash::from(array());
+		}
+
 		foreach ($this->findAll() as $entity) {
 			if ($i++ == 0) {
-				$config["parameters"]["website"]["defaultLanguage"] = $entity->alias;
+				$config['cms']['website']['defaultLanguage'] = $entity->alias;
 			}
 			$languages[] = $entity->alias;
 		}
-		$config["parameters"]["website"]["languages"] = $languages;
+		$config['cms']['website']['languages'] = $languages;
 		$config->save();
 	}
 }
