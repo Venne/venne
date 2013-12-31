@@ -37,7 +37,7 @@ class SystemAccountFormFactory extends FormFactory
 	protected function getMapper()
 	{
 		$mapper = clone $this->mapper;
-		$mapper->setRoot('venne.administration.login');
+		$mapper->setRoot('cms.administration.login');
 		return $mapper;
 	}
 
