@@ -348,15 +348,17 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 	 * @param PageEntity $parent
 	 * @param null $setPrevious
 	 * @param PageEntity $previous
+	 * @return $this
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function setParent(PageEntity $parent = NULL, $setPrevious = NULL, PageEntity $previous = NULL)
 	{
 		if ($parent == $this->getParent() && !$setPrevious) {
-			return;
+			return $this;
 		}
 
 		if (!$parent && !$this->getNext() && !$this->getPrevious() && !$this->getParent() && !$setPrevious) {
-			return;
+			return $this;
 		}
 
 		if ($setPrevious && $previous === $this) {
@@ -402,6 +404,7 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 		$this->getMainRoute()->parent = $this->getParent() && $this->getParent()->getMainRoute() ? $this->getParent()->getMainRoute() : NULL;
 		$this->generatePosition();
 		$this->generateUrl();
+		return $this;
 	}
 
 
@@ -416,6 +419,7 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 	/**
 	 * @param LanguageEntity $language
+	 * @return $this
 	 */
 	public function setLanguage(LanguageEntity $language = NULL)
 	{
@@ -424,6 +428,7 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 		foreach ($this->routes as $route) {
 			$route->setLanguage($language);
 		}
+		return $this;
 	}
 
 
@@ -511,16 +516,18 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 
 	/**
-	 * @param  $navigationShow
+	 * @param $navigationShow
+	 * @return $this
 	 */
 	public function setNavigationShow($navigationShow)
 	{
 		$this->navigationShow = $navigationShow;
+		return $this;
 	}
 
 
 	/**
-	 * @return
+	 * @return bool
 	 */
 	public function getNavigationShow()
 	{
@@ -538,7 +545,7 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 
 	/**
-	 * @return
+	 * @return string
 	 */
 	public function getNavigationTitleRaw()
 	{
