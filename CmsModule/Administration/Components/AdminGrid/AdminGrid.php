@@ -170,7 +170,7 @@ class AdminGrid extends Control
 			$_this->mode = $mode;
 			$_this->id = NULL;
 			$_this->invalidateControl('navbarFormContainer');
-			if ($_this->mode === $this::MODE_PLACE) {
+			if ($_this->mode === $_this::MODE_PLACE) {
 				$_this->invalidateControl('table');
 				$_this->invalidateControl('navbarFormContainer');
 				$_this->invalidateControl('actionFormContainer');
@@ -190,7 +190,7 @@ class AdminGrid extends Control
 			$_this->mode = $mode;
 			$_this->id = $id;
 			$_this->invalidateControl('actionFormContainer');
-			if ($_this->mode === $this::MODE_PLACE) {
+			if ($_this->mode === $_this::MODE_PLACE) {
 				$_this->invalidateControl('table');
 				$_this->invalidateControl('navbarFormContainer');
 				$_this->invalidateControl('actionFormContainer');
@@ -371,6 +371,7 @@ class AdminGrid extends Control
 
 	protected function createComponentNavbarForm()
 	{
+		$_this = $this;
 		$form = $this->navbarForms[$this->formName];
 		$entity = $form->getEntityFactory() ? Callback::create($form->getEntityFactory())->invoke() : $this->repository->createNew();
 
@@ -381,8 +382,8 @@ class AdminGrid extends Control
 		if ($this->mode == self::MODE_PLACE) {
 			$form->addSubmit('_cancel', 'Cancel')
 				->setValidationScope(FALSE)
-				->onClick[] = function () {
-				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+				->onClick[] = function () use ($_this) {
+				$_this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 			};
 		}
 
@@ -392,6 +393,7 @@ class AdminGrid extends Control
 
 	protected function createComponentActionForm()
 	{
+		$_this = $this;
 		$form = $this->actionForms[$this->formName];
 		$entity = $this->repository->find($this->id);
 
@@ -402,8 +404,8 @@ class AdminGrid extends Control
 		if ($this->mode == self::MODE_PLACE) {
 			$form->addSubmit('_cancel', 'Cancel')
 				->setValidationScope(FALSE)
-				->onClick[] = function () {
-				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+				->onClick[] = function () use ($_this) {
+				$_this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 			};
 		}
 
