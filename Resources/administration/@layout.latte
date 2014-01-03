@@ -151,12 +151,17 @@
 		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
 
 			{if $presenter->user->isLoggedIn() && $presenter->context->doctrine->createCheckConnection() && !isset($hideMenuItems)}
+				{if $presenter->isAuthorized(':Cms:Admin:Content:')
+				|| $presenter->isAuthorized(':Cms:Admin:Layouts:')
+				|| $presenter->isAuthorized(':Cms:Admin:Files:')
+				|| $presenter->isAuthorized(':Cms:Admin:Templates:')}
 				{var $_panel = true}
 				<div id="panel" class="row">
 					<div class="col-md-12">
 						{control panel}
 					</div>
 				</div>
+				{/if}
 			{/if}
 
 		<div class="container content" id="content"{if isset($_panel)} style="margin-left: 310px;"{/if}>
