@@ -140,7 +140,7 @@ class LoginPresenter extends BasePresenter
 			$this->redirect(':Cms:Admin:' . $this->administrationManager->defaultPresenter . ':');
 		}
 
-		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes && !$this['signInForm']->isSubmitted()) {
+		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes && !$this['signInForm']['form']->isSubmitted()) {
 			if (!$this['signInForm']->template->flashes) {
 				$this->redirect('this', array('do' => 'signInForm-login', 'signInForm-name' => $this->autologin));
 			}
