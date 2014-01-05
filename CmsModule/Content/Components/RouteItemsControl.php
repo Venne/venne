@@ -104,7 +104,7 @@ class RouteItemsControl extends Control
 
 		$this->getPresenter()->redirect(':Cms:Pages:Text:Route:', array(
 			'route' => $route,
-			'lang'=> $this->getPresenter()->contentLang ?: $this->presenter->context->parameters['website']['defaultLanguage']
+			'lang'=> $this->getPresenter()->contentLang ?: $this->presenter->websiteManager->defaultLanguage,
 		));
 	}
 
