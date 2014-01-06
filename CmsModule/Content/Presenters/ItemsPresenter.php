@@ -101,13 +101,16 @@ abstract class ItemsPresenter extends PagePresenter
 	protected function createComponentPagination()
 	{
 		$vp = new PaginationControl;
-		$pg = $vp->getPaginator();
-		$pg->setItemCount($this->getCountItems());
-		if (($itemsPerPage = $this->getItemsPerPage()) !== NULL) {
-			$pg->setItemsPerPage($itemsPerPage);
-		} else {
-			$pg->setItemsPerPage(999999999999999);
-		}
+		$vp->onAction[] = function(PaginationControl $vp) {
+			$pg = $vp->getPaginator();
+			$pg->setItemCount($this->getCountItems());
+			if (($itemsPerPage = $this->getItemsPerPage()) !== NULL) {
+				$pg->setItemsPerPage($itemsPerPage);
+			} else {
+				$pg->setItemsPerPage(999999999999999);
+			}
+		};
+
 		return $vp;
 	}
 }

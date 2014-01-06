@@ -30,6 +30,9 @@ class PaginationControl extends Control
 	/** @persistent */
 	public $page = 1;
 
+	/** @var array */
+	public $onAction;
+
 
 	/**
 	 * @return Paginator
@@ -50,6 +53,8 @@ class PaginationControl extends Control
 	 */
 	public function renderDefault()
 	{
+		$this->onAction($this);
+
 		$paginator = $this->getPaginator();
 		$page = $paginator->page;
 		if ($paginator->pageCount < 2) {
