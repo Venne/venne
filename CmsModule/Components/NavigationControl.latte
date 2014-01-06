@@ -1,5 +1,5 @@
 {capture $navigation}
-{cache $presenter->lang}
+{cache $presenter->lang, tags => ['pages']}
 {var $root = isset($root) ? $root : $control->getRoot()}
 
 {define #menu}
