@@ -537,7 +537,7 @@ class ContentPresenter extends BasePresenter
 			}
 
 			if ($this->websiteManager->defaultLanguage !== $this->languageEntity->alias) {
-				$this->_pageEntity->page->mainRoute->locale = $this->languageEntity;
+				$this->_pageEntity->page->locale = $this->_pageEntity->page->mainRoute->locale = $this->languageEntity;
 			}
 		}
 

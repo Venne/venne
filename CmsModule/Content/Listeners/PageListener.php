@@ -11,8 +11,10 @@
 
 namespace CmsModule\Content\Listeners;
 
+use CmsModule\Content\Entities\ExtendedPageEntity;
 use CmsModule\Content\Entities\ExtendedRouteEntity;
 use CmsModule\Content\Entities\LanguageEntity;
+use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
 use Doctrine\Common\EventArgs;
@@ -110,7 +112,7 @@ class PageListener implements EventSubscriber
 	public function postLoad(LifecycleEventArgs $args)
 	{
 		$entity = $args->getEntity();
-		if (($entity instanceof RouteEntity OR $entity instanceof ExtendedRouteEntity) && ($e = $this->getLanguageEntity())) {
+		if (($entity instanceof RouteEntity || $entity instanceof ExtendedRouteEntity || $entity instanceof PageEntity || $entity instanceof ExtendedPageEntity) && ($e = $this->getLanguageEntity())) {
 			$entity->setLocale($e);
 		}
 	}

@@ -114,9 +114,9 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 	/**
 	 * @var string
-	 * @ORM\Column(type="string", nullable=true)
+	 * @ORM\Column(type="string")
 	 */
-	protected $navigationTitleRaw;
+	protected $navigationTitle = '';
 
 	/**
 	 * @var bool
@@ -160,6 +160,12 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 	 */
 	protected $adminPermissions;
 
+	/**
+	 * @var RouteTranslationEntity[]
+	 * @ORM\OneToMany(targetEntity="\CmsModule\Content\Entities\PageTranslationEntity", mappedBy="object", indexBy="language", cascade={"persist"}, fetch="EXTRA_LAZY")
+	 */
+	protected $translations;
+
 	/** @var array */
 	protected $_isAllowed = array();
 
@@ -176,6 +182,11 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 	 */
 	private $extendedPageCallback;
 
+	/**
+	 * @var LanguageEntity
+	 */
+	protected $locale;
+
 
 	/**
 	 * @param ExtendedPageEntity $page
@@ -188,6 +199,7 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 		$this->routes = new ArrayCollection;
 		$this->permissions = new ArrayCollection;
 		$this->adminPermissions = new ArrayCollection;
+		$this->translations = new ArrayCollection;
 		$this->created = new \DateTime;
 		$this->updated = new \DateTime;
 		$this->class = get_class($page);
@@ -204,6 +216,24 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 	public function __toString()
 	{
 		return $this->getMainRoute()->getName() . ' (' . $this->getMainRoute()->getUrl() . ')';
+	}
+
+
+	/**
+	 * @param LanguageEntity $locale
+	 */
+	public function setLocale(LanguageEntity $locale = NULL)
+	{
+		$this->locale = $locale;
+	}
+
+
+	/**
+	 * @return LanguageEntity
+	 */
+	public function getLocale()
+	{
+		return $this->locale;
 	}
 
 
@@ -536,29 +566,22 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 
 
 	/**
-	 * @param  $navigationTitleRaw
+	 * @param $navigationTitle
+	 * @return $this
 	 */
-	public function setNavigationTitleRaw($navigationTitleRaw)
+	public function setNavigationTitle($navigationTitle)
 	{
-		$this->navigationTitleRaw = $navigationTitleRaw;
+		$this->setTranslatedValue('navigationTitle', $navigationTitle);
+		return $this;
 	}
 
 
 	/**
 	 * @return string
 	 */
-	public function getNavigationTitleRaw()
-	{
-		return $this->navigationTitleRaw;
-	}
-
-
-	/**
-	 * @return
-	 */
 	public function getNavigationTitle()
 	{
-		return $this->navigationTitleRaw !== NULL ? $this->navigationTitleRaw : $this->getMainRoute()->name;
+		return $this->getTranslatedValue('navigationTitle');
 	}
 
 
@@ -821,5 +844,73 @@ class PageEntity extends IdentifiedEntity implements IloggableEntity
 		foreach ($this->routes as $route) {
 			$route->generateUrl($recursively);
 		}
+	}
+
+
+	/**
+	 * @param $field
+	 * @param LanguageEntity $language
+	 * @return mixed
+	 */
+	protected function getTranslatedValue($field, LanguageEntity $language = NULL)
+	{
+		$language = $language ? : $this->locale;
+
+		if ($language && $this->translations[$language->id]) {
+			if (($ret = $this->translations[$language->id]->{$field}) !== NULL) {
+				return $ret;
+			}
+		}
+
+		return $this->{$field};
+	}
+
+
+	/**
+	 * @param $field
+	 * @param $value
+	 * @param LanguageEntity $language
+	 */
+	protected function setTranslatedValue($field, $value, LanguageEntity $language = NULL)
+	{
+		$language = $language ? : $this->locale;
+
+		if ($language) {
+			if (!isset($this->translations[$language->id])) {
+				if ($value === NULL || $this->{$field} === $value) {
+					return;
+				}
+
+				$this->translations[$language->id] = new PageTranslationEntity($this, $language);
+			}
+			$this->translations[$language->id]->{$field} = $value ? : NULL;
+		} else {
+			$this->{$field} = $value;
+		}
+	}
+
+
+	/**
+	 * @param $name
+	 * @param $value
+	 * @throws \RuntimeException
+	 */
+	public function setValueForAllTranslations($name, $value)
+	{
+		$method = 'set' . ucfirst($name);
+
+		$reflection = new \ReflectionMethod($this, $method);
+		if (!$reflection->isPublic()) {
+			throw new \RuntimeException("The called method is not public.");
+		}
+
+		$locale = $this->locale;
+		$this->locale = NULL;
+		call_user_func(array($this, $method), $value);
+		foreach ($this->translations as $translation) {
+			$this->locale = $translation->getLanguage();
+			call_user_func(array($this, $method), $value);
+		}
+		$this->locale = $locale;
 	}
 }

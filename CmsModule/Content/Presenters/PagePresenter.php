@@ -232,7 +232,7 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	public function handleChangeLanguage($alias)
 	{
 		if (!$this->getPage()->getLanguage()) {
-			$this->getRoute()->locale = $this->languageRepository->findOneBy(array('alias' => $alias));
+			$this->getPage()->locale = $this->getRoute()->locale = $this->languageRepository->findOneBy(array('alias' => $alias));
 			$this->redirect('this', array('route' => $this->getRoute(), 'lang' => $alias));
 		}
 
