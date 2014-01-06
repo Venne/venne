@@ -33,36 +33,31 @@ class HeadMacro extends MacroSet
 
 	public function headBegin(MacroNode $node, $writer)
 	{
-		return $writer->write('ob_start();');
+		return $writer->write('?><head>
+<?php $_renderEventsArgs = new \CmsModule\Events\RenderArgs; $_renderEventsArgs->setPresenter($presenter); ?>
+<?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadBegin, $_renderEventsArgs);');
 	}
 
 
 	public function headEnd(MacroNode $node, $writer)
 	{
-		return $writer->write('$_headMacroData = ob_get_clean();');
+		return $writer->write('?></head>
+<?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadEnd, $_renderEventsArgs);');
 	}
 
 
 	public function bodyBegin(MacroNode $node, $writer)
 	{
-		return $writer->write('ob_start();');
+		return $writer->write('?><body<?php if($basePath){?> data-venne-basepath="<?php echo $basePath;?>"<?php } ?>>
+<?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyBegin, $_renderEventsArgs); ?>
+<?php if ($presenter instanceof \CmsModule\Presenters\FrontPresenter && $presenter->isPanelOpened() && $presenter->getUser()->isLoggedIn() && $presenter->isAuthorized(":Cms:Admin:Panel:") ) { echo \'<div id="venne-panel-container" style="position: fixed; top: 0; left: 0; z-index: 9999999; width: 100%; height: 43px; overflow: hidden;"><iframe src="\'.$basePath.\'/admin/en/panel?mode=1" scrolling="no" allowtransparency="true" style="width: 100%; height: 100%; overflow: hidden;" frameborder="0" id="venne-panel"></iframe></div>\'; }');
 	}
 
 
 	public function bodyEnd(MacroNode $node, $writer)
 	{
-		return $writer->write('$_bodyMacroData = ob_get_clean();?><head>
-<?php $_renderEventsArgs = new \CmsModule\Events\RenderArgs; $_renderEventsArgs->setPresenter($presenter); ?>
-<?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadBegin, $_renderEventsArgs); ?>
-<?php echo $_headMacroData; echo $presenter["head"]->render();?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onHeadEnd, $_renderEventsArgs); ?>
-</head>
-
-<body<?php if($basePath){?> data-venne-basepath="<?php echo $basePath;?>"<?php } ?>><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyBegin, $_renderEventsArgs); ?>
-<?php if ($presenter instanceof \CmsModule\Presenters\FrontPresenter && $presenter->isPanelOpened() && $presenter->getUser()->isLoggedIn() && $presenter->isAuthorized(":Cms:Admin:Panel:") ) { echo \'<div id="venne-panel-container" style="position: fixed; top: 0; left: 0; z-index: 9999999; width: 100%; height: 43px; overflow: hidden;"><iframe src="\'.$basePath.\'/admin/en/panel?mode=1" scrolling="no" allowtransparency="true" style="width: 100%; height: 100%; overflow: hidden;" frameborder="0" id="venne-panel"></iframe></div>\'; } ?>
-<?php echo $_bodyMacroData;?><?php $presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyEnd, $_renderEventsArgs); ?>
-</body>
-<?php
-');
+		return $writer->write('$presenter->context->eventManager->dispatchEvent(\CmsModule\Events\RenderEvents::onBodyEnd, $_renderEventsArgs); ?>
+</body><?php');
 	}
 
 
