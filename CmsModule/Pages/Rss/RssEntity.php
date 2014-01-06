@@ -27,7 +27,7 @@ class RssEntity extends ExtendedRouteEntity
 
 	/**
 	 * @var string
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 **/
 	protected $class;
 
