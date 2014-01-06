@@ -11,7 +11,11 @@
 	<hr />
 
 	<small class="muted">
+		{cache $presenter->routeId, tags => [
+			'route-' . $presenter->routeId,
+		]}
 		{control itemInfo $presenter->route}
+		{/cache}
 	</small>
 </div>
 
