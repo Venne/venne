@@ -61,7 +61,8 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$textPage = new \CmsModule\Pages\Text\PageEntity;
 		$textPage
 			->getPage()
-			->setPublished(TRUE);
+			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Main page'));
 		$textPage
 			->getExtendedMainRoute()
 			->setName($this->translator->translate('Main page'))
@@ -75,6 +76,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$userPage
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Users'))
 			->setParent($textPage->getPage());
 		$userPage
 			->getExtendedMainRoute()
@@ -87,6 +89,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$tagsPage
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Tags'))
 			->setParent($textPage->getPage());
 		$tagsPage
 			->getExtendedMainRoute()
@@ -99,6 +102,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$error404Page
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Page not found'))
 			->setParent($textPage->getPage());
 		$error404Page
 			->getExtendedMainRoute()
@@ -111,6 +115,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$error403Page
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Forbidden'))
 			->setParent($textPage->getPage());
 		$error403Page
 			->getExtendedMainRoute()
@@ -123,6 +128,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$error500Page
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Internal server error'))
 			->setParent($textPage->getPage());
 		$error500Page
 			->getExtendedMainRoute()
@@ -135,6 +141,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$sitemapPage
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Site map'))
 			->setParent($textPage->getPage());
 		$sitemapPage
 			->getExtendedMainRoute()
@@ -146,6 +153,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$loginPage
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Login page'))
 			->setNavigationShow(FALSE)
 			->setParent($textPage->getPage());
 		$loginPage
@@ -158,6 +166,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$profilePage
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('User profile'))
 			->setNavigationShow(FALSE)
 			->setParent($textPage->getPage());
 		$profilePage
@@ -170,6 +179,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$rssPage
 			->getPage()
 			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('RSS'))
 			->setNavigationShow(FALSE)
 			->setParent($textPage->getPage());
 		$rssPage
