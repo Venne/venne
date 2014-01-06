@@ -225,27 +225,26 @@ class PageListener implements EventSubscriber
 		$em = $eventArgs->getEntityManager();
 		$uow = $em->getUnitOfWork();
 
-		$entities = $this->entities;
 		foreach ($uow->getScheduledEntityInsertions() AS $entity) {
-			foreach ($entities as $class => $i) {
+			foreach ($this->entities as $class => $i) {
 				if (is_a($entity, $class)) {
-					$this->invalidate($class, $entity);
+					$this->invalidate($class, $entity, 'insert');
 				}
 			}
 		}
 
 		foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-			foreach ($entities as $class => $i) {
+			foreach ($this->entities as $class => $i) {
 				if (is_a($entity, $class)) {
-					$this->invalidate($class, $entity);
+					$this->invalidate($class, $entity, 'update');
 				}
 			}
 		}
 
 		foreach ($uow->getScheduledEntityDeletions() AS $entity) {
-			foreach ($entities as $class => $i) {
+			foreach ($this->entities as $class => $i) {
 				if (is_a($entity, $class)) {
-					$this->invalidate($class, $entity);
+					$this->invalidate($class, $entity, 'delete');
 				}
 			}
 		}
@@ -254,8 +253,10 @@ class PageListener implements EventSubscriber
 
 	/**
 	 * @param $class
+	 * @param $entity
+	 * @param $mode
 	 */
-	protected function invalidate($class, $entity)
+	protected function invalidate($class, $entity, $mode)
 	{
 		if (defined("\\$class::CACHE")) {
 			$this->cache->clean(array(
@@ -265,16 +266,27 @@ class PageListener implements EventSubscriber
 
 		if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
 			$this->cache->clean(array(
-				Cache::TAGS => array('page' => $entity->id),
+				Cache::TAGS => array('pages', 'page-'.$mode, 'page-' . $entity->id),
+			));
+		} elseif ($entity instanceof \CmsModule\Content\Entities\ExtendedPageEntity) {
+			$this->cache->clean(array(
+				Cache::TAGS => array('pages', 'page-'.$mode, 'page-' . $entity->page->id),
 			));
 		} elseif ($entity instanceof \CmsModule\Content\Entities\RouteEntity) {
 			$this->cache->clean(array(
-				Cache::TAGS => array('route' => $entity->id),
+				Cache::TAGS => array('routes', 'route-'.$mode, 'route-' . $entity->id),
+			));
+		} elseif ($entity instanceof \CmsModule\Content\Entities\ExtendedRouteEntity) {
+			$this->cache->clean(array(
+				Cache::TAGS => array('routes', 'route-'.$mode, 'route-' . $entity->route->id),
 			));
 		} elseif ($entity instanceof \CmsModule\Content\Entities\ElementEntity) {
+			$this->cache->clean(array(
+				Cache::TAGS => array('routes', 'route-'.$mode),
+			));
 			foreach ($entity->layout->routes as $route) {
 				$this->cache->clean(array(
-					Cache::TAGS => array('route' => $route->id),
+					Cache::TAGS => array('route-' . $route->id),
 				));
 			}
 		}
