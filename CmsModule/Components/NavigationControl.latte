@@ -1,58 +1,54 @@
-{cache $cacheKey, tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
+{capture $navigation}
+{cache $presenter->lang}
+{var $root = isset($root) ? $root : $control->getRoot()}
 
-{var $root = $control->getRoot()}
-
-{if $root}
 {define #menu}
-
-	{var $j = 0}
 	{foreach $items as $item}
-
-		{var $entity = $item}
-		{continueIf $entity===NULL || !$entity->mainRoute->published || ($entity->mainRoute->language && $entity->mainRoute->language != $presenter->lang)}
-
-		{var $active = $control->isActive($entity)}
-		{var $link = $control->getLink($entity)}
-
-		{var $children = ($sub < ($startDepth + $maxDepth - 1)) && ($active || !$followActive) && count($item->children) > 0}
-
 		{if $sub < $startDepth}
-			{if $item->children->count() > 0 && ($active || !$followActive)}
-				{include #menu, "items"=>$item->children, "sub"=>($sub+1), "first"=>true}
+			{if $control->countChildren($item) > 0}
+				{include #menu items => $control->getChildren($item), sub => ($sub+1), first => TRUE}
 			{/if}
+
 		{else}
+			{first}
+			<ul {if !$first}class="dropdown-menu"{else}class="nav navbar-nav"{/if}>
+				{if $first && $root->navigationShow}
+					{include #item children => FALSE, link => $presenter->link('Route', array('route' => $root->mainRoute)), item => $root}
+				{/if}
+			{/first}
 
-{if $j==0}
-<ul {if !$first}class="dropdown-menu"{else}class="nav navbar-nav"{/if}>
-		{if $first && $root->navigationShow}
-            {include #item active=>$presenter->route->url === '', children=>array(), link=>$presenter->link('Route', array('route'=>$root->mainRoute)), entity=>$root, item=>$root}
-		{/if}
-{/if}
-
-			{if $entity->navigationShow}
-				{include #item active=>$active, children=>$children, link=>$link, entity=>$entity, item=>$item, sub=>$sub}
+			{if $item->navigationShow}
+				{include #item children => (($sub < ($startDepth + $maxDepth - 1)) && count($item->children) > 0), item => $item, sub => $sub}
 			{/if}
 		{/if}
 
-		{var $j = $j + 1}
-
+		{last}</ul>{/last}
 	{/foreach}
-{if $j>0}
-</ul>
-{/if}
 {/define}
 
 {define #item}
-	<li class="{if $active}active{/if}{if $children} dropdown{/if}">
-		<a href="{$link}" class="{if $active} active{/if}{if $children} dropdown-toogle" data-toggle="dropdown{/if}">{$entity->navigationTitle}</a>
+	<li n:class="$children ? dropdown" class="-{$item->mainRoute->url}-">
+		<a href="{$control->getLink($item)}"{if $children} class="dropdown-toogle" data-toggle="dropdown"{/if}>{$item->navigationTitle}</a>
 
 		{if $children}
-		{include #menu "items"=>$item->children, "sub"=>($sub+1), first=>false}
+			{include #menu items => $control->getChildren($item), sub => ($sub+1), first => FALSE}
 		{/if}
 	</li>
 {/define}
 
-{include #menu "items"=>$root->children, "sub"=>0, "first"=>true, root=>$root}
-
-{/if}
+{include #menu items => $control->getChildren($root), sub => 0, first => TRUE, root => $control->getRoot()}
 {/cache}
+{/capture}
+
+<?php
+	$d = preg_match_all('/class="-([^-]*)-"/', $navigation, $matches, PREG_SET_ORDER);
+	foreach ($matches as $m) {
+		if ($control->isUrlActive($m[1])) {
+			$navigation = str_replace('"-' . $m[1] . '-"', 'active', $navigation);
+		} else {
+			$navigation = str_replace($m[0], '', $navigation);
+		}
+	}
+?>
+
+{!$navigation}

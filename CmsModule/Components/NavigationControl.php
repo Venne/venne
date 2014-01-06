@@ -15,6 +15,7 @@ use CmsModule\Content\Control;
 use CmsModule\Content\Repositories\PageRepository;
 use CmsModule\Content\WebsiteManager;
 use CmsModule\Pages\Redirect\PageEntity;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -42,6 +43,22 @@ class NavigationControl extends Control
 	}
 
 
+	/**
+	 * @param null $startDepth
+	 * @param null $maxDepth
+	 * @param \CmsModule\Content\Entities\PageEntity $root
+	 */
+	public function renderDefault($startDepth = NULL, $maxDepth = NULL, \CmsModule\Content\Entities\PageEntity $root = NULL)
+	{
+		$this->template->startDepth = $startDepth ? : 0;
+		$this->template->maxDepth = $maxDepth ? : 2;
+		$this->template->root = $root ? : NULL;
+	}
+
+
+	/**
+	 * @return \CmsModule\Content\Entities\PageEntity
+	 */
 	public function getRoot()
 	{
 		return $this->pageRepository->createQueryBuilder('a')
@@ -50,11 +67,60 @@ class NavigationControl extends Control
 	}
 
 
+	/**
+	 * @param \CmsModule\Content\Entities\PageEntity $page
+	 * @return int
+	 */
+	public function countChildren(\CmsModule\Content\Entities\PageEntity $page = NULL)
+	{
+		return $this->getChildrenQb($page)
+			->select('COUNT(a.id)')->getQuery()->getSingleScalarResult();
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\PageEntity $page
+	 * @return array
+	 */
+	public function getChildren(\CmsModule\Content\Entities\PageEntity $page = NULL)
+	{
+		return $this->getChildrenQb($page)
+			->getQuery()->getResult();
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\PageEntity $page
+	 * @return \Doctrine\ORM\QueryBuilder
+	 */
+	private function getChildrenQb(\CmsModule\Content\Entities\PageEntity $page = NULL)
+	{
+		return $this->pageRepository->createQueryBuilder('a')
+			->leftJoin('a.mainRoute', 'r')
+			->andWhere('a.parent = :parent')->setParameter('parent', $page ? $page->id : NULL)
+			->andWhere('(r.language IS NULL OR r.language = :language)')->setParameter('language', $this->presenter->language->id)
+			->andWhere('a.published = :true')
+			->andWhere('r.published = :true')->setParameter('true', TRUE);
+	}
+
+
+	/**
+	 * @param \CmsModule\Content\Entities\PageEntity $page
+	 * @return bool
+	 */
 	public function isActive(\CmsModule\Content\Entities\PageEntity $page)
 	{
-		$currentUrl = $this->presenter->route->url;
-		$url = $page->mainRoute->url;
+		return $this->isUrlActive($page->mainRoute->url);
+	}
 
+
+	/**
+	 * @param $url
+	 * @return bool
+	 */
+	public function isUrlActive($url)
+	{
+		$currentUrl = $this->presenter->slug;
 		return (!$url && !$currentUrl) || ($url && strpos($currentUrl . '/', $url . '/') !== FALSE);
 	}
 
@@ -72,19 +138,4 @@ class NavigationControl extends Control
 		}
 	}
 
-
-	public function renderDefault($startDepth = NULL, $maxDepth = NULL, $followActive = NULL)
-	{
-		$cacheKey = array(
-			$this->presenter->page->id, $this->websiteManager->routePrefix, $startDepth, $maxDepth, $followActive, $this->getPresenter()->lang
-		);
-
-		$this->template->startDepth = $startDepth ? : 0;
-		$this->template->maxDepth = $maxDepth ? : 1;
-		$this->template->followActive = $followActive ? : FALSE;
-		$this->template->cacheKey = array(
-			implode('|', $cacheKey),
-			$this->presenter->user->isLoggedIn() ? $this->presenter->user->getRoles() : NULL,
-		);
-	}
 }
