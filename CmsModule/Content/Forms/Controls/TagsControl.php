@@ -11,13 +11,10 @@
 
 namespace CmsModule\Content\Forms\Controls;
 
-use CmsModule\Content\Entities\RouteEntity;
-use CmsModule\Pages\Tags\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use FormsModule\Controls\TagInput;
+use DoctrineModule\Repositories\BaseRepository;
 use FormsModule\Controls\TagsInput;
-use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,6 +24,9 @@ class TagsControl extends TagsInput
 
 	/** @var array */
 	private $_values;
+
+	/** @var BaseRepository */
+	private $_repository;
 
 
 	public function __construct($label = NULL, $cols = NULL, $maxLength = NULL)
@@ -45,7 +45,7 @@ class TagsControl extends TagsInput
 	 */
 	public function suggestTags($query)
 	{
-		$tags = $this->getTagRepository()->createQueryBuilder('a')
+		$tags = $this->getRepository()->createQueryBuilder('a')
 			->select('a.name')
 			->andWhere('a.name LIKE :name')->setParameter('name', "%{$query}%")
 			->setMaxResults(50)
@@ -64,7 +64,7 @@ class TagsControl extends TagsInput
 	public function getValue()
 	{
 		if ($this->_values === NULL) {
-			$repository = $this->getTagRepository();
+			$repository = $this->getRepository();
 			$this->_values = array();
 
 			foreach (parent::getValue() as $key => $tag) {
@@ -117,10 +117,21 @@ class TagsControl extends TagsInput
 
 
 	/**
-	 * @return TagRepository
+	 * @return BaseRepository
 	 */
-	private function getTagRepository()
+	private function getRepository()
 	{
-		return $this->form->presenter->context->getByType('CmsModule\Pages\Tags\TagRepository');
+		if (!$this->_repository) {
+			$ref = $this->getParent()->data->getReflection()->getProperty($this->name)->getAnnotation('ORM\\ManyToMany');
+
+			$class = $ref['targetEntity'];
+			if (substr($class, 0, 1) != '\\') {
+				$class = '\\' . $this->getParent()->data->getReflection()->getNamespaceName() . '\\' . $class;
+			}
+
+			$this->_repository = $this->form->mapper->entityManager->getRepository($class);
+		}
+
+		return $this->_repository;
 	}
 }
