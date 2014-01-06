@@ -51,11 +51,7 @@ class ErrorPresenter extends FrontPresenter
 			$page = $this->pageRepository->findOneBy(array('special' => $code));
 
 			if ($page) {
-				$route = $this->getEntityManager()
-					->getRepository($page->mainRoute->class)
-					->findOneBy(array('route' => $page->mainRoute->id));
-
-				$this->forward(':Cms:Pages:Text:Route:default', array('route' => $route));
+				$this->forward(':Cms:Pages:Text:Route:', array('routeId' => $page->mainRoute->id, 'pageId' => $page->id));
 			}
 		}
 	}
