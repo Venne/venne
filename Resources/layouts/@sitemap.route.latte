@@ -1,10 +1,11 @@
 {block #page-content}
+	{cache $presenter->routeId, tags => ['pages', 'routes']}
 	{include #page-item items => array($presenter->getRootPage()), floor => 1, skip => ['403', '404', '500']}
+	{/cache}
 {/block}
 
 
 {define #page-item}
-	{dump $skip}
 	<ul n:inner-foreach="$items as $item">
 		{continueIf !$item->mainRoute->published || in_array($item->special, $skip)}
 

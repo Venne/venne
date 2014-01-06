@@ -1,5 +1,11 @@
 {block #page-content}
 
+{cache [$presenter->routeId, $control['pagination']->page], tags => [
+	'page-' . $presenter->pageId,
+	'route-' . $presenter->routeId,
+	'language-' . $presenter->lang,
+]}
 {control pagination, config => [ variant => '@tags.tags' ]}
 {control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@tags.tags' ]}
 {control pagination, config => [ variant => '@tags.tags' ]}
+{/cache}

@@ -1,5 +1,11 @@
 {block #page-content}
 
+{cache $presenter->routeId, tags => [
+	'page-' . $presenter->pageId,
+	'route-' . $presenter->routeId,
+	'language-' . $presenter->lang,
+]}
 {control pagination, config => [ variant => '@menu.route' ]}
 {control itemList $control->getItemsBuilder()->leftJoin('a.page', 'p')->orderBy('p.position', 'ASC')->getQuery()->getResult(), config => [ variant => '@menu.route' ]}
 {control pagination, config => [ variant => '@menu.route' ]}
+{/cache}
