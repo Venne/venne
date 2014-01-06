@@ -1,23 +1,33 @@
-<form class="navbar-form navbar-left" action="{plink Route special=>'search'}" method="get">
-	<input name="search" type="text" id="{!$control->name}_myTypeahead" class="form-control" placeholder="{_Search}" autocomplete="off" />
-</form>
+{cache}
+	{var $page = $presenter->pageRepository->findOneBy(array('special' => 'search'))}
 
-<script type="text/javascript">
-	$(function () {
-		$('#{!$control->name}_myTypeahead').typeahead({
-			name: 'countries',
-			remote: {link search!} + '&{!$control->name}-query=%QUERY&{!$control->name}-limit={!$limit}',
-			template: [
-				'<div onClick="window.location = \'{l}{l}url{r}{r}\';">',
-				'{l}{l}#photo{r}{r}<img class="tt-suggestion-photo" src="{l}{l}photo{r}{r}" />{l}{l}/photo{r}{r}',
-				'<p class="tt-suggestion-name">{l}{l}{l}name{r}{r}{r}</p>',
-				'<p class="tt-suggestion-description">{l}{l}{l}description{r}{r}{r}</p>',
-				'</div>'
-			].join(''),
-			engine: Hogan,
-			limit: {$limit}
-		}).on('typeahead:selected', function(ev, data){
-					window.location = data.url;
-		});
-	});
-</script>
+	{cache tags => [
+		'page' . $page->id,
+	]}
+
+		<form class="navbar-form navbar-left" action="{plink Route route => $page->mainRoute}" method="get">
+			<input name="search" type="text" id="{!$control->name}_myTypeahead" class="form-control" placeholder="{_Search}" autocomplete="off" />
+		</form>
+
+		<script type="text/javascript">
+			$(function () {
+				$('#{!$control->name}_myTypeahead').typeahead({
+					name: 'countries',
+					remote: {link search!} + '&{!$control->name}-query=%QUERY&{!$control->name}-limit={!$limit}',
+					template: [
+						'<div onClick="window.location = \'{l}{l}url{r}{r}\';">',
+						'{l}{l}#photo{r}{r}<img class="tt-suggestion-photo" src="{l}{l}photo{r}{r}" />{l}{l}/photo{r}{r}',
+						'<p class="tt-suggestion-name">{l}{l}{l}name{r}{r}{r}</p>',
+						'<p class="tt-suggestion-description">{l}{l}{l}description{r}{r}{r}</p>',
+						'</div>'
+					].join(''),
+					engine: Hogan,
+					limit: {$limit}
+				}).on('typeahead:selected', function(ev, data){
+							window.location = data.url;
+						});
+			});
+		</script>
+
+	{/cache}
+{/cache}
