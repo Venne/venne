@@ -1,16 +1,12 @@
-{cache [$presenter->lang, $presenter->route->id], tags => [\CmsModule\Content\Entities\PageEntity::CACHE, \CmsModule\Content\Entities\RouteEntity::CACHE, \CmsModule\Pages\Tags\TagEntity::CACHE, \CmsModule\Content\Entities\LanguageEntity::CACHE]}
-
 <ul class="nav navbar-nav pull-right">
 	<li class="dropdown">
 		<a href="javaScript:;" class="dropdown-toogle" data-toggle="dropdown"><span class="glyphicon glyphicon-flag"></span> {$control->currentLanguage->short} <b class="caret"></b></a>
 
 		<ul class="dropdown-menu">
 		{foreach $control->getItems() as $language}
-			<li><a href="{plink changeLanguage! $language->alias}">{$language}</a></li>
+			<li><a href="?do=changeLanguage&alias={$language->alias}">{$language}</a></li>
 		{/foreach}
 		</ul>
 
 	</li>
 </ul>
-
-{/cache}
