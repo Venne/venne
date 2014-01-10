@@ -284,16 +284,20 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	 */
 	public function handleChangeLanguage($alias)
 	{
+		if (($language = $this->languageRepository->findOneBy(array('alias' => $alias))) === NULL) {
+			throw new BadRequestException;
+		}
+
 		if (!$this->getPage()->getLanguage()) {
-			$this->getPage()->locale = $this->getRoute()->locale = $this->languageRepository->findOneBy(array('alias' => $alias));
+			$this->getPage()->locale = $this->getRoute()->locale = $language;
 			$this->redirect('this', array('route' => $this->getRoute(), 'lang' => $alias));
 		}
 
 		$page = $this->getPage()->parent;
 		do {
-			$page->mainRoute->locale = $alias;
+			$page->mainRoute->locale = $language;
 			$this->entityManager->refresh($page->mainRoute);
-			if (!$page->getLanguage() || $page->getLanguage() == $alias) {
+			if (!$page->getLanguage() || $page->getLanguage() == $language) {
 				$this->redirect('this', array('route' => $page->mainRoute, 'lang' => $alias));
 			}
 			$page = $page->parent;
