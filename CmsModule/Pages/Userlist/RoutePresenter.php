@@ -68,4 +68,24 @@ class RoutePresenter extends ItemsPresenter
 
 		return $qb;
 	}
+
+
+	/**
+	 * @return \Doctrine\ORM\QueryBuilder
+	 */
+	protected function getQueryBuilder()
+	{
+		$qb = $this->getRepository()->createQueryBuilder('a')
+			->join('a.route', 'r')
+			->andWhere('r.published = :true')->setParameter('true', TRUE)
+			->andWhere('r.released <= :released')->setParameter('released', new \DateTime)
+			->andWhere('(r.expired >= :expired OR r.expired IS NULL)')->setParameter('expired', new \DateTime);
+
+		if (count($this->websiteManager->languages) > 1) {
+			$qb->andWhere('(r.language IS NULL OR r.language = :language)')->setParameter('language', $this->getLanguage()->id);
+		}
+
+		return $qb;
+	}
+
 }

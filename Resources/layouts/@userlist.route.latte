@@ -5,7 +5,7 @@
 	'route-' . $presenter->routeId,
 	'language-' . $presenter->lang,
 ]}
-{control pagination, config => [ variant => '@users.users' ]}
-{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@users.users' ]}
-{control pagination, config => [ variant => '@users.users' ]}
+{control pagination, config => [ variant => '@userlist.route' ]}
+{control itemList $control->getItemsBuilder()->orderBy('a.name', 'ASC')->getQuery()->getResult(), config => [ variant => '@userlist.route' ]}
+{control pagination, config => [ variant => '@userlist.route' ]}
 {/cache}
