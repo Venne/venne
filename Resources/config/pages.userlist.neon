@@ -1,0 +1,18 @@
+services:
+	cms.pages.userlistPage:
+		class: CmsModule\Content\ContentType('CmsModule\Pages\Userlist\PageEntity')
+		setup:
+			- addSection('Settings', @cms.pages.userlist.pageFormFactory)
+		tags: [contentType: 'website lists.user list']
+
+
+	cms.pages.userlist.pageFormFactory:
+		class: CmsModule\Pages\Userlist\PageFormFactory
+		setup:
+			- injectFactory(@cms.admin.basicFormFactory)
+		tags: [component]
+
+factories:
+	cms.pages.userlist.routePresenter:
+		class: CmsModule\Pages\Userlist\RoutePresenter
+		tags: [presenter]

@@ -153,6 +153,7 @@ includes:
 	- commands.neon
 	- pages.text.neon
 	- pages.users.neon
+	- pages.userlist.neon
 	- pages.redirect.neon
 	- pages.registration.neon
 	- pages.tags.neon
