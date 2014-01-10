@@ -17,12 +17,14 @@ use CmsModule\Security\Entities\LoginEntity;
 use CmsModule\Security\Entities\LoginProviderEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Nette\Callback;
 use Nette\Security\IIdentity;
 use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity(repositoryClass="\CmsModule\Security\Repositories\UserRepository")
+ * @ORM\EntityListeners({"\CmsModule\Content\Listeners\ExtendedUserListener"})
  * @ORM\Table(name="users")
  */
 class UserEntity extends ExtendedRouteEntity implements IIdentity
@@ -118,6 +120,16 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 	 */
 	protected $resetKey;
 
+	/**
+	 * @var ExtendedUserEntity
+	 */
+	protected $extendedUser;
+
+	/**
+	 * @var callable
+	 */
+	private $extendedUserCallback;
+
 
 	protected function startup()
 	{
@@ -129,6 +141,28 @@ class UserEntity extends ExtendedRouteEntity implements IIdentity
 		$this->routes = new ArrayCollection;
 		$this->generateNewSalt();
 		$this->created = new \DateTime;
+	}
+
+
+	/**
+	 * @param callable $extendedUserCallback
+	 */
+	public function setExtendedUserCallback($extendedUserCallback)
+	{
+		$this->extendedUserCallback = $extendedUserCallback;
+	}
+
+
+	/**
+	 * @return ExtendedUserEntity
+	 */
+	public function getExtendedUser()
+	{
+		if (!$this->extendedUser) {
+			$this->extendedUser = Callback::create($this->extendedUserCallback)->invoke();
+		}
+
+		return $this->extendedUser;
 	}
 
 
