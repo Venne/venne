@@ -34,7 +34,7 @@ class RolesPresenter extends BasePresenter
 	/** @var RoleFormFactory */
 	protected $roleForm;
 
-	/** @var Callback */
+	/** @var PermissionsFormFactory */
 	protected $permissionsForm;
 
 
