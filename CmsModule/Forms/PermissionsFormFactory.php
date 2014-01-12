@@ -63,7 +63,7 @@ class PermissionsFormFactory extends FormFactory
 
 
 	/**
-	 * @param AdministrationManager $roleRepository
+	 * @param AuthorizatorFactory $authorizatorFactory
 	 */
 	public function injectAuthorizatorFactory(AuthorizatorFactory $authorizatorFactory)
 	{
@@ -90,7 +90,7 @@ class PermissionsFormFactory extends FormFactory
 
 
 	/**
-	 * @param IControlVerifierReader $controlVerifier
+	 * @param IControlVerifierReader $reader
 	 */
 	public function injectControlVerifier(IControlVerifierReader $reader)
 	{
@@ -126,7 +126,7 @@ class PermissionsFormFactory extends FormFactory
 			}
 		}
 
-		$form->addSubmit('_submit', 'Save');
+		$form->addSaveButton('Save');
 	}
 
 
