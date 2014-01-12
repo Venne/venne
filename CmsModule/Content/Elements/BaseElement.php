@@ -248,7 +248,6 @@ abstract class BaseElement extends Control implements IElement
 				if ($this->pageEntity) {
 					$this->element = $this->getElementRepository()->findOneBy(array(
 							'name' => $this->name,
-							'layout' => $this->layoutEntity->id,
 							'page' => $this->pageEntity->id,
 							'mode' => ElementEntity::MODE_PAGE,
 						) + $i);
@@ -261,7 +260,6 @@ abstract class BaseElement extends Control implements IElement
 				if ($this->pageEntity && $this->routeEntity) {
 					$this->element = $this->getElementRepository()->findOneBy(array(
 							'name' => $this->name,
-							'layout' => $this->layoutEntity->id,
 							'page' => $this->pageEntity->id,
 							'route' => $this->routeEntity->id,
 							'mode' => ElementEntity::MODE_ROUTE,
