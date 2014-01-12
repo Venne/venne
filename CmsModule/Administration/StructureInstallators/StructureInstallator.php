@@ -179,12 +179,25 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$rssPage
 			->getPage()
 			->setPublished(TRUE)
-			->setNavigationTitle($this->translator->translate('RSS'))
+			->setNavigationTitle('RSS')
 			->setNavigationShow(FALSE)
 			->setParent($textPage->getPage());
 		$rssPage
 			->getExtendedMainRoute()
 			->setName('RSS')
+			->getRoute()
+			->setPublished(TRUE);
+
+		$searchPage = new \CmsModule\Pages\Search\PageEntity;
+		$searchPage
+			->getPage()
+			->setPublished(TRUE)
+			->setNavigationTitle($this->translator->translate('Search'))
+			->setNavigationShow(FALSE)
+			->setParent($textPage->getPage());
+		$searchPage
+			->getExtendedMainRoute()
+			->setName($this->translator->translate('Search'))
 			->getRoute()
 			->setPublished(TRUE);
 
@@ -198,6 +211,7 @@ class StructureInstallator extends Object implements IStructureInstallator
 		$em->persist($loginPage);
 		$em->persist($profilePage);
 		$em->persist($rssPage);
+		$em->persist($searchPage);
 		$em->flush();
 	}
 
