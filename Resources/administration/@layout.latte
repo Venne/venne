@@ -47,7 +47,7 @@
 
 		{css @dynatreeModule/skin-bootstrap/ui.dynatree.css}
 
-		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
+		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter && (!$presenter instanceof CmsModule\Administration\Presenters\FilesPresenter || ($presenter instanceof CmsModule\Administration\Presenters\FilesPresenter && !$presenter->browserMode))}
 			{js @ajaxModule/history/history.ajax.js}
 		{/if}
 
