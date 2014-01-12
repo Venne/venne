@@ -184,7 +184,7 @@ class PanelControl extends Control
 
 			$data2 = array();
 			foreach ($this->templateManager->getLayoutsByModule($moduleName) as $name => $key) {
-				$s = array('title' => '@' . $name . ' <small class="muted">' . $this->template->translate('layout') . '</small>', 'key' => $key);
+				$s = array('isFolder' => TRUE, 'title' => '@' . $name . ' <small class="muted">' . $this->template->translate('layout') . '</small>', 'key' => $key);
 
 				foreach ($this->templateManager->getTemplatesByModule($moduleName, $name) as $name => $key) {
 					$item2 = array('title' => $name . ' <small class="muted">' . $this->template->translate('template') . '</small>', 'key' => $key);

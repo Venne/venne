@@ -104,12 +104,9 @@ class OverloadFormFactory extends FormFactory
 
 			$name = substr($name, 0, -9);
 			$name = explode('.', $name);
+			$name = implode(':', $name);
 
-			foreach ($name as &$n) {
-				$n = ucfirst($n);
-			}
-
-			$presenters[$class] = implode(':', $name);
+			$presenters[$name] = $name;
 		}
 
 		$components = array();
@@ -143,15 +140,13 @@ class OverloadFormFactory extends FormFactory
 				}
 				$target .= '/' . $baseName;
 			} else {
-				$file = $this->getFileByClass($values['presenter']);
-				$baseName = $file->getBasename('Presenter.php');
-				$template = $file->getPath() . '/templates/' . $baseName . '/default.latte';
+				$presenter = explode(':', $values['presenter']);
+				$module = lcfirst($presenter[0]);
+				$page = lcfirst($presenter[2]);
+				$presenter = lcfirst($presenter[3]);
 
-				$target = $this->moduleHelpers->expandPath('@' . $values['target'] . 'Module', 'Resources/layouts');
-				if ($values['layout']) {
-					$target .= '/' . $values['layout'];
-				}
-				$target .= '/' . str_replace(':', '.', $this->presenterFactory->unformatPresenterClass($values['presenter'])) . '.default.latte';
+				$template = $this->moduleHelpers->expandPath('@' . $module . 'Module/@' . $page . '.' . $presenter . '.latte', 'Resources/layouts');
+				$target = $this->moduleHelpers->expandPath('@' . $values['target'] . 'Module/' . ($values['layout'] ? $values['layout'] . '/' : '') . '@' . $page . '.' . $presenter . '.latte', 'Resources/layouts');
 			}
 
 			if (!copy($template, $target)) {
@@ -170,4 +165,5 @@ class OverloadFormFactory extends FormFactory
 		$reflector = new \ReflectionClass($class);
 		return new \SplFileInfo($reflector->getFileName());
 	}
+
 }
