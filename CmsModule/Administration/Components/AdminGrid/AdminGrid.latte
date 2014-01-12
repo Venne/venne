@@ -39,7 +39,7 @@
 				{control table}
 			{/if}
 		{else}
-			{if $control->id}
+			{if $control->formName}
 				<ul class="breadcrumb">
 					<li><a class="ajax" n:href="floor floor=>NULL, floorId=>NULL, mode => NULL, formName=>NULL, id=>NULL">{_Root}</a></li>
 					<li class="active">{$control->id ? $control['actionForm']->data : $control['navbarForm']->data}</li>
