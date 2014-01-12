@@ -297,11 +297,6 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 		$this->cacheMode = self::DEFAULT_CACHE_MODE;
 		$this->created = new \DateTime;
 		$this->released = new \DateTime;
-
-		$this->dir = new DirEntity;
-		$this->dir->setParent($this->page->getDir());
-		$this->dir->setInvisible(TRUE);
-		$this->dir->setName(Strings::webalize(get_class($this)) . Strings::random());
 	}
 
 
@@ -985,6 +980,13 @@ class RouteEntity extends \DoctrineModule\Entities\IdentifiedEntity
 	 */
 	public function getDir()
 	{
+		if (!$this->dir) {
+			$this->dir = new DirEntity;
+			$this->dir->setParent($this->page->getDir());
+			$this->dir->setInvisible(TRUE);
+			$this->dir->setName(Strings::webalize(get_class($this)) . Strings::random());
+		}
+
 		return $this->dir;
 	}
 
