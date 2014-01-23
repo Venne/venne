@@ -497,8 +497,8 @@ class PagePresenter extends \CmsModule\Presenters\FrontPresenter
 	{
 		$this->getCache()->save($this->routeId, $data, array(
 			Cache::TAGS => array(
-				'route' => $this->routeId,
-				'page' => $this->pageId,
+				'route-' . $this->routeId,
+				'page-' . $this->pageId,
 			),
 		));
 	}
