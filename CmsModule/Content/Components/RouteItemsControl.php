@@ -16,6 +16,7 @@ use CmsModule\Administration\Presenters\ContentPresenter;
 use CmsModule\Content\Entities\ExtendedPageEntity;
 use DoctrineModule\Repositories\BaseRepository;
 use Grido\DataSources\Doctrine;
+use Nette\Application\BadRequestException;
 use Venne\Application\UI\Control;
 
 /**
