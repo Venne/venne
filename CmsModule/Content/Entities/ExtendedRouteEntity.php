@@ -38,7 +38,7 @@ abstract class ExtendedRouteEntity extends IdentifiedEntity
 
 	/**
 	 * @var ExtendedPageEntity
-	 * @ORM\ManyToOne(targetEntity="\CmsModule\Blank")
+	 * @ORM\ManyToOne(targetEntity="::dynamic")
 	 * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $extendedPage;
@@ -81,7 +81,7 @@ abstract class ExtendedRouteEntity extends IdentifiedEntity
 	}
 
 
-	public static function getPageName()
+	public static function getExtendedPageName()
 	{
 		return static::getReflection()->getNamespaceName() . '\PageEntity';
 	}

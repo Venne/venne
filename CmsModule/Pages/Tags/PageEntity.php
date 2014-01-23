@@ -32,7 +32,7 @@ class PageEntity extends ExtendedPageEntity
 	/**
 	 * @return string
 	 */
-	public static function getMainRouteName()
+	public static function getExtendedMainRouteName()
 	{
 		return static::getReflection()->getNamespaceName() . '\TagsEntity';
 	}

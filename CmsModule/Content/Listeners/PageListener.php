@@ -100,7 +100,6 @@ class PageListener implements EventSubscriber
 	{
 		return array(
 			Events::onFlush,
-			Events::loadClassMetadata,
 			Events::postLoad,
 		);
 	}
@@ -127,93 +126,6 @@ class PageListener implements EventSubscriber
 			$this->languageEntity = $this->locale instanceof LanguageEntity ? $this->locale : $this->getLanguageRepository()->findOneBy(array('alias' => $this->locale));
 		}
 		return $this->languageEntity;
-	}
-
-
-	private $_l = FALSE;
-
-
-	/**
-	 * @param LoadClassMetadataEventArgs $args
-	 */
-	public function loadClassMetadata(LoadClassMetadataEventArgs $args)
-	{
-		$meta = $args->getClassMetadata();
-
-		if ($this->_l) {
-			if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
-				if ($meta->associationMappings['extendedMainRoute']['targetEntity'] === 'CmsModule\Blank') {
-					$meta->associationMappings['extendedMainRoute']['targetEntity'] = $this->getMainRouteByPage($meta->name);
-				}
-			} elseif (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
-				if ($meta->associationMappings['extendedPage']['targetEntity'] === 'CmsModule\Blank') {
-					$meta->associationMappings['extendedPage']['targetEntity'] = $this->_l;
-				}
-			}
-			return;
-		}
-
-		if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
-			$em = $args->getEntityManager();
-			$mainRouteEntityName = $this->getMainRouteByPage($meta->name);
-
-			$this->_l = $meta->name;
-			$routeMeta = $em->getClassMetadata($mainRouteEntityName);
-			$this->_l = FALSE;
-
-			$meta->associationMappings['extendedMainRoute']['targetEntity'] = $mainRouteEntityName;
-			$routeMeta->associationMappings['extendedPage']['targetEntity'] = $meta->name;
-		} else if (is_subclass_of($meta->name, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
-			$em = $args->getEntityManager();
-			$pageEntityName = $this->getPageByRoute($meta->name);
-
-			$this->_l = $meta->name;
-			$pageMeta = $em->getClassMetadata($pageEntityName);
-			$this->_l = FALSE;
-
-			$meta->associationMappings['extendedPage']['targetEntity'] = $pageEntityName;
-			$pageMeta->associationMappings['extendedMainRoute']['targetEntity'] = $this->getMainRouteByPage($pageEntityName);
-		}
-	}
-
-
-	/**
-	 * @param $class
-	 * @return string
-	 * @throws \Nette\InvalidArgumentException
-	 */
-	private function getMainRouteByPage($class)
-	{
-		if (($ret = $class::getMainRouteName()) === NULL) {
-			throw new InvalidArgumentException("Entity '{$class}' must implemented method 'getMainRouteName'.");
-		}
-		if (!class_exists($ret)) {
-			throw new InvalidArgumentException("Class '{$ret}' does not exist.");
-		}
-		if (!is_subclass_of($ret, 'CmsModule\Content\Entities\ExtendedRouteEntity')) {
-			throw new InvalidArgumentException("Method 'getMainRouteName' on '{$class}' must return subclass of 'CmsModule\Content\Entities\ExtendedRouteEntity'. '{$ret}' is given.");
-		}
-		return $ret;
-	}
-
-
-	/**
-	 * @param $class
-	 * @return string
-	 * @throws \Nette\InvalidArgumentException
-	 */
-	private function getPageByRoute($class)
-	{
-		if (($ret = $class::getPageName()) === NULL) {
-			throw new InvalidArgumentException("Entity '{$class}' must implemented method 'getPageName'.");
-		}
-		if (!class_exists($ret)) {
-			throw new InvalidArgumentException("Class '{$ret}' does not exist.");
-		}
-		if (!is_subclass_of($ret, 'CmsModule\Content\Entities\ExtendedPageEntity')) {
-			throw new InvalidArgumentException("Method 'getPageName' on '{$class}' must return subclass of 'CmsModule\Content\Entities\ExtendedPageEntity'. '{$ret}' is given.");
-		}
-		return $ret;
 	}
 
 

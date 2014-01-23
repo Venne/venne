@@ -42,7 +42,7 @@ class Error404PageEntity extends ExtendedPageEntity
 	/**
 	 * @return string
 	 */
-	public static function getMainRouteName()
+	public static function getExtendedMainRouteName()
 	{
 		return 'CmsModule\Pages\Errors\Error404RouteEntity';
 	}

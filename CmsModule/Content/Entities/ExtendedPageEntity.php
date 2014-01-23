@@ -58,7 +58,7 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 
 	/**
 	 * @var ExtendedRouteEntity
-	 * @ORM\OneToOne(targetEntity="\CmsModule\Blank", cascade={"persist"})
+	 * @ORM\OneToOne(targetEntity="::dynamic", cascade={"persist"})
 	 * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $extendedMainRoute;
@@ -113,7 +113,7 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 	 */
 	private function createMainRoute()
 	{
-		return $this->createRoute(static::getMainRouteName());
+		return $this->createRoute(static::getExtendedMainRouteName());
 	}
 
 
@@ -140,10 +140,7 @@ abstract class ExtendedPageEntity extends IdentifiedEntity
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public static function getMainRouteName()
+	public static function getExtendedMainRouteName()
 	{
 		return static::getReflection()->getNamespaceName() . '\RouteEntity';
 	}

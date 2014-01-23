@@ -30,7 +30,7 @@ class Error403RouteEntity extends ExtendedRouteEntity
 	/**
 	 * @return string
 	 */
-	public static function getPageName()
+	public static function getExtendedPageName()
 	{
 		return 'CmsModule\Pages\Errors\Error403PageEntity';
 	}
