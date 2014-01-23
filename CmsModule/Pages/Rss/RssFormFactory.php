@@ -43,7 +43,7 @@ class RssFormFactory extends FormFactory
 			->setPrompt('--------');
 		$form->addManyToMany('targetPages', 'Target pages');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

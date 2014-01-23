@@ -151,7 +151,7 @@ class BasicFormFactory extends FormFactory
 			}
 		}
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 
 		$js = '

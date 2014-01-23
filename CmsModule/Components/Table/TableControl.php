@@ -512,7 +512,7 @@ class TableControl extends Control
 		$form->addSelect('perPage')->setItems($this->perPageList, FALSE)->setDefaultValue($this->getParameter('perPage', $this->defaultPerPage));
 
 		$form->addSelect('_action', 'Action', $items)->getControlPrototype()->class[] = 'ajax';
-		$form->addSubmit('_submit', 'Apply')->getControlPrototype()->class[] = 'ajax';
+		$form->addSaveButton('Apply')->getControlPrototype()->class[] = 'ajax';
 		$form->addSubmit('_filters', 'Apply')->getControlPrototype()->class[] = 'ajax';
 		$form->addSubmit('_reset', 'Reset')->getControlPrototype()->class[] = 'ajax';
 		$form->addSubmit('perPageSubmit', 'Apply')->getControlPrototype()->class[] = 'ajax';

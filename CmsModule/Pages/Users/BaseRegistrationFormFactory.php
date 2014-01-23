@@ -44,6 +44,7 @@ abstract class BaseRegistrationFormFactory extends FormFactory implements IRegis
 
 	public function handleAttached(Form $form)
 	{
+		$form->setCurrentGroup();
 		$form->addSaveButton('Sign up');
 	}
 

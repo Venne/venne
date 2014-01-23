@@ -49,6 +49,7 @@ class TagFormFactory extends FormFactory
 			$c->addCondition($form::EQUAL, TRUE)->toggle('group-' . $language->id);
 		}
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

@@ -43,7 +43,7 @@ class PublishFormFactory extends FormFactory
 			->addRule($form::FILLED);
 		$mainRoute->addDateTime('expired', 'Expire');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

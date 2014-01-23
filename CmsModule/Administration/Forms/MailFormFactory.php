@@ -56,7 +56,7 @@ class MailFormFactory extends FormFactory
 		$form->addGroup('Text');
 		$form->addTextArea('text');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

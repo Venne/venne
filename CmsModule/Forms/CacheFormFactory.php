@@ -33,7 +33,7 @@ class CacheFormFactory extends FormFactory
 		$form->addGroup('Namespace')->setOption('id', 'namespace');
 		$form->addText('namespace');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Clear');
 	}
 }

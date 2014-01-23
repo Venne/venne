@@ -80,8 +80,8 @@ class WebsiteFormFactory extends FormFactory
 		$form->addGroup()->setOption('id', 'cacheValue');
 		$form->addSelect('cacheValue', 'Minutes')->setItems(array(1, 2, 5, 10, 15, 20, 30, 40, 50, 60, 90, 120), FALSE);
 
-		$form->addGroup();
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 
 

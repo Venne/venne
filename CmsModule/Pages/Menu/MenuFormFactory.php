@@ -28,7 +28,7 @@ class MenuFormFactory extends FormFactory
 		$form->addGroup('Settings');
 		$form->addText('itemsPerPage', 'Items per page');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

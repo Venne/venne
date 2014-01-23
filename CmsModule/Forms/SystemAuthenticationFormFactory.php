@@ -89,8 +89,8 @@ class SystemAuthenticationFormFactory extends FormFactory
 			->addConditionOn($enabled, $form::EQUAL, TRUE)
 			->addRule($form::FILLED);
 
-		$form->addGroup();
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 
 }

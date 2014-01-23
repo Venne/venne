@@ -103,8 +103,8 @@ class SystemDatabaseFormFactory extends FormFactory
 			$form->addSelect('_backup', 'Backup name', $backups)->setPrompt('--------');
 		}
 
-		$form->addGroup();
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 
 

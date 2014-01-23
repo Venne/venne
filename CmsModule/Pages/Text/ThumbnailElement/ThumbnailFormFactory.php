@@ -62,7 +62,7 @@ class ThumbnailFormFactory extends AbstractImageFormFactory
 			))->setPrompt('-- default --');
 		}
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

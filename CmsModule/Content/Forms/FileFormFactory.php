@@ -51,7 +51,7 @@ class FileFormFactory extends FormFactory
 		$form->addGroup()->setOption('id', 'form-permissions');
 		$form->addManyToMany('read', 'Read');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

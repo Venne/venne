@@ -84,6 +84,7 @@ class OverloadFormFactory extends FormFactory
 
 		$form->addSelect('layout', 'Target layout');
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

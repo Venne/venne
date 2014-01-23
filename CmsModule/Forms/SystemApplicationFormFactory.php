@@ -115,7 +115,7 @@ class SystemApplicationFormFactory extends FormFactory
 		$doctrine->setCurrentGroup($form->addGroup('Doctrine'));
 		$doctrine->addSelect('cacheClass', 'Cache type', DoctrineExtension::getCaches());
 
-		$form->addGroup();
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 }

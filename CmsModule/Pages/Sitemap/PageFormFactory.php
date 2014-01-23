@@ -42,6 +42,7 @@ class PageFormFactory extends FormFactory
 		$form->addText('maxWidth', 'Maximal width')
 			->addRule($form::INTEGER);
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

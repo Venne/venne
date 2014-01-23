@@ -46,6 +46,7 @@ class LayoutFormFactory extends FormFactory
 		$form->addText('name', 'Name');
 		$form->addSelect('file', 'File')->setItems($this->templateManager->getLayouts());
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

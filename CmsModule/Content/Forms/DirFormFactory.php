@@ -41,7 +41,7 @@ class DirFormFactory extends FormFactory
 		$form->addCheckbox('protected', 'Protected');
 		$form->addCheckbox('recursively', 'Change recursively');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

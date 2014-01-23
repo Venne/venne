@@ -29,7 +29,7 @@ class UserFormFactory extends FormFactory
 		$form->addText('itemsPerPage', 'Items per page');
 		$form->addManyToMany('roles', 'Roles');
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

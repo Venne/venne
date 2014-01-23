@@ -94,7 +94,8 @@ class LayouteditFormFactory extends FormFactory
 		$form->addCode('text', NULL, NULL, 30)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
 
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 
 

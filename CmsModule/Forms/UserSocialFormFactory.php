@@ -41,7 +41,7 @@ class UserSocialFormFactory extends FormFactory
 	{
 		$form->addGroup();
 		$user = $form->addOne('user');
-		$logins = $user->addMany('loginProviders', function (\Venne\Forms\Container $container) use ($form) {
+		$user->addMany('loginProviders', function (\Venne\Forms\Container $container) use ($form) {
 			$container->setCurrentGroup($form->addGroup($container->data->type));
 			$container->addSelect('type', 'Type')->setItems($this->securityManager->getLoginProviders(), false);
 			$container->addText('uid', 'UID');
@@ -49,7 +49,7 @@ class UserSocialFormFactory extends FormFactory
 			$container->addSubmit('remove', 'Remove')->addRemoveOnClick();
 		});
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

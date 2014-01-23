@@ -126,6 +126,7 @@ class PermissionsFormFactory extends FormFactory
 			}
 		}
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 

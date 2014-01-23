@@ -56,6 +56,7 @@ class SystemAccountFormFactory extends FormFactory
 		$form['password']->addRule($form::FILLED, 'Enter password')->addRule($form::MIN_LENGTH, 'Password is short', 5);
 		$form['_password']->addRule($form::EQUAL, 'Invalid re password', $form['password']);
 
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 }

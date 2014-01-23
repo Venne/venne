@@ -63,7 +63,8 @@ class SystemAdministrationFormFactory extends FormFactory
 		$form->addText('routePrefix', 'Route prefix');
 		$form->addText('defaultPresenter', 'Default presenter');
 
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 
 

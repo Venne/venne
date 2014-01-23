@@ -105,8 +105,8 @@ class SystemRegistrationFormFactory extends FormFactory
 		$registrations->addSubmit('_add', 'Add')
 			->addCreateOnClick();
 
-		$form->addGroup();
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 
 

@@ -46,6 +46,7 @@ class LoginFormFactory extends FormFactory
 			->addConditionOn($enabled, $form::EQUAL, TRUE)
 			->addRule($form::FILLED);
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

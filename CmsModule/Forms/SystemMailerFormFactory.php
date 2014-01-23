@@ -80,7 +80,7 @@ class SystemMailerFormFactory extends FormFactory
 			->addCondition($form::FILLED)
 			->addRule($form::INTEGER, 'Enter number format');
 
-		$form->addGroup();
-		$form->addSubmit('_submit', 'Save');
+		$form->setCurrentGroup();
+		$form->addSaveButton('Save');
 	}
 }

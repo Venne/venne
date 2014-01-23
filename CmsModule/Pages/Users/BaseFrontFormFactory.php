@@ -66,6 +66,7 @@ abstract class BaseFrontFormFactory extends FormFactory
 
 	public function handleAttached(Form $form)
 	{
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 
 		if ($form->isSubmitted()) {

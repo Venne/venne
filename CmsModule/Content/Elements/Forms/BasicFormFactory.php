@@ -61,7 +61,7 @@ class BasicFormFactory extends FormFactory
 			->addConditionOn($mode, $form::EQUAL, 4)->addRule($form::FILLED);
 
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

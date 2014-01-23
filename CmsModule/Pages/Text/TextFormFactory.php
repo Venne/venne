@@ -40,6 +40,7 @@ class TextFormFactory extends FormFactory
 		$route['text']->getControlPrototype()->data['cms-route'] = $form->data->page->mainRoute->id;
 		$route['text']->getControlPrototype()->data['cms-page'] = $form->data->page->id;
 
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }

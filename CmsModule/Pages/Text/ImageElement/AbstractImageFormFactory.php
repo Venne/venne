@@ -71,7 +71,7 @@ abstract class AbstractImageFormFactory extends FormFactory
 			))->setPrompt('-- default --');
 		}
 
-		$form->addGroup();
+		$form->setCurrentGroup();
 		$form->addSaveButton('Save');
 	}
 }
