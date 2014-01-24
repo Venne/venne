@@ -24,6 +24,6 @@ class ItemControl extends Control
 
 	public function renderDefault($route = NULL)
 	{
-		$this->template->route = (isset($route[0]) && ($route[0] instanceof RouteEntity || $route[0] instanceof ExtendedRouteEntity)) ? $route[0] : $route;
+		$this->template->route = (is_array($route) && isset($route[0]) && ($route[0] instanceof RouteEntity || $route[0] instanceof ExtendedRouteEntity)) ? $route[0] : $route;
 	}
 }
