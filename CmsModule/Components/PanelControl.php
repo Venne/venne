@@ -12,6 +12,7 @@
 namespace CmsModule\Components;
 
 use CmsModule\Content\ContentManager;
+use CmsModule\Content\Entities\ExtendedPageEntity;
 use Nette\Http\SessionSection;
 use Venne\Application\UI\Control;
 use Venne\Module\TemplateManager;
@@ -235,6 +236,10 @@ class PanelControl extends Control
 
 		$types = $this->contentManager->getContentTypes();
 		foreach ($dql->getQuery()->getResult() as $page) {
+			if (!$page->isAllowedInBackend($this->presenter->user, ExtendedPageEntity::ADMIN_PRIVILEGE_SHOW)) {
+				continue;
+			}
+
 			$type = explode('.', $types[$page->class]);
 			$type = $this->presenter->template->translate(end($type));
 			$item = array('title' => $page->mainRoute->name . ' <small class="muted">' . $type . '</small>', 'key' => $page->id);
