@@ -17,16 +17,13 @@ use CmsModule\Content\Entities\LanguageEntity;
 use CmsModule\Content\Entities\PageEntity;
 use CmsModule\Content\Entities\RouteEntity;
 use CmsModule\Content\Repositories\LanguageRepository;
-use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\DI\Container;
-use Nette\InvalidArgumentException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -176,29 +173,36 @@ class PageListener implements EventSubscriber
 			));
 		}
 
-		if ($entity instanceof \CmsModule\Content\Entities\PageEntity) {
+		if ($entity instanceof \CmsModule\Content\Entities\PageEntity || ($entity instanceof \CmsModule\Content\Entities\ExtendedPageEntity && $entity = $entity->page)) {
 			$this->cache->clean(array(
-				Cache::TAGS => array('pages', 'page-'.$mode, 'page-' . $entity->id),
+				Cache::TAGS => array('pages', 'page-' . $mode, 'page-' . $entity->id),
 			));
-		} elseif ($entity instanceof \CmsModule\Content\Entities\ExtendedPageEntity) {
+		} elseif ($entity instanceof \CmsModule\Content\Entities\RouteEntity || ($entity instanceof \CmsModule\Content\Entities\ExtendedRouteEntity && $entity = $entity->route)) {
 			$this->cache->clean(array(
-				Cache::TAGS => array('pages', 'page-'.$mode, 'page-' . $entity->page->id),
+				Cache::TAGS => array('routes', 'route-' . $mode, 'route-' . $entity->id),
 			));
-		} elseif ($entity instanceof \CmsModule\Content\Entities\RouteEntity) {
+		} elseif ($entity instanceof \CmsModule\Content\Elements\ElementEntity || ($entity instanceof \CmsModule\Content\Elements\ExtendedElementEntity && $entity = $entity->element)) {
 			$this->cache->clean(array(
-				Cache::TAGS => array('routes', 'route-'.$mode, 'route-' . $entity->id),
+				Cache::TAGS => array('elements', 'element-' . $mode, 'element-' . $entity->id),
 			));
-		} elseif ($entity instanceof \CmsModule\Content\Entities\ExtendedRouteEntity) {
-			$this->cache->clean(array(
-				Cache::TAGS => array('routes', 'route-'.$mode, 'route-' . $entity->route->id),
-			));
-		} elseif ($entity instanceof \CmsModule\Content\Entities\ElementEntity) {
-			$this->cache->clean(array(
-				Cache::TAGS => array('routes', 'route-'.$mode),
-			));
-			foreach ($entity->layout->routes as $route) {
+
+			if ($entity->mode === $entity::MODE_LAYOUT) {
+				foreach ($entity->layout->routes as $route) {
+					$this->cache->clean(array(
+						Cache::TAGS => array('routes', 'route-update', 'route-' . $route->id),
+					));
+				}
+			} elseif ($entity->mode === $entity::MODE_PAGE) {
 				$this->cache->clean(array(
-					Cache::TAGS => array('route-' . $route->id),
+					Cache::TAGS => array('pages', 'page-update', 'page-' . $entity->page->id),
+				));
+			} elseif ($entity->mode === $entity::MODE_ROUTE) {
+				$this->cache->clean(array(
+					Cache::TAGS => array('routes', 'route-update', 'page-' . $entity->route),
+				));
+			} else {
+				$this->cache->clean(array(
+					Cache::TAGS => array('routes', 'route-update', 'pages', 'page-update'),
 				));
 			}
 		}
