@@ -55,7 +55,7 @@ class CmsExtension extends CompilerExtension
 			'languages' => array(),
 			'defaultLanguage' => 'cs',
 			'defaultPresenter' => 'Homepage',
-			'errorPresenter' => 'Cms=>Error',
+			'errorPresenter' => 'Cms:Error',
 			'layout' => '@cms/bootstrap',
 			'cacheMode' => '',
 			'cacheValue' => '10',
