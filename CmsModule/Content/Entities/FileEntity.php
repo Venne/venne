@@ -101,8 +101,6 @@ class FileEntity extends BaseFileEntity
 
 			}
 
-			$this->generatePath();
-
 			if ($this->_oldPath && $this->_oldPath !== $this->path) {
 				@unlink($this->getFilePathBy($this->_oldProtected, $this->_oldPath));
 			}
@@ -112,7 +110,7 @@ class FileEntity extends BaseFileEntity
 			} else {
 				copy($this->file->getPathname(), $this->getFilePath());
 			}
-			return;
+			return $this->file = NULL;
 		}
 
 		if (
