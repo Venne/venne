@@ -1,0 +1,31 @@
+{block header}
+	{_'Security'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content-container}
+<div class="row">
+
+	{for $x = 0 ; $x < 20 ; $x++}
+	<div class="col-md-2">
+
+		<div class="panel panel-default">
+			<div class="panel-heading">{_'Logged in user'}</div>
+			<div class="panel-body">
+				<a href=""><i class="fa fa-user fa-4x"></i></a>
+			</div>
+		</div>
+
+	</div>
+	{/for}
+
+
+</div>
+

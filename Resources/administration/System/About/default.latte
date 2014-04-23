@@ -1,0 +1,21 @@
+{block header}
+	{_'About Venne:CMS'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+<h2>Versions</h2>
+
+<dd>Venne:SYSTEM</dd><dd>{=$presenter->context->parameters['packages']['venne/venne']['version']}</dd>
+
+<h2>Author</h2>
+
+Josef Kříž <pre>pepakriz@gmail.com</pre>

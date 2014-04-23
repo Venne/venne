@@ -1,0 +1,20 @@
+{
+	"name": "venne-venne",
+	"version": "2.2.0",
+	"dependencies": {
+		"jquery": "~1.9",
+		"jquery-ui": "~1.10.4",
+		"bootstrap": "~3.1.1",
+		"jasny-bootstrap": "~3.1.0",
+		"font-awesome": "~4.0.3",
+		"smalot-bootstrap-datetimepicker": "~2.2.0",
+		"jquery-hashchange": "v1.3",
+		"grido": "~1.0.6",
+		"dynatree": "~1.2.5",
+		"select2": "~3.4.5",
+		"typeahead.js": "~0.10.2",
+		"holderjs": "~2.3.2",
+		"hogan": "~3.0.0",
+		"nette.ajax.js": "~1.2.2"
+	}
+}

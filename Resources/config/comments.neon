@@ -1,0 +1,8 @@
+services:
+	Venne\Comments\ICommentsControlFactory:
+		arguments: [@doctrine.dao(Venne\Comments\CommentEntity)]
+		implement: Venne\Comments\ICommentsControlFactory
+		inject: yes
+
+	Venne\Comments\CommentFormFactory:
+		class: Venne\Comments\CommentFormFactory(@system.admin.basicFormFactory)

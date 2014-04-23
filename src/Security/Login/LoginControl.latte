@@ -1,0 +1,21 @@
+{control flashMessage}
+
+{if $control->provider}
+	{control providerForm}
+{elseif $control->reset}
+	{control resetForm}
+{elseif $control->key}
+	{control confirmForm}
+{else}
+	{control form}
+{/if}
+
+{if !$control->key && !$control->reset}
+<hr />
+
+	<div class="row">
+		<div class="col-lg-19 col-lg-offset-3">
+			<a n:href="this reset => TRUE">{_'forgot password'}</a>
+		</div>
+	</div>
+{/if}

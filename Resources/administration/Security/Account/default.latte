@@ -1,0 +1,53 @@
+{block header}
+	{_'Account'}
+{/block}
+
+{block toolbar-items}
+	{include head.latte}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><a class="ajax" n:href="Default:">{_'Security'}</a></li>
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+<h2>{_'Logged in user'}</h2>
+
+<div class="media">
+	<a class="pull-left" href="#">
+		{var $user = $presenter->user->identity}
+		{if $user instanceof \Venne\Security\UserEntity}
+			<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 96px; height: 96px;" />
+		{/if}
+	</a>
+
+	<div class="media-body">
+		<h4 class="media-heading">
+			{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
+		</h4>
+
+		<dl class="dl-horizontal">
+			<dt>{_Registered}</dt>
+			<dd>{$user->created|date: "%d.%m.%Y"}</dd>
+
+			<dt>{_E-mail}</dt>
+			<dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
+		</dl>
+
+	</div>
+</div>
+
+{if $user instanceof \CmsModule\Pages\Users\UserEntity}
+	<hr />
+
+	<h2>{_Authentication}</h2>
+
+	{control loginTable}
+{/if}
+
+<hr />
+
+<h2>{_'Loggin sessions'}</h2>
+{control table}

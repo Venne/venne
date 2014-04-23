@@ -1,0 +1,51 @@
+services:
+
+	system.admin.security.permissionsFormFactory:
+		class: Venne\Security\AdminModule\PermissionsFormFactory(@system.admin.basicFormFactory, @doctrine.dao(Venne\Security\RoleEntity))
+
+	system.admin.security.roleFormFactory:
+		class: Venne\Security\AdminModule\RoleFormFactory(@system.admin.basicFormFactory)
+
+	system.admin.security.providerFormFactory:
+		class: Venne\Security\AdminModule\ProviderFormFactory
+		setup:
+#			- injectFactory(@system.admin.basicFormFactory)
+#			- injectSecurityManager()
+#
+#	system.admin.security.providersFormFactory:
+#		class: Venne\Security\AdminModule\ProvidersFormFactory
+#		setup:
+#			- injectSecurityManager(...)
+#			- injectFactory(@system.admin.basicFormFactory)
+
+# Factories
+
+	system.admin.usersPresenter:
+		class: Venne\Security\AdminModule\UsersPresenter(@doctrine.dao(Venne\Security\UserEntity))
+		tags: [administration: [
+			link: 'Security:Admin:Users:'
+			category: 'Security'
+			name: 'User manager'
+			description: 'Add, edit users and their roles'
+			priority: 60
+		]]
+
+	system.admin.rolesPresenter:
+		class: Venne\Security\AdminModule\RolesPresenter(@doctrine.dao(Venne\Security\RoleEntity))
+		tags: [administration: [
+			link: 'Security:Admin:Roles:'
+			category: 'Security'
+			name: 'Role manager'
+			description: 'Manage roles and permissions'
+			priority: 55
+		]]
+
+	system.admin.accountPresenter:
+		class: Venne\Security\AdminModule\AccountPresenter(@doctrine.dao(Venne\Security\UserEntity), @doctrine.dao(Venne\Security\LoginEntity))
+		tags: [administration: [
+			link: 'Security:Admin:Account:'
+			category: 'Security'
+			name: 'User account'
+			description: 'Manage your user profile'
+			priority: 50
+		]]

@@ -1,0 +1,17 @@
+{block header}
+	{_'404 Not Found'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+<p class="lead">
+	{_'This URL does not exist.'}
+</p>

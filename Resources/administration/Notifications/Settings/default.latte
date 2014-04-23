@@ -1,0 +1,17 @@
+{block header}
+	{_'Notification'}
+{/block}
+
+{block toolbar-items}
+	{include ../head.latte}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li><a class="ajax" n:href="Default:">{include #header}</a></li>
+	<li class="active">{_Settings}</li>
+{/block}
+
+{block content}
+
+{control table}

@@ -1,0 +1,35 @@
+{block header}
+	{_'Notification'}
+{/block}
+
+{block toolbar-items}
+	{include ../head.latte}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+{var $today = (new DateTime)->format('Y.m.d')}
+{var $yesterday = (new DateTime)->modify('-1 day')->format('Y.m.d')}
+{var $last = NULL}
+
+{foreach $control->getNotificationManager()->getNotifications() as $notification}
+	{if !$last || $notification->notification->created->format('Y.m.d') != $last}
+		{var $last = $notification->notification->created->format('Y.m.d')}
+		{if $iterator->counter !== 1}
+			</div>
+		{/if}
+
+		<h2 class="page-header">{if $last == $today}Today{elseif $last == $yesterday}Yesterday{/if} <small>{=new \DateTime|date:'Y.m.d'}</small></h2>
+		<div class="list-group">
+	{/if}
+
+	<div class="list-group-item">
+		{control notification $notification}
+	</div>
+{/foreach}
+</div>

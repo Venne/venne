@@ -1,0 +1,40 @@
+services:
+
+	system.admin.system.loginFormFactory:
+		class: Venne\System\AdminModule\LoginFormFactory(@system.admin.basicFormFactory)
+
+	system.admin.system.resetFormFactory:
+		class: Venne\Security\Login\ResetFormFactory(@system.admin.basicFormFactory)
+
+	system.admin.system.confirmFormFactory:
+		class: Venne\Security\Login\ConfirmFormFactory(@system.admin.basicFormFactory)
+
+# Factories
+
+	system.admin.system.notificationsControlFactory:
+		class: Venne\Notifications\Components\NotificationsControl(@doctrine.dao(Venne\Notifications\NotificationUserEntity))
+		implement: Venne\Notifications\Components\INotificationsControlFactory
+		tags: [venne.widget: notifications]
+
+	system.admin.dashboardPresenter:
+		class: Venne\System\AdminModule\DashboardPresenter(@doctrine.dao(Venne\Notifications\NotificationEntity), @doctrine.dao(Venne\Security\UserEntity))
+		tags: [administration: [
+			link: 'System:Admin:Dashboard:'
+		]]
+
+	system.admin.aboutPresenter:
+		class: Venne\System\AdminModule\AboutPresenter
+		tags: [administration: [
+        	link: 'System:Admin:About:'
+        ]]
+		autowired: no
+#
+#	system.admin.panelPresenter:
+#		class: Venne\System\Admin\System\PanelPresenter
+#		tags: [presenter]
+#		autowired: no
+
+#	system.admin.errorPresenter:
+#		class: Venne\System\Admin\System\ErrorPresenter
+#		tags: [presenter]
+#		autowired: no

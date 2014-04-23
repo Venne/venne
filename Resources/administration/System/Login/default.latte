@@ -1,0 +1,46 @@
+{block header}{/block}
+
+{block toolbar}{/block}
+
+{block breadcrumb-container}{/block}
+
+{block #content-container}
+
+<div class="container login-container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<ul class="nav nav-tabs">
+						<li n:class="!isset($regLoad) ? active"><a href="#login" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
+
+						{foreach $presenter->registrations as $name => $values}
+							<li class="pull-right{if isset($regLoad) && $regLoad == str_replace(' ', '_', $name)} active{/if}"><a href="#{str_replace(' ', '_', $name)}" data-toggle="tab">{_$name}</a></li>
+						{/foreach}
+					</ul>
+				</div>
+				<div class="panel-body">
+					{if count($presenter->registrations)}
+
+						<!-- Tab panes -->
+						<div class="tab-content">
+
+							<div class="tab-pane{if !isset($regLoad)} active{/if}" id="login">
+								{control signInForm}
+							</div>
+
+							{foreach $presenter->registrations as $name => $values}
+								{var $name = str_replace(' ', '_', $name)}
+								<div class="tab-pane{if isset($regLoad) && $regLoad == str_replace(' ', '_', $name)} active{/if}" id="{$name}">
+									{control registration-$name}
+								</div>
+							{/foreach}
+						</div>
+					{else}
+						{control signInForm}
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

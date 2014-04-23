@@ -1,0 +1,94 @@
+services:
+
+	system.dirFormFactory:
+		class: Venne\Files\DirFormFactory(@system.admin.basicFormFactory)
+
+	system.fileFormFactory:
+		class: Venne\Files\FileFormFactory(@system.admin.basicFormFactory)
+
+	system.admin.ajaxFileUploaderFactory:
+		class: Venne\Files\AjaxFileUploaderControlFactory(%publicDir%/ajaxFileUpload, %publicDir%, @doctrine.dao(Venne\Files\FileEntity), @doctrine.dao(Venne\Files\DirEntity))
+
+	system.admin.fileControlFactory:
+		class: Venne\Files\FileBrowser\FileControlFactory
+
+	system.admin.fileBrowserControlFactory:
+		class: Venne\Files\FileBrowser\FileBrowserControlFactory(@doctrine.dao(Venne\Files\FileEntity), @doctrine.dao(Venne\Files\DirEntity))
+
+#	system.admin.mailFormFactory:
+#		class: Venne\System\Administration\Forms\MailFormFactory
+#		setup:
+#			- injectFactory(@system.admin.ajaxFormFactory)
+
+
+# Factories
+
+	system.admin.basicFormFactory:
+		class: Nette\Application\UI\Form
+		arguments: [NULL, NULL]
+		implement: Venne\Forms\IFormFactory
+		setup:
+			- setRenderer(@system.formRenderer)
+#			- setTranslator(@translator.translator)
+		autowired: no
+
+	system.admin.configFormFactory:
+		class: Venne\System\UI\ConfigFormFactory(%configFile%, %section%)
+		setup:
+			- setFormFactory(@system.admin.basicFormFactory)
+		autowired: no
+		parameters: [configFile, section]
+
+	system.admin.ajaxFormFactory:
+		class: Venne\Forms\FormFactory
+		setup:
+#			- setRenderer(@system.formRenderer)
+#			- setTranslator(@translator.translator)
+#			- "$service->getElementPrototype()->class[] = ?"("ajax")
+		autowired: no
+
+	system.admin.loggableFormFactory:
+		class: Venne\Forms\FormFactory
+		setup:
+#			- setRenderer(@system.formRenderer)
+#			- setTranslator(@translator.translator)
+#			- '$service->onSuccess[] = ?'([@system.formLogListener, 'onSuccess'])
+		autowired: no
+
+	system.admin.loggableAjaxFormFactory:
+		class: Venne\Forms\FormFactory
+		setup:
+#			- setRenderer(@system.formRenderer)
+#			- setTranslator(@translator.translator)
+#			- "$service->getElementPrototype()->class[] = ?"("ajax")
+#			- '$service->onSuccess[] = ?'([@system.formLogListener, 'onSuccess'])
+		autowired: no
+
+	system.factory.registrationControlFactory:
+		class: Venne\Security\Registration\RegistrationControl(@doctrine.dao(Venne\Security\RoleEntity), %userType%, %mode%, %loginProviderMode%, %roles%, %emailSender%, %emailFrom%, %emailSubject%, %emailText)
+		implement: Venne\Security\Registration\IRegistrationControlFactory
+		parameters: [userType, mode, loginProviderMode, roles, emailSender, emailFrom, emailSubject, emailText]
+		setup:
+			- inject
+
+	system.admin.navbarControlFactory:
+		implement: Venne\System\Components\INavbarControlFactory
+		arguments: [NULL]
+		inject: yes
+
+	system.admin.loginControlFactory:
+		class: Venne\Security\Login\LoginControl(@doctrine.dao(Venne\Security\UserEntity))
+		implement: Venne\Security\Login\ILoginControlFactory
+		inject: yes
+
+	system.admin.gridControlFactory:
+		class: Venne\System\Components\AdminGrid\AdminGrid(%repository%)
+		implement: Venne\System\Components\AdminGrid\IAdminGridFactory
+		parameters: [repository]
+		inject: yes
+
+	cms.flashMessageControlFactory:
+		implement: Venne\System\Components\IFlashMessageControlFactory
+		arguments: [NULL]
+		inject: yes
+		tags: [venne.widget: flashMessage]

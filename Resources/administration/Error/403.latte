@@ -1,0 +1,17 @@
+{block header}
+	{_'403 Forbidden'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+<p class="lead">
+	{_'You do not have sufficient permissions.'}
+</p>

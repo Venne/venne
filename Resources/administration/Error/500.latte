@@ -1,0 +1,17 @@
+{block header}
+	{_'500 Internal Server Error'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+<p class="lead">
+	{_'Something gone wrong.'}
+</p>

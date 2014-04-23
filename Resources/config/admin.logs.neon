@@ -1,0 +1,11 @@
+services:
+
+	system.admin.logsPresenter:
+		class: Venne\System\AdminModule\LogsPresenter(%logDir%)
+		tags: [presenter, administration: [
+			link: 'System:Admin:Logs:'
+			category: 'System'
+			name: 'Log browser'
+			description: 'Show logs, errors, warnings,...'
+			priority: 5
+		]]

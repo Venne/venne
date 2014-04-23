@@ -1,0 +1,53 @@
+{block header}
+	{_'Log browser'}
+{/block}
+
+{block toolbar}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+<div n:if="$presenter->isAuthorized('deleteAll!')" class="navbar navbar-default">
+	<div class="collapse navbar-collapse navbar-ex1-collapse">
+		<ul class="nav navbar-nav">
+		    <li>
+		    	<a class="ajax" href="{link deleteAll!}">
+		    		<span class="glyphicon glyphicon-remove"></span> Delete all
+		    	</a>
+		     </li>
+		</ul>
+	</div>
+</div>
+
+<table class="table table-striped table-bordered table-condensed">
+	<thead>
+		<tr>
+			<th style="width: 70%;">Link</th>
+			<th style="width: 30%;">Date</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{foreach $files as $date=>$info}
+		<tr class="screens {if $iterator->getCounter()%2 == 0} even{/if}{if $iterator->isLast()} footer{/if}">
+			<td>
+				{$info["hash"]}
+			</td>
+			<td>
+				{$info["date"]|date:'%d.%m.%Y - %H:%M:%S'}
+			</td>
+			<td class="actions">
+				<div class="btn-group">
+					<a n:if="$presenter->isAuthorized('show')" class="btn btn-default btn-xs" target="_blank" href="{link show name=>$info["link"]}">{_'show'}</a>
+					<a n:if="$presenter->isAuthorized('delete!')" class="btn btn-default btn-xs" onclick="return confirm('really?')" href="{link delete! name=>$info["link"]}">{_'delete'}</a>
+				</div>
+			</td>
+		</tr>
+		{/foreach}
+	</tbody>
+</table>

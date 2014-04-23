@@ -1,0 +1,19 @@
+{
+	"name": "venne-venne",
+	"description": "Venne system administration",
+	"version": "3.0.0",
+	"keywords": ["nette", "venne", "system", "administration"],
+	"homepage": "http://venne.cz",
+	"author": "Josef Kříž <info@josef-kriz.cz> (http://www.josef-kriz.cz)",
+	"dependencies": {},
+	"devDependencies": {
+		"grunt": "^0.4.3",
+		"grunt-contrib-copy": "0.5.x",
+		"grunt-contrib-uglify": "0.x.x",
+		"grunt-contrib-cssmin": "0.8.x",
+		"grunt-contrib-sass": "^0.7.3",
+		"grunt-contrib-imagemin": "0.4.x",
+		"grunt-contrib-watch": "0.5.x",
+		"grunt-autoprefixer": "0.6.x"
+	}
+}

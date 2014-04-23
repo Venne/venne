@@ -1,0 +1,16 @@
+services:
+
+	system.admin.cache.formFactory:
+		class: Venne\System\AdminModule\CacheFormFactory(@system.admin.basicFormFactory)
+
+# Factories
+
+	system.admin.cachePresenter:
+		class: Venne\System\AdminModule\CachePresenter
+		tags: [administration: [
+			link: 'System:Admin:Cache:'
+			category: 'System'
+			name: 'Cache'
+			description: 'Clear cache'
+			priority: 0
+		]]

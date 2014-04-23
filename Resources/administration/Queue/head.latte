@@ -1,0 +1,2 @@
+<li n:if="$presenter->isAuthorized('Default:')"{if $presenter->name == 'Queue:Admin:Default'} class="active"{/if}><a class="ajax" href="{link Default:}">{_'Workers'}</a></li>
+<li n:if="$presenter->isAuthorized('Jobs:')"{if $presenter->name == 'Queue:Admin:Jobs'} class="active"{/if}><a class="ajax" href="{link Jobs:}">{_'Jobs'}</a></li>

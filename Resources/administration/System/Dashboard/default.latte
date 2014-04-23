@@ -1,0 +1,52 @@
+{block header}
+	{_'Dashboard'}
+{/block}
+
+{block toolbar}
+{/block}
+
+
+{block content-container}
+	<div class="row">
+		<div class="col-md-7">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">{_'Logged in user'}</div>
+				<div class="panel-body">
+					<div class="media">
+						<a class="pull-left" href="#">
+							{var $user = $presenter->user->identity}
+							{if $user instanceof \Venne\Security\UserEntity}
+								<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 96px; height: 96px;" />
+							{/if}
+						</a>
+
+						<div class="media-body">
+							<h4 class="media-heading">
+								{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
+							</h4>
+
+							{if $user}
+								<dl class="dl-horizontal">
+									<dt>{_Registered}</dt><dd>{$user->created|date: "%d.%m.%Y"}</dd>
+									<dt>{_E-mail}</dt><dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
+								</dl>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-md-5">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">{_Comments}</div>
+				<div class="panel-body">
+					{control comments-dashboard}
+				</div>
+			</div>
+
+		</div>
+	</div>

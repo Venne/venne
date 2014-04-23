@@ -1,0 +1,252 @@
+{**
+ * Venne:CMS layout template.
+ *
+ * @copyright  Copyright (c) 2011, 2012 Josef Kříž 
+ *
+ * @param string   $basePath	web base path
+ * @param array    $flashes		flash messages
+ *}
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<link rel="stylesheet" href="{path @venne.venne/vendor/bootstrap/css/bootstrap.min.css}" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="{path @venne.venne/vendor/bootstrap/css/bootstrap-theme.min.css}" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="{path @venne.venne/vendor/jasny-bootstrap/css/jasny-bootstrap.min.css}" type="text/css" charset="utf-8" />
+
+		<link rel="stylesheet" href="{path @venne.venne/vendor/font-awesome/css/font-awesome.min.css}" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="{path @venne.venne/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css}" type="text/css" charset="utf-8" />
+
+		<link rel="stylesheet" href="{path @venne.venne/vendor/grido/grido.css}" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="{path @venne.venne/vendor/dynatree/skin-vista/ui.dynatree.css}" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="{path @venne.venne/vendor/select2/select2.css}" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="{path @venne.venne/vendor/select2/select2-bootstrap.css}" type="text/css" charset="utf-8" />
+
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery/jquery.min.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery/jquery-migrate.min.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery-ui/jquery-ui.min.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/bootstrap/js/bootstrap.min.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jasny-bootstrap/js/jasny-bootstrap.min.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js}"></script>
+		{*<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.$presenter->lang.js}"></script>*}
+
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery-hashchange/jquery.ba-hashchange.min.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/grido/grido.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/dynatree/jquery.dynatree.min.js}"></script>
+
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/select2/select2.min.js}"></script>
+		{*<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/select2/select2_locale_$presenter->lang.js}"></script>*}
+
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/typeahead.js/typeahead.bundle.min.js}"></script>
+
+		{*<script type="text/javascript" charset="utf-8" src="{path @venne.ckeditor-module/ckeditor/ckeditor.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.ckeditor-module/editor.js}"></script>*}
+
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/nette.ajax.js/nette.ajax.js}"></script>
+		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/js/spinner.ajax.js}"></script>
+
+		{*js
+			@stringtoslugModule/jquery.stringToSlug.js,
+			@ajaxModule/nette.ajax.js,
+			@ajaxModule/extensions/spinner.ajax.js,
+			@jqueryfileuploadModule/js/jquery.fileupload.js,
+			@jqueryfileuploadModule/js/vendor/jquery.ui.widget.js,
+			@jqueryfileuploadModule/js/jquery.iframe-transport.js,
+		*}
+
+	{js
+	@venne.venne/typing/jquery.typing-0.2.0.min.js,
+	@nette.nette/netteForms.js,
+	@venne.venne/textWithSelect/textWithSelect.js,
+	@venne.venne/js/grido.ext.js,
+
+	@venne.venne/js/application.js
+	}
+
+		{css
+		@venne.venne/css/style.css,
+		@venne.venne/css/fileBrowser.control.css
+		}
+
+		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter && (!$presenter instanceof CmsModule\Administration\Presenters\FilesPresenter || ($presenter instanceof CmsModule\Administration\Presenters\FilesPresenter && !$presenter->browserMode))}
+			{*js @ajaxModule/history/history.ajax.js*}
+		{/if}
+
+		{if $presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
+			{js @venne.venne/js/panel.js}
+			{css @venne.venne/css/inside.css}
+		{/if}
+
+
+	{*control head*}
+
+	{*/head*}
+	</head>
+
+	{if $presenter->user->isLoggedIn()}
+	<body n:class="$presenter->sideComponent ? panel-opened : panel-closed">
+	{else}
+	<body>
+	{/if}
+
+		{* Top navigation *}
+		<div class="navbar navbar-fixed-top navbar-default navigation" n:snippet="navigation">
+		<div class="container-fluid">
+
+			<div class="navbar-header">
+					<a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax {/if}navbar-brand" href="{$presenter->link(':' . $presenter->administrationManager->defaultPresenter . ':')}"><img src="{path @venne.venne/img/logo-panel.png}" alt="Venne:CMS" /></a>
+			</div>
+
+					<div class="navbar-collapse collapse">
+
+						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
+						<ul class="nav navbar-nav">
+							{var $pages = $presenter->administrationManager->getAdministrationNavigation()}
+							{foreach $pages as $category=>$items}
+								{var $ok = false}
+								{capture $nav}
+								<li class="dropdown">
+									<a class="dropdown-toggle" href="javaScript:;" data-toggle="dropdown">{_$category}</a>
+
+									<ul class="dropdown-menu">
+										{foreach $items as $link=>$item}
+											{if $presenter->isAuthorized(':' . $link)}
+											{var $ok = true}
+											<li>
+												<a class="ajax" href="{plink :$link}">{_$item['name']}{if isset($item["description"]) && $item["description"]}<span>{_$item["description"]}</span>{/if}</a>
+											</li>
+											{/if}
+										{/foreach}
+									</ul>
+								</li>
+								{/capture}
+								{if $ok}{!$nav}{/if}
+							{/foreach}
+						</ul>
+						{/if}
+
+						<ul class="nav navbar-nav navbar-right">
+							<li>
+								{*<a n:if="!$presenter instanceof CmsModule\Admin\Installation\DefaultPresenter" target="_blank" n:href=":Cms:Pages:Text:Route: special => main" data-toggle="tooltip" data-placement="bottom" title="Show frontend"><i class="glyphicon glyphicon-refresh"></i></a>*}
+							</li>
+							<li class="divider-vertical"></li>
+							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
+								{control notifications}
+							</li>
+							<li class="divider-vertical"></li>
+							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									{if $presenter->user->identity instanceof \Venne\Security\UserEntity}
+										<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 35px; height: 35px;" />
+										{*if $presenter->user->identity->photo}
+											<img class="img-circle" n:src="$presenter->user->identity->photo->getFileUrl(TRUE), size=> '35x35'" />
+										{else}
+											<span class="glyphicon glyphicon-user"></span>
+											{$presenter->user->identity}
+										{/if*}
+									{else}
+										<span class="glyphicon glyphicon-user"></span>
+										{$presenter->user->identity->id}
+									{/if}&nbsp;&nbsp;<b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li class="dropdown-header">{_'Actions'}</li>
+									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_'User card'}</a></li>
+									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_'Log out'}</a></li>
+								</ul>
+							</li>
+						</ul>
+			</div>
+		</div>
+		</div>
+
+	<div class="layout">
+
+		{* Center *}
+		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
+
+		{snippet sideComponent-container}
+		{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
+			<div n:snippet="sideComponent" class="container-side">
+				<div class="navmenu navmenu-default navmenu-fixed-left" style="margin-top: 40px; padding-top: 50px; width: 60px;">
+					<ul n:inner-foreach="$presenter->administrationManager->sideComponents as $name => $values" class="nav navmenu-nav">
+						<li n:class="$presenter->sideComponent == $name ? active"><a data-toggle="tooltip" data-placement="right" title="{_$name}" class="ajax" n:href="changeSideComponent! ($presenter->sideComponent != $name ? $name : NULL)"><i class="{$values['icon']} fa-2x"></i></a></li>
+					</ul>
+				</div>
+				<div class="side-body{if !$presenter->isAjax()} side-opened{/if}" n:if="$presenter->sideComponent">
+					<div id="panel" class="row">
+						<div class="col-md-12">
+							{control panel}
+						</div>
+					</div>
+				</div>
+				<script n:if="$presenter->isAjax()">
+					$(function() {
+						$('.container-side .side-body').animate({ left: '60px'});
+						$('body').animate({ marginLeft: '{!($presenter->sideComponent ? 360 : 60)}px'});
+					});
+				</script>
+			</div>
+		{/if}
+		{/snippet}
+
+		{block #layout}
+		<div class="container content" n:snippet="content">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="header-container page-header" n:snippet="header">
+						<h1>{block #header}{/block}</h1>
+					</div>
+					{block #breadcrumb-container}
+						<ul class="breadcrumb breadcrumb-master pull-left">
+							{block #breadcrumb}
+								<li><a class="ajax" href="{$presenter->link(':'. $presenter->administrationManager->defaultPresenter . ':')}"><span class="glyphicon glyphicon-globe"></span> {_Dashboard}</a></li>
+							{/block}
+						</ul>
+					{/block}
+				</div>
+			</div>
+
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="container-alerts">
+						<div class="alerts-body">
+							{control flashMessage TRUE}
+						</div>
+					</div>
+
+					{block #content-container}
+						<div class="panel panel-default">
+							{block #toolbar}
+								<div class="panel-heading">
+									<ul id="toolbar" class="nav nav-tabs">
+										{block #toolbar-items}{/block}
+									</ul>
+								</div>
+							{/block}
+							<div class="panel-body">
+								{include #content}
+							</div>
+						</div>
+					{/block}
+				</div>
+			</div>
+
+
+
+		</div>
+		<footer>
+			<p>
+				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span>{if !$presenter instanceof \Venne\System\UI\InstallationPresenter} | <span><a class="ajax" href="{link :System:Admin:About:}">{_'about'} Venne:CMS</a></span>{/if}
+			</p>
+		</footer>
+		{/block}
+		{else}
+			{include #content}
+		{/if}
+
+		</div>
+
+	</body>
+</html>

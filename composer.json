@@ -1,0 +1,57 @@
+{
+	"name": "venne/venne",
+	"description": "Venne system administration",
+	"keywords": ["nette", "venne", "system", "administration"],
+	"homepage": "http://venne.cz",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Josef Kříž",
+			"homepage": "http://josef-kriz.cz"
+		}
+	],
+	"support": {
+		"email": "info@venne.cz",
+		"issues": "https://github.com/Venne/venne/issues"
+	},
+	"require": {
+		"php": ">=5.4.0",
+		"nette/nette": "~2.1.0",
+		"kdyby/translation": "~1.2.0",
+		"kdyby/doctrine": "~1.1.0",
+		"kdyby/doctrine-forms": "dev-master",
+		"o5/grido": "1.0.6",
+		"venne/packages": "dev-master",
+		"venne/assets": "~3.0.0",
+		"venne/forms": "~3.0.0",
+		"venne/widgets": "~3.0.0"
+	},
+	"require-dev": {
+		"venne/tester": "~1.1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Venne\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"VenneTests\\": "tests/src/"
+		}
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.0-dev"
+		},
+		"venne": {
+			"configuration": {
+				"extensions": {
+					"notifications": "Venne\\Notifications\\DI\\NotificationsExtension",
+					"security": "Venne\\Security\\DI\\SecurityExtension",
+					"queue": "Venne\\Queue\\DI\\QueueExtension",
+					"system": "Venne\\System\\DI\\SystemExtension"
+				}
+			}
+		}
+	}
+}

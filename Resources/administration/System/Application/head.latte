@@ -1,0 +1,18 @@
+	<li n:if="$presenter->isAuthorized('Application:default')"{if $presenter->isLinkCurrent("Application:default")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:default}">{_'Application'}</a>
+	</li>
+	<li n:if="$presenter->isAuthorized('Application:authentication')"{if $presenter->isLinkCurrent("Application:authentication")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:authentication}">{_'Authentication'}</a>
+	</li>
+	<li n:if="$presenter->isAuthorized('Application:registration')"{if $presenter->isLinkCurrent("Application:registration")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:registration}">{_'Registration'}</a>
+	</li>
+	<li n:if="$presenter->isAuthorized('Application:admin')"{if $presenter->isLinkCurrent("Application:admin")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:admin}">{_'Administration'}</a>
+	</li>
+	<li n:if="$presenter->isAuthorized('Application:mailer')"{if $presenter->isLinkCurrent("Application:mailer")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:mailer}">{_'Mailer'}</a>
+	</li>
+	<li n:if="$presenter->isAuthorized('Application:account')"{if $presenter->isLinkCurrent("Application:account")} class="active"{/if}>
+		<a class="ajax" href="{plink Application:account}">{_'Admin account'}</a>
+	</li>

@@ -1,0 +1,17 @@
+{block header}
+	{_'Worker'}
+{/block}
+
+{block toolbar-items}
+	{include ../head.latte}
+{/block}
+
+{block breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/block}
+
+{block content}
+
+{control navbar}
+{control table}

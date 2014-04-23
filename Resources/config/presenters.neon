@@ -1,0 +1,4 @@
+services:
+
+	system.filePresenter:
+		class: Venne\Files\AdminModule\FilePresenter

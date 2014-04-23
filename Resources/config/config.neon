@@ -1,0 +1,41 @@
+services:
+
+	system.dynamicMapperSubscriber:
+		class: Venne\Doctrine\Mapping\DynamicMapperSubscriber
+		tags: [kdyby.subscriber]
+
+	system.extendedUserListener:
+		class: Venne\Security\Listeners\ExtendedUserListener
+
+	system.configBuilder:
+		class: Venne\Config\ConfigBuilder(%configDir%/config.neon)
+
+	system.formRenderer:
+		class: Venne\System\Forms\Bootstrap3Renderer
+
+	system.userLogListener:
+		class: Venne\Security\Listeners\UserLogListener
+		tags: [kdyby.subscriber]
+
+
+	nette.latte:
+		setup:
+#			- 'Venne\System\Content\Macros\InsiteMacro::install(?->compiler)'(@self)
+#			- 'Venne\System\Content\Macros\UIMacros::install(?->compiler)'(@self)
+			- 'Venne\Files\Macros\MediaMacro::install(?->compiler)'(@self)
+#			- 'Venne\System\Macros\DialogMacro::install(?->compiler)'(@self)
+#			- 'Venne\System\Macros\HeadMacro::install(?->compiler)'(@self)
+#			- 'Venne\System\Macros\ConfirmMacro::install(?->compiler)'(@self)
+#			- 'Venne\System\Content\Macros\ElementMacro::install(?->compiler)'(@self)
+
+includes:
+	- presenters.neon
+	- components.neon
+	- admin.system.neon
+	- admin.modules.neon
+	- admin.application.neon
+	- admin.security.neon
+	- admin.cache.neon
+	- admin.logs.neon
+	- users.default.neon
+	- comments.neon
