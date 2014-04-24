@@ -9,11 +9,10 @@ services:
 	system.admin.system.confirmFormFactory:
 		class: Venne\Security\Login\ConfirmFormFactory(@system.admin.basicFormFactory)
 
-# Factories
-
 	system.admin.system.notificationsControlFactory:
 		class: Venne\Notifications\Components\NotificationsControl(@doctrine.dao(Venne\Notifications\NotificationUserEntity))
 		implement: Venne\Notifications\Components\INotificationsControlFactory
+		inject: yes
 		tags: [venne.widget: notifications]
 
 	system.admin.dashboardPresenter:

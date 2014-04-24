@@ -1,4 +1,5 @@
 services:
+
 	Venne\Comments\ICommentsControlFactory:
 		arguments: [@doctrine.dao(Venne\Comments\CommentEntity)]
 		implement: Venne\Comments\ICommentsControlFactory

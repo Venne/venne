@@ -73,12 +73,13 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 		$container->addDefinition($this->prefix('jobFormFactory'))
 			->setClass('Venne\Queue\AdminModule\JobFormFactory', array(new Statement('@system.admin.basicFormFactory')));
 
-		$container->addDefinition($this->prefix('jobsControLFactory'))
+		$container->addDefinition($this->prefix('jobsControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobsControlFactory')
+			->setInject(TRUE)
 			->addTag('venne.widget','jobs');
 
-		$container->addDefinition($this->prefix('jobControLFactory'))
+		$container->addDefinition($this->prefix('jobControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobControlFactory');
 	}

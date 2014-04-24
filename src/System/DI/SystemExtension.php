@@ -12,7 +12,6 @@
 namespace Venne\System\DI;
 
 use Kdyby\Doctrine\DI\IEntityProvider;
-use Nette\Application\Routers\Route;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 
@@ -128,14 +127,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->getDefinition('nette.latte')
 			->addSetup('$service->getCompiler()->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->getCompiler()))', array('@self'));
 
-		$container->addDefinition($this->prefix('templateConfigurator'))
-			->setClass("Venne\Templating\TemplateConfigurator", array('@container', '@nette.latte'));
-
-		// helpers
-		$container->addDefinition($this->prefix('helpers'))
-			->setClass("Venne\Templating\Helpers");
-
-
 		// security
 		$container->getDefinition('nette.userStorage')
 			->setClass('Venne\Security\UserStorage', array('@session', new Statement('@doctrine.dao', array('Venne\Security\LoginEntity')), new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
@@ -166,7 +157,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$prefix = $config['website']['routePrefix'];
 		$adminPrefix = $config['administration']['routePrefix'];
 		$languages = $config['website']['languages'];
-		$prefix = str_replace('<lang>/', '<lang ' . implode('|', $languages) . '>/', $prefix);
 
 		// parameters
 		$parameters = array();
@@ -193,34 +183,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			//->addSetup('$service->injectLanguageDao($this->getByType("Kdyby\Doctrine\EntityManager")->getDao(?))', array('Venne\Cms\LanguageEntity'))
 			->addTag('route', array('priority' => 100000));
 
-		// installation
-		if (!$config['administration']['login']['name']) {
-			$container->addDefinition($this->prefix('installationRoute'))
-				->setClass('Nette\Application\Routers\Route', array('', "Admin:{$config['administration']['defaultPresenter']}:", Route::ONE_WAY))
-				->addTag('route', array('priority' => -1));
-		}
-
-		// CMS route
-//		$container->addDefinition($this->prefix('pageRoute'))
-//			->setClass('Venne\System\Content\Routes\PageRoute', array('@container', '@cacheStorage', $prefix, $parameters, $config['website']['languages'], $config['website']['defaultLanguage'])
-//			)
-//			->addTag('route', array('priority' => 100));
-
 		if ($config['website']['oneWayRoutePrefix']) {
 			$container->addDefinition($this->prefix('oneWayPageRoute'))
 				->setClass('Venne\System\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnection', $config['website']['oneWayRoutePrefix'], $parameters, $config['website']['languages'], $config['website']['defaultLanguage'], TRUE)
 				)
 				->addTag('route', array('priority' => 99));
 		}
-
-		// File route
-		$container->addDefinition($this->prefix('imageRoute'))
-			->setClass('Venne\Files\Routers\ImageRoute')
-			->addTag('route', array('priority' => 99999999));
-
-		$container->addDefinition($this->prefix('fileRoute'))
-			->setClass('Venne\Files\Routers\FileRoute')
-			->addTag('route', array('priority' => 99999990));
 
 		$container->addDefinition($this->prefix('administrationManager'))
 			->setClass('Venne\System\AdministrationManager', array(
@@ -229,20 +197,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				$config['administration']['login'],
 				$config['administration']['theme']
 			));
-		//	->addSetup('addSideComponent', array('Content', 'Content', '@system.admin.content.browser.contentSideControlFactory', 'fa fa-file'))
-		//	->addSetup('addSideComponent', array('Files', 'Files', '@system.admin.content.browser.filesSideControlFactory', 'fa fa-folder-open'))
-		//	->addSetup('addSideComponent', array('Layouts', 'Layouts', '@system.admin.content.browser.layoutsSideControlFactory', 'fa fa-th'))
-		//	->addSetup('addSideComponent', array('Templates', 'Templates', '@system.admin.content.browser.templatesSideControlFactory', 'fa fa-file-text'));
-
-		// listeners
-//		$container->addDefinition($this->prefix('fileListener'))
-//			->setClass('Venne\Files\Listeners\FileListener', array(
-//				'@container',
-//				$container->parameters['publicDir'] . '/media',
-//				$container->parameters['dataDir'] . '/media',
-//				'/public/media',
-//			))
-//			->addTag('kdyby.subscriber');
 
 		$container->addDefinition($this->prefix('authenticationFormFactory'))
 			->setArguments(array(new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.authentication')), $config['administration']['registrations']))
@@ -283,8 +237,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	{
 		$this->prepareComponents();
 
-		$this->registerMacroFactories();
-		$this->registerHelperFactories();
 		$this->registerRoutes();
 		$this->registerAdministrationPages();
 		$this->registerUsers();
@@ -317,28 +269,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			$definition->setAutowired(FALSE);
 
 			$router->addSetup('$service[] = $this->getService(?)', array($route));
-		}
-	}
-
-
-	private function registerMacroFactories()
-	{
-		$container = $this->getContainerBuilder();
-		$config = $container->getDefinition($this->prefix('templateConfigurator'));
-
-		foreach ($container->findByTag('macro') as $factory => $meta) {
-			$config->addSetup('addFactory', array($factory));
-		}
-	}
-
-
-	private function registerHelperFactories()
-	{
-		$container = $this->getContainerBuilder();
-		$config = $container->getDefinition($this->prefix('helpers'));
-
-		foreach ($container->findByTag('helper') as $factory => $meta) {
-			$config->addSetup('addHelper', array($meta, "@{$factory}"));
 		}
 	}
 

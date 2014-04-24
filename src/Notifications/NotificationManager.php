@@ -161,10 +161,13 @@ class NotificationManager extends Object
 		$typeEntity = $this->getTypeEntity($type, $action, $message);
 
 		$notificationEntity = new NotificationEntity($typeEntity);
-		$notificationEntity->user = $user ?: $this->getUser();
+		$notificationEntity->user = $user = $user ?: $this->getUser();
 		$notificationEntity->target = $target;
 		$notificationEntity->targetKey = $targetKey;
 		$this->logDao->save($notificationEntity);
+
+		$jobEntity = new JobEntity(NotificationJob::getName(), NULL, array($notificationEntity->id));
+		$jobEntity->user = $user;
 
 		$this->jobManager->scheduleJob(new JobEntity(NotificationJob::getName(), NULL, array($notificationEntity->id)));
 	}

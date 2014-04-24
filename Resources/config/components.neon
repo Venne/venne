@@ -1,35 +1,12 @@
 services:
 
-	system.dirFormFactory:
-		class: Venne\Files\DirFormFactory(@system.admin.basicFormFactory)
-
-	system.fileFormFactory:
-		class: Venne\Files\FileFormFactory(@system.admin.basicFormFactory)
-
-	system.admin.ajaxFileUploaderFactory:
-		class: Venne\Files\AjaxFileUploaderControlFactory(%publicDir%/ajaxFileUpload, %publicDir%, @doctrine.dao(Venne\Files\FileEntity), @doctrine.dao(Venne\Files\DirEntity))
-
-	system.admin.fileControlFactory:
-		class: Venne\Files\FileBrowser\FileControlFactory
-
-	system.admin.fileBrowserControlFactory:
-		class: Venne\Files\FileBrowser\FileBrowserControlFactory(@doctrine.dao(Venne\Files\FileEntity), @doctrine.dao(Venne\Files\DirEntity))
-
-#	system.admin.mailFormFactory:
-#		class: Venne\System\Administration\Forms\MailFormFactory
-#		setup:
-#			- injectFactory(@system.admin.ajaxFormFactory)
-
-
-# Factories
-
 	system.admin.basicFormFactory:
 		class: Nette\Application\UI\Form
 		arguments: [NULL, NULL]
 		implement: Venne\Forms\IFormFactory
 		setup:
 			- setRenderer(@system.formRenderer)
-#			- setTranslator(@translator.translator)
+			- setTranslator(@Nette\Localization\ITranslator)
 		autowired: no
 
 	system.admin.configFormFactory:
@@ -38,31 +15,6 @@ services:
 			- setFormFactory(@system.admin.basicFormFactory)
 		autowired: no
 		parameters: [configFile, section]
-
-	system.admin.ajaxFormFactory:
-		class: Venne\Forms\FormFactory
-		setup:
-#			- setRenderer(@system.formRenderer)
-#			- setTranslator(@translator.translator)
-#			- "$service->getElementPrototype()->class[] = ?"("ajax")
-		autowired: no
-
-	system.admin.loggableFormFactory:
-		class: Venne\Forms\FormFactory
-		setup:
-#			- setRenderer(@system.formRenderer)
-#			- setTranslator(@translator.translator)
-#			- '$service->onSuccess[] = ?'([@system.formLogListener, 'onSuccess'])
-		autowired: no
-
-	system.admin.loggableAjaxFormFactory:
-		class: Venne\Forms\FormFactory
-		setup:
-#			- setRenderer(@system.formRenderer)
-#			- setTranslator(@translator.translator)
-#			- "$service->getElementPrototype()->class[] = ?"("ajax")
-#			- '$service->onSuccess[] = ?'([@system.formLogListener, 'onSuccess'])
-		autowired: no
 
 	system.factory.registrationControlFactory:
 		class: Venne\Security\Registration\RegistrationControl(@doctrine.dao(Venne\Security\RoleEntity), %userType%, %mode%, %loginProviderMode%, %roles%, %emailSender%, %emailFrom%, %emailSubject%, %emailText)

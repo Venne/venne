@@ -82,7 +82,7 @@ class JobManager extends Object
 	 */
 	public function scheduleJob(JobEntity $workEntity)
 	{
-		if ($this->user->identity instanceof UserEntity) {
+		if (!$workEntity->user && $this->user->identity instanceof UserEntity) {
 			$workEntity->user = $this->user->identity;
 		}
 

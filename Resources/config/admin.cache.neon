@@ -3,8 +3,6 @@ services:
 	system.admin.cache.formFactory:
 		class: Venne\System\AdminModule\CacheFormFactory(@system.admin.basicFormFactory)
 
-# Factories
-
 	system.admin.cachePresenter:
 		class: Venne\System\AdminModule\CachePresenter
 		tags: [administration: [

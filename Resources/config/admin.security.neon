@@ -18,8 +18,6 @@ services:
 #			- injectSecurityManager(...)
 #			- injectFactory(@system.admin.basicFormFactory)
 
-# Factories
-
 	system.admin.usersPresenter:
 		class: Venne\Security\AdminModule\UsersPresenter(@doctrine.dao(Venne\Security\UserEntity))
 		tags: [administration: [
