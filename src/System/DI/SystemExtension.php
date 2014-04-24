@@ -19,7 +19,7 @@ use Nette\DI\Statement;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemExtension extends CompilerExtension implements IEntityProvider
+class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider
 {
 
 	/** @var array */
@@ -234,29 +234,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider
 		//	->addSetup('addSideComponent', array('Layouts', 'Layouts', '@system.admin.content.browser.layoutsSideControlFactory', 'fa fa-th'))
 		//	->addSetup('addSideComponent', array('Templates', 'Templates', '@system.admin.content.browser.templatesSideControlFactory', 'fa fa-file-text'));
 
-		//$container->addDefinition($this->prefix('contentManager'))
-		//	->setClass('Venne\System\Content\ContentManager');
-		//	->addSetup('addRouteComponent', array('Name', '@system.admin.content.routeComponents.nameControlFactory'))
-		//	->addSetup('addRouteComponent', array('SEO', '@system.admin.content.routeComponents.seoControlFactory'));
-
-//		$container->addDefinition($this->prefix('websiteManager'))
-//			->setClass('Venne\System\Content\WebsiteManager', array(
-//				$config['website']['author'],
-//				$config['website']['defaultLanguage'],
-//				$config['website']['defaultPresenter'],
-//				$config['website']['description'],
-//				$config['website']['errorPresenter'],
-//				$config['website']['keywords'],
-//				$config['website']['robots'],
-//				$config['website']['languages'],
-//				$config['website']['name'],
-//				$config['website']['oneWayRoutePrefix'],
-//				$config['website']['routePrefix'],
-//				$config['website']['theme'],
-//				$config['website']['title'],
-//				$config['website']['titleSeparator']
-//			));
-
 		// listeners
 //		$container->addDefinition($this->prefix('fileListener'))
 //			->setClass('Venne\Files\Listeners\FileListener', array(
@@ -289,10 +266,16 @@ class SystemExtension extends CompilerExtension implements IEntityProvider
 		}
 
 
-		// Nette
-		$extension = $this->compiler->getExtensions('Nette\DI\Extensions\NetteExtension');
-		$presenterFactory = $container->getDefinition(reset($extension)->prefix('presenterFactory'));
-		$presenterFactory->addSetup('setMapping', array(array('System' => 'Venne\System\*Module\*Presenter')));
+		$container->removeDefinition('nette.presenterFactory');
+		$presenterFactory = $container->addDefinition($this->prefix('presenterFactory'))
+			->setClass('Nette\Application\PresenterFactory', array(
+				isset($container->parameters['appDir']) ? $container->parameters['appDir'] : NULL
+			));
+		foreach ($this->compiler->extensions as $extension) {
+			if ($extension instanceof IPresenterProvider) {
+				$presenterFactory->addSetup('setMapping', array($extension->getPresenterMapping()));
+			}
+		}
 	}
 
 
@@ -428,6 +411,17 @@ class SystemExtension extends CompilerExtension implements IEntityProvider
 		return array(
 			'Venne\System' => dirname(__DIR__) . '/*Entity.php',
 			'Venne\Comments' => dirname(dirname(__DIR__)) . '/Comments/*Entity.php',
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPresenterMapping()
+	{
+		return array(
+			'System' => 'Venne\System\*Module\*Presenter',
 		);
 	}
 

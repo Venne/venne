@@ -16,11 +16,12 @@ use Nette\Application\Routers\Route;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 use Venne\Notifications\DI\IEventProvider;
+use Venne\System\DI\IPresenterProvider;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SecurityExtension extends CompilerExtension implements IEntityProvider, IEventProvider
+class SecurityExtension extends CompilerExtension implements IEntityProvider, IEventProvider, IPresenterProvider
 {
 
 	public function loadConfiguration()
@@ -29,11 +30,6 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 
 		$container->addDefinition($this->prefix('listeners.userStateListener'))
 			->setClass('Venne\Security\Listeners\UserStateListener');
-
-		// Nette
-		$extension = $this->compiler->getExtensions('Nette\DI\Extensions\NetteExtension');
-		$presenterFactory = $container->getDefinition(reset($extension)->prefix('presenterFactory'));
-		$presenterFactory->addSetup('setMapping', array(array('Security' => 'Venne\Security\*Module\*Presenter')));
 	}
 
 
@@ -44,6 +40,17 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 	{
 		return array(
 			'Venne\Security' => dirname(__DIR__) . '/*Entity.php',
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPresenterMapping()
+	{
+		return array(
+			'Security' => 'Venne\Security\*Module\*Presenter',
 		);
 	}
 

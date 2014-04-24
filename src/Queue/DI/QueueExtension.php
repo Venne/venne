@@ -15,11 +15,12 @@ use Kdyby\Doctrine\DI\IEntityProvider;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
+use Venne\System\DI\IPresenterProvider;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class QueueExtension extends CompilerExtension implements IEntityProvider
+class QueueExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider
 {
 
 	/** @var array */
@@ -71,11 +72,6 @@ class QueueExtension extends CompilerExtension implements IEntityProvider
 
 		$container->addDefinition($this->prefix('jobFormFactory'))
 			->setClass('Venne\Queue\AdminModule\JobFormFactory', array(new Statement('@system.admin.basicFormFactory')));
-
-		// Nette
-		$extension = $this->compiler->getExtensions('Nette\DI\Extensions\NetteExtension');
-		$presenterFactory = $container->getDefinition(reset($extension)->prefix('presenterFactory'));
-		$presenterFactory->addSetup('setMapping', array(array('Queue' => 'Venne\Queue\*Module\*Presenter')));
 	}
 
 
@@ -86,6 +82,17 @@ class QueueExtension extends CompilerExtension implements IEntityProvider
 	{
 		return array(
 			'Venne\Queue' => dirname(__DIR__) . '/*Entity.php',
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPresenterMapping()
+	{
+		return array(
+			'Queue' => 'Venne\Queue\*Module\*Presenter',
 		);
 	}
 

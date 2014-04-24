@@ -16,11 +16,12 @@ use Nette\Application\Routers\Route;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 use Venne\Queue\DI\IJobProvider;
+use Venne\System\DI\IPresenterProvider;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationsExtension extends CompilerExtension implements IJobProvider, IEntityProvider
+class NotificationsExtension extends CompilerExtension implements IJobProvider, IEntityProvider, IPresenterProvider
 {
 
 	/** @var array */
@@ -63,11 +64,6 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 		$container->addDefinition($this->prefix('settingsPresenter'))
 			->setClass('Venne\Notifications\AdminModule\SettingsPresenter', array(new Statement('@doctrine.dao', array('Venne\Notifications\NotificationSettingEntity'))));
 
-		// Nette
-		$extension = $this->compiler->getExtensions('Nette\DI\Extensions\NetteExtension');
-		$presenterFactory = $container->getDefinition(reset($extension)->prefix('presenterFactory'));
-		$presenterFactory->addSetup('setMapping', array(array('Notifications' => 'Venne\Notifications\*Module\*Presenter')));
-
 		// Jobs
 		$container->addDefinition($this->prefix('notificationJob'))
 			->setClass('Venne\Notifications\Jobs\NotificationJob', array(
@@ -104,6 +100,17 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 		return array(
 			'Venne\Notifications\Jobs\EmailJob',
 			'Venne\Notifications\Jobs\NotificationJob',
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPresenterMapping()
+	{
+		return array(
+			'Notifications' => 'Venne\Notifications\*Module\*Presenter',
 		);
 	}
 
