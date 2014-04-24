@@ -6,6 +6,7 @@ module.exports = function(grunt) {
 		copy: {
 			main: {
 				files: [
+					{expand: true, cwd: 'bower_components/nette-forms/src/assets/', src: 'netteForms.js', dest: 'Resources/public/vendor/nette-forms/'},
 					{expand: true, cwd: 'bower_components/bootstrap/dist/', src: '**', dest: 'Resources/public/vendor/bootstrap/'},
 					{expand: true, cwd: 'bower_components/jasny-bootstrap/dist/', src: '**', dest: 'Resources/public/vendor/jasny-bootstrap/'},
 					{expand: true, cwd: 'bower_components/font-awesome/css/', src: 'font-awesome.min.css', dest: 'Resources/public/vendor/font-awesome/css/', filter: 'isFile'},
