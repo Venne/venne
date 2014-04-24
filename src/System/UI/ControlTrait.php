@@ -11,8 +11,8 @@
 
 namespace Venne\System\UI;
 
-use Nette\Templating\FileTemplate;
-use Venne\Templating\ITemplateConfigurator;
+use Nette\Application\UI\ITemplate;
+use Nette\Localization\ITranslator;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,58 +20,29 @@ use Venne\Templating\ITemplateConfigurator;
 trait ControlTrait
 {
 
-	/** @var ITemplateConfigurator|NULL */
-	private $templateConfigurator;
+	/** @var ITranslator */
+	private $translator;
 
 
 	/**
-	 * @param ITemplateConfigurator $configurator
+	 * @param ITranslator $translator
 	 */
-	public function injectVenneControl(ITemplateConfigurator $configurator = NULL)
+	public function injectControlTrait(ITranslator $translator)
 	{
-		$this->templateConfigurator = $configurator;
+		$this->translator = $translator;
 	}
 
 
 	/**
-	 * @return \Venne\Templating\ITemplateConfigurator
+	 * @return ITemplate
 	 */
-	public function getTemplateConfigurator()
+	protected function createTemplate()
 	{
-		return $this->templateConfigurator;
-	}
+		$template = parent::createTemplate();
+		$template->setFile($this->formatTemplateFile());
 
-
-	/**
-	 * Descendant can override this method to customize template compile-time filters.
-	 *
-	 * @param  Nette\Templating\Template
-	 * @return void
-	 */
-	public function templatePrepareFilters($template)
-	{
-		if ($this->templateConfigurator !== NULL) {
-			$this->templateConfigurator->prepareFilters($template);
-		} else {
-			$template->registerFilter(new \Nette\Latte\Engine);
-		}
-	}
-
-
-	/**
-	 * @param string|NULL $class
-	 * @return \Nette\Templating\ITemplate
-	 */
-	protected function createTemplate($class = NULL)
-	{
-		$template = parent::createTemplate($class);
-
-		if ($this->templateConfigurator !== NULL) {
-			$this->templateConfigurator->configure($template);
-		}
-
-		if ($template instanceof FileTemplate) {
-			$template->setFile($this->formatTemplateFile());
+		if ($this->translator) {
+			$template->setTranslator($this->translator);
 		}
 
 		return $template;

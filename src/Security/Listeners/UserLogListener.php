@@ -50,7 +50,7 @@ class UserLogListener implements Subscriber
 	 */
 	public function onLoggedIn(User $user)
 	{
-		$this->getNotificationManager()->log(LoginEvent::getName(), $user->identity, 'login', 'User has been logged in');
+		$this->getNotificationManager()->notify(LoginEvent::getName(), $user->identity, 'login', 'User has been logged in');
 	}
 
 
@@ -59,7 +59,7 @@ class UserLogListener implements Subscriber
 	 */
 	public function onLoggedOut(User $user)
 	{
-		$this->getNotificationManager()->log(LoginEvent::getName(), $user->identity, 'logout', 'User has been logged out');
+		$this->getNotificationManager()->notify(LoginEvent::getName(), $user->identity, 'logout', 'User has been logged out');
 	}
 
 

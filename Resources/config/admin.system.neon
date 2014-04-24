@@ -18,23 +18,3 @@ services:
 
 	system.admin.dashboardPresenter:
 		class: Venne\System\AdminModule\DashboardPresenter(@doctrine.dao(Venne\Notifications\NotificationEntity), @doctrine.dao(Venne\Security\UserEntity))
-		tags: [administration: [
-			link: 'System:Admin:Dashboard:'
-		]]
-
-	system.admin.aboutPresenter:
-		class: Venne\System\AdminModule\AboutPresenter
-		tags: [administration: [
-        	link: 'System:Admin:About:'
-        ]]
-		autowired: no
-#
-#	system.admin.panelPresenter:
-#		class: Venne\System\Admin\System\PanelPresenter
-#		tags: [presenter]
-#		autowired: no
-
-#	system.admin.errorPresenter:
-#		class: Venne\System\Admin\System\ErrorPresenter
-#		tags: [presenter]
-#		autowired: no

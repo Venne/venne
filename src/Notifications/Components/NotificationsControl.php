@@ -12,8 +12,6 @@
 namespace Venne\Notifications\Components;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\BadRequestException;
-use Nette\Application\UI\Multiplier;
 use Venne\Notifications\NotificationManager;
 use Venne\System\UI\Control;
 
@@ -29,17 +27,26 @@ class NotificationsControl extends Control
 	/** @var EntityDao */
 	private $notificationUserDao;
 
+	/** @var INotificationControlFactory */
+	private $notificationControlFactory;
+
 
 	/**
 	 * @param EntityDao $notificationUserDao
 	 * @param NotificationManager $notificationManager
+	 * @param INotificationControlFactory $notificationControlFactory
 	 */
-	public function __construct(EntityDao $notificationUserDao, NotificationManager $notificationManager)
+	public function __construct(
+		EntityDao $notificationUserDao,
+		NotificationManager $notificationManager,
+		INotificationControlFactory $notificationControlFactory
+	)
 	{
 		parent::__construct();
 
 		$this->notificationUserDao = $notificationUserDao;
 		$this->notificationManager = $notificationManager;
+		$this->notificationControlFactory = $notificationControlFactory;
 	}
 
 
@@ -60,7 +67,7 @@ class NotificationsControl extends Control
 
 	protected function createComponentNotification()
 	{
-		return new NotificationControl($this->notificationUserDao, $this->notificationManager);
+		return $this->notificationControlFactory->create();
 	}
 
 

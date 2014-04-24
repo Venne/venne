@@ -134,6 +134,10 @@
 							</li>
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
+								{control jobs}
+							</li>
+							<li class="divider-vertical"></li>
+							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								{control notifications}
 							</li>
 							<li class="divider-vertical"></li>

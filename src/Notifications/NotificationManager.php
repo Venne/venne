@@ -136,10 +136,10 @@ class NotificationManager extends Object
 	 * @param null $target
 	 * @param null $action
 	 * @param null $message
-	 * @param UserEntity $entity
+	 * @param UserEntity $user
 	 * @throws \Nette\InvalidArgumentException
 	 */
-	public function log($type, $target = NULL, $action = NULL, $message = NULL, UserEntity $user = NULL)
+	public function notify($type, $target = NULL, $action = NULL, $message = NULL, UserEntity $user = NULL)
 	{
 		if (!isset($this->types[$type])) {
 			throw new InvalidArgumentException("Type '$type' does not exist.");

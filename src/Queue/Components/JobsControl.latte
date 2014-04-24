@@ -1,0 +1,35 @@
+{var $count = $control->countJobs()}
+
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	<i class="fa fa-tasks"></i> <span class="badge">{$count}</span>
+</a>
+
+<div id="notification-{!$control->name}" class="dropdown-menu list-group notification-container">
+	<div role="presentation" class="dropdown-header">
+		<i class="fa fa-tasks"></i>
+		{$count} Jobs
+	</div>
+
+	<div class="list-group notification-list-group">
+		<div n:foreach="$control->jobs as $job" class="list-group-item">
+			{control job $job}
+		</div>
+	</div>
+
+	<a class="ajax list-group-item text-right" href="{plink :Queue:Admin:Jobs:}">
+		See all jobs <i class="glyphicon glyphicon-chevron-right"></i>
+	</a>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		$('#notification-{!$control->name}').on('click', function(e) {
+			e.stopPropagation();
+		});
+		$('#notification-{!$control->name} a.notification-close').on('click', function(e) {
+			$(this).closest('.list-group-item').slideUp(400, function() {
+				$(this).remove();
+			});
+		});
+	});
+</script>

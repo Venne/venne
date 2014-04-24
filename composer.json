@@ -16,7 +16,7 @@
 	},
 	"require": {
 		"php": ">=5.4.0",
-		"nette/nette": "~2.1.0",
+		"nette/nette": "~2.2.0@dev",
 		"kdyby/translation": "~1.2.0",
 		"kdyby/doctrine": "~1.1.0",
 		"kdyby/doctrine-forms": "dev-master",

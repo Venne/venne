@@ -42,9 +42,6 @@ trait AdminPresenterTrait
 	/** @var EntityManager */
 	private $entityManager;
 
-	/** @var ITranslator */
-	private $translator;
-
 	/** @var bool */
 	private $_translatorInit = FALSE;
 
@@ -82,21 +79,15 @@ trait AdminPresenterTrait
 	}
 
 
-	/**
-	 * @param PackageManager $packageManager
-	 * @param Application $application
-	 */
 	public function injectAdminPresenter(
 		AdministrationManager $administrationManager,
 		EntityManager $entityManager,
-		ITranslator $translator,
 		PackageManager $packageManager,
 		Application $application
 	)
 	{
 		$this->administrationManager = $administrationManager;
 		$this->entityManager = $entityManager;
-		$this->translator = $translator;
 		$this->packageManager = $packageManager;
 		$this->application = $application;
 	}

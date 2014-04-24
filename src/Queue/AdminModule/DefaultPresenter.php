@@ -55,6 +55,12 @@ class DefaultPresenter extends Presenter
 			->getCellPrototype()->width = '40%';
 
 		$table->addColumnText('state', 'State')
+			->setCustomRender(function($data) {
+				$lastCheck = \DateTime::createFromFormat('Y-m-d H:i:s', $data['lastCheck']);
+				$lastCheck->modify('+' . ($this->workerManager->getInterval() + 7) . ' second');
+
+				return ($lastCheck < new \DateTime) ? 'break' : $data['state'];
+			})
 			->getCellPrototype()->width = '20%';
 
 		$table->addColumnText('lastCheck', 'Last check')
@@ -65,6 +71,9 @@ class DefaultPresenter extends Presenter
 
 		$table->addActionEvent('debug', 'Debug')
 			->onClick[] = $this->tableDebugClick;
+
+		$table->addActionEvent('restart', 'Restart')
+			->onClick[] = $this->tableRestartClick;
 
 		$table->addActionEvent('stop', 'Stop')
 			->onClick[] = $this->tableStopClick;
@@ -91,6 +100,21 @@ class DefaultPresenter extends Presenter
 	{
 		$worker = $this->workerManager->getWokrer($id);
 		$this->workerManager->stopWorker($worker);
+		$this->redirect('this');
+	}
+
+
+	public function tableRestartClick($id)
+	{
+		$ch = curl_init();
+		$timeout = 5;
+
+		curl_setopt($ch, CURLOPT_URL, $this->link('//:Queue:Admin:Worker:', array('id' => $id)));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+		curl_exec($ch);
+		curl_close($ch);
+
 		$this->redirect('this');
 	}
 

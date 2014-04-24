@@ -25,7 +25,7 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 
 	/** @var array */
 	public $config = array(
-		'interval' => 25,
+		'interval' => 20,
 		'configDir' => '%appDir%/../temp/worker'
 	);
 
@@ -39,7 +39,7 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 			->setClass('Venne\Queue\ConfigManager', array($container->expand($config['configDir'])));
 
 		$container->addDefinition($this->prefix('workerManager'))
-			->setClass('Venne\Queue\WorkerManager');
+			->setClass('Venne\Queue\WorkerManager', array($config['interval']));
 
 		$jobManager = $container->addDefinition($this->prefix('jobManager'))
 			->setClass('Venne\Queue\JobManager', array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))));
@@ -67,11 +67,20 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 
 		$container->addDefinition($this->prefix('workerFactory'))
 			->setImplement('Venne\Queue\IWorkerFactory')
-			->setArguments(array(new PhpLiteral('$id'), $container->expand($config['configDir'])))
+			->setArguments(array(new PhpLiteral('$id'), new PhpLiteral('$interval'), $container->expand($config['configDir'])))
 			->setAutowired(TRUE);
 
 		$container->addDefinition($this->prefix('jobFormFactory'))
 			->setClass('Venne\Queue\AdminModule\JobFormFactory', array(new Statement('@system.admin.basicFormFactory')));
+
+		$container->addDefinition($this->prefix('jobsControLFactory'))
+			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
+			->setImplement('Venne\Queue\Components\IJobsControlFactory')
+			->addTag('venne.widget','jobs');
+
+		$container->addDefinition($this->prefix('jobControLFactory'))
+			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
+			->setImplement('Venne\Queue\Components\IJobControlFactory');
 	}
 
 

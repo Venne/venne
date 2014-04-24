@@ -48,9 +48,9 @@ class UserStateListener
 		if (!self::$lock && $entity instanceof UserEntity) {
 			self::$lock = TRUE;
 			if ($entity->createdBy === $entity::CREATED_BY_REGISTRATION) {
-				$this->notificationManager->log(RegistrationEvent::getName(), $entity, 'registration', 'User has been registered.', $entity);
+				$this->notificationManager->notify(RegistrationEvent::getName(), $entity, 'registration', 'User has been registered.', $entity);
 			} elseif ($entity->createdBy === $entity::CREATED_BY_INVATION) {
-				$this->notificationManager->log(RegistrationEvent::getName(), $entity, 'invitation', 'User has been invited.', $entity);
+				$this->notificationManager->notify(RegistrationEvent::getName(), $entity, 'invitation', 'User has been invited.', $entity);
 			}
 			self::$lock = FALSE;
 		}

@@ -14,6 +14,7 @@ namespace Venne\Queue;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Venne\Doctrine\Entities\IdentifiedEntityTrait;
+use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,6 +28,7 @@ use Venne\Doctrine\Entities\IdentifiedEntityTrait;
  * @property \DateTime $date
  * @property \DateTime $dateInterval
  * @property int|NULL $round
+ * @property UserEntity $user
  */
 class JobEntity extends BaseEntity
 {
@@ -86,6 +88,13 @@ class JobEntity extends BaseEntity
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
 	protected $round;
+
+	/**
+	 * @var UserEntity
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
+	 * @ORM\JoinColumn(onDelete="CASCADE")
+	 */
+	protected $user;
 
 
 	/**

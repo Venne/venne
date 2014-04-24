@@ -126,7 +126,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		// template
 		$container->getDefinition('nette.latte')
-			->addSetup('$service->compiler->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->compiler))', array('@self'));
+			->addSetup('$service->getCompiler()->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->getCompiler()))', array('@self'));
 
 		$container->addDefinition($this->prefix('templateConfigurator'))
 			->setClass("Venne\Templating\TemplateConfigurator", array('@container', '@nette.latte'));

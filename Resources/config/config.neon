@@ -22,7 +22,7 @@ services:
 		setup:
 #			- 'Venne\System\Content\Macros\InsiteMacro::install(?->compiler)'(@self)
 #			- 'Venne\System\Content\Macros\UIMacros::install(?->compiler)'(@self)
-			- 'Venne\Files\Macros\MediaMacro::install(?->compiler)'(@self)
+			- 'Venne\Files\Macros\MediaMacro::install(?->getCompiler())'(@self)
 #			- 'Venne\System\Macros\DialogMacro::install(?->compiler)'(@self)
 #			- 'Venne\System\Macros\HeadMacro::install(?->compiler)'(@self)
 #			- 'Venne\System\Macros\ConfirmMacro::install(?->compiler)'(@self)

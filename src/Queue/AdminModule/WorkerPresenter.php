@@ -62,7 +62,7 @@ class WorkerPresenter extends Presenter
 		}
 
 		if (!$worker->run() && !$this->debugMode) {
-			sleep(2);
+			sleep($worker->getInterval());
 		}
 
 		if (!$this->debugMode) {

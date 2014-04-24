@@ -9,21 +9,17 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\Queue;
-
-use Nette\Object;
+namespace Venne\Queue\Components;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-interface IWorkerFactory
+interface IJobControlFactory
 {
 
 	/**
-	 * @param $id
-	 * @param $interval
-	 * @return Worker
+	 * @return JobControl
 	 */
-	public function create($id, $interval);
+	public function create();
 
 }

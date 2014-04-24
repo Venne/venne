@@ -11,10 +11,9 @@
 
 namespace Venne\Queue;
 
-use Nette\Diagnostics\Debugger;
 use Nette\InvalidArgumentException;
 use Nette\Object;
-use Nette\Utils\Strings;
+use Nette\Utils\Random;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -32,15 +31,29 @@ class WorkerManager extends Object
 	/** @var IWorkerFactory */
 	private $workerFactory;
 
+	/** @var int */
+	private $interval;
+
 
 	/**
+	 * @param $interval
 	 * @param ConfigManager $configManager
 	 * @param IWorkerFactory $workerFactory
 	 */
-	public function __construct(ConfigManager $configManager, IWorkerFactory $workerFactory)
+	public function __construct($interval, ConfigManager $configManager, IWorkerFactory $workerFactory)
 	{
+		$this->interval = $interval;
 		$this->configManager = $configManager;
 		$this->workerFactory = $workerFactory;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getInterval()
+	{
+		return $this->interval;
 	}
 
 
@@ -49,7 +62,7 @@ class WorkerManager extends Object
 	 */
 	public function createWorker()
 	{
-		$id = Strings::random(20);
+		$id = Random::generate(20);
 
 		$this->configManager->lock();
 		$data = $this->configManager->loadConfigFile();
@@ -121,7 +134,7 @@ class WorkerManager extends Object
 			throw new InvalidArgumentException("Worker '$id' does not exist.");
 		}
 
-		return $this->workerFactory->create($id);
+		return $this->workerFactory->create($id, $this->interval);
 	}
 
 

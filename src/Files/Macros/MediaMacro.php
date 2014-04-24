@@ -11,17 +11,17 @@
 
 namespace Venne\Files\Macros;
 
-use DoctrineModule\Repositories\BaseRepository;
 use Kdyby\Doctrine\EntityDao;
-use Nette\Latte\CompileException;
-use Nette\Latte\Compiler;
-use Nette\Latte\MacroNode;
+use Latte\Macros\MacroSet;
+use Latte\CompileException;
+use Latte\Compiler;
+use Latte\MacroNode;
 use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class MediaMacro extends \Nette\Latte\Macros\MacroSet
+class MediaMacro extends MacroSet
 {
 
 	/** @var EntityDao */

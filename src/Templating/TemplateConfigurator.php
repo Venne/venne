@@ -11,12 +11,11 @@
 
 namespace Venne\Templating;
 
-use Nette\Callback;
+use Nette\Bridges\ApplicationLatte\Template;
 use Nette\DI\Container;
-use Nette\Latte\Engine;
+use Latte\Engine;
 use Nette\Localization\ITranslator;
 use Nette\Object;
-use Nette\Templating\Template;
 
 /**
  * @author     Josef Kříž
@@ -62,13 +61,19 @@ class TemplateConfigurator extends Object implements ITemplateConfigurator
 		if ($this->translator) {
 			$template->setTranslator($this->translator);
 		}
-		$template->registerHelperLoader(array($this->helpers, 'loader'));
+		$latte = $template->getLatte();
+		$callback = array($this->helpers, 'loader');
+		$template->getLatte()->addFilter(NULL, function($name) use ($callback, $latte) {
+			if ($res = call_user_func($callback, $name)) {
+				$latte->addFilter($name, $res);
+			}
+		});
 	}
 
 
 	public function prepareFilters(Template $template)
 	{
-		$template->registerFilter($this->latte);
+
 	}
 
 

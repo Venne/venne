@@ -11,7 +11,7 @@
 
 namespace Venne\Templating;
 
-use Nette\Templating\Template;
+use Nette\Bridges\ApplicationLatte\Template;
 
 /**
  * @author     Josef Kříž
@@ -20,13 +20,13 @@ interface ITemplateConfigurator
 {
 
 	/**
-	 * @param \Nette\Templating\Template $template
+	 * @param Template $template
 	 */
 	public function configure(Template $template);
 
 
 	/**
-	 * @param \Nette\Templating\Template $template
+	 * @param Template $template
 	 */
 	public function prepareFilters(Template $template);
 }

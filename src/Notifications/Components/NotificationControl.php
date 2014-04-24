@@ -13,6 +13,7 @@ namespace Venne\Notifications\Components;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
+use Nette\Security\User;
 use Venne\Notifications\NotificationManager;
 use Venne\Notifications\NotificationUserEntity;
 use Venne\System\UI\Control;
@@ -22,6 +23,9 @@ use Venne\System\UI\Control;
  */
 class NotificationControl extends Control
 {
+
+	/** @var User */
+	private $user;
 
 	/** @var NotificationManager */
 	private $notificationManager;
@@ -33,11 +37,13 @@ class NotificationControl extends Control
 	/**
 	 * @param EntityDao $notificationUserDao
 	 * @param NotificationManager $notificationManager
+	 * @param User $user
 	 */
-	public function __construct(EntityDao $notificationUserDao, NotificationManager $notificationManager)
+	public function __construct(EntityDao $notificationUserDao, NotificationManager $notificationManager, User $user)
 	{
 		parent::__construct();
 
+		$this->user = $user;
 		$this->notificationUserDao = $notificationUserDao;
 		$this->notificationManager = $notificationManager;
 	}
@@ -58,7 +64,7 @@ class NotificationControl extends Control
 			throw new BadRequestException;
 		}
 
-		if ($entity->user !== $this->presenter->user->identity) {
+		if ($entity->user !== $this->user->identity) {
 			throw new BadRequestException;
 		}
 
@@ -77,7 +83,7 @@ class NotificationControl extends Control
 			throw new BadRequestException;
 		}
 
-		if ($entity->user !== $this->presenter->user->identity) {
+		if ($entity->user !== $this->user->identity) {
 			throw new BadRequestException;
 		}
 

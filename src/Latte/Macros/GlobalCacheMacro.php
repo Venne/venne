@@ -11,13 +11,16 @@
 
 namespace Venne\Latte\Macros;
 
+use Latte\IMacro;
+use Latte\MacroNode;
+use Latte\PhpWriter;
 use Nette;
 use Nette\Latte;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class GlobalCacheMacro extends Nette\Object implements Latte\IMacro
+class GlobalCacheMacro extends Nette\Object implements IMacro
 {
 
 	/** @var bool */
@@ -56,11 +59,11 @@ class GlobalCacheMacro extends Nette\Object implements Latte\IMacro
 	 * New node is found.
 	 * @return bool
 	 */
-	public function nodeOpened(Latte\MacroNode $node)
+	public function nodeOpened(MacroNode $node)
 	{
 		$this->used = TRUE;
 		$node->isEmpty = FALSE;
-		$node->openingCode = Latte\PhpWriter::using($node)
+		$node->openingCode = PhpWriter::using($node)
 			->write('<?php if (Venne\Latte\Macros\GlobalCacheMacro::createCache($netteCacheStorage, %var, $presenter->template->_g->caches, ' . var_export(self::$template, TRUE) . ', %node.array?)) { ?>',
 				Nette\Utils\Strings::random()
 			);
@@ -71,7 +74,7 @@ class GlobalCacheMacro extends Nette\Object implements Latte\IMacro
 	 * Node is closed.
 	 * @return void
 	 */
-	public function nodeClosed(Latte\MacroNode $node)
+	public function nodeClosed(MacroNode $node)
 	{
 		$node->closingCode = '<?php $_l->tmp = array_pop($presenter->template->_g->caches); if (!$_l->tmp instanceof stdClass) $_l->tmp->end(); Venne\Latte\Macros\GlobalCacheMacro::closeCache(); } ?>';
 	}

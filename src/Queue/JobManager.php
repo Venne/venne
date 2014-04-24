@@ -14,8 +14,9 @@ namespace Venne\Queue;
 use Kdyby\Doctrine\EntityDao;
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
-use Nette\InvalidStateException;
 use Nette\Object;
+use Nette\Security\User;
+use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -35,16 +36,21 @@ class JobManager extends Object
 	/** @var Container */
 	private $container;
 
+	/** @var User */
+	private $user;
+
 
 	/**
 	 * @param EntityDao $jobDao
 	 * @param ConfigManager $configManager
+	 * @param User $user
 	 * @param Container $container
 	 */
-	public function __construct(EntityDao $jobDao, ConfigManager $configManager, Container $container)
+	public function __construct(EntityDao $jobDao, ConfigManager $configManager, User $user, Container $container)
 	{
 		$this->configManager = $configManager;
 		$this->jobDao = $jobDao;
+		$this->user = $user;
 		$this->container = $container;
 	}
 
@@ -76,6 +82,10 @@ class JobManager extends Object
 	 */
 	public function scheduleJob(JobEntity $workEntity)
 	{
+		if ($this->user->identity instanceof UserEntity) {
+			$workEntity->user = $this->user->identity;
+		}
+
 		$this->jobDao->save($workEntity);
 		return $this;
 	}

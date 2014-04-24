@@ -28,16 +28,21 @@ class Worker extends Object
 	/** @var JobManager */
 	private $jobManager;
 
+	/** @var integer */
+	private $interval;
+
 
 	/**
 	 * @param $id
+	 * @param $interval
 	 * @param $configDir
 	 * @param JobManager $jobManager
 	 */
-	public function __construct($id, $configDir, JobManager $jobManager)
+	public function __construct($id, $interval, $configDir, JobManager $jobManager)
 	{
 		$this->jobManager = $jobManager;
 		$this->configDir = $configDir;
+		$this->interval = $interval;
 		$this->id = $id;
 	}
 
@@ -48,6 +53,15 @@ class Worker extends Object
 	public function getId()
 	{
 		return $this->id;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getInterval()
+	{
+		return $this->interval;
 	}
 
 
