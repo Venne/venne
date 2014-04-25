@@ -17,14 +17,14 @@
 	"require": {
 		"php": ">=5.4.0",
 		"nette/nette": "~2.2.0@dev",
-		"kdyby/translation": "~1.2.0",
-		"kdyby/doctrine": "~1.1.0",
-		"kdyby/doctrine-forms": "dev-master",
-		"o5/grido": "1.0.6",
-		"venne/packages": "dev-master",
-		"venne/assets": "~3.0.0",
-		"venne/forms": "~3.0.0",
-		"venne/widgets": "~3.0.0"
+		"kdyby/translation": "@dev",
+		"kdyby/doctrine": "@dev",
+		"kdyby/doctrine-forms": "@dev",
+		"o5/grido": "~1.0.6@dev",
+		"venne/packages": "@dev",
+		"venne/assets": "~3.0.0@dev",
+		"venne/forms": "~3.0.0@dev",
+		"venne/widgets": "~3.0.0@dev"
 	},
 	"require-dev": {
 		"venne/tester": "~1.1.0"
