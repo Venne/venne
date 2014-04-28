@@ -81,7 +81,8 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 
 		$container->addDefinition($this->prefix('jobControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
-			->setImplement('Venne\Queue\Components\IJobControlFactory');
+			->setImplement('Venne\Queue\Components\IJobControlFactory')
+			->setInject(TRUE);
 	}
 
 

@@ -31,9 +31,6 @@ trait AdminPresenterTrait
 	use WidgetsControlTrait;
 
 	/** @persistent */
-	public $lang;
-
-	/** @persistent */
 	public $sideComponent;
 
 	/** @var AdministrationManager */
@@ -42,14 +39,8 @@ trait AdminPresenterTrait
 	/** @var EntityManager */
 	private $entityManager;
 
-	/** @var bool */
-	private $_translatorInit = FALSE;
-
 	/** @var ExtendedUserEntity */
 	private $extendedUser;
-
-	/** @var string */
-	private $_layoutFileCache;
 
 	/** @var PackageManager */
 	private $packageManager;
@@ -116,16 +107,6 @@ trait AdminPresenterTrait
 	 */
 	public function getTranslator()
 	{
-		if (!$this->_translatorInit) {
-			$this->_translatorInit = TRUE;
-
-			// Language
-			$this->checkLanguage();
-
-			// Setup translator
-			//$this->translator->setLang($this->lang);
-		}
-
 		return $this->translator;
 	}
 
@@ -192,63 +173,4 @@ trait AdminPresenterTrait
 		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
-
-	protected function checkLanguage()
-	{
-		if (!$this->lang) {
-			$this->lang = $this->getHttpRequest()->detectLanguage(array('cs', 'en'));
-		}
-	}
-
-
-	/**
-	 * Finds layout template file name.
-	 * @return string
-	 */
-	public function findLayoutTemplateFile()
-	{
-		if (!$this->_layoutFileCache) {
-			$this->_layoutFileCache = parent::findLayoutTemplateFile();
-		}
-
-		return $this->_layoutFileCache;
-	}
-
-
-	/**
-	 * Formats layout template file names.
-	 * @return array
-	 */
-	public function formatLayoutTemplateFiles()
-	{
-		$name = $this->getName();
-		$presenter = explode(':', $name);
-		unset($presenter[1]);
-		$presenter = implode('/', $presenter);
-
-		return array(
-			$this->getContext()->parameters['packages'][$this->administrationManager->theme]['path'] . "/Resources/administration/$presenter/@layout.latte",
-			$this->getContext()->parameters['packages'][$this->administrationManager->theme]['path'] . '/Resources/administration/@layout.latte',
-		);
-	}
-
-
-	/**
-	 * Formats view template file names.
-	 * @return array
-	 */
-	public function formatTemplateFiles()
-	{
-		$name = $this->getName();
-		$presenter = explode(':', $name);
-		unset($presenter[1]);
-		$presenter = implode('/', $presenter);
-
-		return array_merge(array(
-			$this->getContext()->parameters['packages'][$this->administrationManager->theme]['path'] . "/Resources/administration/$presenter/$this->view.latte",
-			$this->getContext()->parameters['packages'][$this->administrationManager->theme]['path'] . "/Resources/administration/$presenter.$this->view.latte",
-		), parent::formatTemplateFiles());
-	}
-
 }
-

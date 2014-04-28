@@ -20,10 +20,13 @@ use Nette\Application;
 class AdminRoute extends Nette\Application\Routers\Route
 {
 
-	public function __construct($presenter, $adminPrefix)
+	public function __construct($presenter, $adminPrefix, $flags = NULL)
 	{
-		$mask = $adminPrefix . ($adminPrefix ? '[/' : '[') . '<presenter .+>]?action=<action>[&id=<id>]';
+		$mask = $adminPrefix . '[<presenter .+>]?action=<action>[&id=<id>]';
 		$metadata = array(
+			'locale' => array(
+				self::PATTERN => '.+',
+			),
 			'presenter' => array(
 				self::VALUE => implode(':', $presenter),
 				self::FILTER_IN => function ($s) {
@@ -46,7 +49,7 @@ class AdminRoute extends Nette\Application\Routers\Route
 			'action' => 'default',
 		);
 
-		parent::__construct($mask, $metadata);
+		parent::__construct($mask, $metadata, $flags);
 	}
 
 

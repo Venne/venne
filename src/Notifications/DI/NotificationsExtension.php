@@ -59,7 +59,8 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 			->setArguments(array(
 				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationUserEntity'))
 			))
-			->setImplement('Venne\Notifications\Components\INotificationControlFactory');
+			->setImplement('Venne\Notifications\Components\INotificationControlFactory')
+			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('settingsPresenter'))
 			->setClass('Venne\Notifications\AdminModule\SettingsPresenter', array(new Statement('@doctrine.dao', array('Venne\Notifications\NotificationSettingEntity'))));

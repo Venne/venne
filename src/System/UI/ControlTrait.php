@@ -12,6 +12,7 @@
 namespace Venne\System\UI;
 
 use Nette\Application\UI\ITemplate;
+use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
 
 /**
@@ -23,13 +24,18 @@ trait ControlTrait
 	/** @var ITranslator */
 	private $translator;
 
+	/** @var ITemplateLocator */
+	private $templateLocator;
+
 
 	/**
 	 * @param ITranslator $translator
+	 * @param ITemplateLocator $templateLocator
 	 */
-	public function injectControlTrait(ITranslator $translator)
+	public function injectControlTrait(ITranslator $translator, ITemplateLocator $templateLocator)
 	{
 		$this->translator = $translator;
+		$this->templateLocator = $templateLocator;
 	}
 
 
@@ -49,19 +55,29 @@ trait ControlTrait
 	}
 
 
-	/**
-	 * Formats component template files
-	 *
-	 * @param string
-	 * @return array
-	 */
-	protected function formatTemplateFiles()
+	public function formatTemplateFiles()
 	{
-		$refl = $this->getReflection();
-		$list = array(
-			dirname($refl->getFileName()) . '/' . $refl->getShortName() . '.latte',
-		);
-		return $list;
+		if ($this->templateLocator) {
+			return $this->templateLocator->formatTemplateFiles($this);
+		}
+
+		if ($this instanceof Presenter) {
+			return parent::formatTemplateFiles();
+		}
+
+		return array();
+	}
+
+
+	public function formatLayoutTemplateFiles()
+	{
+		if ($this->templateLocator) {
+			return $this->templateLocator->formatLayoutTemplateFiles($this);
+		}
+
+		if ($this instanceof Presenter) {
+			return parent::formatLayoutTemplateFiles();
+		}
 	}
 
 

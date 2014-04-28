@@ -21,7 +21,6 @@ includes:
 	- components.neon
 	- admin.system.neon
 	- admin.modules.neon
-	- admin.application.neon
 	- admin.security.neon
 	- admin.cache.neon
 	- admin.logs.neon

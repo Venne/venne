@@ -12,13 +12,16 @@
 namespace Venne\System\DI;
 
 use Kdyby\Doctrine\DI\IEntityProvider;
+use Kdyby\Translation\DI\ITranslationProvider;
 use Nette\DI\CompilerExtension;
+use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
+use string;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider
+class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider
 {
 
 	/** @var array */
@@ -179,9 +182,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		unset($presenter[1]);
 		$container->addDefinition($this->prefix('adminRoute'))
 			->setClass('Venne\System\Routers\AdminRoute', array($presenter, $adminPrefix))
-			//->addSetup('inject', array($config['website']['defaultLanguage']))
-			//->addSetup('$service->injectLanguageDao($this->getByType("Kdyby\Doctrine\EntityManager")->getDao(?))', array('Venne\Cms\LanguageEntity'))
-			->addTag('route', array('priority' => 100000));
+			->addTag('route', array('priority' => 100001));
 
 		if ($config['website']['oneWayRoutePrefix']) {
 			$container->addDefinition($this->prefix('oneWayPageRoute'))
@@ -220,6 +221,13 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 
 
+		$container->addDefinition($this->prefix('templateLocator'))
+			->setClass('Venne\System\UI\AdminTemplateLocator', array(array(
+				$container->parameters['appDir'] . '/templates',
+				$container->parameters['packages']['venne/venne']['path'] . '/Resources/templates',
+			)));
+
+
 		$container->removeDefinition('nette.presenterFactory');
 		$presenterFactory = $container->addDefinition($this->prefix('presenterFactory'))
 			->setClass('Nette\Application\PresenterFactory', array(
@@ -230,6 +238,49 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				$presenterFactory->addSetup('setMapping', array($extension->getPresenterMapping()));
 			}
 		}
+
+
+		$this->setupSystemApplication($container, $config);
+	}
+
+
+	public function setupSystemApplication(ContainerBuilder $container, array $config)
+	{
+		$container->addDefinition($this->prefix('system.application.mailerFormFactory'))
+			->setClass('Venne\System\AdminModule\MailerFormFactory', array(
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), ''))
+			));
+
+		$container->addDefinition($this->prefix('system.application.registrationFormFactory'))
+			->setClass('Venne\System\AdminModule\RegistrationFormFactory', array(
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration')),
+				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))
+			));
+
+		$container->addDefinition($this->prefix('system.application.systemFormFactory'))
+			->setClass('Venne\System\AdminModule\AdministrationFormFactory', array(
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.application'))
+			));
+
+		$container->addDefinition($this->prefix('system.application.applicationFormFactory'))
+			->setClass('Venne\System\AdminModule\ApplicationFormFactory', array(
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), ''))
+			));
+
+		$container->addDefinition($this->prefix('system.application.accountFormFactory'))
+			->setClass('Venne\Security\AdminModule\AccountFormFactory', array(
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.login'))
+			));
+
+		$container->addDefinition($this->prefix('system.applicationPresenter'))
+			->setClass('Venne\System\AdminModule\ApplicationPresenter')
+			->addTag('administration', array(
+				'link' => 'System:Admin:Application:',
+				'category' => 'System',
+				'name' => 'System settings',
+				'description' => 'Set up database, environment,...',
+				'priority' => 15,
+			));
 	}
 
 
@@ -352,6 +403,17 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	{
 		return array(
 			'System' => 'Venne\System\*Module\*Presenter',
+		);
+	}
+
+
+	/**
+	 * @return string[]
+	 */
+	function getTranslationResources()
+	{
+		return array(
+			__DIR__ . '/../../../Resources/lang',
 		);
 	}
 

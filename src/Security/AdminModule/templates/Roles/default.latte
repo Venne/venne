@@ -1,0 +1,18 @@
+{define header}
+	{include ../#header.latte}
+{/define}
+
+{define toolbar-items}
+	{include ../#toolbar-items.latte}
+{/define}
+
+{define breadcrumb}
+	{include #parent}
+	<li class="active">{include #header}</li>
+{/define}
+
+{block content}
+
+{control table}
+
+

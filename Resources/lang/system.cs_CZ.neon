@@ -1,0 +1,11 @@
+admin:
+	dashboard:
+		comments: Komentáře
+		loggedInUser: Přihlášený uživatel
+		registered: Registrovaný
+		email: E-mail
+	about: o Venne
+	actions: akce
+	dashboardBreadcrumb: Dashboard
+	userCard: Karta uživatele
+	logOut: Odhlásit se

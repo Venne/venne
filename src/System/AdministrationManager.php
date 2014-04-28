@@ -99,9 +99,15 @@ class AdministrationManager extends Object
 	}
 
 
-	public function addAdministrationPage($link, $name, $description, $category)
+	public function addAdministrationPage($link, $name, $description, $category = NULL)
 	{
-		$this->administrationPages[$link] = array(
+		if ($category) {
+			$pages = & $this->administrationPages[$category];
+		} else {
+			$pages = & $this->administrationPages;
+		}
+		$pages[] = array(
+			'link' => $link,
 			'name' => $name,
 			'description' => $description,
 			'category' => $category,
@@ -117,23 +123,6 @@ class AdministrationManager extends Object
 	public function getAdministrationPages()
 	{
 		return $this->administrationPages;
-	}
-
-
-	/**
-	 * Get Administration pages as array
-	 *
-	 * @return array
-	 */
-	public function getAdministrationNavigation()
-	{
-		$ret = array();
-
-		foreach ($this->administrationPages as $link => $item) {
-			$ret[$item['category']][$link] = $item;
-		}
-
-		return $ret;
 	}
 
 

@@ -104,15 +104,17 @@
 
 						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 						<ul class="nav navbar-nav">
-							{var $pages = $presenter->administrationManager->getAdministrationNavigation()}
-							{foreach $pages as $category=>$items}
+							{var $pages = $presenter->administrationManager->getAdministrationPages()}
+							{foreach $pages as $category => $items}
+								{if is_array($items)}
 								{var $ok = false}
 								{capture $nav}
 								<li class="dropdown">
 									<a class="dropdown-toggle" href="javaScript:;" data-toggle="dropdown">{_$category}</a>
 
 									<ul class="dropdown-menu">
-										{foreach $items as $link=>$item}
+										{foreach $items as $item}
+											{var $link = $item['link']}
 											{if $presenter->isAuthorized(':' . $link)}
 											{var $ok = true}
 											<li>
@@ -124,14 +126,12 @@
 								</li>
 								{/capture}
 								{if $ok}{!$nav}{/if}
+								{/if}
 							{/foreach}
 						</ul>
 						{/if}
 
 						<ul class="nav navbar-nav navbar-right">
-							<li>
-								{*<a n:if="!$presenter instanceof CmsModule\Admin\Installation\DefaultPresenter" target="_blank" n:href=":Cms:Pages:Text:Route: special => main" data-toggle="tooltip" data-placement="bottom" title="Show frontend"><i class="glyphicon glyphicon-refresh"></i></a>*}
-							</li>
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								{control jobs}
@@ -139,6 +139,17 @@
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								{control notifications}
+							</li>
+							<li class="divider-vertical"></li>
+							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									<i class="glyphicon glyphicon-flag"></i> {$presenter->translator->locale}
+								</a>
+								<ul class="dropdown-menu">
+									<li class="dropdown-header">{_system.admin.language}</li>
+									<li><a href="{link this}">English</a></li>
+									<li><a href="{link this}">Česky</a></li>
+								</ul>
 							</li>
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
@@ -157,9 +168,9 @@
 									{/if}&nbsp;&nbsp;<b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
-									<li class="dropdown-header">{_'Actions'}</li>
-									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_'User card'}</a></li>
-									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_'Log out'}</a></li>
+									<li class="dropdown-header">{_system.admin.actions}</li>
+									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
+									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -207,7 +218,7 @@
 					{block #breadcrumb-container}
 						<ul class="breadcrumb breadcrumb-master pull-left">
 							{block #breadcrumb}
-								<li><a class="ajax" href="{$presenter->link(':'. $presenter->administrationManager->defaultPresenter . ':')}"><span class="glyphicon glyphicon-globe"></span> {_Dashboard}</a></li>
+								<li><a class="ajax" href="{$presenter->link(':'. $presenter->administrationManager->defaultPresenter . ':')}"><span class="glyphicon glyphicon-globe"></span> {_system.admin.dashboardBreadcrumb}</a></li>
 							{/block}
 						</ul>
 					{/block}
@@ -245,7 +256,7 @@
 		</div>
 		<footer>
 			<p>
-				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span>{if !$presenter instanceof \Venne\System\UI\InstallationPresenter} | <span><a class="ajax" href="{link :System:Admin:About:}">{_'about'} Venne:CMS</a></span>{/if}
+				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span>{if !$presenter instanceof \Venne\System\UI\InstallationPresenter} | <span><a class="ajax" n:href=":System:Admin:About:">{_system.admin.about}</a></span>{/if}
 			</p>
 		</footer>
 		{/block}

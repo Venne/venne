@@ -1,0 +1,7 @@
+<li n:if="$presenter->isAuthorized('Default:')"{if $presenter->isLinkCurrent("Default:")} class="active"{/if}>
+	<a class="ajax" href="{plink Default:}">{_'Users'}</a>
+</li>
+<li n:if="$presenter->isAuthorized('Roles:')"{if $presenter->isLinkCurrent("Roles:")} class="active"{/if}>
+	<a class="ajax" href="{plink Roles:}">{_'Roles'}</a>
+</li>
+

@@ -18,32 +18,19 @@ services:
 #			- injectSecurityManager(...)
 #			- injectFactory(@system.admin.basicFormFactory)
 
-	system.admin.usersPresenter:
-		class: Venne\Security\AdminModule\UsersPresenter(@doctrine.dao(Venne\Security\UserEntity))
+	system.admin.defaultPresenter:
+		class: Venne\Security\AdminModule\DefaultPresenter(@doctrine.dao(Venne\Security\UserEntity))
 		tags: [administration: [
-			link: 'Security:Admin:Users:'
-			category: 'Security'
-			name: 'User manager'
-			description: 'Add, edit users and their roles'
+			link: 'Security:Admin:Default:'
+			category: 'System'
+			name: 'Security'
+			description: 'Manage users, roles and permissions'
 			priority: 60
 		]]
 
 	system.admin.rolesPresenter:
 		class: Venne\Security\AdminModule\RolesPresenter(@doctrine.dao(Venne\Security\RoleEntity))
-		tags: [administration: [
-			link: 'Security:Admin:Roles:'
-			category: 'Security'
-			name: 'Role manager'
-			description: 'Manage roles and permissions'
-			priority: 55
-		]]
 
 	system.admin.accountPresenter:
 		class: Venne\Security\AdminModule\AccountPresenter(@doctrine.dao(Venne\Security\UserEntity), @doctrine.dao(Venne\Security\LoginEntity))
-		tags: [administration: [
-			link: 'Security:Admin:Account:'
-			category: 'Security'
-			name: 'User account'
-			description: 'Manage your user profile'
-			priority: 50
-		]]
+		parameters: []

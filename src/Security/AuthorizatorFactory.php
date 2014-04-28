@@ -12,13 +12,12 @@
 namespace Venne\Security;
 
 use Kdyby\Doctrine\EntityDao;
+use Nette;
 use Nette\Application\IPresenterFactory;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 use Nette\Object;
 use Nette\Security\Permission;
-use Nette\Security\User;
-use Venne\Security\IControlVerifierReader;
 use Venne\System\AdministrationManager;
 
 /**
@@ -91,7 +90,7 @@ class AuthorizatorFactory extends Object
 	 * @param User $user
 	 * @return Permission
 	 */
-	public function getPermissionsByUser(User $user, $fromSession = FALSE)
+	public function getPermissionsByUser(Nette\Security\User $user, $fromSession = FALSE)
 	{
 		if ($fromSession) {
 			if ($this->session['permission']) {

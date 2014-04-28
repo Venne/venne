@@ -17,6 +17,7 @@
 	"require": {
 		"php": ">=5.4.0",
 		"nette/nette": "~2.2.0@dev",
+		"kdyby/forms-replicator": "@dev",
 		"kdyby/translation": "@dev",
 		"kdyby/doctrine": "@dev",
 		"kdyby/doctrine-forms": "@dev",
