@@ -140,16 +140,8 @@
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								{control notifications}
 							</li>
-							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="glyphicon glyphicon-flag"></i> {$presenter->translator->locale}
-								</a>
-								<ul class="dropdown-menu">
-									<li class="dropdown-header">{_system.admin.language}</li>
-									<li><a href="{link this}">English</a></li>
-									<li><a href="{link this}">Česky</a></li>
-								</ul>
+								{control comments-dashboard}
 							</li>
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
@@ -170,7 +162,7 @@
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_system.admin.actions}</li>
 									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
-									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
+									<li><a class="ajax" href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -265,6 +257,8 @@
 		{/if}
 
 		</div>
+
+		{control chat}
 
 	</body>
 </html>

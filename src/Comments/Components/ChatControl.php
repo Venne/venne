@@ -9,23 +9,20 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\Comments;
+namespace Venne\Comments\Components;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\UI\Form;
-use Nette\InvalidStateException;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
+use Venne\Comments\CommentEntity;
 use Venne\Security\UserEntity;
 use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class CommentsControl extends Control
+class ChatControl extends Control
 {
-
-	/** @var string|NULL */
-	private $tag;
 
 	/** @var UserEntity|NULL */
 	private $recipient;
@@ -39,35 +36,39 @@ class CommentsControl extends Control
 	/** @var FormFactoryFactory */
 	private $formFactoryFactory;
 
+	/** @var ICommentControlFactory */
+	private $commentControlFactory;
 
-	/**
-	 * @param EntityDao $commentDao
-	 * @param CommentFormFactory $commentFormFactory
-	 * @param FormFactoryFactory $formFactoryFactory
-	 */
-	public function __construct(EntityDao $commentDao, CommentFormFactory $commentFormFactory, FormFactoryFactory $formFactoryFactory)
+	/** @var CommentEntity */
+	private $olderThan;
+
+
+	public function __construct(
+		EntityDao $commentDao,
+		CommentFormFactory $commentFormFactory,
+		FormFactoryFactory $formFactoryFactory,
+		ICommentControlFactory $commentsControlFactory
+	)
 	{
 		parent::__construct();
 
 		$this->commentDao = $commentDao;
 		$this->commentFormFactory = $commentFormFactory;
 		$this->formFactoryFactory = $formFactoryFactory;
-	}
-
-
-	/**
-	 * @param NULL|string $tag
-	 */
-	public function setTag($tag)
-	{
-		$this->tag = $tag;
+		$this->commentControlFactory = $commentsControlFactory;
 	}
 
 
 	public function handleComment()
 	{
-		$this->template->showComment = TRUE;
 		$this->redrawControl('comment');
+	}
+
+
+	public function handleLoad($id)
+	{
+		$this->olderThan = $this->commentDao->find($id);
+		$this->redrawControl('content');
 	}
 
 
@@ -87,7 +88,6 @@ class CommentsControl extends Control
 	{
 		$entity = new CommentEntity;
 		$entity->author = $this->presenter->user->identity;
-		$entity->tag = $this->tag;
 		return $entity;
 	}
 
@@ -100,15 +100,41 @@ class CommentsControl extends Control
 			$this->redirect('this');
 		}
 
-		$this->redrawControl('comments');
+		$this->redrawControl('container');
+	}
+
+
+	public function countComments()
+	{
+		return $this->getDql()
+			->select('COUNT(a.id)')
+			->getQuery()
+			->getSingleScalarResult();
 	}
 
 
 	public function getComments()
 	{
-		$qb = $this->commentDao->createQueryBuilder('a')
-			->andWhere('a.tag = :tag')->setParameter('tag', $this->tag)
-			->orderBy('a.created', 'DESC');
+		$qb = $this->getDql()
+			->orderBy('a.created', 'DESC')
+			->setMaxResults(10);
+
+		if ($this->olderThan) {
+			$qb->andWhere('a.created < :created')->setParameter('created', $this->olderThan->created);
+		}
+
+		return $qb
+			->getQuery()
+			->getResult();
+	}
+
+
+	/**
+	 * @return \Doctrine\ORM\QueryBuilder
+	 */
+	public function getDql()
+	{
+		$qb = $this->commentDao->createQueryBuilder('a');
 
 		if ($this->recipient) {
 			$qb = $qb->andWhere('a.recipient = :recipient')->setParameter('recipient', $this->recipient);
@@ -116,7 +142,7 @@ class CommentsControl extends Control
 			$qb = $qb->andWhere('a.recipient IS NULL');
 		}
 
-		return $qb->getQuery()->getResult();
+		return $qb;
 	}
 
 
@@ -126,15 +152,9 @@ class CommentsControl extends Control
 	}
 
 
-	protected function createComponent($name)
+	protected function createComponentComment()
 	{
-		if ($control = parent::createComponent($name)) {
-			return $control;
-		}
-
-		$control = clone $this;
-		$control->setTag($name);
-		return $control;
+		return $this->commentControlFactory->create();
 	}
 
 }

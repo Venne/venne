@@ -13,7 +13,6 @@ namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\UI\Presenter;
-use Venne\Comments\ICommentsControlFactory;
 use Venne\Security\UserEntity;
 use Venne\System\AdminPresenterTrait;
 
@@ -33,24 +32,18 @@ class DashboardPresenter extends Presenter
 	/** @var EntityDao */
 	private $userDao;
 
-	/** @var ICommentsControlFactory */
-	private $commentControlFactory;
-
 
 	/**
 	 * @param EntityDao $logDao
 	 * @param EntityDao $userDao
-	 * @param ICommentsControlFactory $commentsControlFactory
 	 */
 	public function __construct(
 		EntityDao $logDao,
-		EntityDao $userDao,
-		ICommentsControlFactory $commentsControlFactory
+		EntityDao $userDao
 	)
 	{
 		$this->logDao = $logDao;
 		$this->userDao = $userDao;
-		$this->commentControlFactory = $commentsControlFactory;
 	}
 
 
@@ -71,10 +64,4 @@ class DashboardPresenter extends Presenter
 		$this->template->userRepository = $this->userDao;
 	}
 
-
-	protected function createComponentComments()
-	{
-		$control = $this->commentControlFactory->create();
-		return $control;
-	}
 }

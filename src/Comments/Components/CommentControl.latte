@@ -1,0 +1,19 @@
+<div class="media">
+	<a class="pull-left" href="#">
+		<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($comment->author->email)))}" style="width: 42px; height: 42px;" />
+	</a>
+
+	<div class="media-body">
+		<h4 class="media-heading">
+			{$comment->author}
+		</h4>
+
+		<small class="text-muted">
+			<i class="fa fa-clock-o"></i> {$comment->created|date:'d.m H:i'}
+		</small>
+
+		<p>
+			{$comment->text|escape|nl2br|noescape}
+		</p>
+	</div>
+</div>

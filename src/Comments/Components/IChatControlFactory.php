@@ -9,16 +9,16 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\Comments;
+namespace Venne\Comments\Components;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-interface ICommentsControlFactory
+interface IChatControlFactory
 {
 
 	/**
-	 * @return CommentsControl
+	 * @return ChatControl
 	 */
 	public function create();
 

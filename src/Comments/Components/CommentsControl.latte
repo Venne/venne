@@ -1,0 +1,65 @@
+{var $count = $control->countComments()}
+
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	<i class="glyphicon glyphicon-envelope"></i> <span class="badge">{$count}</span>
+</a>
+
+<div id="comments-{!$control->name}" class="dropdown-menu list-group notification-container">
+	<div role="presentation" class="dropdown-header">
+		<i class="glyphicon glyphicon-envelope"></i>
+		{_'%count% comments', $count}
+	</div>
+
+	<div class="list-group notification-list-group">
+		<div n:foreach="$control->comments as $comment" class="list-group-item">
+			{control comment $comment}
+		</div>
+	</div>
+
+	<a class="ajax list-group-item text-right" href="{plink :Comments:Admin:}">
+		{_'See all messages'} <i class="glyphicon glyphicon-chevron-right"></i>
+	</a>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		$('#comments-{!$control->name}').on('click', function(e) {
+			e.stopPropagation();
+		});
+		$('#comments-{!$control->name} a.notification-close').on('click', function(e) {
+			$(this).closest('.list-group-item').slideUp(400, function() {
+				$(this).remove();
+			});
+		});
+	});
+</script>
+
+
+
+{*<div class="comments-container" n:snippet="comments">*}
+
+	{*{foreach $flashes as $flash}*}
+		{*<div class="alert alert-{$flash->type}">*}
+			{*<a class="close" data-dismiss="alert">×</a>*}
+			{*{$flash->message}*}
+		{*</div>*}
+	{*{/foreach}*}
+
+	{*<div class="list-group">*}
+		{*<div n:foreach="$control->comments as $comment" class="list-group-item">*}
+			{*{control comment $comment}*}
+		{*</div>*}
+	{*</div>*}
+
+
+	{*<hr/>*}
+
+	{*{snippet comment}*}
+	{*{if isset($showComment)}*}
+		{*{control form}*}
+	{*{else}*}
+		{*<a class="ajax btn btn-primary" n:href="comment"><i class="glyphicon glyphicon-comment"></i> {_Comment}</a>*}
+	{*{/if}*}
+	{*{/snippet}*}
+
+{*</div>*}
