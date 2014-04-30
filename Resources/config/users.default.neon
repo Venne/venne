@@ -6,7 +6,7 @@ services:
 			- setFormFactory(@Venne\Security\DefaultType\AdminFormFactory)
 			- setFrontFormFactory(@Venne\Security\DefaultType\FrontFormFactory)
 			- setRegistrationFormFactory(@Venne\Security\DefaultType\RegistrationFormFactory)
-		tags: [user: [name: Default user]]
+		tags: [venne.user: [name: Default user]]
 
 	Venne\Security\DefaultType\AdminFormFactory:
 		class: Venne\Security\DefaultType\AdminFormFactory(@system.admin.basicFormFactory)

@@ -132,17 +132,13 @@
 						{/if}
 
 						<ul class="nav navbar-nav navbar-right">
+						{dump $presenter->administrationManager->trayComponents}
+						{foreach $presenter->administrationManager->trayComponents as $name => $factory}
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
-								{control jobs}
+								{control $name}
 							</li>
-							<li class="divider-vertical"></li>
-							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
-								{control notifications}
-							</li>
-							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
-								{control comments-dashboard}
-							</li>
+						{/foreach}
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -257,8 +253,5 @@
 		{/if}
 
 		</div>
-
-		{control chat}
-
 	</body>
 </html>

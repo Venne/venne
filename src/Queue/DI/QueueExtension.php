@@ -16,6 +16,8 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
 use Venne\System\DI\IPresenterProvider;
+use Venne\System\DI\SystemExtension;
+use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -54,7 +56,7 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 
 		$container->addDefinition($this->prefix('defaultPresenter'))
 			->setClass('Venne\Queue\AdminModule\DefaultPresenter')
-			->addTag('administration', array(
+			->addTag(SystemExtension::ADMINISTRATION_TAG, array(
 				'link' => 'Queue:Admin:Default:',
 				'category' => 'System',
 				'name' => 'Worker manager',
@@ -77,7 +79,8 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobsControlFactory')
 			->setInject(TRUE)
-			->addTag('venne.widget','jobs');
+			->addTag(SystemExtension::TRAY_COMPONENT_TAG)
+			->addTag(WidgetsExtension::WIDGET_TAG,'jobs');
 
 		$container->addDefinition($this->prefix('jobControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))

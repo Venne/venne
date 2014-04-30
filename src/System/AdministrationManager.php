@@ -33,6 +33,9 @@ class AdministrationManager extends Object
 	/** @var array */
 	private $sideComponents = array();
 
+	/** @var array */
+	private $trayComponents = array();
+
 	/** @var string */
 	private $routePrefix;
 
@@ -99,6 +102,13 @@ class AdministrationManager extends Object
 	}
 
 
+	/**
+	 * @param $link
+	 * @param $name
+	 * @param $description
+	 * @param null $category
+	 * @return $this
+	 */
 	public function addAdministrationPage($link, $name, $description, $category = NULL)
 	{
 		if ($category) {
@@ -112,6 +122,7 @@ class AdministrationManager extends Object
 			'description' => $description,
 			'category' => $category,
 		);
+		return $this;
 	}
 
 
@@ -131,6 +142,7 @@ class AdministrationManager extends Object
 	 * @param $description
 	 * @param $factory
 	 * @param null $icon
+	 * @return $this
 	 */
 	public function addSideComponent($name, $description, $factory, $icon = NULL)
 	{
@@ -140,6 +152,7 @@ class AdministrationManager extends Object
 			'factory' => $factory,
 			'icon' => $icon,
 		);
+		return $this;
 	}
 
 
@@ -149,6 +162,26 @@ class AdministrationManager extends Object
 	public function getSideComponents()
 	{
 		return $this->sideComponents;
+	}
+
+
+	/**
+	 * @param $name
+	 * @return $this
+	 */
+	public function addTrayComponent($name)
+	{
+		$this->trayComponents[$name] = TRUE;
+		return $this;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getTrayComponents()
+	{
+		return $this->trayComponents;
 	}
 
 }

@@ -25,4 +25,3 @@ includes:
 	- admin.cache.neon
 	- admin.logs.neon
 	- users.default.neon
-	- comments.neon

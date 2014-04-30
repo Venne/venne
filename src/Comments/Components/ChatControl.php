@@ -13,6 +13,7 @@ namespace Venne\Comments\Components;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\UI\Form;
+use Nette\Http\Session;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Comments\CommentEntity;
 use Venne\Security\UserEntity;
@@ -42,12 +43,16 @@ class ChatControl extends Control
 	/** @var CommentEntity */
 	private $olderThan;
 
+	/** @var Session */
+	private $session;
+
 
 	public function __construct(
 		EntityDao $commentDao,
 		CommentFormFactory $commentFormFactory,
 		FormFactoryFactory $formFactoryFactory,
-		ICommentControlFactory $commentsControlFactory
+		ICommentControlFactory $commentsControlFactory,
+		Session $session
 	)
 	{
 		parent::__construct();
@@ -56,6 +61,7 @@ class ChatControl extends Control
 		$this->commentFormFactory = $commentFormFactory;
 		$this->formFactoryFactory = $formFactoryFactory;
 		$this->commentControlFactory = $commentsControlFactory;
+		$this->session = $session;
 	}
 
 
@@ -69,6 +75,26 @@ class ChatControl extends Control
 	{
 		$this->olderThan = $this->commentDao->find($id);
 		$this->redrawControl('content');
+	}
+
+
+	public function handleCheck($id)
+	{
+		$this->session->close();
+
+		$this->redrawControl('check');
+		$this->template->last = $newerThan = $this->commentDao->find($id);
+
+		for ($x = 0; $x < 100; $x++) {
+			if ($this->countNewComments($newerThan)) {
+				$this->template->new = $this->getNewComments($newerThan);
+				$this->template->last = end($this->template->new);
+				$this->redrawControl('new');
+				break;
+			}
+
+			sleep(1);
+		}
 	}
 
 
@@ -100,7 +126,8 @@ class ChatControl extends Control
 			$this->redirect('this');
 		}
 
-		$this->redrawControl('container');
+		$this->template->focus = TRUE;
+		$this->redrawControl('form');
 	}
 
 
@@ -113,17 +140,37 @@ class ChatControl extends Control
 	}
 
 
-	public function getComments()
+	public function getComments($limit = 10)
 	{
 		$qb = $this->getDql()
 			->orderBy('a.created', 'DESC')
-			->setMaxResults(10);
+			->setMaxResults($limit);
 
 		if ($this->olderThan) {
-			$qb->andWhere('a.created < :created')->setParameter('created', $this->olderThan->created);
+			$qb->andWhere('a.created < :older')->setParameter('older', $this->olderThan->created);
 		}
 
 		return $qb
+			->getQuery()
+			->getResult();
+	}
+
+
+	public function countNewComments(CommentEntity $newerThen)
+	{
+		return $this->getDql()
+			->select('COUNT(a.id)')
+			->andWhere('a.created > :newer')->setParameter('newer', $newerThen->created)
+			->getQuery()
+			->getSingleScalarResult();
+	}
+
+
+	public function getNewComments(CommentEntity $newerThen)
+	{
+		return $this->getDql()
+			->orderBy('a.created', 'DESC')
+			->andWhere('a.created > :newer')->setParameter('newer', $newerThen->created)
 			->getQuery()
 			->getResult();
 	}

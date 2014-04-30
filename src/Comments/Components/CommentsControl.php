@@ -131,8 +131,13 @@ class CommentsControl extends Control
 	 */
 	public function getDql()
 	{
-		$qb = $this->commentDao->createQueryBuilder('a')
-			->andWhere('a.tag = :tag')->setParameter('tag', $this->tag);
+		$qb = $this->commentDao->createQueryBuilder('a');
+
+		if ($this->tag) {
+			$qb = $qb->andWhere('a.tag = :tag')->setParameter('tag', $this->tag);
+		} else {
+			$qb = $qb->andWhere('a.tag IS NULL');
+		}
 
 		if ($this->recipient) {
 			$qb = $qb->andWhere('a.recipient = :recipient')->setParameter('recipient', $this->recipient);

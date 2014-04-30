@@ -17,6 +17,8 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 use Venne\Queue\DI\IJobProvider;
 use Venne\System\DI\IPresenterProvider;
+use Venne\System\DI\SystemExtension;
+use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -60,6 +62,15 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationUserEntity'))
 			))
 			->setImplement('Venne\Notifications\Components\INotificationControlFactory')
+			->setInject(TRUE);
+
+		$container->addDefinition($this->prefix('notificationsControl'))
+			->setArguments(array(
+				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationUserEntity'))
+			))
+			->setImplement('Venne\Notifications\Components\INotificationsControlFactory')
+			->addTag(SystemExtension::TRAY_COMPONENT_TAG)
+			->addTag(WidgetsExtension::WIDGET_TAG, 'notifications')
 			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('settingsPresenter'))
