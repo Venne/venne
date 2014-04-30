@@ -50,7 +50,8 @@
 					"notifications": "Venne\\Notifications\\DI\\NotificationsExtension",
 					"security": "Venne\\Security\\DI\\SecurityExtension",
 					"queue": "Venne\\Queue\\DI\\QueueExtension",
-					"system": "Venne\\System\\DI\\SystemExtension"
+					"system": "Venne\\System\\DI\\SystemExtension",
+					"comments": "Venne\\Comments\\DI\\CommentsExtension"
 				}
 			}
 		}
