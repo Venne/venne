@@ -32,9 +32,6 @@ abstract class Control extends \Nette\Application\UI\Control
 	/** @var string */
 	private $variant;
 
-	/** @var array */
-	private $templateFiles = array();
-
 
 	/**
 	 * @return string

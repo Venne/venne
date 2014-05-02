@@ -249,6 +249,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 
 
+		$container->addDefinition($this->prefix('trayComponent'))
+			->setImplement('Venne\System\AdminModule\Components\ITrayControlFactory')
+			->setInject(TRUE)
+			->addTag(WidgetsExtension::WIDGET_TAG, 'tray');
+
+
 		$this->setupSystemApplication($container, $config);
 	}
 
@@ -384,21 +390,13 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	private function registerTrayComponents()
 	{
 		$container = $this->getContainerBuilder();
-		$administrationManager = $container->getDefinition($this->prefix('administrationManager'));
-
-		foreach ($this->compiler->extensions as $extension) {
-			if ($extension instanceof WidgetsExtension) {
-				$widgetManager = $container->getDefinition($extension->prefix('widgetManager'));
-				break;
-			}
-		}
+		$config = $container->getDefinition($this->prefix('administrationManager'));
 
 		foreach ($container->findByTag(static::TRAY_COMPONENT_TAG) as $item => $tags) {
 			$def = $container->getDefinition($item);
 			$name = 'tray__' . str_replace('\\', '_', $def->class ? : $def->implement);
 
-			$widgetManager->addSetup('addWidget', array($name, $item));
-			$administrationManager->addSetup('addTrayComponent', array($name));
+			$config->addSetup('$service->trayWidgetManager->addWidget(?, ?)', array($name, $item));
 		}
 	}
 

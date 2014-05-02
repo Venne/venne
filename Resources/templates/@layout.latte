@@ -132,13 +132,7 @@
 						{/if}
 
 						<ul class="nav navbar-nav navbar-right">
-						{dump $presenter->administrationManager->trayComponents}
-						{foreach $presenter->administrationManager->trayComponents as $name => $factory}
-							<li class="divider-vertical"></li>
-							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
-								{control $name}
-							</li>
-						{/foreach}
+							{control tray}
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">

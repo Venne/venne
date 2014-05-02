@@ -9,18 +9,17 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\System\Components\AdminGrid;
+namespace Venne\System\AdminModule\Components;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-interface IAdminGridFactory
+interface ITrayControlFactory
 {
 
 	/**
-	 * @param $repository
-	 * @return AdminGrid
+	 * @return TrayControl
 	 */
-	public function create($repository);
+	public function create();
 
 }

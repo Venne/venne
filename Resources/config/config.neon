@@ -20,7 +20,6 @@ services:
 includes:
 	- components.neon
 	- admin.system.neon
-	- admin.modules.neon
 	- admin.security.neon
 	- admin.cache.neon
 	- admin.logs.neon

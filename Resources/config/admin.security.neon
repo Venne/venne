@@ -20,7 +20,7 @@ services:
 
 	system.admin.defaultPresenter:
 		class: Venne\Security\AdminModule\DefaultPresenter(@doctrine.dao(Venne\Security\UserEntity))
-		tags: [administration: [
+		tags: [venne.administration: [
 			link: 'Security:Admin:Default:'
 			category: 'System'
 			name: 'Security'

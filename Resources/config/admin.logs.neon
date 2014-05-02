@@ -2,7 +2,7 @@ services:
 
 	system.admin.logsPresenter:
 		class: Venne\System\AdminModule\LogsPresenter(%logDir%)
-		tags: [presenter, administration: [
+		tags: [venne.administration: [
 			link: 'System:Admin:Logs:'
 			category: 'System'
 			name: 'Log browser'

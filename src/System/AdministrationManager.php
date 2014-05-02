@@ -11,8 +11,9 @@
 
 namespace Venne\System;
 
-use Nette\DI\Container;
 use Nette\Object;
+use Venne\Widgets\IWidgetManagerFactory;
+use Venne\Widgets\WidgetManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,17 +25,11 @@ use Nette\Object;
 class AdministrationManager extends Object
 {
 
-	/** @var Container */
-	private $context;
-
 	/** @var array */
 	private $administrationPages = array();
 
 	/** @var array */
 	private $sideComponents = array();
-
-	/** @var array */
-	private $trayComponents = array();
 
 	/** @var string */
 	private $routePrefix;
@@ -48,21 +43,27 @@ class AdministrationManager extends Object
 	/** @var string */
 	private $theme;
 
+	/** @var WidgetManager */
+	private $trayWidgetManager;
+
+	/** @var IWidgetManagerFactory */
+	private $widgetManagerFactory;
+
 
 	/**
 	 * @param $routePrefix
 	 * @param $defaultPresenter
 	 * @param $login
 	 * @param $theme
-	 * @param Container $context
+	 * @param IWidgetManagerFactory $widgetManagerFactory
 	 */
-	public function __construct($routePrefix, $defaultPresenter, $login, $theme, Container $context)
+	public function __construct($routePrefix, $defaultPresenter, $login, $theme, IWidgetManagerFactory $widgetManagerFactory)
 	{
 		$this->routePrefix = $routePrefix;
 		$this->defaultPresenter = $defaultPresenter;
 		$this->login = $login;
 		$this->theme = $theme;
-		$this->context = $context;
+		$this->widgetManagerFactory = $widgetManagerFactory;
 	}
 
 
@@ -166,22 +167,15 @@ class AdministrationManager extends Object
 
 
 	/**
-	 * @param $name
-	 * @return $this
+	 * @return \Venne\Widgets\WidgetManager
 	 */
-	public function addTrayComponent($name)
+	public function getTrayWidgetManager()
 	{
-		$this->trayComponents[$name] = TRUE;
-		return $this;
-	}
+		if (!$this->trayWidgetManager) {
+			$this->trayWidgetManager = $this->widgetManagerFactory->create();
+		}
 
-
-	/**
-	 * @return array
-	 */
-	public function getTrayComponents()
-	{
-		return $this->trayComponents;
+		return $this->trayWidgetManager;
 	}
 
 }

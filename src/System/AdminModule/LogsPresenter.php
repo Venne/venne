@@ -11,12 +11,16 @@
 
 namespace Venne\System\AdminModule;
 
+use Grido\DataSources\ArraySource;
+use Grido\Grid;
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
 use Nette\DateTime;
 use Nette\Utils\Finder;
 use Venne\System\AdminPresenterTrait;
+use Venne\System\Components\AdminGrid\IAdminGridFactory;
+use Venne\System\Components\INavbarControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -29,32 +33,24 @@ class LogsPresenter extends Presenter
 	use AdminPresenterTrait;
 
 	/** @var string */
-	protected $logDir;
+	private $logDir;
+
+	/** @var IAdminGridFactory */
+	private $adminGridFactory;
+
+	/** @var INavbarControlFactory */
+	private $navbarControlFactory;
 
 
 	/**
 	 * @param $logDir
+	 * @param IAdminGridFactory $adminGridFactory
 	 */
-	public function __construct($logDir)
+	public function __construct($logDir, IAdminGridFactory $adminGridFactory, INavbarControlFactory $navbarControlFactory)
 	{
 		$this->logDir = $logDir;
-	}
-
-
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function actionShow($name)
-	{
-		if (!is_string($name)) { // be aware of arrays and other inputs
-			throw new BadRequestException;
-		}
-		if (preg_match("#^exception-([0-9a-zA-Z\-]+)\.html$#D", $name)) {
-			$this->sendResponse(new TextResponse(file_get_contents($this->logDir . '/' . $name)));
-		} else {
-			// prevent directory traversal
-			throw new BadRequestException;
-		}
+		$this->adminGridFactory = $adminGridFactory;
+		$this->navbarControlFactory = $navbarControlFactory;
 	}
 
 
@@ -75,12 +71,57 @@ class LogsPresenter extends Presenter
 	}
 
 
+	protected function createComponentNavbar()
+	{
+		$control = $this->navbarControlFactory->create();
+		$control->addSection('delete', 'Delete all', 'remove')->onClick[] = $this->handleDeleteAll;
+		return $control;
+	}
+
+
+	protected function createComponentTable()
+	{
+		$table = new Grid;
+		$table->setModel(new ArraySource($this->getFiles()));
+
+		$table->addColumnText('id', 'Link')
+			->setSortable()
+			->getCellPrototype()->width = '70%';
+
+		$table->addColumnDate('date', 'Date', 'Y.m.d H:i:s')
+			->setSortable()
+			->getCellPrototype()->width = '30%';
+
+		$table->addActionEvent('show', 'Show')->onClick[] = $this->handleShow;
+		$table->addActionEvent('delete', 'Delete')->onClick[] = $this->handleDelete;
+
+		return $table;
+	}
+
+
+	/**
+	 * @secured(privilege="show")
+	 */
+	public function handleShow($name)
+	{
+		if (!is_string($name)) { // be aware of arrays and other inputs
+			throw new BadRequestException;
+		}
+		if (preg_match("#^exception-([0-9a-zA-Z\-]+)\.html$#D", $name)) {
+			$this->sendResponse(new TextResponse(file_get_contents($this->logDir . '/' . $name)));
+		} else {
+			// prevent directory traversal
+			throw new BadRequestException;
+		}
+	}
+
+
 	/**
 	 * @secured(privilege="remove")
 	 */
-	public function handleDelete()
+	public function handleDelete($id)
 	{
-		unlink($this->logDir . '/' . $this->getParameter('name'));
+		unlink($this->logDir . '/' . $id);
 		$this->flashMessage($this->translator->translate('Log has been removed'), 'success');
 		$this->redirect('this');
 	}
@@ -104,15 +145,16 @@ class LogsPresenter extends Presenter
 	{
 		$ret = array();
 
-		foreach (Finder::findFiles('exception*')->in($this->logDir) as $file) {
+		foreach (Finder::findFiles('exception-*')->in($this->logDir) as $file) {
 			$data = explode('-', $file->getFileName());
 
 			$date = "{$data[1]}-{$data[2]}-{$data[3]} {$data[4]}:{$data[5]}:{$data[6]}";
-			$info = array('date' => DateTime::from($date), 'hash' => $data[7], 'link' => $file->getFileName());
+			$info = array('date' => DateTime::from($date), 'id' => $file->getFileName());
 
 			$ret[$date] = $info;
 		}
 		ksort($ret);
 		return array_reverse($ret);
 	}
+
 }
