@@ -1,5 +1,9 @@
 {var $count = $control->countComments()}
 
+<div n:snippet="chat-container" class="chat-container" style="position: fixed; bottom: 0; right: 0;">
+	{if isset($chat)}{control chat-$chat}{/if}
+</div>
+
 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 	<i class="glyphicon glyphicon-envelope"></i> <span class="badge">{$count}</span>
 </a>
@@ -12,7 +16,7 @@
 
 	<div class="list-group notification-list-group">
 		<div n:foreach="$control->comments as $comment" class="list-group-item">
-			{control comment $comment}
+			{include #comment comment => $comment}
 		</div>
 	</div>
 
@@ -34,32 +38,25 @@
 	});
 </script>
 
+{define comment}
+<div class="media">
+	<a n:href="remove $comment->id" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
 
+	<a class="pull-left" href="#">
+		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($comment->author->email)))}" alt="$comment->author">
+	</a>
+	<div class="media-body">
+		<h4 class="media-heading">
+			{$comment->author}
+		</h4>
 
-{*<div class="comments-container" n:snippet="comments">*}
+		<small class="text-muted">
+			<i class="fa fa-clock-o"></i> {$comment->created|date:'d.m H:i'}
+		</small>
 
-	{*{foreach $flashes as $flash}*}
-		{*<div class="alert alert-{$flash->type}">*}
-			{*<a class="close" data-dismiss="alert">×</a>*}
-			{*{$flash->message}*}
-		{*</div>*}
-	{*{/foreach}*}
-
-	{*<div class="list-group">*}
-		{*<div n:foreach="$control->comments as $comment" class="list-group-item">*}
-			{*{control comment $comment}*}
-		{*</div>*}
-	{*</div>*}
-
-
-	{*<hr/>*}
-
-	{*{snippet comment}*}
-	{*{if isset($showComment)}*}
-		{*{control form}*}
-	{*{else}*}
-		{*<a class="ajax btn btn-primary" n:href="comment"><i class="glyphicon glyphicon-comment"></i> {_Comment}</a>*}
-	{*{/if}*}
-	{*{/snippet}*}
-
-{*</div>*}
+		<a class="ajax" n:href="openChat! tag => $comment->tag">
+			<span>{$comment->text}</span><br />
+		</a>
+	</div>
+</div>
+{/define}

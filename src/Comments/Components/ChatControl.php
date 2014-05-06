@@ -25,6 +25,8 @@ use Venne\System\UI\Control;
 class ChatControl extends Control
 {
 
+	private $tag;
+
 	/** @var UserEntity|NULL */
 	private $recipient;
 
@@ -62,6 +64,24 @@ class ChatControl extends Control
 		$this->formFactoryFactory = $formFactoryFactory;
 		$this->commentControlFactory = $commentsControlFactory;
 		$this->session = $session;
+	}
+
+
+	/**
+	 * @param mixed $tag
+	 */
+	public function setTag($tag)
+	{
+		$this->tag = $tag;
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getTag()
+	{
+		return $this->tag;
 	}
 
 
@@ -113,6 +133,7 @@ class ChatControl extends Control
 	protected function createEntity()
 	{
 		$entity = new CommentEntity;
+		$entity->tag = $this->tag;
 		$entity->author = $this->presenter->user->identity;
 		return $entity;
 	}
@@ -148,6 +169,12 @@ class ChatControl extends Control
 
 		if ($this->olderThan) {
 			$qb->andWhere('a.created < :older')->setParameter('older', $this->olderThan->created);
+		}
+
+		if ($this->tag) {
+			$qb->andWhere('a.tag = :tag')->setParameter('tag', $this->tag);
+		} else {
+			$qb->andWhere('a.tag IS NULL');
 		}
 
 		return $qb

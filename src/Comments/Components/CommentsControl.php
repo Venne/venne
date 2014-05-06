@@ -12,10 +12,8 @@
 namespace Venne\Comments\Components;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Form;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Comments\CommentEntity;
-use Venne\Security\UserEntity;
+use Nette\Application\UI\Multiplier;
+use Nette\Security\User;
 use Venne\System\UI\Control;
 
 /**
@@ -24,96 +22,45 @@ use Venne\System\UI\Control;
 class CommentsControl extends Control
 {
 
-	/** @var string|NULL */
-	private $tag;
-
-	/** @var UserEntity|NULL */
-	private $recipient;
-
-	/** @var CommentFormFactory */
-	private $commentFormFactory;
+	/** @var User */
+	private $user;
 
 	/** @var EntityDao */
 	private $commentDao;
 
-	/** @var FormFactoryFactory */
-	private $formFactoryFactory;
-
-	/** @var ICommentControlFactory */
-	private $commentControlFactory;
+	/** @var IChatControlFactory */
+	private $chatControlFactory;
 
 
 	public function __construct(
 		EntityDao $commentDao,
-		CommentFormFactory $commentFormFactory,
-		FormFactoryFactory $formFactoryFactory,
-		ICommentControlFactory $commentsControlFactory
+		User $user,
+		IChatControlFactory $chatControlFactory
 	)
 	{
 		parent::__construct();
 
 		$this->commentDao = $commentDao;
-		$this->commentFormFactory = $commentFormFactory;
-		$this->formFactoryFactory = $formFactoryFactory;
-		$this->commentControlFactory = $commentsControlFactory;
+		$this->user = $user;
+		$this->chatControlFactory = $chatControlFactory;
 	}
 
 
-	/**
-	 * @param NULL|string $tag
-	 */
-	public function setTag($tag)
+	public function handleOpenChat($tag = NULL)
 	{
-		$this->tag = $tag;
-	}
-
-
-	public function handleComment()
-	{
-		$this->template->showComment = TRUE;
-		$this->redrawControl('comment');
-	}
-
-
-	public function createComponentForm()
-	{
-		$form = $this->formFactoryFactory
-			->create($this->commentFormFactory)
-			->setEntity($this->createEntity())
-			->create();
-
-		$form->onSuccess[] = $this->formSuccess;
-		return $form;
-	}
-
-
-	protected function createEntity()
-	{
-		$entity = new CommentEntity;
-		$entity->author = $this->presenter->user->identity;
-		$entity->tag = $this->tag;
-		return $entity;
-	}
-
-
-	public function formSuccess(Form $form)
-	{
-		$this->flashMessage($this->presenter->translator->translate('Comment has been saved'), 'success');
-
-		if (!$this->presenter->isAjax()) {
-			$this->redirect('this');
-		}
-
-		$this->redrawControl('comments');
+		$this->template->chat = $tag ?: 'null';
+		$this->redrawControl('chat-container');
 	}
 
 
 	public function countComments()
 	{
-		return $this->getDql()
+		$ret = $this->getDql()
 			->select('COUNT(a.id)')
 			->getQuery()
-			->getSingleScalarResult();
+			->getScalarResult();
+
+		return count($ret);
 	}
 
 
@@ -131,45 +78,26 @@ class CommentsControl extends Control
 	 */
 	public function getDql()
 	{
-		$qb = $this->commentDao->createQueryBuilder('a');
+		return $this->commentDao->createQueryBuilder('a')
+			->andWhere('a.recipient IS NULL OR a.recipient = :recipient')->setParameter('recipient', $this->user->identity)
+			->groupBy('a.tag')
+			->addGroupBy('a.recipient');
+	}
 
-		if ($this->tag) {
-			$qb = $qb->andWhere('a.tag = :tag')->setParameter('tag', $this->tag);
-		} else {
-			$qb = $qb->andWhere('a.tag IS NULL');
-		}
 
-		if ($this->recipient) {
-			$qb = $qb->andWhere('a.recipient = :recipient')->setParameter('recipient', $this->recipient);
-		} else {
-			$qb = $qb->andWhere('a.recipient IS NULL');
-		}
-
-		return $qb;
+	public function createComponentChat()
+	{
+		return new Multiplier(function ($tag) {
+			$chat = $this->chatControlFactory->create();
+			$chat->setTag($tag == 'null' ? NULL : $tag);
+			return $chat;
+		});
 	}
 
 
 	public function render()
 	{
 		$this->template->render();
-	}
-
-
-	protected function createComponentComment()
-	{
-		return $this->commentControlFactory->create();
-	}
-
-
-	protected function createComponent($name)
-	{
-		if ($control = parent::createComponent($name)) {
-			return $control;
-		}
-
-		$control = clone $this;
-		$control->setTag($name);
-		return $control;
 	}
 
 }

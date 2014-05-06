@@ -1,4 +1,4 @@
-<div n:snippet="container" class="chat-panel panel panel-default">
+<div n:snippet="container" class="chat-panel panel panel-default chat-tag-{!$control->tag}">
 	<div class="panel-heading">
 		<span class="glyphicon glyphicon-comment"></span> Chat
 		<div class="pull-right btn-group">
@@ -21,8 +21,8 @@
 			<script>
 				$(function () {
 					var scrollLoad = false;
-					$('.chat-panel .panel-body').scrollTop($('.chat-panel .panel-body').scrollTop() + 1000);
-					$('.chat-panel .panel-body').on('scroll.comments', function () {
+					$('.chat-panel.chat-tag-{!$control->tag} .panel-body').scrollTop($('.chat-panel .panel-body').scrollTop() + 1000);
+					$('.chat-panel.chat-tag-{!$control->tag} .panel-body').on('scroll.comments', function () {
 						if (!scrollLoad && $(this).scrollTop() < 20) {
 							scrollLoad = true;
 							$('.chat-panel .panel-body').off('scroll.comments');
@@ -46,7 +46,7 @@
 				</div>
 				<script>
 					$(function () {
-						$('.chat-panel .panel-body').scrollTop($('.chat-panel .panel-body').scrollTop() + 999999);
+						$('.chat-panel.chat-tag-{!$control->tag} .panel-body').scrollTop($('.chat-panel .panel-body').scrollTop() + 999999);
 					});
 				</script>
 			{/if}
@@ -79,7 +79,7 @@
 		{if isset($focus)}
 			<script>
 				$(function () {
-					$('.chat-panel form input[type=text]').focus();
+					$('.chat-panel.chat-tag-{!$control->tag} form input[type=text]').focus();
 				});
 			</script>
 		{/if}

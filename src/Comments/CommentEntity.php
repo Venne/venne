@@ -21,6 +21,7 @@ use Venne\Security\UserEntity;
  * @ORM\Entity
  * @ORM\Table(name="comments", indexes={
  * @ORM\Index(name="tag_idx", columns={"tag"}),
+ * @ORM\Index(name="read_idx", columns={"read"}),
  * })
  */
 class CommentEntity extends BaseEntity
