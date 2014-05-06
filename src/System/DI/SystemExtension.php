@@ -137,7 +137,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 
 		// template
-		$container->getDefinition('nette.latte')
+		$container->getDefinition('nette.latteFactory')
 			->addSetup('$service->getCompiler()->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->getCompiler()))', array('@self'));
 
 		// security
