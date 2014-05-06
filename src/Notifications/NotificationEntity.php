@@ -13,7 +13,6 @@ namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Nette\InvalidArgumentException;
 use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 use Venne\Security\UserEntity;
 
