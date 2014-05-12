@@ -11,51 +11,57 @@
 
 namespace Venne\Security\AdminModule;
 
+use Nette\Forms\Container;
+use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
-use DoctrineModule\Forms\FormFactory;
-use Venne\Forms\Form;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ProvidersFormFactory extends FormFactory
+class ProvidersFormFactory implements IFormFactory
 {
 
+	/** @var IFormFactory */
+	private $formFactory;
+
 	/** @var SecurityManager */
-	protected $securityManager;
+	private $securityManager;
 
 
 	/**
+	 * @param IFormFactory $formFactory
 	 * @param SecurityManager $securityManager
 	 */
-	public function injectSecurityManager(SecurityManager $securityManager)
+	public function __construct(IFormFactory $formFactory, SecurityManager $securityManager)
 	{
+		$this->formFactory = $formFactory;
 		$this->securityManager = $securityManager;
 	}
 
 
 	/**
-	 * @param Form $form
+	 * @return \Nette\Application\UI\Form
 	 */
-	protected function configure(Form $form)
+	public function create()
 	{
+		$form = $this->formFactory->create();
+
 		$form->addGroup();
-		$user = $form->addOne('user');
-		$user->addMany('loginProviders', function (\Venne\Forms\Container $container) use ($form) {
-			$container->setCurrentGroup($form->addGroup($container->data->type));
+		$user = $form->addContainer('user');
+		$providers = $user->addDynamic('loginProviders', function (Container $container) use ($form) {
+			$container->setCurrentGroup($form->addGroup('Login provider'));
 			$container->addSelect('type', 'Type')->setItems($this->securityManager->getLoginProviders(), false);
 			$container->addText('uid', 'UID');
 
 			$container->addSubmit('remove', 'Remove')->addRemoveOnClick();
 		});
 
+		$providers->addSubmit('add', 'Add')->addCreateOnClick();
+
 		$form->setCurrentGroup();
-		$form->addSaveButton('Save');
+		$form->addSubmit('_submit', 'Save');
+
+		return $form;
 	}
 
-
-	public function handleSuccess(Form $form)
-	{
-		$form->getPresenter()->flashMessage($form->presenter->translator->translate('User has been saved'), 'success');
-	}
 }

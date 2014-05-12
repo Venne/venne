@@ -221,8 +221,15 @@ class AuthorizatorFactory extends Object
 		$ret = array();
 
 		foreach ($this->administrationManager->getAdministrationPages() as $link => $page) {
-			$link = trim($link, ':');
-			$ret[] = $this->presenterFactory->getPresenterClass($link);
+			if (is_array($page) && !isset($page['link'])) {
+				foreach ($page as $p) {
+					$link = trim($p['link'], ':');
+					$ret[] = $this->presenterFactory->getPresenterClass($link);
+				}
+			} else {
+				$link = trim($page['link'], ':');
+				$ret[] = $this->presenterFactory->getPresenterClass($link);
+			}
 		}
 
 		return $ret;

@@ -93,7 +93,7 @@
 	{/if}
 
 		{* Top navigation *}
-		<div class="navbar navbar-fixed-top navbar-default navigation" n:snippet="navigation">
+		<div class="navbar navbar-fixed-top navbar-default navigation">
 		<div class="container-fluid">
 
 			<div class="navbar-header">
@@ -103,7 +103,7 @@
 					<div class="navbar-collapse collapse">
 
 						{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
-						<ul class="nav navbar-nav">
+						<ul class="nav navbar-nav" n:snippet="navigation">
 							{var $pages = $presenter->administrationManager->getAdministrationPages()}
 							{foreach $pages as $category => $items}
 								{if is_array($items)}

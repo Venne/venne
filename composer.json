@@ -47,6 +47,7 @@
 		"venne": {
 			"configuration": {
 				"extensions": {
+					"config": "Venne\\Config\\DI\\ConfigExtension",
 					"notifications": "Venne\\Notifications\\DI\\NotificationsExtension",
 					"security": "Venne\\Security\\DI\\SecurityExtension",
 					"queue": "Venne\\Queue\\DI\\QueueExtension",

@@ -42,8 +42,8 @@ class DefaultPresenter extends Presenter
 	/** @var AdminFormFactory */
 	private $form;
 
-	/** @var ProviderFormFactory */
-	private $providerForm;
+	/** @var ProvidersFormFactory */
+	private $providersForm;
 
 	/** @var SecurityManager */
 	private $securityManager;
@@ -55,21 +55,21 @@ class DefaultPresenter extends Presenter
 	/**
 	 * @param EntityDao $userDao
 	 * @param AdminFormFactory $form
-	 * @param ProviderFormFactory $providerForm
+	 * @param ProvidersFormFactory $providersForm
 	 * @param SecurityManager $securityManager
 	 * @param IAdminGridFactory $adminGridFactory
 	 */
 	public function __construct(
 		EntityDao $userDao,
 		AdminFormFactory $form,
-		ProviderFormFactory $providerForm,
+		ProvidersFormFactory $providersForm,
 		SecurityManager $securityManager,
 		IAdminGridFactory $adminGridFactory
 	)
 	{
 		$this->userDao = $userDao;
 		$this->form = $form;
-		$this->providerForm = $providerForm;
+		$this->providersForm = $providersForm;
 		$this->securityManager = $securityManager;
 		$this->adminGridFactory = $adminGridFactory;
 	}
@@ -167,7 +167,7 @@ class DefaultPresenter extends Presenter
 			$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($type) {
 				return new $type;
 			}, Form::TYPE_LARGE);
-			$providerForm = $admin->createForm($this->providerForm, 'Login providers', NULL, Form::TYPE_LARGE);
+			$providerForm = $admin->createForm($this->providersForm, 'Login providers', NULL, Form::TYPE_LARGE);
 
 			$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
 			$admin->connectFormWithAction($providerForm, $table->getAction('loginProviders'));

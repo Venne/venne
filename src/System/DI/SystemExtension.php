@@ -16,6 +16,7 @@ use Kdyby\Translation\DI\ITranslationProvider;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
+use Nette\PhpGenerator\PhpLiteral;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
@@ -93,11 +94,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			}
 		}
 
-		$this->compiler->parseServices(
-			$this->getContainerBuilder(),
-			$this->loadFromFile(__DIR__ . '/../../../Resources/config/config.neon')
-		);
-
 		foreach ($config['administration']['registrations'] as $key => $values) {
 			if (isset($values['name']) && $values['name']) {
 				$config['administration']['registrations'][$values['name']] = $values;
@@ -164,7 +160,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->setFactory('@authorizatorFactory::getPermissionsByUser', array('@user', TRUE));
 
 		$container->addDefinition('authenticator')
-			->setClass('Venne\Security\Authenticator', array($config['administration']['login']['name'], $config['administration']['login']['password'], new \Nette\DI\Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
+			->setClass('Venne\Security\Authenticator', array($config['administration']['login']['name'], $config['administration']['login']['password'], new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
 
 		// detect prefix
 		$prefix = $config['website']['routePrefix'];
@@ -255,7 +251,49 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->addTag(WidgetsExtension::WIDGET_TAG, 'tray');
 
 
+		$this->setupSystemLogs($container, $config);
+		$this->setupSystemCache($container, $config);
 		$this->setupSystemApplication($container, $config);
+		$this->setupSystem($container, $config);
+	}
+
+
+	public function setupDoctrine(ContainerBuilder $container, array $config)
+	{
+		$container->addDefinition($this->prefix('dynamicMapperSubscriber'))
+			->setClass('Venne\Doctrine\Mapping\DynamicMapperSubscriber')
+			->addTag('kdyby.subscriber');
+	}
+
+
+	public function setupSystemLogs(ContainerBuilder $container, array $config)
+	{
+		$container->addDefinition($this->prefix('system.logsPresenter'))
+			->setClass('Venne\System\AdminModule\LogsPresenter', array($container->expand('%logDir%')))
+			->addTag(static::ADMINISTRATION_TAG, array(
+				'link' => 'System:Admin:Logs:',
+				'category' => 'System',
+				'name' => 'Log browser',
+				'description' => 'Show logs, errors, warnings,...',
+				'priority' => 5,
+			));
+	}
+
+
+	public function setupSystemCache(ContainerBuilder $container, array $config)
+	{
+		$container->addDefinition($this->prefix('system.cache.formFactory'))
+			->setClass('Venne\System\AdminModule\CacheFormFactory', array(new Statement('@system.admin.basicFormFactory', array())));
+
+		$container->addDefinition($this->prefix('system.cachePresenter'))
+			->setClass('Venne\System\AdminModule\CachePresenter')
+			->addTag(static::ADMINISTRATION_TAG, array(
+				'link' => 'System:Admin:Cache:',
+				'category' => 'System',
+				'name' => 'Cache',
+				'description' => 'Clear cache',
+				'priority' => 0,
+			));
 	}
 
 
@@ -296,6 +334,67 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				'description' => 'Set up database, environment,...',
 				'priority' => 15,
 			));
+	}
+
+
+	public function setupSystem(ContainerBuilder $container, array $config)
+	{
+		$container->addDefinition($this->prefix('formRenderer'))
+			->setClass('Venne\System\Forms\Bootstrap3Renderer');
+
+		$container->addDefinition($this->prefix('admin.basicFormFactory'))
+			->setClass('Nette\Application\UI\Form')
+			->setArguments(array(NULL, NULL))
+			->setImplement('Venne\Forms\IFormFactory')
+			->addSetup('setRenderer', array(new Statement($this->prefix('@formRenderer'))))
+			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
+			->setAutowired(FALSE);
+
+		$container->addDefinition($this->prefix('admin.configFormFactory'))
+			->setClass('Venne\System\UI\ConfigFormFactory', array(new PhpLiteral('$configFile'), new PhpLiteral('$section')))
+			->addSetup('setFormFactory', array(new Statement('@system.admin.basicFormFactory')))
+			->setAutowired(FALSE)
+			->setParameters(array('configFile', 'section'));
+
+		$container->addDefinition($this->prefix('registrationControlFactory'))
+			->setClass('Venne\Security\Registration\RegistrationControl', array(
+				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
+				'%userType%', '%mode%', '%loginProviderMode%', '%roles%', '%emailSender%', '%emailFrom%', '%emailSubject%', '%emailText%'
+			))
+			->setImplement('Venne\Security\Registration\IRegistrationControlFactory')
+			->addSetup('inject')
+			->setParameters(array('userType', 'mode', 'loginProviderMode', 'roles', 'emailSender', 'emailFrom', 'emailSubject', 'emailText'));
+
+		$container->addDefinition($this->prefix('system.loginFormFactory'))
+			->setClass('Venne\System\AdminModule\LoginFormFactory', array(new Statement('@system.admin.basicFormFactory')));
+
+		$container->addDefinition($this->prefix('system.dashboardPresenter'))
+			->setClass('Venne\System\AdminModule\DashboardPresenter', array(
+				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationEntity')),
+				new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))
+			));
+
+		$container->addDefinition($this->prefix('navbarControlFactory'))
+			->setImplement('Venne\System\Components\INavbarControlFactory')
+			->setArguments(array(NULL))
+			->setInject(TRUE);
+
+		$container->addDefinition($this->prefix('loginControlFactory'))
+			->setImplement('Venne\Security\Login\ILoginControlFactory')
+			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
+			->setInject(TRUE);
+
+		$container->addDefinition($this->prefix('gridControlFactory'))
+			->setImplement('Venne\System\Components\AdminGrid\IAdminGridFactory')
+			->setArguments(array(new PhpLiteral('$repository')))
+			->setParameters(array('repository'))
+			->setInject(TRUE);
+
+		$container->addDefinition($this->prefix('flashMessageControlFactory'))
+			->setImplement('Venne\System\Components\IFlashMessageControlFactory')
+			->setArguments(array(NULL))
+			->setInject(TRUE)
+			->addTag(WidgetsExtension::WIDGET_TAG, 'flashMessage');
 	}
 
 

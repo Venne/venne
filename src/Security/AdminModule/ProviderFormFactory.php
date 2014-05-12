@@ -11,38 +11,32 @@
 
 namespace Venne\Security\AdminModule;
 
-use Venne\Forms\Form;
-use Venne\Forms\FormFactory;
+use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\System\Pages\Users\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ProviderFormFactory extends FormFactory
+class ProviderFormFactory implements IFormFactory
 {
-
-	/** @var array */
-	public $onSave;
-
-	/** @var array */
-	public $onSuccess;
 
 	/** @var string */
 	private $provider;
 
-	/** @var UserEntity */
-	private $user;
-
 	/** @var SecurityManager */
 	private $securityManager;
 
+	/** @var IFormFactory */
+	private $formFactory;
+
 
 	/**
-	 * @param \Venne\Security\SecurityManager $securityManager
+	 * @param IFormFactory $formFactory
+	 * @param SecurityManager $securityManager
 	 */
-	public function injectSecurityManager(SecurityManager $securityManager)
+	public function __construct(IFormFactory $formFactory, SecurityManager $securityManager)
 	{
+		$this->formFactory = $formFactory;
 		$this->securityManager = $securityManager;
 	}
 
@@ -57,40 +51,23 @@ class ProviderFormFactory extends FormFactory
 
 
 	/**
-	 * @param \Venne\System\Pages\Users\UserEntity $user
+	 * @return \Nette\Application\UI\Form
 	 */
-	public function setUser(UserEntity $user)
+	public function create()
 	{
-		$this->user = $user;
-	}
+		$form = $this->formFactory->create();
 
-
-	/**
-	 * @param Form $form
-	 */
-	public function configure(Form $form)
-	{
 		$form->addHidden('provider')->setValue($this->provider);
 		$form['parameters'] = $this->securityManager
 			->getLoginProviderByName($this->provider)
 			->getFormContainer();
 
-		$form->addSaveButton('Sign in')
+		$form->addSubmit('_submit', 'Save')
 			->getControlPrototype()->class[] = 'btn-primary';
 		$form->addSubmit('cancel', 'Cancel')
 			->setValidationScope(FALSE);
-	}
 
-
-	public function handleSave(Form $form)
-	{
-		$this->onSave($form);
-	}
-
-
-	public function handleSuccess(Form $form)
-	{
-		$this->onSuccess($form);
+		return $form;
 	}
 
 }
