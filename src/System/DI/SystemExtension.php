@@ -25,15 +25,15 @@ use Venne\Widgets\DI\WidgetsExtension;
 class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider
 {
 
-	const TRAY_COMPONENT_TAG = 'venne.trayComponent';
+	const TAG_TRAY_COMPONENT = 'venne.trayComponent';
 
-	const USER_TAG = 'venne.user';
+	const TAG_USER = 'venne.user';
 
-	const LOGIN_PROVIDER_TAG = 'venne.loginProvider';
+	const TAG_LOGIN_PROVIDER = 'venne.loginProvider';
 
-	const ROUTE_TAG = 'venne.route';
+	const TAG_ROUTE = 'venne.route';
 
-	const ADMINISTRATION_TAG = 'venne.administration';
+	const TAG_ADMINISTRATION = 'venne.administration';
 
 	/** @var array */
 	public $defaults = array(
@@ -176,25 +176,25 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->setClass('Nette\Application\Routers\Route', array('robots.txt',
 				array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => NULL)
 			))
-			->addTag(static::ROUTE_TAG, array('priority' => 999999999));
+			->addTag(static::TAG_ROUTE, array('priority' => 999999999));
 		$container->addDefinition($this->prefix('sitemapRoute'))
 			->setClass('Nette\Application\Routers\Route', array('[lang-<lang>/][page-<page>/]sitemap.xml',
 				array('presenter' => 'Cms:Sitemap', 'action' => 'sitemap',)
 			))
-			->addTag(static::ROUTE_TAG, array('priority' => 999999998));
+			->addTag(static::TAG_ROUTE, array('priority' => 999999998));
 
 		// Administration
 		$presenter = explode(':', $config['administration']['defaultPresenter']);
 		unset($presenter[1]);
 		$container->addDefinition($this->prefix('adminRoute'))
 			->setClass('Venne\System\Routers\AdminRoute', array($presenter, $adminPrefix))
-			->addTag(static::ROUTE_TAG, array('priority' => 100001));
+			->addTag(static::TAG_ROUTE, array('priority' => 100001));
 
 		if ($config['website']['oneWayRoutePrefix']) {
 			$container->addDefinition($this->prefix('oneWayPageRoute'))
 				->setClass('Venne\System\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnection', $config['website']['oneWayRoutePrefix'], $parameters, $config['website']['languages'], $config['website']['defaultLanguage'], TRUE)
 				)
-				->addTag(static::ROUTE_TAG, array('priority' => 99));
+				->addTag(static::TAG_ROUTE, array('priority' => 99));
 		}
 
 		$container->addDefinition($this->prefix('administrationManager'))
@@ -217,10 +217,10 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		foreach ($this->compiler->getExtensions('Venne\Assets\DI\AssetsExtension') as $extension) {
 			$container->getDefinition($extension->prefix('cssLoaderFactory'))
-				->addTag(WidgetsExtension::WIDGET_TAG, 'css');
+				->addTag(WidgetsExtension::TAG_WIDGET, 'css');
 
 			$container->getDefinition($extension->prefix('jsLoaderFactory'))
-				->addTag(WidgetsExtension::WIDGET_TAG, 'js');
+				->addTag(WidgetsExtension::TAG_WIDGET, 'js');
 
 			break;
 		}
@@ -248,7 +248,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->addDefinition($this->prefix('trayComponent'))
 			->setImplement('Venne\System\AdminModule\Components\ITrayControlFactory')
 			->setInject(TRUE)
-			->addTag(WidgetsExtension::WIDGET_TAG, 'tray');
+			->addTag(WidgetsExtension::TAG_WIDGET, 'tray');
 
 
 		$this->setupSystemLogs($container, $config);
@@ -270,7 +270,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	{
 		$container->addDefinition($this->prefix('system.logsPresenter'))
 			->setClass('Venne\System\AdminModule\LogsPresenter', array($container->expand('%logDir%')))
-			->addTag(static::ADMINISTRATION_TAG, array(
+			->addTag(static::TAG_ADMINISTRATION, array(
 				'link' => 'System:Admin:Logs:',
 				'category' => 'System',
 				'name' => 'Log browser',
@@ -287,7 +287,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition($this->prefix('system.cachePresenter'))
 			->setClass('Venne\System\AdminModule\CachePresenter')
-			->addTag(static::ADMINISTRATION_TAG, array(
+			->addTag(static::TAG_ADMINISTRATION, array(
 				'link' => 'System:Admin:Cache:',
 				'category' => 'System',
 				'name' => 'Cache',
@@ -327,7 +327,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition($this->prefix('system.applicationPresenter'))
 			->setClass('Venne\System\AdminModule\ApplicationPresenter')
-			->addTag(static::ADMINISTRATION_TAG, array(
+			->addTag(static::TAG_ADMINISTRATION, array(
 				'link' => 'System:Admin:Application:',
 				'category' => 'System',
 				'name' => 'System settings',
@@ -394,7 +394,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->setImplement('Venne\System\Components\IFlashMessageControlFactory')
 			->setArguments(array(NULL))
 			->setInject(TRUE)
-			->addTag(WidgetsExtension::WIDGET_TAG, 'flashMessage');
+			->addTag(WidgetsExtension::TAG_WIDGET, 'flashMessage');
 	}
 
 
@@ -428,7 +428,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container = $this->getContainerBuilder();
 		$router = $container->getDefinition('router');
 
-		foreach ($this->getSortedServices(static::ROUTE_TAG) as $route) {
+		foreach ($this->getSortedServices(static::TAG_ROUTE) as $route) {
 			$definition = $container->getDefinition($route);
 			$definition->setAutowired(FALSE);
 
@@ -442,8 +442,8 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container = $this->getContainerBuilder();
 		$manager = $container->getDefinition($this->prefix('administrationManager'));
 
-		foreach ($this->getSortedServices(static::ADMINISTRATION_TAG) as $item) {
-			$tags = $container->getDefinition($item)->tags[static::ADMINISTRATION_TAG];
+		foreach ($this->getSortedServices(static::TAG_ADMINISTRATION) as $item) {
+			$tags = $container->getDefinition($item)->tags[static::TAG_ADMINISTRATION];
 			$manager->addSetup('addAdministrationPage', array(
 				$tags['link'],
 				isset($tags['name']) ? $tags['name'] : NULL,
@@ -459,7 +459,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container = $this->getContainerBuilder();
 		$config = $container->getDefinition($this->prefix('securityManager'));
 
-		foreach ($container->findByTag(static::USER_TAG) as $item => $tags) {
+		foreach ($container->findByTag(static::TAG_USER) as $item => $tags) {
 			$arguments = $container->getDefinition($item)->factory->arguments;
 
 			$container->getDefinition($item)->factory->arguments = array(
@@ -477,7 +477,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container = $this->getContainerBuilder();
 		$config = $container->getDefinition($this->prefix('securityManager'));
 
-		foreach ($container->findByTag(static::LOGIN_PROVIDER_TAG) as $item => $tags) {
+		foreach ($container->findByTag(static::TAG_LOGIN_PROVIDER) as $item => $tags) {
 			$class = '\\' . $container->getDefinition($item)->class;
 			$type = $class::getType();
 
@@ -491,7 +491,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container = $this->getContainerBuilder();
 		$config = $container->getDefinition($this->prefix('administrationManager'));
 
-		foreach ($container->findByTag(static::TRAY_COMPONENT_TAG) as $item => $tags) {
+		foreach ($container->findByTag(static::TAG_TRAY_COMPONENT) as $item => $tags) {
 			$def = $container->getDefinition($item);
 			$name = 'tray__' . str_replace('\\', '_', $def->class ? : $def->implement);
 

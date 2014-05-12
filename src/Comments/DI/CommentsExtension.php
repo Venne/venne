@@ -36,14 +36,14 @@ class CommentsExtension extends CompilerExtension implements IEntityProvider, IP
 		$container->addDefinition($this->prefix('commentsControlFactory'))
 			->setImplement('Venne\Comments\Components\ICommentsControlFactory')
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Comments\CommentEntity'))))
-			->addTag(SystemExtension::TRAY_COMPONENT_TAG)
-			->addTag(WidgetsExtension::WIDGET_TAG, 'comments')
+			->addTag(SystemExtension::TAG_TRAY_COMPONENT)
+			->addTag(WidgetsExtension::TAG_WIDGET, 'comments')
 			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('chatControlFactory'))
 			->setImplement('Venne\Comments\Components\IChatControlFactory')
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Comments\CommentEntity'))))
-			->addTag(WidgetsExtension::WIDGET_TAG, 'chat')
+			->addTag(WidgetsExtension::TAG_WIDGET, 'chat')
 			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('commentFormFactory'))

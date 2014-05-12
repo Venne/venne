@@ -72,7 +72,7 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 
 		$container->addDefinition($this->prefix('defaultPresenter'))
 			->setClass('Venne\Security\AdminModule\DefaultPresenter', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
-			->addTag(SystemExtension::ADMINISTRATION_TAG, array(
+			->addTag(SystemExtension::TAG_ADMINISTRATION, array(
 				'link' => 'Security:Admin:Default:',
 				'category' => 'System',
 				'name' => 'Security',
@@ -98,7 +98,7 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 			->addSetup('setFormFactory', array(new Statement('@Venne\Security\DefaultType\AdminFormFactory')))
 			->addSetup('setFrontFormFactory', array(new Statement('@Venne\Security\DefaultType\FrontFormFactory')))
 			->addSetup('setRegistrationFormFactory', array(new Statement('@Venne\Security\DefaultType\RegistrationFormFactory')))
-			->addTag('venne.user', array(
+			->addTag(SystemExtension::TAG_USER, array(
 				'name' => 'Default user',
 			));
 

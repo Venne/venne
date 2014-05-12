@@ -56,7 +56,7 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 
 		$container->addDefinition($this->prefix('defaultPresenter'))
 			->setClass('Venne\Queue\AdminModule\DefaultPresenter')
-			->addTag(SystemExtension::ADMINISTRATION_TAG, array(
+			->addTag(SystemExtension::TAG_ADMINISTRATION, array(
 				'link' => 'Queue:Admin:Default:',
 				'category' => 'System',
 				'name' => 'Worker manager',
@@ -79,8 +79,8 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobsControlFactory')
 			->setInject(TRUE)
-			->addTag(SystemExtension::TRAY_COMPONENT_TAG)
-			->addTag(WidgetsExtension::WIDGET_TAG,'jobs');
+			->addTag(SystemExtension::TAG_TRAY_COMPONENT)
+			->addTag(WidgetsExtension::TAG_WIDGET,'jobs');
 
 		$container->addDefinition($this->prefix('jobControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
