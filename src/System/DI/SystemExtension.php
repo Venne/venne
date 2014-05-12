@@ -12,6 +12,7 @@
 namespace Venne\System\DI;
 
 use Kdyby\Doctrine\DI\IEntityProvider;
+use Kdyby\Events\DI\EventsExtension;
 use Kdyby\Translation\DI\ITranslationProvider;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
@@ -262,7 +263,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	{
 		$container->addDefinition($this->prefix('dynamicMapperSubscriber'))
 			->setClass('Venne\Doctrine\Mapping\DynamicMapperSubscriber')
-			->addTag('kdyby.subscriber');
+			->addTag(EventsExtension::TAG_SUBSCRIBER);
 	}
 
 
