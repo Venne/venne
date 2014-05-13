@@ -41,10 +41,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	public $defaults = array(
 		'session' => array(),
 		'administration' => array(
-			'login' => array(
-				'name' => '',
-				'password' => ''
-			),
 			'routePrefix' => '',
 			'defaultPresenter' => 'System:Admin:Dashboard',
 			'authentication' => array(
@@ -171,7 +167,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->setFactory('@authorizatorFactory::getPermissionsByUser', array('@user', TRUE));
 
 		$container->addDefinition('authenticator')
-			->setClass('Venne\Security\Authenticator', array($config['administration']['login']['name'], $config['administration']['login']['password'], new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
+			->setClass('Venne\Security\Authenticator', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
 
 		// detect prefix
 		$prefix = $config['website']['routePrefix'];
@@ -212,7 +208,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->setClass('Venne\System\AdministrationManager', array(
 				$config['administration']['routePrefix'],
 				$config['administration']['defaultPresenter'],
-				$config['administration']['login'],
 				$config['administration']['theme']
 			));
 

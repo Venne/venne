@@ -25,22 +25,12 @@ class Authenticator extends Object implements IAuthenticator
 	/** @var EntityDao */
 	private $userDao;
 
-	/** @var string */
-	private $adminLogin;
-
-	/** @var string */
-	private $adminPassword;
-
 
 	/**
-	 * @param $adminLogin
-	 * @param $adminPassword
 	 * @param $userDao
 	 */
-	public function __construct($adminLogin, $adminPassword, EntityDao $userDao)
+	public function __construct(EntityDao $userDao)
 	{
-		$this->adminLogin = $adminLogin;
-		$this->adminPassword = $adminPassword;
 		$this->userDao = $userDao;
 	}
 
@@ -54,49 +44,20 @@ class Authenticator extends Object implements IAuthenticator
 	 */
 	public function authenticate(array $credentials)
 	{
-		try {
-			return $this->authenticateAdmin($credentials);
-		} catch (\Exception $ex) {
-			list($username, $password) = $credentials;
 
-			$user = $this->userDao->findOneBy(array('email' => $username, 'published' => 1));
-
-			if (!$user) {
-				throw $ex;
-			}
-
-			if (!$user->verifyByPassword($password)) {
-				throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
-			}
-
-			return new Identity($user->id, $user->getRoles());
-		}
-	}
-
-
-	/**
-	 * Performs an authentication
-	 *
-	 * @param  array
-	 * @return \Nette\Security\Identity
-	 * @throws \Nette\Security\AuthenticationException
-	 */
-	private function authenticateAdmin(array $credentials)
-	{
 		list($username, $password) = $credentials;
 
-		if (!$username OR !$password) {
-			throw new AuthenticationException('The username or password is not filled.', self::INVALID_CREDENTIAL);
+		$user = $this->userDao->findOneBy(array('email' => $username, 'published' => 1));
+
+		if (!$user) {
+			throw $ex;
 		}
 
-		if ($this->adminLogin != $username) {
-			throw new AuthenticationException('The username is incorrect.', self::INVALID_CREDENTIAL);
+		if (!$user->verifyByPassword($password)) {
+			throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 		}
 
-		if ($this->adminPassword != $password) {
-			throw new AuthenticationException('The password is incorrect.', self::IDENTITY_NOT_FOUND);
-		}
-
-		return new \Nette\Security\Identity($username, array('admin'));
+		return new Identity($user->id, $user->getRoles());
 	}
+
 }

@@ -18,7 +18,7 @@ use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity
- * @ORM\Table(name="login",indexes={@ORM\Index(name="search_idx", columns={"sessionId"})})
+ * @ORM\Table(name="login",indexes={@ORM\Index(name="session_idx", columns={"session_id"})})
  */
 class LoginEntity extends BaseEntity
 {
@@ -33,7 +33,7 @@ class LoginEntity extends BaseEntity
 	 */
 	protected $user;
 
-	/** @ORM\Column(type="string", nullable=true) */
+	/** @ORM\Column(name="session_id", type="string", nullable=true) */
 	protected $sessionId;
 
 	/** @ORM\Column(type="boolean") */

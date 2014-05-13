@@ -37,9 +37,6 @@ class AdministrationManager extends Object
 	/** @var string */
 	private $defaultPresenter;
 
-	/** @var array */
-	private $login;
-
 	/** @var string */
 	private $theme;
 
@@ -53,15 +50,13 @@ class AdministrationManager extends Object
 	/**
 	 * @param $routePrefix
 	 * @param $defaultPresenter
-	 * @param $login
 	 * @param $theme
 	 * @param IWidgetManagerFactory $widgetManagerFactory
 	 */
-	public function __construct($routePrefix, $defaultPresenter, $login, $theme, IWidgetManagerFactory $widgetManagerFactory)
+	public function __construct($routePrefix, $defaultPresenter, $theme, IWidgetManagerFactory $widgetManagerFactory)
 	{
 		$this->routePrefix = $routePrefix;
 		$this->defaultPresenter = $defaultPresenter;
-		$this->login = $login;
 		$this->theme = $theme;
 		$this->widgetManagerFactory = $widgetManagerFactory;
 	}
@@ -82,15 +77,6 @@ class AdministrationManager extends Object
 	public function getRoutePrefix()
 	{
 		return $this->routePrefix;
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getLogin()
-	{
-		return $this->login;
 	}
 
 

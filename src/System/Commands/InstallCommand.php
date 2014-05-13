@@ -124,7 +124,7 @@ class InstallCommand extends Command
 
 		$user = new UserEntity;
 		$user->user->setPassword($password);
-		$user->user->setName($email);
+		$user->user->setEmail($email);
 
 		$this->entityManager->persist($user);
 		$this->entityManager->flush();
