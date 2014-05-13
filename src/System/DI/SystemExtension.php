@@ -11,6 +11,7 @@
 
 namespace Venne\System\DI;
 
+use Kdyby\Console\DI\ConsoleExtension;
 use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Events\DI\EventsExtension;
 use Kdyby\Translation\DI\ITranslationProvider;
@@ -153,6 +154,13 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
 				new Statement('@doctrine.dao', array('Venne\Security\PermissionEntity'))
 			, '@session'));
+
+		$container->addDefinition('installCommand')
+			->setFactory('Venne\System\Commands\InstallCommand', array(
+				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
+				new Statement('@doctrine.dao', array('Venne\Security\PermissionEntity'))
+			))
+			->addTag(ConsoleExtension::COMMAND_TAG);
 
 		$container->getDefinition('packageManager.packageManager')
 			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array('@authorizatorFactory'))
