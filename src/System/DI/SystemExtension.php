@@ -149,8 +149,10 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$application->addSetup('$service->errorPresenter = ?', array($config['website']['errorPresenter']));
 
 		$container->addDefinition('authorizatorFactory')
-			->setFactory('Venne\Security\AuthorizatorFactory', array(new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')), '@session'))
-			->addSetup('setReader');
+			->setFactory('Venne\Security\AuthorizatorFactory', array(
+				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
+				new Statement('@doctrine.dao', array('Venne\Security\PermissionEntity'))
+			, '@session'));
 
 		$container->getDefinition('packageManager.packageManager')
 			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array('@authorizatorFactory'))

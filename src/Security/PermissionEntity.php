@@ -17,7 +17,7 @@ use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity(repositoryClass="\Venne\Security\Repositories\PermissionRepository")
+ * @ORM\Entity
  * @ORM\Table(name="permission")
  */
 class PermissionEntity extends BaseEntity
@@ -26,7 +26,7 @@ class PermissionEntity extends BaseEntity
 	use IdentifiedEntityTrait;
 
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $resource;
 
