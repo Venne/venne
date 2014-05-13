@@ -101,7 +101,7 @@ class InstallCommand extends Command
 		}, FALSE);
 
 		$roles = array();
-		foreach (array('guest' => NULL, 'registered' => 'guest', 'admin' => 'registered') as $name => $parent) {
+		foreach (array('guest' => NULL, 'authenticated' => 'guest', 'admin' => 'authenticated') as $name => $parent) {
 
 			$output->writeln(sprintf('Creating role "<info>%s</info>"', $name));
 
@@ -125,6 +125,7 @@ class InstallCommand extends Command
 		$user = new UserEntity;
 		$user->user->setPassword($password);
 		$user->user->setEmail($email);
+		$user->user->addRoleEntity($roles['admin']);
 
 		$this->entityManager->persist($user);
 		$this->entityManager->flush();

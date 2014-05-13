@@ -23,8 +23,8 @@ use Venne\Doctrine\Entities\IdentifiedEntityTrait;
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity
  * @ORM\EntityListeners({
- * 		"\Venne\Security\Listeners\ExtendedUserListener",
- * 		"\Venne\Security\Listeners\UserStateListener"
+ *        "\Venne\Security\Listeners\ExtendedUserListener",
+ *        "\Venne\Security\Listeners\UserStateListener"
  * })
  * @ORM\Table(name="users")
  */
@@ -335,6 +335,17 @@ class UserEntity extends BaseEntity implements IIdentity
 	public function getNotation()
 	{
 		return $this->notation;
+	}
+
+
+	/**
+	 * @param RoleEntity $roleEntity
+	 * @return $this
+	 */
+	public function addRoleEntity(RoleEntity $roleEntity)
+	{
+		$this->roleEntities->add($roleEntity);
+		return $this;
 	}
 
 
