@@ -25,7 +25,8 @@
 		"venne/packages": "@dev",
 		"venne/assets": "~3.0.0@dev",
 		"venne/forms": "~3.0.0@dev",
-		"venne/widgets": "~3.0.0@dev"
+		"venne/widgets": "~3.0.0@dev",
+		"vojtech-dobes/nette-ajax-history": "@dev"
 	},
 	"require-dev": {
 		"venne/tester": "~1.1.0"
