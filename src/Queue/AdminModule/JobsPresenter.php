@@ -73,14 +73,14 @@ class JobsPresenter extends Presenter
 			->getCellPrototype()->width = '10%';
 
 		// actions
-		$table->addAction('edit', 'Edit')
+		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
 		$form = $admin->createForm($this->jobFormFactory, 'Job');
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 
-		$table->addAction('delete', 'Delete')
+		$table->addActionEvent('delete', 'Delete')
 			->getElementPrototype()->class[] = 'ajax';
 		$admin->connectActionAsDelete($table->getAction('delete'));
 

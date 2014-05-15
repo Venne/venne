@@ -94,11 +94,11 @@ class SettingsPresenter extends Presenter
 			->getCellPrototype()->width = '20%';
 
 		// actions
-			$table->addAction('edit', 'Edit')
+			$table->addActionEvent('edit', 'Edit')
 				->getElementPrototype()->class[] = 'ajax';
 
 
-		$table->addAction('delete', 'Delete')
+		$table->addActionEvent('delete', 'Delete')
 			->getElementPrototype()->class[] = 'ajax';
 		$admin->connectActionAsDelete($table->getAction('delete'));
 

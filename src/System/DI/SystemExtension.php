@@ -289,7 +289,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	public function setupSystemCache(ContainerBuilder $container, array $config)
 	{
 		$container->addDefinition($this->prefix('system.cache.formFactory'))
-			->setClass('Venne\System\AdminModule\CacheFormFactory', array(new Statement('@system.admin.basicFormFactory', array())));
+			->setClass('Venne\System\AdminModule\CacheFormFactory', array(new Statement('@system.admin.basicFormFactory')));
 
 		$container->addDefinition($this->prefix('system.cachePresenter'))
 			->setClass('Venne\System\AdminModule\CachePresenter')
@@ -388,6 +388,11 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->addDefinition($this->prefix('loginControlFactory'))
 			->setImplement('Venne\Security\Login\ILoginControlFactory')
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
+			->setInject(TRUE);
+
+		$container->addDefinition($this->prefix('gridoFactory'))
+			->setImplement('Venne\System\Components\IGridoFactory')
+			->setArguments(array(NULL, NULL))
 			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('gridControlFactory'))
@@ -532,7 +537,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 	/**
 	 * @return array
 	 */
-	function getTranslationResources()
+	public function getTranslationResources()
 	{
 		return array(
 			__DIR__ . '/../../../Resources/lang',

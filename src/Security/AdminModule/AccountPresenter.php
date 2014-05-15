@@ -186,7 +186,7 @@ class AccountPresenter extends Presenter
 		$providerFormFactory = $this->providerFormFactory;
 
 		// actions
-		$table->addAction('connect', 'Connect')
+		$table->addActionEvent('connect', 'Connect')
 			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
 				if ($user->hasLoginProvider($entity['name'])) {
 					$element->class[] = 'disabled';
@@ -219,7 +219,7 @@ class AccountPresenter extends Presenter
 		$admin->connectFormWithAction($form, $table->getAction('connect'));
 
 
-		$table->addAction('disconnect', 'Disconnect')
+		$table->addActionEvent('disconnect', 'Disconnect')
 			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
 				if (!$user->hasLoginProvider($entity['name'])) {
 					$element->class[] = 'disabled';
@@ -265,7 +265,7 @@ class AccountPresenter extends Presenter
 			->getCellPrototype()->width = '50%';
 
 		// actions
-		$table->addAction('delete', 'Delete')
+		$table->addActionEvent('delete', 'Delete')
 			->setConfirm(function ($entity) {
 				return "Really delete session '{$entity->sessionId}'?";
 			})

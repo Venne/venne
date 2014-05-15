@@ -11,15 +11,15 @@
 
 namespace Venne\System\Components\AdminGrid;
 
-use DoctrineModule\Repositories\BaseRepository;
+use Grido\Components\Actions\Event;
 use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Kdyby\Doctrine\EntityDao;
 use Nette\Callback;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Forms\IFormFactory;
-use Venne\System\Components\Grido\Actions\CallbackAction;
-use Venne\System\Components\Grido\Grid;
+use Grido\Grid;
+use Venne\System\Components\IGridoFactory;
 use Venne\System\Components\INavbarControlFactory;
 use Venne\System\Components\NavbarControl;
 use Venne\System\Components\Section;
@@ -77,11 +77,8 @@ class AdminGrid extends Control
 	/** @var AdminGrid */
 	protected $parentFloor;
 
-	/** @var BaseRepository */
+	/** @var EntityDao */
 	protected $dao;
-
-	/** @var Callback */
-	protected $tableFactory;
 
 	/** @var INavbarControlFactory */
 	protected $navbarFactory;
@@ -98,16 +95,15 @@ class AdminGrid extends Control
 	/** @var FormFactoryFactory */
 	private $formFactoryFactory;
 
+	/** @var IGridoFactory */
+	private $gridoFactory;
 
-	/**
-	 * @param EntityDao $dao
-	 * @param INavbarControlFactory $navbarFactory
-	 * @param FormFactoryFactory $formFactoryFactory
-	 */
+
 	public function __construct(
 		EntityDao $dao = NULL,
 		INavbarControlFactory $navbarFactory,
-		FormFactoryFactory $formFactoryFactory
+		FormFactoryFactory $formFactoryFactory,
+		IGridoFactory $gridoFactory
 	)
 	{
 		parent::__construct();
@@ -115,6 +111,7 @@ class AdminGrid extends Control
 		$this->dao = $dao;
 		$this->navbarFactory = $navbarFactory;
 		$this->formFactoryFactory = $formFactoryFactory;
+		$this->gridoFactory = $gridoFactory;
 	}
 
 
@@ -198,27 +195,26 @@ class AdminGrid extends Control
 	}
 
 
-	public function connectFormWithAction(Form $form, CallbackAction $action, $mode = self::MODE_MODAL)
+	public function connectFormWithAction(Form $form, Event $action, $mode = self::MODE_MODAL)
 	{
 		$this->actionForms[$action->getName()] = $form;
 
-		$_this = $this;
-		$action->onClick[] = function ($action, $id) use ($_this, $mode) {
-			$_this->mode = $mode;
-			$_this->id = $id;
-			$_this->invalidateControl('actionFormContainer');
-			if ($_this->mode === $_this::MODE_PLACE) {
-				$_this->invalidateControl('table');
-				$_this->invalidateControl('navbarFormContainer');
-				$_this->invalidateControl('actionFormContainer');
+		$action->onClick[] = function ($id, $action) use ($mode) {
+			$this->mode = $mode;
+			$this->id = $id;
+			$this->invalidateControl('actionFormContainer');
+			if ($this->mode === $this::MODE_PLACE) {
+				$this->invalidateControl('table');
+				$this->invalidateControl('navbarFormContainer');
+				$this->invalidateControl('actionFormContainer');
 			}
-			$_this->setFormName($action->getName());
+			$this->setFormName($action->getName());
 		};
 		return $this;
 	}
 
 
-	public function connectActionAsDelete(CallbackAction $action)
+	public function connectActionAsDelete(Event $action)
 	{
 		$action->onClick[] = $this->tableDelete;
 		$action->setConfirm(function ($entity) {
@@ -233,7 +229,7 @@ class AdminGrid extends Control
 	}
 
 
-	public function connectActionWithFloor(CallbackAction $action, AdminGrid $adminGrid, $name)
+	public function connectActionWithFloor(Event $action, AdminGrid $adminGrid, $name)
 	{
 		$this->floors[$name] = $adminGrid;
 		$adminGrid->setParentFloor($this);
@@ -282,26 +278,6 @@ class AdminGrid extends Control
 	public function createForm(IFormFactory $formFactory, $title, $entityFactory = NULL, $type = NULL)
 	{
 		return new Form($formFactory, $title, $entityFactory, $type);
-	}
-
-
-	/**
-	 * @param $tableFactory
-	 * @return $this
-	 */
-	public function setTableFactory($tableFactory)
-	{
-		$this->tableFactory = $tableFactory;
-		return $this;
-	}
-
-
-	/**
-	 * @return callable
-	 */
-	public function getTableFactory()
-	{
-		return $this->tableFactory;
 	}
 
 
@@ -360,16 +336,10 @@ class AdminGrid extends Control
 	 */
 	protected function createComponentTable()
 	{
-		if ($this->tableFactory) {
-			$grid = Callback::create($this->tableFactory)->invoke();
-		} else {
-			$grid = new Grid;
-			$grid->addAction('_groupstart', 'Group start')->setCustomRender(function () {
-				return '<div class="btn-group">';
-			});
-			if ($this->dao) {
-				$grid->setModel(new Doctrine($this->dao->createQueryBuilder('a')));
-			}
+		$grid = $this->gridoFactory->create();
+
+		if ($this->dao) {
+			$grid->setModel(new Doctrine($this->dao->createQueryBuilder('a')));
 		}
 
 		return $grid;
@@ -512,13 +482,6 @@ class AdminGrid extends Control
 	public function render()
 	{
 		$this->onRender($this);
-
-		if (!$this->tableFactory) {
-			$grid = $this['table'];
-			$grid->addAction('_groupend', 'Group end')->setCustomRender(function () {
-				return '</div>';
-			});
-		}
 
 		if ($this->formName) {
 			$this->template->form = $this->id ? $this->actionForms[$this->formName] : $this->navbarForms[$this->formName];

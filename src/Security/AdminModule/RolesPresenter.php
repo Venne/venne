@@ -128,10 +128,10 @@ class RolesPresenter extends Presenter
 
 		// actions
 		if ($this->isAuthorized('edit')) {
-			$table->addAction('edit', 'Edit')
+			$table->addActionEvent('edit', 'Edit')
 				->getElementPrototype()->class[] = 'ajax';
 
-			$table->addAction('permissions', 'Permissions')
+			$table->addActionEvent('permissions', 'Permissions')
 				->getElementPrototype()->class[] = 'ajax';
 
 			$form = $admin->createForm($this->roleForm, 'Role');
@@ -147,7 +147,7 @@ class RolesPresenter extends Presenter
 		}
 
 		if ($this->isAuthorized('remove')) {
-			$table->addAction('delete', 'Delete')
+			$table->addActionEvent('delete', 'Delete')
 				->getElementPrototype()->class[] = 'ajax';
 			$admin->connectActionAsDelete($table->getAction('delete'));
 		}

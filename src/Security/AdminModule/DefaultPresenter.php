@@ -157,10 +157,10 @@ class DefaultPresenter extends Presenter
 
 		// actions
 		if ($this->isAuthorized('edit')) {
-			$table->addAction('edit', 'Edit')
+			$table->addActionEvent('edit', 'Edit')
 				->getElementPrototype()->class[] = 'ajax';
 
-			$table->addAction('loginProviders', 'Login providers')
+			$table->addActionEvent('loginProviders', 'Login providers')
 				->getElementPrototype()->class[] = 'ajax';
 
 			$type = $this->type;
@@ -179,7 +179,7 @@ class DefaultPresenter extends Presenter
 		}
 
 		if ($this->isAuthorized('remove')) {
-			$table->addAction('delete', 'Delete')
+			$table->addActionEvent('delete', 'Delete')
 				->getElementPrototype()->class[] = 'ajax';
 			$admin->connectActionAsDelete($table->getAction('delete'));
 		}
