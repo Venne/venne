@@ -13,12 +13,12 @@ namespace Venne\System\Components\AdminGrid;
 
 use Grido\Components\Actions\Event;
 use Grido\DataSources\Doctrine;
+use Grido\Grid;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Kdyby\Doctrine\EntityDao;
 use Nette\Callback;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Forms\IFormFactory;
-use Grido\Grid;
 use Venne\System\Components\IGridoFactory;
 use Venne\System\Components\INavbarControlFactory;
 use Venne\System\Components\NavbarControl;
@@ -149,8 +149,8 @@ class AdminGrid extends Control
 
 		$this->id = NULL;
 		$this->formName = NULL;
-		$this->invalidateControl('navbarFormContainer');
-		$this->invalidateControl('actionFormContainer');
+		$this->redrawControl('navbarFormContainer');
+		$this->redrawControl('actionFormContainer');
 		$this->presenter->payload->url = $this->link('this');
 	}
 
@@ -161,11 +161,11 @@ class AdminGrid extends Control
 			$this->redirect('this');
 		}
 
-		$this->invalidateControl('table');
-		$this->invalidateControl('navbar');
-		$this->invalidateControl('breadcrumb');
-		$this->invalidateControl('navbarFormContainer');
-		$this->invalidateControl('actionFormContainer');
+		$this->redrawControl('table');
+		$this->redrawControl('navbar');
+		$this->redrawControl('breadcrumb');
+		$this->redrawControl('navbarFormContainer');
+		$this->redrawControl('actionFormContainer');
 		$this->presenter->payload->url = $this->link('this');
 	}
 
@@ -179,17 +179,16 @@ class AdminGrid extends Control
 	{
 		$this->navbarForms[$section->getName()] = $form;
 
-		$_this = $this;
-		$section->onClick[] = function ($section) use ($_this, $mode) {
-			$_this->mode = $mode;
-			$_this->id = NULL;
-			$_this->invalidateControl('navbarFormContainer');
-			if ($_this->mode === $_this::MODE_PLACE) {
-				$_this->invalidateControl('table');
-				$_this->invalidateControl('navbarFormContainer');
-				$_this->invalidateControl('actionFormContainer');
+		$section->onClick[] = function ($section) use ($mode) {
+			$this->mode = $mode;
+			$this->id = NULL;
+			$this->redrawControl('navbarFormContainer');
+			if ($this->mode === $this::MODE_PLACE) {
+				$this->redrawControl('table');
+				$this->redrawControl('navbarFormContainer');
+				$this->redrawControl('actionFormContainer');
 			}
-			$_this->setFormName($section->getName());
+			$this->setFormName($section->getName());
 		};
 		return $this;
 	}
@@ -202,11 +201,11 @@ class AdminGrid extends Control
 		$action->onClick[] = function ($id, $action) use ($mode) {
 			$this->mode = $mode;
 			$this->id = $id;
-			$this->invalidateControl('actionFormContainer');
+			$this->redrawControl('actionFormContainer');
 			if ($this->mode === $this::MODE_PLACE) {
-				$this->invalidateControl('table');
-				$this->invalidateControl('navbarFormContainer');
-				$this->invalidateControl('actionFormContainer');
+				$this->redrawControl('table');
+				$this->redrawControl('navbarFormContainer');
+				$this->redrawControl('actionFormContainer');
 			}
 			$this->setFormName($action->getName());
 		};
@@ -234,12 +233,11 @@ class AdminGrid extends Control
 		$this->floors[$name] = $adminGrid;
 		$adminGrid->setParentFloor($this);
 
-		$_this = $this;
-		$action->onClick[] = function ($action, $id) use ($_this, $name) {
-			$_this->floorId = $id;
-			$_this->floor = $name;
+		$action->onClick[] = function ($id, $action) use ($name) {
+			$this->floorId = $id;
+			$this->floor = $name;
 
-			$_this->handleFloor();
+			$this->handleFloor();
 		};
 
 		return $this;
@@ -426,7 +424,7 @@ class AdminGrid extends Control
 
 	public function navbarFormSuccess(\Nette\Application\UI\Form $form)
 	{
-		$this->invalidateControl('navbarForm');
+		$this->redrawControl('navbarForm');
 
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
 
@@ -435,10 +433,10 @@ class AdminGrid extends Control
 				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 			}
 
-			$this->invalidateControl('table');
+			$this->redrawControl('table');
 			if ($this->mode === $this::MODE_PLACE) {
-				$this->invalidateControl('navbarFormContainer');
-				$this->invalidateControl('actionFormContainer');
+				$this->redrawControl('navbarFormContainer');
+				$this->redrawControl('actionFormContainer');
 			}
 			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'mode' => NULL));
 		}
@@ -447,7 +445,7 @@ class AdminGrid extends Control
 
 	public function actionFormSuccess(\Nette\Application\UI\Form $form)
 	{
-		$this->invalidateControl('actionForm');
+		$this->redrawControl('actionForm');
 
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
 
@@ -457,10 +455,10 @@ class AdminGrid extends Control
 				$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
 			}
 
-			$this->invalidateControl('table');
+			$this->redrawControl('table');
 			if ($this->mode === $this::MODE_PLACE) {
-				$this->invalidateControl('navbarFormContainer');
-				$this->invalidateControl('actionFormContainer');
+				$this->redrawControl('navbarFormContainer');
+				$this->redrawControl('actionFormContainer');
 			}
 			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
 		}
@@ -469,13 +467,13 @@ class AdminGrid extends Control
 
 	public function navbarFormError()
 	{
-		$this->invalidateControl('navbarForm');
+		$this->redrawControl('navbarForm');
 	}
 
 
 	public function actionFormError()
 	{
-		$this->invalidateControl('actionForm');
+		$this->redrawControl('actionForm');
 	}
 
 
@@ -493,11 +491,11 @@ class AdminGrid extends Control
 
 	/** ------------------------ Callbacks --------------------------------- */
 
-	public function tableDelete($action, $id, $redirect = TRUE)
+	public function tableDelete($id, $action, $redirect = TRUE)
 	{
 		if (is_array($id)) {
 			foreach ($id as $item) {
-				$this->tableDelete($action, $item, FALSE);
+				$this->tableDelete($item, $action, FALSE);
 			}
 		} else {
 			$this->dao->delete($this->dao->find($id));
@@ -508,7 +506,7 @@ class AdminGrid extends Control
 				$this->redirect('this');
 			}
 
-			$this->invalidateControl('table');
+			$this->redrawControl('table');
 			$this->presenter->payload->url = $this->link('this');
 		}
 	}

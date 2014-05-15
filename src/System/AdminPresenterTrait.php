@@ -158,10 +158,10 @@ trait AdminPresenterTrait
 		}
 
 		if ($this->getParameter('do') === NULL && $this->isAjax()) {
-			$this->invalidateControl('navigation');
-			$this->invalidateControl('content');
-			$this->invalidateControl('header');
-			$this->invalidateControl('toolbar');
+			$this->redrawControl('navigation');
+			$this->redrawControl('content');
+			$this->redrawControl('header');
+			$this->redrawControl('toolbar');
 		}
 	}
 
