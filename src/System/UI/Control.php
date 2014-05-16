@@ -102,4 +102,5 @@ abstract class Control extends \Nette\Application\UI\Control
 
 		$this->variant = NULL;
 	}
+
 }

@@ -34,7 +34,7 @@ class Bootstrap3Renderer extends DefaultFormRenderer
 
 	public function render(Nette\Forms\Form $form, $mode = NULL)
 	{
-		$form->getElementPrototype()->class('form-horizontal');
+		$form->getElementPrototype()->class[] = 'form-horizontal';
 
 		foreach ($form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {

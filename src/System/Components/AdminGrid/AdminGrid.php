@@ -120,6 +120,12 @@ class AdminGrid extends Control
 		parent::attached($presenter);
 
 		$this->onAttached($this);
+
+		if ($this->presenter->getParameter('do') === NULL && $this->presenter->isAjax()) {
+			$this->redrawControl('actionFormContainer');
+			$this->redrawControl('table');
+			$this->redrawControl('navbarFormContainer');
+		}
 	}
 
 
@@ -143,30 +149,20 @@ class AdminGrid extends Control
 
 	public function handleClose()
 	{
-		if (!$this->presenter->isAjax()) {
-			$this->redirect('this');
-		}
-
-		$this->id = NULL;
-		$this->formName = NULL;
-		$this->redrawControl('navbarFormContainer');
-		$this->redrawControl('actionFormContainer');
-		$this->presenter->payload->url = $this->link('this');
+		$this->redirect('this', array('id' => NULL, 'formName' => NULL));
 	}
 
 
 	public function handleFloor()
 	{
-		if (!$this->presenter->isAjax()) {
-			$this->redirect('this');
+		if ($this->presenter->isAjax()) {
+			$this->redrawControl('table');
+			$this->redrawControl('navbar');
+			$this->redrawControl('breadcrumb');
+			$this->redrawControl('navbarFormContainer');
+			$this->redrawControl('actionFormContainer');
 		}
-
-		$this->redrawControl('table');
-		$this->redrawControl('navbar');
-		$this->redrawControl('breadcrumb');
-		$this->redrawControl('navbarFormContainer');
-		$this->redrawControl('actionFormContainer');
-		$this->presenter->payload->url = $this->link('this');
+		$this->redirect('this');
 	}
 
 
@@ -180,15 +176,7 @@ class AdminGrid extends Control
 		$this->navbarForms[$section->getName()] = $form;
 
 		$section->onClick[] = function ($section) use ($mode) {
-			$this->mode = $mode;
-			$this->id = NULL;
-			$this->redrawControl('navbarFormContainer');
-			if ($this->mode === $this::MODE_PLACE) {
-				$this->redrawControl('table');
-				$this->redrawControl('navbarFormContainer');
-				$this->redrawControl('actionFormContainer');
-			}
-			$this->setFormName($section->getName());
+			$this->redirect('this', array('id' => NULL, 'mode' => $mode, 'formName' => $section->getName()));
 		};
 		return $this;
 	}
@@ -199,15 +187,7 @@ class AdminGrid extends Control
 		$this->actionForms[$action->getName()] = $form;
 
 		$action->onClick[] = function ($id, $action) use ($mode) {
-			$this->mode = $mode;
-			$this->id = $id;
-			$this->redrawControl('actionFormContainer');
-			if ($this->mode === $this::MODE_PLACE) {
-				$this->redrawControl('table');
-				$this->redrawControl('navbarFormContainer');
-				$this->redrawControl('actionFormContainer');
-			}
-			$this->setFormName($action->getName());
+				$this->redirect('this', array('id' => $id, 'mode' => $mode, 'formName' => $action->getName()));
 		};
 		return $this;
 	}
@@ -233,7 +213,7 @@ class AdminGrid extends Control
 		$this->floors[$name] = $adminGrid;
 		$adminGrid->setParentFloor($this);
 
-		$action->onClick[] = function ($id, $action) use ($name) {
+		$action->onClick[] = function ($id) use ($name) {
 			$this->floorId = $id;
 			$this->floor = $name;
 
@@ -424,56 +404,33 @@ class AdminGrid extends Control
 
 	public function navbarFormSuccess(\Nette\Application\UI\Form $form)
 	{
-		$this->redrawControl('navbarForm');
+		$this->redrawControl('navbarFormContainer');
 
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-
-			$this->formName = NULL;
-			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
-			}
-
-			$this->redrawControl('table');
-			if ($this->mode === $this::MODE_PLACE) {
-				$this->redrawControl('navbarFormContainer');
-				$this->redrawControl('actionFormContainer');
-			}
-			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'mode' => NULL));
+			$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 		}
 	}
 
 
 	public function actionFormSuccess(\Nette\Application\UI\Form $form)
 	{
-		$this->redrawControl('actionForm');
+		$this->redrawControl('actionFormContainer');
 
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-
-			$this->id = NULL;
-			$this->formName = NULL;
-			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
-			}
-
-			$this->redrawControl('table');
-			if ($this->mode === $this::MODE_PLACE) {
-				$this->redrawControl('navbarFormContainer');
-				$this->redrawControl('actionFormContainer');
-			}
-			$this->presenter->payload->url = $this->link('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
+			$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
 		}
 	}
 
 
 	public function navbarFormError()
 	{
-		$this->redrawControl('navbarForm');
+		$this->redrawControl('navbarFormContainer');
 	}
 
 
 	public function actionFormError()
 	{
-		$this->redrawControl('actionForm');
+		$this->redrawControl('actionFormContainer');
 	}
 
 
@@ -502,12 +459,7 @@ class AdminGrid extends Control
 		}
 
 		if ($redirect) {
-			if (!$this->presenter->isAjax()) {
-				$this->redirect('this');
-			}
-
-			$this->redrawControl('table');
-			$this->presenter->payload->url = $this->link('this');
+			$this->redirect('this');
 		}
 	}
 }

@@ -61,7 +61,7 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 			));
 
 		$container->addDefinition($this->prefix('roleFormFactory'))
-			->setClass('Venne\Security\AdminModule\RoleFormFactory', array(new Statement('@system.admin.basicFormFactory')));
+			->setClass('Venne\Security\AdminModule\RoleFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 
 		$container->addDefinition($this->prefix('providerFormFactory'))
 			->setClass('Venne\Security\AdminModule\ProviderFormFactory', array(new Statement('@system.admin.basicFormFactory')));

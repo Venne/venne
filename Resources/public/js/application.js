@@ -203,16 +203,6 @@ $(function () {
 		},
 		selector: 'input[type=date], input[type=datetime]'
 	});
-	$.nette.ext('grido', {
-		load: function() {
-			this.selector = $('.grido');
-			this.selector.grido();
-		},
-		success: function(payload) {
-			this.selector.trigger('success.ajax.grido', payload);
-			$('html, body').animate({scrollTop: 0}, 400);
-		}
-	});
 	$.nette.ext('formsFileUpload', {
 		load: function () {
 			this.init('body');

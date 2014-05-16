@@ -356,6 +356,15 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
 			->setAutowired(FALSE);
 
+		$container->addDefinition($this->prefix('admin.ajaxFormFactory'))
+			->setClass('Nette\Application\UI\Form')
+			->setArguments(array(NULL, NULL))
+			->setImplement('Venne\Forms\IFormFactory')
+			->addSetup('setRenderer', array(new Statement($this->prefix('@formRenderer'))))
+			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
+			->addSetup("\$service->getElementPrototype()->class[] = ?", array('ajax'))
+			->setAutowired(FALSE);
+
 		$container->addDefinition($this->prefix('admin.configFormFactory'))
 			->setClass('Venne\System\UI\ConfigFormFactory', array(new PhpLiteral('$configFile'), new PhpLiteral('$section')))
 			->addSetup('setFormFactory', array(new Statement('@system.admin.basicFormFactory')))

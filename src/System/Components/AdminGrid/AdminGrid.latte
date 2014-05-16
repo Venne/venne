@@ -75,9 +75,6 @@
 								if (input.parent().find('input[name!="_submit"]').length === 0) {
 									input.parent().hide();
 								}
-								{if $control['navbarForm']->isSubmitted() === $control['navbarForm']['_submit'] && !$control['navbarForm']->getErrors()}
-									$('#modal-{!$control->getName()}').modal('hide');
-								{/if}
 
 								$('#modal-{!$control->getName()} button.btn-primary').off('click.admingrid');
 								$('#modal-{!$control->getName()} button.btn-primary').on('click.admingrid', function (e) {
@@ -87,6 +84,7 @@
 								if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
 									$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
 										e.preventDefault();
+										$('#modal-{!$control->getName()}').modal('hide');
 									});
 								}
 							});
@@ -134,16 +132,12 @@
 						{/if}
 
 						<script type="text/javascript">
-							// <![CDATA[
 							$(function () {
 								var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
 								input.hide();
 								if (input.parent().find('input[name!="_submit"]').length === 0) {
 									input.parent().hide();
 								}
-								{if $control['actionForm']->isSubmitted() === $control['actionForm']['_submit'] && !$control['actionForm']->getErrors()}
-									$('#modal-{!$control->getName()}').modal('hide');
-								{/if}
 
 								$('#modal-{!$control->getName()} button.btn-primary').off('click.admingrid');
 								$('#modal-{!$control->getName()} button.btn-primary').on('click.admingrid', function (e) {
@@ -153,10 +147,10 @@
 								if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
 									$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
 										e.preventDefault();
+										$('#modal-{!$control->getName()}').modal('hide');
 									});
 								}
 							});
-							// ]]>
 						</script>
 					</div>
 					<div class="modal-footer">
@@ -167,7 +161,6 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			// <![CDATA[
 			$(function () {
 				$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
 					if($('#modal-{!$control->getName()} .modal-close').length !== 1){
@@ -175,7 +168,6 @@
 					}
 				});
 			});
-			// ]]>
 		</script>
 		{else}
 			<h2>{_$form->title}</h2>

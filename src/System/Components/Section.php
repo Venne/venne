@@ -44,11 +44,13 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 
 
 	/**
-	 * @param string $caption
+	 * @param $caption
+	 * @return $this
 	 */
 	public function setCaption($caption)
 	{
 		$this->caption = $caption;
+		return $this;
 	}
 
 
@@ -62,11 +64,13 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 
 
 	/**
-	 * @param string $icon
+	 * @param $icon
+	 * @return $this
 	 */
 	public function setIcon($icon)
 	{
 		$this->icon = $icon;
+		return $this;
 	}
 
 
