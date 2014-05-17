@@ -350,6 +350,11 @@ class AdminGrid extends Control
 			->setEntity($entity)
 			->create();
 
+		$form->onSubmit[] = function(){
+			if ($this->presenter->isAjax()) {
+				$this->redrawControl('navbarForm');
+			}
+		};
 		$form->onSuccess[] = $this->navbarFormSuccess;
 		$form->onError[] = $this->navbarFormError;
 
@@ -367,12 +372,18 @@ class AdminGrid extends Control
 
 	protected function createComponentActionForm()
 	{
+		/** @var Form $form */
 		$form = $this->actionForms[$this->formName];
 		$form = $this->formFactoryFactory
 			->create($form->getFactory())
 			->setEntity($this->getCurrentEntity())
 			->create();
 
+		$form->onSubmit[] = function(){
+			if ($this->presenter->isAjax()) {
+				$this->redrawControl('actionForm');
+			}
+		};
 		$form->onSuccess[] = $this->actionFormSuccess;
 		$form->onError[] = $this->actionFormError;
 
@@ -404,8 +415,6 @@ class AdminGrid extends Control
 
 	public function navbarFormSuccess(\Nette\Application\UI\Form $form)
 	{
-		$this->redrawControl('navbarFormContainer');
-
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
 			$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
 		}
@@ -414,8 +423,6 @@ class AdminGrid extends Control
 
 	public function actionFormSuccess(\Nette\Application\UI\Form $form)
 	{
-		$this->redrawControl('actionFormContainer');
-
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
 			$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
 		}
@@ -424,13 +431,13 @@ class AdminGrid extends Control
 
 	public function navbarFormError()
 	{
-		$this->redrawControl('navbarFormContainer');
+		$this->redrawControl('navbarForm');
 	}
 
 
 	public function actionFormError()
 	{
-		$this->redrawControl('actionFormContainer');
+		$this->redrawControl('actionForm');
 	}
 
 

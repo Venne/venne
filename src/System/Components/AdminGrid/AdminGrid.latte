@@ -79,14 +79,19 @@
 								$('#modal-{!$control->getName()} button.btn-primary').off('click.admingrid');
 								$('#modal-{!$control->getName()} button.btn-primary').on('click.admingrid', function (e) {
 									e.preventDefault();
-									$('#modal-{!$control->getName()} form input[name="_submit"]').click();
-								});
-								if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
-									$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
-										e.preventDefault();
-										$('#modal-{!$control->getName()}').modal('hide');
+									$('#modal-{!$control->getName()}').modal('show').off('hidden.bs.modal');
+									$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
+										$('#modal-{!$control->getName()} form input[name="_submit"]').click();
 									});
-								}
+									$('#modal-{!$control->getName()}').modal('hide');
+								});
+
+								$('#modal-{!$control->getName()}').modal('show').off('hidden.bs.modal');
+								$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
+									if($('#modal-{!$control->getName()} .modal-close').length !== 1){
+										$.nette.ajax({ url: {link close!}});
+									}
+								});
 							});
 						</script>
 					</div>
@@ -97,15 +102,6 @@
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript">
-			$(function () {
-				$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
-					if($('#modal-{!$control->getName()} .modal-close').length !== 1){
-						$.nette.ajax({ url: {link close!}});
-					}
-				});
-			});
-		</script>
 		{else}
 			<h2>{_$form->title}</h2>
 			{control navbarForm}
@@ -142,33 +138,29 @@
 								$('#modal-{!$control->getName()} button.btn-primary').off('click.admingrid');
 								$('#modal-{!$control->getName()} button.btn-primary').on('click.admingrid', function (e) {
 									e.preventDefault();
-									$('#modal-{!$control->getName()} form input[name="_submit"]').click();
-								});
-								if ($('#modal-{!$control->getName()} form').hasClass('ajax')) {
-									$('#modal-{!$control->getName()} form input[name="_submit"]').on('click', function(e) {
-										e.preventDefault();
-										$('#modal-{!$control->getName()}').modal('hide');
+									$('#modal-{!$control->getName()}').modal('show').off('hidden.bs.modal');
+									$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
+										$('#modal-{!$control->getName()} form input[name="_submit"]').click();
 									});
-								}
+									$('#modal-{!$control->getName()}').modal('hide');
+								});
+
+								$('#modal-{!$control->getName()}').modal('show').off('hidden.bs.modal');
+								$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
+									if($('#modal-{!$control->getName()} .modal-close').length !== 1){
+										$.nette.ajax({ url: {link close!}});
+									}
+								});
 							});
 						</script>
 					</div>
 					<div class="modal-footer">
-						<button type="button" data-dismiss="modal" class="btn btn-default">Zavřít</button>
-						<button type="button" class="btn btn-primary">Uložit</button>
+						<button type="button" data-dismiss="modal" class="btn btn-default">{_Close}</button>
+						<button type="button" class="btn btn-primary">{_Save}</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript">
-			$(function () {
-				$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
-					if($('#modal-{!$control->getName()} .modal-close').length !== 1){
-						$.nette.ajax({ url: {link close!}});
-					}
-				});
-			});
-		</script>
 		{else}
 			<h2>{_$form->title}</h2>
 			{control actionForm}
