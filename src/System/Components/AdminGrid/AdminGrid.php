@@ -51,18 +51,6 @@ class AdminGrid extends Control
 	 * @var string
 	 * @persistent
 	 */
-	public $floor;
-
-	/**
-	 * @var string
-	 * @persistent
-	 */
-	public $floorId;
-
-	/**
-	 * @var string
-	 * @persistent
-	 */
 	public $mode = self::MODE_MODAL;
 
 	/** @var array */
@@ -70,12 +58,6 @@ class AdminGrid extends Control
 
 	/** @var array */
 	public $onRender;
-
-	/** @var AdminGrid[] */
-	protected $floors = array();
-
-	/** @var AdminGrid */
-	protected $parentFloor;
 
 	/** @var EntityDao */
 	protected $dao;
@@ -122,9 +104,9 @@ class AdminGrid extends Control
 		$this->onAttached($this);
 
 		if ($this->presenter->getParameter('do') === NULL && $this->presenter->isAjax()) {
-			$this->redrawControl('actionFormContainer');
 			$this->redrawControl('table');
-			$this->redrawControl('navbarFormContainer');
+			$this->redrawControl('navbar');
+			$this->redrawControl('breadcrumb');
 		}
 	}
 
@@ -153,24 +135,6 @@ class AdminGrid extends Control
 	}
 
 
-	public function handleFloor()
-	{
-		if ($this->presenter->isAjax()) {
-			$this->redrawControl('table');
-			$this->redrawControl('navbar');
-			$this->redrawControl('breadcrumb');
-			$this->redrawControl('navbarFormContainer');
-			$this->redrawControl('actionFormContainer');
-		}
-		$this->redirect('this');
-	}
-
-
-	/**
-	 * @param Form $form
-	 * @param Section $section
-	 * @return $this
-	 */
 	public function connectFormWithNavbar(Form $form, Section $section, $mode = self::MODE_MODAL)
 	{
 		$this->navbarForms[$section->getName()] = $form;
@@ -187,7 +151,7 @@ class AdminGrid extends Control
 		$this->actionForms[$action->getName()] = $form;
 
 		$action->onClick[] = function ($id, $action) use ($mode) {
-				$this->redirect('this', array('id' => $id, 'mode' => $mode, 'formName' => $action->getName()));
+			$this->redirect('this', array('id' => $id, 'mode' => $mode, 'formName' => $action->getName()));
 		};
 		return $this;
 	}
@@ -205,51 +169,6 @@ class AdminGrid extends Control
 
 		$this->getTable()->setOperation(array('delete' => 'Delete'), $this->tableDelete);
 		return $this;
-	}
-
-
-	public function connectActionWithFloor(Event $action, AdminGrid $adminGrid, $name)
-	{
-		$this->floors[$name] = $adminGrid;
-		$adminGrid->setParentFloor($this);
-
-		$action->onClick[] = function ($id) use ($name) {
-			$this->floorId = $id;
-			$this->floor = $name;
-
-			$this->handleFloor();
-		};
-
-		return $this;
-	}
-
-
-	/**
-	 * @param $parentFloor
-	 * @return $this
-	 */
-	public function setParentFloor($parentFloor)
-	{
-		$this->parentFloor = $parentFloor;
-		return $this;
-	}
-
-
-	/**
-	 * @return AdminGrid
-	 */
-	public function getParentFloor()
-	{
-		return $this->parentFloor;
-	}
-
-
-	/**
-	 * @return array|AdminGrid[]
-	 */
-	public function getFloors()
-	{
-		return $this->floors;
 	}
 
 
@@ -350,7 +269,7 @@ class AdminGrid extends Control
 			->setEntity($entity)
 			->create();
 
-		$form->onSubmit[] = function(){
+		$form->onSubmit[] = function () {
 			if ($this->presenter->isAjax()) {
 				$this->redrawControl('navbarForm');
 			}
@@ -379,7 +298,7 @@ class AdminGrid extends Control
 			->setEntity($this->getCurrentEntity())
 			->create();
 
-		$form->onSubmit[] = function(){
+		$form->onSubmit[] = function () {
 			if ($this->presenter->isAjax()) {
 				$this->redrawControl('actionForm');
 			}
@@ -416,7 +335,11 @@ class AdminGrid extends Control
 	public function navbarFormSuccess(\Nette\Application\UI\Form $form)
 	{
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-			$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+			if (!$this->presenter->isAjax()) {
+				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+			}
+			$this->formName = NULL;
+			$this->mode = NULL;
 		}
 	}
 
@@ -424,7 +347,12 @@ class AdminGrid extends Control
 	public function actionFormSuccess(\Nette\Application\UI\Form $form)
 	{
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-			$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
+			if (!$this->presenter->isAjax()) {
+				$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
+			}
+			$this->formName = NULL;
+			$this->id = NULL;
+			$this->mode = NULL;
 		}
 	}
 
@@ -453,8 +381,6 @@ class AdminGrid extends Control
 	}
 
 
-	/** ------------------------ Callbacks --------------------------------- */
-
 	public function tableDelete($id, $action, $redirect = TRUE)
 	{
 		if (is_array($id)) {
@@ -469,4 +395,5 @@ class AdminGrid extends Control
 			$this->redirect('this');
 		}
 	}
+
 }
