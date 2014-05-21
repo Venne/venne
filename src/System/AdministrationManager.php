@@ -46,6 +46,12 @@ class AdministrationManager extends Object
 	/** @var IWidgetManagerFactory */
 	private $widgetManagerFactory;
 
+	/** @var array */
+	private $jsFiles = array();
+
+	/** @var array */
+	private $cssFiles = array();
+
 
 	/**
 	 * @param $routePrefix
@@ -59,6 +65,48 @@ class AdministrationManager extends Object
 		$this->defaultPresenter = $defaultPresenter;
 		$this->theme = $theme;
 		$this->widgetManagerFactory = $widgetManagerFactory;
+	}
+
+
+	/**
+	 * @param $file
+	 * @param bool $args
+	 * @return $this
+	 */
+	public function addCssFile($file, $args = TRUE)
+	{
+		$this->cssFiles[trim($file)] = $args;
+		return $this;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getCssFiles()
+	{
+		return $this->cssFiles;
+	}
+
+
+	/**
+	 * @param $file
+	 * @param bool $args
+	 * @return $this
+	 */
+	public function addJsFile($file, $args = TRUE)
+	{
+		$this->jsFiles[trim($file)] = $args;
+		return $this;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getJsFiles()
+	{
+		return $this->jsFiles;
 	}
 
 

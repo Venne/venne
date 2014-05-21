@@ -9,82 +9,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		{foreach $presenter->administrationManager->getCssFiles() as $file => $args}
+			<link rel="stylesheet" href="{path $file}" type="text/css" charset="utf-8" />
+		{/foreach}
 
-		<link rel="stylesheet" href="{path @venne.venne/vendor/bootstrap/css/bootstrap.min.css}" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="{path @venne.venne/vendor/bootstrap/css/bootstrap-theme.min.css}" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="{path @venne.venne/vendor/jasny-bootstrap/css/jasny-bootstrap.min.css}" type="text/css" charset="utf-8" />
-
-		<link rel="stylesheet" href="{path @venne.venne/vendor/font-awesome/css/font-awesome.min.css}" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="{path @venne.venne/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css}" type="text/css" charset="utf-8" />
-
-		<link rel="stylesheet" href="{path @venne.venne/vendor/grido/grido.css}" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="{path @venne.venne/vendor/dynatree/skin-vista/ui.dynatree.css}" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="{path @venne.venne/vendor/select2/select2.css}" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="{path @venne.venne/vendor/select2/select2-bootstrap.css}" type="text/css" charset="utf-8" />
-
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery/jquery.min.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery/jquery-migrate.min.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery-ui/jquery-ui.min.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/bootstrap/js/bootstrap.min.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jasny-bootstrap/js/jasny-bootstrap.min.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js}"></script>
-		{*<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.$presenter->lang.js}"></script>*}
-
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/jquery-hashchange/jquery.ba-hashchange.min.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/grido/grido.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/dynatree/jquery.dynatree.min.js}"></script>
-
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/select2/select2.min.js}"></script>
-		{*<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/select2/select2_locale_$presenter->lang.js}"></script>*}
-
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/typeahead.js/typeahead.bundle.min.js}"></script>
-
-		{*<script type="text/javascript" charset="utf-8" src="{path @venne.ckeditor-module/ckeditor/ckeditor.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.ckeditor-module/editor.js}"></script>*}
-
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/vendor/nette.ajax.js/nette.ajax.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @vojtech-dobes.nette-ajax-history/history.ajax.js}"></script>
-		<script type="text/javascript" charset="utf-8" src="{path @venne.venne/js/spinner.ajax.js}"></script>
-
-		{*js
-			@stringtoslugModule/jquery.stringToSlug.js,
-			@ajaxModule/nette.ajax.js,
-			@ajaxModule/extensions/spinner.ajax.js,
-			@jqueryfileuploadModule/js/jquery.fileupload.js,
-			@jqueryfileuploadModule/js/vendor/jquery.ui.widget.js,
-			@jqueryfileuploadModule/js/jquery.iframe-transport.js,
-		*}
-
-	{js
-	@venne.venne/typing/jquery.typing-0.2.0.min.js,
-	@venne.venne/vendor/nette-forms/netteForms.js,
-	@venne.venne/textWithSelect/textWithSelect.js,
-	@venne.venne/js/grido.ext.js,
-
-	@venne.venne/js/application.js
-	}
-
-		{css
-		@venne.venne/css/style.css,
-		@venne.venne/css/fileBrowser.control.css
-		}
-
-		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter && (!$presenter instanceof CmsModule\Administration\Presenters\FilesPresenter || ($presenter instanceof CmsModule\Administration\Presenters\FilesPresenter && !$presenter->browserMode))}
-			{*js @ajaxModule/history/history.ajax.js*}
-		{/if}
-
-		{if $presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
-			{js @venne.venne/js/panel.js}
-			{css @venne.venne/css/inside.css}
-		{/if}
-
-
-	{*control head*}
-
-	{*/head*}
+		{foreach $presenter->administrationManager->getJsFiles() as $file => $args}
+			<script type="text/javascript" charset="utf-8" src="{path $file}"></script>
+        {/foreach}
 
 		<link rel="shortcut icon" href="{path @venne.venne/icon.png}"/>
-		<title>Venne | {block #header}{/block}</title>
+		<title n:inner-snippet="title">Venne | {block #header}{/block}</title>
 	</head>
 
 	{if $presenter->user->isLoggedIn()}
@@ -93,7 +27,6 @@
 	<body>
 	{/if}
 
-		{* Top navigation *}
 		<div class="navbar navbar-fixed-top navbar-default navigation">
 		<div class="container-fluid">
 
@@ -132,7 +65,7 @@
 						</ul>
 						{/if}
 
-						<ul class="nav navbar-nav navbar-right">
+						<ul n:snippet="tray" class="nav navbar-nav navbar-right">
 							{control tray}
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">

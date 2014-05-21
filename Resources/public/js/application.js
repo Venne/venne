@@ -51,17 +51,6 @@ $(function () {
 		}
 	});
 
-	// Ajax
-	$.nette.ext('removeDoubleModalBackground', {
-		load: function() {
-			var len = $('.modal-backdrop').length;
-			$('.modal-backdrop').each(function(index){
-				if (index < len - 1) {
-					$(this).remove();
-				}
-			});
-		}
-	});
 	$.nette.ext('data-ajax-confirm', {
 		before: function (xhr, settings) {
 			if (settings.nette !== undefined && settings.nette.el !== undefined) {

@@ -162,6 +162,7 @@ trait AdminPresenterTrait
 			$this->redrawControl('content');
 			$this->redrawControl('header');
 			$this->redrawControl('toolbar');
+			$this->redrawControl('title');
 		}
 	}
 
@@ -170,7 +171,17 @@ trait AdminPresenterTrait
 	{
 		$this->user->logout(TRUE);
 		$this->flashMessage($this->translator->translate('Logout success'), 'success');
-		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
+
+		if ($this->isAjax()) {
+			$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
+		}
+
+		$this->redrawControl('navigation');
+		$this->redrawControl('content');
+		$this->redrawControl('header');
+		$this->redrawControl('toolbar');
+		$this->redrawControl('tray');
+		$this->redrawControl('title');
 	}
 
 }

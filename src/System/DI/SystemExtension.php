@@ -24,7 +24,7 @@ use Venne\Widgets\DI\WidgetsExtension;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider
+class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider, ICssProvider, IJsProvider
 {
 
 	const TAG_TRAY_COMPONENT = 'venne.trayComponent';
@@ -204,12 +204,24 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				->addTag(static::TAG_ROUTE, array('priority' => 99));
 		}
 
-		$container->addDefinition($this->prefix('administrationManager'))
+		$am = $container->addDefinition($this->prefix('administrationManager'))
 			->setClass('Venne\System\AdministrationManager', array(
 				$config['administration']['routePrefix'],
 				$config['administration']['defaultPresenter'],
 				$config['administration']['theme']
 			));
+		foreach ($this->compiler->extensions as $extension) {
+			if ($extension instanceof ICssProvider) {
+				foreach ($extension->getCssFiles() as $file) {
+					$am->addSetup('addCssFile', array(' ' . $file));
+				}
+			}
+			if ($extension instanceof IJsProvider) {
+				foreach ($extension->getJsFiles() as $file) {
+					$am->addSetup('addJsFile', array(' ' . $file));
+				}
+			}
+		}
 
 		$container->addDefinition($this->prefix('authenticationFormFactory'))
 			->setArguments(array(new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.authentication')), $config['administration']['registrations']))
@@ -577,6 +589,73 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			}
 		}
 		return $ret;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getCssFiles()
+	{
+		return array(
+			'@venne.venne/vendor/bootstrap/css/bootstrap.min.css',
+			'@venne.venne/vendor/bootstrap/css/bootstrap-theme.min.css',
+			'@venne.venne/vendor/jasny-bootstrap/css/jasny-bootstrap.min.css',
+			'@venne.venne/vendor/font-awesome/css/font-awesome.min.css',
+			'@venne.venne/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css',
+			'@venne.venne/vendor/grido/grido.css',
+			'@venne.venne/vendor/dynatree/skin-vista/ui.dynatree.css',
+			'@venne.venne/vendor/select2/select2.css',
+			'@venne.venne/vendor/select2/select2-bootstrap.css',
+
+			'@venne.venne/css/style.css',
+			'@venne.venne/css/fileBrowser.control.css',
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getJsFiles()
+	{
+		return array(
+			'@venne.venne/vendor/jquery/jquery.min.js',
+			'@venne.venne/vendor/jquery/jquery-migrate.min.js',
+			'@venne.venne/vendor/jquery-ui/jquery-ui.min.js',
+			'@venne.venne/vendor/bootstrap/js/bootstrap.min.js',
+			'@venne.venne/vendor/jasny-bootstrap/js/jasny-bootstrap.min.js',
+			'@venne.venne/vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
+//			'@venne.venne/vendor/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.$presenter->lang.js',
+
+			'@venne.venne/vendor/jquery-hashchange/jquery.ba-hashchange.min.js',
+			'@venne.venne/vendor/grido/grido.js',
+			'@venne.venne/vendor/dynatree/jquery.dynatree.min.js',
+
+			'@venne.venne/vendor/select2/select2.min.js',
+//			'@venne.venne/vendor/select2/select2_locale_$presenter->lang.js',
+
+			'@venne.venne/vendor/typeahead.js/typeahead.bundle.min.js',
+
+			'@venne.venne/vendor/nette.ajax.js/nette.ajax.js',
+			'@vojtech-dobes.nette-ajax-history/history.ajax.js',
+			'@venne.venne/js/spinner.ajax.js',
+
+//			'@stringtoslugModule/jquery.stringToSlug.js',
+//			'@ajaxModule/nette.ajax.js',
+//			'@ajaxModule/extensions/spinner.ajax.js',
+//			'@jqueryfileuploadModule/js/jquery.fileupload.js',
+//			'@jqueryfileuploadModule/js/vendor/jquery.ui.widget.js',
+//			'@jqueryfileuploadModule/js/jquery.iframe-transport.js',
+
+			'@venne.venne/typing/jquery.typing-0.2.0.min.js',
+			'@venne.venne/vendor/nette-forms/netteForms.js',
+			'@venne.venne/textWithSelect/textWithSelect.js',
+			'@venne.venne/js/grido.ext.js',
+
+			'@venne.venne/js/application.js',
+
+		);
 	}
 
 }
