@@ -94,38 +94,6 @@ class DefaultPresenter extends Presenter
 	}
 
 
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function actionDefault()
-	{
-	}
-
-
-	/**
-	 * @secured
-	 */
-	public function actionCreate()
-	{
-	}
-
-
-	/**
-	 * @secured
-	 */
-	public function actionEdit()
-	{
-	}
-
-
-	/**
-	 * @secured
-	 */
-	public function actionRemove()
-	{
-	}
-
-
 	protected function createComponentTable()
 	{
 		$dao = $this->entityManager->getDao($this->type);
@@ -156,33 +124,29 @@ class DefaultPresenter extends Presenter
 			});
 
 		// actions
-		if ($this->isAuthorized('edit')) {
-			$table->addActionEvent('edit', 'Edit')
-				->getElementPrototype()->class[] = 'ajax';
+		$table->addActionEvent('edit', 'Edit')
+			->getElementPrototype()->class[] = 'ajax';
 
-			$table->addActionEvent('loginProviders', 'Login providers')
-				->getElementPrototype()->class[] = 'ajax';
+		$table->addActionEvent('loginProviders', 'Login providers')
+			->getElementPrototype()->class[] = 'ajax';
 
-			$type = $this->type;
-			$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($type) {
-				return new $type;
-			}, Form::TYPE_LARGE);
-			$providerForm = $admin->createForm($this->providersForm, 'Login providers', NULL, Form::TYPE_LARGE);
+		$type = $this->type;
+		$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($type) {
+			return new $type;
+		}, Form::TYPE_LARGE);
+		$providerForm = $admin->createForm($this->providersForm, 'Login providers', NULL, Form::TYPE_LARGE);
 
-			$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
-			$admin->connectFormWithAction($providerForm, $table->getAction('loginProviders'));
+		$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
+		$admin->connectFormWithAction($providerForm, $table->getAction('loginProviders'));
 
-			// Toolbar
-			$toolbar = $admin->getNavbar();
-			$toolbar->addSection('new', 'Create', 'file');
-			$admin->connectFormWithNavbar($form, $toolbar->getSection('new'), $admin::MODE_PLACE);
-		}
+		// Toolbar
+		$toolbar = $admin->getNavbar();
+		$toolbar->addSection('new', 'Create', 'file');
+		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'), $admin::MODE_PLACE);
 
-		if ($this->isAuthorized('remove')) {
-			$table->addActionEvent('delete', 'Delete')
-				->getElementPrototype()->class[] = 'ajax';
-			$admin->connectActionAsDelete($table->getAction('delete'));
-		}
+		$table->addActionEvent('delete', 'Delete')
+			->getElementPrototype()->class[] = 'ajax';
+		$admin->connectActionAsDelete($table->getAction('delete'));
 
 		return $admin;
 	}

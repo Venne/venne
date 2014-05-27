@@ -386,11 +386,19 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->addDefinition($this->prefix('registrationControlFactory'))
 			->setClass('Venne\Security\Registration\RegistrationControl', array(
 				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
-				'%userType%', '%mode%', '%loginProviderMode%', '%roles%', '%emailSender%', '%emailFrom%', '%emailSubject%', '%emailText%'
+				new PhpLiteral('$byRequest'),
+				new PhpLiteral('$userType'),
+				new PhpLiteral('$mode'),
+				new PhpLiteral('$loginProviderMode'),
+				new PhpLiteral('$roles'),
+				new PhpLiteral('$emailSender'),
+				new PhpLiteral('$emailFrom'),
+				new PhpLiteral('$emailSubject'),
+				new PhpLiteral('$emailText'),
 			))
 			->setImplement('Venne\Security\Registration\IRegistrationControlFactory')
-			->addSetup('inject')
-			->setParameters(array('userType', 'mode', 'loginProviderMode', 'roles', 'emailSender', 'emailFrom', 'emailSubject', 'emailText'));
+			->setParameters(array('byRequest', 'userType', 'mode', 'loginProviderMode', 'roles', 'emailSender', 'emailFrom', 'emailSubject', 'emailText'))
+			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('system.loginFormFactory'))
 			->setClass('Venne\System\AdminModule\LoginFormFactory', array(new Statement('@system.admin.basicFormFactory')));

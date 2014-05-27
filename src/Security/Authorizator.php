@@ -19,6 +19,13 @@ use Nette\Security\Permission;
 class Authorizator extends Permission
 {
 
+	public function __construct()
+	{
+		$this->addRole('guest');
+		$this->addRole('admin', 'guest');
+	}
+
+
 	public function isAllowed($role = self::ALL, $resource = self::ALL, $privilege = self::ALL)
 	{
 		if ($resource !== self::ALL && !$this->hasResource($resource)) {

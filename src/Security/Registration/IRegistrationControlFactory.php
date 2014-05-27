@@ -20,6 +20,6 @@ interface IRegistrationControlFactory
 	/**
 	 * @return RegistrationControl
 	 */
-	function create($userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText);
+	function create($byRequest, $userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText);
 
 }

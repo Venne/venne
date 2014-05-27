@@ -137,11 +137,23 @@ class UserEntity extends BaseEntity implements IIdentity
 	private $extendedUserCallback;
 
 
+	/**
+	 * @var \Doctrine\Common\Collections\ArrayCollection
+	 * @ORM\ManyToMany(targetEntity="UserEntity", cascade={"persist"}, inversedBy="users")
+	 * @ORM\JoinTable(name="users_friends",
+	 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")}
+	 *      )
+	 */
+	protected $friends;
+
+
 	public function __construct()
 	{
 		$this->roleEntities = new ArrayCollection;
 		$this->logins = new ArrayCollection;
 		$this->loginProviders = new ArrayCollection;
+		$this->friends = new ArrayCollection;
 		$this->created = new \DateTime;
 
 		$this->generateNewSalt();

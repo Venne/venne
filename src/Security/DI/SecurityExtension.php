@@ -80,8 +80,13 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 				'priority' => 60,
 			));
 
+		$container->addDefinition($this->prefix('rolesTableFactory'))
+			->setClass('Venne\Security\AdminModule\RolesTableFactory', array(
+				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))
+			));
+
 		$container->addDefinition($this->prefix('rolesPresenter'))
-			->setClass('Venne\Security\AdminModule\RolesPresenter', array(new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))));
+			->setClass('Venne\Security\AdminModule\RolesPresenter');
 
 		$container->addDefinition($this->prefix('accountPresenter'))
 			->setClass('Venne\Security\AdminModule\AccountPresenter', array(

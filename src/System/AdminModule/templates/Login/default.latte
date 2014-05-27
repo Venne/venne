@@ -1,4 +1,6 @@
-{block header}{/block}
+{block title}
+	{_Login}
+{/block}
 
 {block toolbar}{/block}
 
@@ -12,30 +14,17 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<ul class="nav nav-tabs">
-						<li n:class="!isset($regLoad) ? active"><a href="#login" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
+						<li n:class="!$presenter->registration ? active"><a class="ajax" n:href="this registration => NULL" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
 
 						{foreach $presenter->registrations as $name => $values}
-							<li class="pull-right{if isset($regLoad) && $regLoad == str_replace(' ', '_', $name)} active{/if}"><a href="#{str_replace(' ', '_', $name)}" data-toggle="tab">{_$name}</a></li>
+							{continueIf $values['byRequest']}
+							<li class="pull-right{if $presenter->registration && $presenter->registration == $name} active{/if}"><a class="ajax" n:href="this registration => $name">{_$name}</a></li>
 						{/foreach}
 					</ul>
 				</div>
 				<div class="panel-body">
-					{if count($presenter->registrations)}
-
-						<!-- Tab panes -->
-						<div class="tab-content">
-
-							<div class="tab-pane{if !isset($regLoad)} active{/if}" id="login">
-								{control signInForm}
-							</div>
-
-							{foreach $presenter->registrations as $name => $values}
-								{var $name = str_replace(' ', '_', $name)}
-								<div class="tab-pane{if isset($regLoad) && $regLoad == str_replace(' ', '_', $name)} active{/if}" id="{$name}">
-									{control registration-$name}
-								</div>
-							{/foreach}
-						</div>
+					{if $presenter->registration}
+						{control registration-$presenter->registration}
 					{else}
 						{control signInForm}
 					{/if}

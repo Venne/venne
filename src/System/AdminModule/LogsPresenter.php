@@ -133,7 +133,7 @@ class LogsPresenter extends Presenter
 	public function handleDeleteAll()
 	{
 		foreach ($this->getFiles() as $item) {
-			unlink($this->logDir . '/' . $item['link']);
+			unlink($this->logDir . '/' . $item['id']);
 		}
 
 		$this->flashMessage($this->translator->translate('Logs were removed'), 'success');

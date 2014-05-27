@@ -44,41 +44,44 @@ class RegistrationControl extends Control
 	/** @var array */
 	public $onLoad;
 
-	/** @var string */
-	protected $userType;
+	/** @var bool */
+	private $byRequest;
 
 	/** @var string */
-	protected $mode;
+	private $userType;
 
 	/** @var string */
-	protected $loginProviderMode;
+	private $mode;
+
+	/** @var string */
+	private $loginProviderMode;
 
 	/** @var string|array */
-	protected $roles;
+	private $roles;
 
 	/** @var string */
-	protected $emailSubject;
+	private $emailSubject;
 
 	/** @var string */
-	protected $emailFrom;
+	private $emailFrom;
 
 	/** @var string */
-	protected $emailSender;
+	private $emailSender;
 
 	/** @var string */
-	protected $emailText;
+	private $emailText;
 
 	/** @var SecurityManager */
-	protected $securityManager;
+	private $securityManager;
 
 	/** @var AuthorizatorFactory */
-	protected $authorizatorFactory;
+	private $authorizatorFactory;
 
 	/** @var EntityManager */
-	protected $entityManager;
+	private $entityManager;
 
-	/** @var RoleRepository */
-	protected $roleDao;
+	/** @var EntityDao */
+	private $roleDao;
 
 	/** @var IMailer */
 	private $mailer;
@@ -90,22 +93,12 @@ class RegistrationControl extends Control
 	private $_currentUser;
 
 
-	/**
-	 * @param EntityDao $roleDao
-	 * @param null $userType
-	 * @param $mode
-	 * @param $loginProviderMode
-	 * @param $roles
-	 * @param $emailSender
-	 * @param $emailFrom
-	 * @param $emailSubject
-	 * @param $emailText
-	 */
-	public function __construct(EntityDao $roleDao, $userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText)
+	public function __construct(EntityDao $roleDao, $byRequest, $userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText)
 	{
 		parent::__construct();
 
 		$this->roleDao = $roleDao;
+		$this->byRequest = $byRequest;
 		$this->loginProviderMode = $loginProviderMode;
 		$this->mode = $mode;
 		$this->roles = $roles;

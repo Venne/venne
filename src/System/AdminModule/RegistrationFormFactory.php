@@ -87,6 +87,7 @@ class RegistrationFormFactory implements IFormFactory
 			$registration->setCurrentGroup($group);
 			$registration->addCheckbox('enabled', 'Enabled')->addCondition($form::EQUAL, TRUE)->toggle('reg-' . $registration->name);
 			$registration->setCurrentGroup($registration->form->addGroup()->setOption('id', 'reg-' . $registration->name));
+			$registration->addCheckbox('byRequest', 'By request');
 			$registration->addText('name', 'Name');
 			$registration->addSelect('userType', 'Type', $userTypes);
 			$registration->addSelect('mode', 'Mode', self::$modes)

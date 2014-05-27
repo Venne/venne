@@ -116,7 +116,9 @@ class AuthorizatorFactory extends Object
 	private function setPermissionsByRole(Permission $permission, $role)
 	{
 		// add role
-		$permission->addRole($role);
+		if (!$permission->hasRole($role)) {
+			$permission->addRole($role);
+		}
 
 		// add resources
 		$resources = $this->permissionDao->createQueryBuilder('a')

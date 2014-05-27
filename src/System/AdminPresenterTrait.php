@@ -173,15 +173,15 @@ trait AdminPresenterTrait
 		$this->flashMessage($this->translator->translate('Logout success'), 'success');
 
 		if ($this->isAjax()) {
-			$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
+			$this->redrawControl('navigation');
+			$this->redrawControl('content');
+			$this->redrawControl('header');
+			$this->redrawControl('toolbar');
+			$this->redrawControl('tray');
+			$this->redrawControl('title');
 		}
 
-		$this->redrawControl('navigation');
-		$this->redrawControl('content');
-		$this->redrawControl('header');
-		$this->redrawControl('toolbar');
-		$this->redrawControl('tray');
-		$this->redrawControl('title');
+		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
 }

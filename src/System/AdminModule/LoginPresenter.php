@@ -32,6 +32,12 @@ class LoginPresenter extends Presenter
 	/** @persistent */
 	public $backlink;
 
+	/** @persistent */
+	public $registration;
+
+	/** @persistent */
+	public $registrationKey;
+
 	/** @var Callback */
 	private $form;
 
@@ -184,6 +190,7 @@ class LoginPresenter extends Presenter
 
 		/** @var RegistrationControl $control */
 		$control = $this->registrationControlFactory->create(
+			$this->registrations[$name]['byRequest'],
 			$this->registrations[$name]['userType'],
 			$this->registrations[$name]['mode'],
 			$this->registrations[$name]['loginProviderMode'],
