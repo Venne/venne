@@ -184,4 +184,23 @@ trait AdminPresenterTrait
 		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
+	protected function createComponentPanel()
+	{
+		$sideComponents = $this->getAdministrationManager()->getSideComponents();
+
+		$control = $sideComponents[$this->sideComponent]['factory']->create();
+		return $control;
+	}
+
+
+	public function handleChangeSideComponent($id)
+	{
+		if (!$this->isAjax()) {
+			$this->redirect('this', array('sideComponent' => $id));
+		}
+
+		$this->sideComponent = $id;
+		$this->redrawControl('sideComponent');
+	}
+
 }

@@ -37,6 +37,8 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 	const TAG_ADMINISTRATION = 'venne.administration';
 
+	const TAG_SIDE_COMPONENT = 'venne.sideComponent';
+
 	/** @var array */
 	public $defaults = array(
 		'session' => array(),
@@ -445,6 +447,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$this->registerUsers();
 		$this->registerLoginProvider();
 		$this->registerTrayComponents();
+		$this->registerSideComponents();
 	}
 
 
@@ -536,6 +539,22 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			$name = 'tray__' . str_replace('\\', '_', $def->class ? : $def->implement);
 
 			$config->addSetup('$service->trayWidgetManager->addWidget(?, ?)', array($name, $item));
+		}
+	}
+
+
+	private function registerSideComponents()
+	{
+		$container = $this->getContainerBuilder();
+		$config = $container->getDefinition($this->prefix('administrationManager'));
+
+		foreach ($container->findByTag(static::TAG_SIDE_COMPONENT) as $item => $tags) {
+			$config->addSetup('$service->addSideComponent(?, ?, ?, ?)', array(
+				$tags['name'],
+				$tags['description'],
+				new Statement('@' . $item),
+				$tags['args'],
+			));
 		}
 	}
 

@@ -176,16 +176,16 @@ class AdministrationManager extends Object
 	 * @param $name
 	 * @param $description
 	 * @param $factory
-	 * @param null $icon
+	 * @param array $args
 	 * @return $this
 	 */
-	public function addSideComponent($name, $description, $factory, $icon = NULL)
+	public function addSideComponent($name, $description, $factory, array $args = array())
 	{
 		$this->sideComponents[$name] = array(
 			'name' => $name,
 			'description' => $description,
 			'factory' => $factory,
-			'icon' => $icon,
+			'args' => $args,
 		);
 		return $this;
 	}

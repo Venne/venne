@@ -86,6 +86,7 @@
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_system.admin.actions}</li>
 									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
+									<li><a n:href=":Security:Admin:Invitation:"><i class="glyphicon glyphicon-off"></i> {_system.admin.invitation}</a></li>
 									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
 								</ul>
 							</li>
@@ -104,7 +105,7 @@
 			<div n:snippet="sideComponent" class="container-side">
 				<div class="navmenu navmenu-default navmenu-fixed-left" style="margin-top: 40px; padding-top: 50px; width: 60px;">
 					<ul n:inner-foreach="$presenter->administrationManager->sideComponents as $name => $values" class="nav navmenu-nav">
-						<li n:class="$presenter->sideComponent == $name ? active"><a data-toggle="tooltip" data-placement="right" title="{_$name}" class="ajax" n:href="changeSideComponent! ($presenter->sideComponent != $name ? $name : NULL)"><i class="{$values['icon']} fa-2x"></i></a></li>
+						<li n:class="$presenter->sideComponent == $name ? active"><a data-toggle="tooltip" data-placement="right" title="{_$name}" class="ajax" n:href="changeSideComponent! ($presenter->sideComponent != $name ? $name : NULL)"><i class="{$values['args']['icon']} fa-2x"></i></a></li>
 					</ul>
 				</div>
 				<div class="side-body{if !$presenter->isAjax()} side-opened{/if}" n:if="$presenter->sideComponent">
