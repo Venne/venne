@@ -14,7 +14,6 @@ namespace Venne\Security\Registration;
 use Kdyby\Doctrine\EntityDao;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\ExtendedUserEntity;
-use Venne\System\Content\IRegistrationFormFactory;
 use Venne\Security\AuthorizatorFactory;
 use Venne\Security\SecurityManager;
 use Doctrine\ORM\EntityManager;
@@ -45,7 +44,7 @@ class RegistrationControl extends Control
 	public $onLoad;
 
 	/** @var bool */
-	private $byRequest;
+	private $invitaions;
 
 	/** @var string */
 	private $userType;
@@ -58,18 +57,6 @@ class RegistrationControl extends Control
 
 	/** @var string|array */
 	private $roles;
-
-	/** @var string */
-	private $emailSubject;
-
-	/** @var string */
-	private $emailFrom;
-
-	/** @var string */
-	private $emailSender;
-
-	/** @var string */
-	private $emailText;
 
 	/** @var SecurityManager */
 	private $securityManager;
@@ -93,21 +80,16 @@ class RegistrationControl extends Control
 	private $_currentUser;
 
 
-	public function __construct(EntityDao $roleDao, $byRequest, $userType, $mode, $loginProviderMode, $roles, $emailSender, $emailFrom, $emailSubject, $emailText)
+	public function __construct(EntityDao $roleDao, $invitaions, $userType, $mode, $loginProviderMode, $roles)
 	{
 		parent::__construct();
 
 		$this->roleDao = $roleDao;
-		$this->byRequest = $byRequest;
+		$this->invitaions = $invitaions;
 		$this->loginProviderMode = $loginProviderMode;
 		$this->mode = $mode;
 		$this->roles = $roles;
 		$this->userType = $userType;
-
-		$this->emailSender = $emailSender;
-		$this->emailFrom = $emailFrom;
-		$this->emailSubject = $emailSubject;
-		$this->emailText = $emailText;
 	}
 
 

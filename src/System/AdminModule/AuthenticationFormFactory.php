@@ -11,6 +11,7 @@
 
 namespace Venne\System\AdminModule;
 
+use Kdyby\Doctrine\EntityDao;
 use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
 
@@ -26,19 +27,14 @@ class AuthenticationFormFactory implements IFormFactory
 	/** @var SecurityManager */
 	private $securityManager;
 
-	/** @var array */
-	private $registrations;
+	/** @var EntityDao */
+	private $registrationDao;
 
 
-	/**
-	 * @param IFormFactory $formFactory
-	 * @param array $registrations
-	 * @param SecurityManager $securityManager
-	 */
-	public function __construct(IFormFactory $formFactory, array $registrations, SecurityManager $securityManager)
+	public function __construct(IFormFactory $formFactory, EntityDao $registrationsDao, SecurityManager $securityManager)
 	{
 		$this->formFactory = $formFactory;
-		$this->registrations = $registrations;
+		$this->registrationDao = $registrationsDao;
 		$this->securityManager = $securityManager;
 	}
 
@@ -46,6 +42,11 @@ class AuthenticationFormFactory implements IFormFactory
 	public function create()
 	{
 		$form = $this->formFactory->create();
+
+		$reg = array();
+		foreach ($this->registrationDao->findAll() as $registration) {
+			$reg[$registration->id] = $registration->name;
+		}
 
 		$form->addGroup('Authentication');
 		$form->addSelect('autologin', 'Auto login')
@@ -57,26 +58,7 @@ class AuthenticationFormFactory implements IFormFactory
 		$form->addGroup()->setOption('id', 'form-autoregistration');
 		$form->addSelect('autoregistration', 'Auto registration')
 			->setPrompt('Deactivated')
-			->setItems(array_keys($this->registrations), FALSE);
-
-		$forgotPassword = $form->addContainer('forgotPassword');
-		$forgotPassword->setCurrentGroup($form->addGroup('Forgot password'));
-		$enabled = $forgotPassword->addCheckbox('enabled', 'Enabled');
-		$enabled->addCondition($form::EQUAL, TRUE)->toggle('form-reset');
-
-		$forgotPassword->setCurrentGroup($form->addGroup()->setOption('container', \Nette\Utils\Html::el('div')->id('form-reset')));
-		$forgotPassword->addText('emailSubject', 'Subject')
-			->addConditionOn($enabled, $form::EQUAL, TRUE)
-			->addRule($form::FILLED);
-		$forgotPassword->addText('emailSender', 'Sender')
-			->addConditionOn($enabled, $form::EQUAL, TRUE)
-			->addRule($form::FILLED);
-		$forgotPassword->addText('emailFrom', 'From')
-			->addConditionOn($enabled, $form::EQUAL, TRUE)
-			->addRule($form::FILLED)->addRule($form::EMAIL);
-		$forgotPassword->addTextArea('emailText', 'Text')
-			->addConditionOn($enabled, $form::EQUAL, TRUE)
-			->addRule($form::FILLED);
+			->setItems($reg);
 
 		$form->setCurrentGroup();
 		$form->addSubmit('_submit', 'Save');

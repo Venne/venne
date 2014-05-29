@@ -9,31 +9,25 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\Security\AdminModule;
+namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Security\RoleEntity;
 use Venne\System\AdminPresenterTrait;
-use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RolesTableFactory
+class RegistrationTableFactory
 {
 
 	/** @var EntityDao */
 	private $dao;
 
-	/** @var RoleFormFactory */
-	private $roleForm;
-
-	/** @var PermissionsFormFactory */
-	private $permissionsForm;
+	/** @var RegistrationFormFactory */
+	private $formFactory;
 
 	/** @var IAdminGridFactory */
 	private $adminGridFactory;
@@ -44,15 +38,13 @@ class RolesTableFactory
 
 	public function __construct(
 		EntityDao $dao,
-		PermissionsFormFactory $permissionsForm,
-		RoleFormFactory $roleForm,
+		RegistrationFormFactory $formFactory,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator
 	)
 	{
 		$this->dao = $dao;
-		$this->permissionsForm = $permissionsForm;
-		$this->roleForm = $roleForm;
+		$this->formFactory = $formFactory;
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
 	}
@@ -67,36 +59,17 @@ class RolesTableFactory
 		$table->setTranslator($this->translator);
 		$table->addColumnText('name', 'Name')
 			->setSortable()
-			->getCellPrototype()->width = '40%';
+			->getCellPrototype()->width = '100%';
 		$table->getColumn('name')
 			->setFilterText()->setSuggestion();
-
-		$table->addColumnText('parent', 'Parent')
-			->setSortable()
-			->getCellPrototype()->width = '60%';
-		$table->getColumn('parent')
-			->setCustomRender(function (RoleEntity $entity) {
-				$entities = array();
-				$en = $entity;
-				while (($en = $en->getParent())) {
-					$entities[] = $en->getName();
-				}
-
-				return implode(', ', $entities);
-			});
 
 		// actions
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$table->addActionEvent('permissions', 'Permissions')
-			->getElementPrototype()->class[] = 'ajax';
-
-		$form = $admin->createForm($this->roleForm, 'Role');
-		$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_LARGE);
+		$form = $admin->createForm($this->formFactory, 'Role');
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
-		$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'), $admin::MODE_PLACE);
 
 		// Toolbar
 		$toolbar = $admin->getNavbar();

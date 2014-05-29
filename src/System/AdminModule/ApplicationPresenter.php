@@ -13,6 +13,7 @@ namespace Venne\System\AdminModule;
 
 use Nette\Application\UI\Presenter;
 use Nette\Forms\Form;
+use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\AdminModule\AccountFormFactory;
 use Venne\System\AdminPresenterTrait;
 
@@ -38,36 +39,28 @@ class ApplicationPresenter extends Presenter
 	/** @var SystemMailerFormFactory */
 	private $mailerForm;
 
-	/** @var SystemRegistrationFormFactory */
-	private $registrationForm;
-
 	/** @var SystemAuthenticationFormFactory */
 	private $authenticationForm;
 
+	/** @var RegistrationTableFactory */
+	private $registrationTableFactory;
 
-	/**
-	 * @param ApplicationFormFactory $applicationForm
-	 * @param AccountFormFactory $accountForm
-	 * @param AdministrationFormFactory $systemForm
-	 * @param MailerFormFactory $mailerForm
-	 * @param RegistrationFormFactory $registrationForm
-	 * @param AuthenticationFormFactory $authenticationForm
-	 */
+
 	public function __construct(
 		ApplicationFormFactory $applicationForm,
 		AccountFormFactory $accountForm,
 		AdministrationFormFactory $systemForm,
 		MailerFormFactory $mailerForm,
-		RegistrationFormFactory $registrationForm,
-		AuthenticationFormFactory $authenticationForm
+		AuthenticationFormFactory $authenticationForm,
+		RegistrationTableFactory $registrationTableFactory
 	)
 	{
-		$this->registrationForm = $registrationForm;
 		$this->authenticationForm = $authenticationForm;
 		$this->applicationForm = $applicationForm;
 		$this->accountForm = $accountForm;
 		$this->systemForm = $systemForm;
 		$this->mailerForm = $mailerForm;
+		$this->registrationTableFactory = $registrationTableFactory;
 	}
 
 
@@ -171,16 +164,9 @@ class ApplicationPresenter extends Presenter
 	}
 
 
-	protected function createComponentRegistrationForm()
+	protected function createComponentRegistrationTable()
 	{
-		$form = $this->registrationForm->create();
-		$form->onSuccess[] = function (Form $form) {
-			if ($form->isSubmitted() === $form['_submit']) {
-				$this->flashMessage($this->translator->translate('Registration settings has been updated'), 'success');
-				$this->redirect('this');
-			}
-		};
-		return $form;
+		return $this->registrationTableFactory->create();
 	}
 
 

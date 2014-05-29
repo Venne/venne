@@ -12,6 +12,7 @@
 namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Presenter;
 use Venne\System\AdminPresenterTrait;
 use Venne\Security\Registration\IRegistrationControlFactory;
@@ -31,9 +32,6 @@ class LoginPresenter extends Presenter
 
 	/** @persistent */
 	public $backlink;
-
-	/** @persistent */
-	public $registration;
 
 	/** @persistent */
 	public $registrationKey;
@@ -56,18 +54,16 @@ class LoginPresenter extends Presenter
 	/** @var EntityDao */
 	private $roleDao;
 
+	/** @var EntityDao */
+	private $registrationDao;
+
 	/** @var RegistrationControlFactory */
 	private $registrationControlFactory;
 
 
-	/**
-	 * @param EntityDao $roleDao
-	 * @param ILoginControlFactory $form
-	 * @param IRegistrationControlFactory $registrationControlFactory
-	 * @param SecurityManager $securityManager
-	 */
 	public function __construct(
 		EntityDao $roleDao,
+		EntityDao $registrationDao,
 		ILoginControlFactory $form,
 		IRegistrationControlFactory $registrationControlFactory,
 		SecurityManager $securityManager
@@ -79,6 +75,7 @@ class LoginPresenter extends Presenter
 		$this->registrationControlFactory = $registrationControlFactory;
 		$this->securityManager = $securityManager;
 		$this->roleDao = $roleDao;
+		$this->registrationDao = $registrationDao;
 	}
 
 
@@ -101,27 +98,15 @@ class LoginPresenter extends Presenter
 
 
 	/**
-	 * @param array $registrations
+	 * @return \Kdyby\Doctrine\EntityDao
 	 */
-	public function setRegistrations($registrations)
+	public function getRegistrationDao()
 	{
-		$this->registrations = $registrations;
-
-		foreach ($this->registrations as $key => $reg) {
-			if (!isset($reg['enabled']) || !$reg['enabled']) {
-				unset($this->registrations[$key]);
-			}
-		}
+		return $this->registrationDao;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getRegistrations()
-	{
-		return $this->registrations;
-	}
+
 
 
 	protected function startup()
@@ -186,19 +171,17 @@ class LoginPresenter extends Presenter
 
 	public function createRegistration($name)
 	{
-		$name = str_replace('_', ' ', $name);
+		if (!$registration = $this->registrationDao->find($this->registrationKey)) {
+			throw new BadRequestException;
+		}
 
 		/** @var RegistrationControl $control */
 		$control = $this->registrationControlFactory->create(
-			$this->registrations[$name]['byRequest'],
-			$this->registrations[$name]['userType'],
-			$this->registrations[$name]['mode'],
-			$this->registrations[$name]['loginProviderMode'],
-			$this->registrations[$name]['roles'],
-			$this->registrations[$name]['email']['sender'],
-			$this->registrations[$name]['email']['from'],
-			$this->registrations[$name]['email']['subject'],
-			$this->registrations[$name]['email']['text']
+			$registration->getInvitation(),
+			$registration->userType,
+			$registration->mode,
+			$registration->loginProviderMode,
+			$registration->roles
 		);
 
 		$control->onLoad[] = $this->registrationLoad;

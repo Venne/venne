@@ -86,7 +86,7 @@
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_system.admin.actions}</li>
 									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
-									<li><a n:href=":Security:Admin:Invitation:"><i class="glyphicon glyphicon-off"></i> {_system.admin.invitation}</a></li>
+									<li><a n:href=":Security:Admin:Invitation:"><i class="glyphicon glyphicon-envelope"></i> {_system.admin.invitation}</a></li>
 									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
 								</ul>
 							</li>

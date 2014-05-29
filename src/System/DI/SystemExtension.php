@@ -49,7 +49,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				'autologin' => NULL,
 				'autoregistration' => NULL,
 			),
-			'registrations' => array(),
 			'theme' => 'venne/venne',
 		),
 		'website' => array(
@@ -91,13 +90,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		foreach ($config['paths'] as $name => $path) {
 			if (!isset($container->parameters[$name])) {
 				$container->parameters[$name] = $container->expand($path);
-			}
-		}
-
-		foreach ($config['administration']['registrations'] as $key => $values) {
-			if (isset($values['name']) && $values['name']) {
-				$config['administration']['registrations'][$values['name']] = $values;
-				unset($config['administration']['registrations'][$key]);
 			}
 		}
 
@@ -226,14 +218,27 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 
 		$container->addDefinition($this->prefix('authenticationFormFactory'))
-			->setArguments(array(new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.authentication')), $config['administration']['registrations']))
+			->setArguments(array(
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'),'system.administration.authentication')),
+				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity')),
+			))
 			->setClass('Venne\System\AdminModule\AuthenticationFormFactory');
 
 		$container->addDefinition($this->prefix('admin.loginPresenter'))
-			->setClass('Venne\System\AdminModule\LoginPresenter', array(new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))))
+			->setClass('Venne\System\AdminModule\LoginPresenter', array(
+				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
+				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity')),
+			))
 			->addSetup('$service->setAutologin(?)', array($config['administration']['authentication']['autologin']))
-			->addSetup('$service->setAutoregistration(?)', array($config['administration']['authentication']['autoregistration']))
-			->addSetup('$service->setRegistrations(?)', array($config['administration']['registrations']));
+			->addSetup('$service->setAutoregistration(?)', array($config['administration']['authentication']['autoregistration']));
+
+		$container->addDefinition($this->prefix('invitationFormFactory'))
+			->setClass('Venne\Security\AdminModule\InvitationFormFactory', array(
+				new Statement('@system.admin.basicFormFactory')
+			));
+
+		$container->addDefinition($this->prefix('invitationPresenter'))
+			->setClass('Venne\Security\AdminModule\InvitationPresenter');
 
 		foreach ($this->compiler->getExtensions('Venne\Assets\DI\AssetsExtension') as $extension) {
 			$container->getDefinition($extension->prefix('cssLoaderFactory'))
@@ -326,8 +331,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition($this->prefix('system.application.registrationFormFactory'))
 			->setClass('Venne\System\AdminModule\RegistrationFormFactory', array(
-				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration')),
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))
+				new Statement('@system.admin.basicFormFactory'),
+			));
+
+		$container->addDefinition($this->prefix('registrationTableFactory'))
+			->setClass('Venne\System\AdminModule\RegistrationTableFactory', array(
+				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity'))
 			));
 
 		$container->addDefinition($this->prefix('system.application.systemFormFactory'))
@@ -388,18 +397,13 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->addDefinition($this->prefix('registrationControlFactory'))
 			->setClass('Venne\Security\Registration\RegistrationControl', array(
 				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
-				new PhpLiteral('$byRequest'),
+				new PhpLiteral('$invitaions'),
 				new PhpLiteral('$userType'),
 				new PhpLiteral('$mode'),
 				new PhpLiteral('$loginProviderMode'),
 				new PhpLiteral('$roles'),
-				new PhpLiteral('$emailSender'),
-				new PhpLiteral('$emailFrom'),
-				new PhpLiteral('$emailSubject'),
-				new PhpLiteral('$emailText'),
 			))
 			->setImplement('Venne\Security\Registration\IRegistrationControlFactory')
-			->setParameters(array('byRequest', 'userType', 'mode', 'loginProviderMode', 'roles', 'emailSender', 'emailFrom', 'emailSubject', 'emailText'))
 			->setInject(TRUE);
 
 		$container->addDefinition($this->prefix('system.loginFormFactory'))
