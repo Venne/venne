@@ -149,7 +149,9 @@ class ConfigMapper extends Object
 				if ($control instanceof \Nette\Forms\Container) {
 					$values[$key] = $this->save($control, TRUE, $values);
 				} else if ($control instanceof \Nette\Forms\IControl) {
-					$values[$key] = $control->value;
+					if (!$control->isOmitted()) {
+						$values[$key] = $control->value;
+					}
 				}
 			}
 		}
