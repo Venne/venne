@@ -15,11 +15,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Venne\Doctrine\Entities\NamedEntityTrait;
+use Venne\Security\RoleEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  * @ORM\Entity
  * @ORM\Table(name="registrations")
+ *
+ * @property bool $enabled
+ * @property bool $invitation
+ * @property string $userType
+ * @property string $mode
+ * @property string $loginProviderMode
+ * @property RoleEntity[] $roles
  */
 class RegistrationEntity extends BaseEntity
 {

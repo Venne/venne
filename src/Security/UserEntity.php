@@ -33,10 +33,6 @@ class UserEntity extends BaseEntity implements IIdentity
 
 	use IdentifiedEntityTrait;
 
-	const CREATED_BY_REGISTRATION = 'registration';
-
-	const CREATED_BY_INVATION = 'invation';
-
 	/**
 	 * @ORM\Column(type="string", unique=true, length=64)
 	 */
@@ -46,11 +42,6 @@ class UserEntity extends BaseEntity implements IIdentity
 	 * @ORM\Column(type="string")
 	 */
 	protected $name = '';
-
-	/**
-	 * @ORM\Column(type="string")
-	 */
-	protected $createdBy;
 
 	/**
 	 * @ORM\Column(type="text")
@@ -157,25 +148,6 @@ class UserEntity extends BaseEntity implements IIdentity
 		$this->created = new \DateTime;
 
 		$this->generateNewSalt();
-		$this->createdBy = self::CREATED_BY_REGISTRATION;
-	}
-
-
-	/**
-	 * @param mixed $createdBy
-	 */
-	public function setCreatedBy($createdBy)
-	{
-		$this->createdBy = $createdBy;
-	}
-
-
-	/**
-	 * @return mixed
-	 */
-	public function getCreatedBy()
-	{
-		return $this->createdBy;
 	}
 
 

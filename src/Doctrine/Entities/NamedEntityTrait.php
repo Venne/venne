@@ -15,6 +15,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @property int $id
+ * @property string $name
  */
 trait NamedEntityTrait
 {

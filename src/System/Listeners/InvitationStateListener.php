@@ -9,18 +9,17 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\Security\Listeners;
+namespace Venne\System\Listeners;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Nette\DI\Container;
 use Venne\Notifications\NotificationManager;
-use Venne\Security\Events\RegistrationEvent;
 use Venne\Security\UserEntity;
+use Venne\System\Events\InvitationEvent;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class UserStateListener
+class InvitationStateListener
 {
 
 	/** @var NotificationManager */
@@ -47,7 +46,7 @@ class UserStateListener
 	{
 		if (!self::$lock && $entity instanceof UserEntity) {
 			self::$lock = TRUE;
-			$this->notificationManager->notify(RegistrationEvent::getName(), $entity, 'registration', 'User has been registered.', $entity);
+			$this->notificationManager->notify(InvitationEvent::getName(), $entity, 'invitation', 'User has been invited.', $entity);
 			self::$lock = FALSE;
 		}
 	}

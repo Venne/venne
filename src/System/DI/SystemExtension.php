@@ -240,6 +240,9 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->addDefinition($this->prefix('invitationPresenter'))
 			->setClass('Venne\Security\AdminModule\InvitationPresenter');
 
+		$container->addDefinition($this->prefix('invitationStateListener'))
+			->setClass('Venne\System\Listeners\InvitationStateListener');
+
 		foreach ($this->compiler->getExtensions('Venne\Assets\DI\AssetsExtension') as $extension) {
 			$container->getDefinition($extension->prefix('cssLoaderFactory'))
 				->addTag(WidgetsExtension::TAG_WIDGET, 'css');
@@ -397,7 +400,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$container->addDefinition($this->prefix('registrationControlFactory'))
 			->setClass('Venne\Security\Registration\RegistrationControl', array(
 				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
-				new PhpLiteral('$invitaions'),
+				new PhpLiteral('$invitations'),
 				new PhpLiteral('$userType'),
 				new PhpLiteral('$mode'),
 				new PhpLiteral('$loginProviderMode'),

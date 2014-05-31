@@ -12,9 +12,7 @@
 namespace Venne\Security\AdminModule;
 
 use Nette\Application\UI\Presenter;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\System\AdminPresenterTrait;
-use Venne\System\InvitationEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -26,35 +24,19 @@ class InvitationPresenter extends Presenter
 
 	use AdminPresenterTrait;
 
-	/** @var InvitationFormFactory */
-	private $invitationFormFactory;
-
-	/** @var FormFactoryFactory */
-	private $formFactoryFactory;
+	/** @var InvitationsTableFactory */
+	private $invitationTableFactory;
 
 
-	public function __construct(InvitationFormFactory $invitationFormFactory, FormFactoryFactory $formFactoryFactory)
+	public function __construct(InvitationsTableFactory $invitationTableFactory)
 	{
-		$this->invitationFormFactory = $invitationFormFactory;
-		$this->formFactoryFactory = $formFactoryFactory;
+		$this->invitationTableFactory = $invitationTableFactory;
 	}
 
 
-	public function createComponentForm()
+	public function createComponentTable()
 	{
-		$form = $this->formFactoryFactory->create($this->invitationFormFactory)
-			->setEntity(new InvitationEntity)
-			->create();
-
-		$form->onSuccess[] = $this->formSuccess;
-		return $form;
-	}
-
-
-	public function formSuccess()
-	{
-		$this->flashMessage($this->translator->translate('Invitation has been sent', 'success'));
-		$this->redirect('this');
+		return $this->invitationTableFactory->create();
 	}
 
 }
