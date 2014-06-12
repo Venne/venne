@@ -47,8 +47,6 @@ class WorkerPresenter extends Presenter
 
 	public function renderDefault()
 	{
-		$this->session->close();
-
 		$worker = $this->getWorker();
 
 		if (!$this->debugMode) {
@@ -63,9 +61,11 @@ class WorkerPresenter extends Presenter
 			}
 		}
 
+		ob_start();
 		if (!$worker->run() && !$this->debugMode) {
 			sleep($worker->getInterval());
 		}
+		ob_end_clean();
 
 		if (!$this->debugMode) {
 			$this->ping();

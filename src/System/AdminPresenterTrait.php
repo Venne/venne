@@ -177,7 +177,6 @@ trait AdminPresenterTrait
 			$this->redrawControl('content');
 			$this->redrawControl('header');
 			$this->redrawControl('toolbar');
-			$this->redrawControl('tray');
 			$this->redrawControl('title');
 		}
 

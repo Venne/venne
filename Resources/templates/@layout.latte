@@ -65,19 +65,13 @@
 						</ul>
 						{/if}
 
-						<ul n:snippet="tray" class="nav navbar-nav navbar-right">
+						<ul class="nav navbar-nav navbar-right">
 							{control tray}
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 									{if $presenter->user->identity instanceof \Venne\Security\UserEntity}
 										<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 35px; height: 35px;" />
-										{*if $presenter->user->identity->photo}
-											<img class="img-circle" n:src="$presenter->user->identity->photo->getFileUrl(TRUE), size=> '35x35'" />
-										{else}
-											<span class="glyphicon glyphicon-user"></span>
-											{$presenter->user->identity}
-										{/if*}
 									{else}
 										<span class="glyphicon glyphicon-user"></span>
 										{$presenter->user->identity->id}
@@ -86,7 +80,7 @@
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_system.admin.actions}</li>
 									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
-									<li><a n:href=":Security:Admin:Invitation:"><i class="glyphicon glyphicon-envelope"></i> {_system.admin.invitation}</a></li>
+									<li><a class="ajax" n:href=":Security:Admin:Invitation:"><i class="glyphicon glyphicon-envelope"></i> {_system.admin.invitation}</a></li>
 									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
 								</ul>
 							</li>
@@ -173,7 +167,7 @@
 		</div>
 		<footer>
 			<p>
-				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span>{if !$presenter instanceof \Venne\System\UI\InstallationPresenter} | <span><a class="ajax" n:href=":System:Admin:About:">{_system.admin.about}</a></span>{/if}
+				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span> | <span><a class="ajax" n:href=":System:Admin:About:">{_system.admin.about}</a></span>
 			</p>
 		</footer>
 		{/block}

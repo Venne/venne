@@ -27,7 +27,7 @@ abstract class ExtendedUserEntity extends BaseEntity
 
 	/**
 	 * @var UserEntity
-	 * @ORM\OneToOne(targetEntity="\Venne\Security\UserEntity", cascade={"ALL"})
+	 * @ORM\OneToOne(targetEntity="\Venne\Security\UserEntity", cascade={"all"})
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;

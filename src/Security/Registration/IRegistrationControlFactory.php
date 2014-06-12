@@ -20,6 +20,6 @@ interface IRegistrationControlFactory
 	/**
 	 * @return RegistrationControl
 	 */
-	function create($invitaions, $userType, $mode, $loginProviderMode, $roles);
+	function create($invitations, $userType, $mode, $loginProviderMode, $roles);
 
 }

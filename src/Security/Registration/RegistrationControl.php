@@ -12,6 +12,7 @@
 namespace Venne\Security\Registration;
 
 use Kdyby\Doctrine\EntityDao;
+use Nette\Application\BadRequestException;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\ExtendedUserEntity;
 use Venne\Security\AuthorizatorFactory;
@@ -254,7 +255,7 @@ class RegistrationControl extends Control
 			$entity->getUser()->setPublished(false);
 		}
 		foreach ((array)$this->roles as $role) {
-			$entity->getUser()->addRoleEntitie($this->roleDao->findOneBy(array('name' => $role)));
+			$entity->getUser()->addRoleEntitie($role);
 		}
 
 		return $entity;
