@@ -16,7 +16,7 @@
 					<ul class="nav nav-tabs">
 						<li n:class="!$presenter->registrationKey ? active"><a class="ajax" n:href="this registrationKey => NULL" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
 
-						{foreach $presenter->registrationDao->findBy(array('enabled' => TRUE)) as $registration}
+						{foreach $presenter->registrationDao->findBy(array('enabled' => TRUE, 'invitation' => FALSE)) as $registration}
 							<li class="pull-right{if $presenter->registrationKey && $presenter->registrationKey == $registration->id} active{/if}"><a class="ajax" n:href="this registrationKey => $registration->id">{_$registration->name}</a></li>
 						{/foreach}
 					</ul>

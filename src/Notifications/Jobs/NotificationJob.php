@@ -23,6 +23,7 @@ use Venne\Notifications\NotificationUserEntity;
 use Venne\Queue\Job;
 use Venne\Queue\JobEntity;
 use Venne\Queue\JobManager;
+use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -102,7 +103,7 @@ class NotificationJob extends Job
 
 			if ($user['email']) {
 				$this->jobManager->scheduleJob(new JobEntity(EmailJob::getName(), NULL, array(
-					'user' => $user['user']->id,
+					'user' => $user['user'] instanceof UserEntity ? $user['user']->id : $user['user'],
 					'notification' => $notificationUserEntity->id,
 				)));
 			}

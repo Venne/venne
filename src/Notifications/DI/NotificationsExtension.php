@@ -49,6 +49,12 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 				new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))
 			));
 
+		$container->addDefinition($this->prefix('emailManager'))
+			->setClass('Venne\Notifications\EmailManager', array(
+				$config['mailer']['senderEmail'],
+				$config['mailer']['senderName'],
+			));
+
 		foreach ($this->compiler->extensions as $extension) {
 			if ($extension instanceof IEventProvider) {
 				foreach ($extension->getEventTypes() as $type)
@@ -88,8 +94,6 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 			->setClass('Venne\Notifications\Jobs\EmailJob', array(
 				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationUserEntity')),
 				new Statement('@doctrine.dao', array('Venne\Security\UserEntity')),
-				$config['mailer']['senderEmail'],
-				$config['mailer']['senderName'],
 			));
 	}
 

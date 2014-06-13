@@ -48,7 +48,7 @@ class RegistrationFormFactory implements IFormFactory
 		}
 
 		$form->addCheckbox('enabled', 'Enabled');
-		$form->addCheckbox('invitaions', 'Only as invitation');
+		$form->addCheckbox('invitation', 'Only as invitation');
 		$form->addText('name', 'Name');
 		$form->addHidden('key');
 		$form->addSelect('userType', 'Type', $userTypes);

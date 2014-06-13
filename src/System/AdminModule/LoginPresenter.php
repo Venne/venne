@@ -36,6 +36,9 @@ class LoginPresenter extends Presenter
 	/** @persistent */
 	public $registrationKey;
 
+	/** @persistent */
+	public $hash;
+
 	/** @var Callback */
 	private $form;
 
@@ -57,6 +60,9 @@ class LoginPresenter extends Presenter
 	/** @var EntityDao */
 	private $registrationDao;
 
+	/** @var EntityDao */
+	private $invitationDao;
+
 	/** @var RegistrationControlFactory */
 	private $registrationControlFactory;
 
@@ -64,6 +70,7 @@ class LoginPresenter extends Presenter
 	public function __construct(
 		EntityDao $roleDao,
 		EntityDao $registrationDao,
+		EntityDao $invitationDao,
 		ILoginControlFactory $form,
 		IRegistrationControlFactory $registrationControlFactory,
 		SecurityManager $securityManager
@@ -76,6 +83,7 @@ class LoginPresenter extends Presenter
 		$this->securityManager = $securityManager;
 		$this->roleDao = $roleDao;
 		$this->registrationDao = $registrationDao;
+		$this->invitationDao = $invitationDao;
 	}
 
 
@@ -104,9 +112,6 @@ class LoginPresenter extends Presenter
 	{
 		return $this->registrationDao;
 	}
-
-
-
 
 
 	protected function startup()
@@ -171,7 +176,15 @@ class LoginPresenter extends Presenter
 
 	public function createRegistration($name)
 	{
-		if (!$registration = $this->registrationDao->find($this->registrationKey)) {
+		if (!$registration = $this->registrationDao->findOneBy(array('id' => $this->registrationKey, 'enabled' => TRUE))) {
+			throw new BadRequestException;
+		}
+
+		if ($registration->invitation && !$this->hash) {
+			throw new BadRequestException;
+		}
+
+		if ($this->hash && !($invitation = $this->invitationDao->findOneBy(array('hash' => $this->hash, 'registration' => $this->registrationKey)))) {
 			throw new BadRequestException;
 		}
 
@@ -183,6 +196,10 @@ class LoginPresenter extends Presenter
 			$registration->loginProviderMode,
 			$registration->roles
 		);
+
+		if ($this->hash && $invitation) {
+			$control->setDefaultEmail($invitation->email);
+		}
 
 		$control->onLoad[] = $this->registrationLoad;
 		$control->onSuccess[] = $this->registrationSuccess;
@@ -201,6 +218,11 @@ class LoginPresenter extends Presenter
 
 	public function registrationSuccess()
 	{
+		if ($this->hash) {
+			$invitation = $this->invitationDao->findOneBy(array('hash' => $this->hash, 'registration' => $this->registrationKey));
+			$this->invitationDao->delete($invitation);
+		}
+
 		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
 		$this->redirect('this');
 	}

@@ -11,16 +11,16 @@
 
 namespace Venne\Security\Registration;
 
+use Doctrine\ORM\EntityManager;
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Security\ExtendedUserEntity;
-use Venne\Security\AuthorizatorFactory;
-use Venne\Security\SecurityManager;
-use Doctrine\ORM\EntityManager;
 use Nette\InvalidArgumentException;
 use Nette\Mail\IMailer;
 use Nette\Security\AuthenticationException;
+use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
+use Venne\Security\AuthorizatorFactory;
+use Venne\Security\ExtendedUserEntity;
+use Venne\Security\SecurityManager;
 use Venne\System\UI\Control;
 
 /**
@@ -80,6 +80,9 @@ class RegistrationControl extends Control
 	/** @var ExtendedUserEntity */
 	private $_currentUser;
 
+	/** @var string */
+	private $defaultEmail;
+
 
 	public function __construct(EntityDao $roleDao, $invitaions, $userType, $mode, $loginProviderMode, $roles)
 	{
@@ -107,13 +110,24 @@ class RegistrationControl extends Control
 		EntityManager $entityManager,
 		IMailer $mailer,
 		FormFactoryFactory $formFactoryFactory
-	){
+	)
+	{
 		$this->securityManager = $securityManager;
 		$this->authorizatorFactory = $authorizatorFactory;
 		$this->entityManager = $entityManager;
 		$this->mailer = $mailer;
 		$this->formFactoryFactory = $formFactoryFactory;
 	}
+
+
+	/**
+	 * @param string $defaultEmail
+	 */
+	public function setDefaultEmail($defaultEmail)
+	{
+		$this->defaultEmail = $defaultEmail;
+	}
+
 
 	public function handleLoad($name)
 	{
@@ -256,6 +270,10 @@ class RegistrationControl extends Control
 		}
 		foreach ((array)$this->roles as $role) {
 			$entity->getUser()->addRoleEntitie($role);
+		}
+
+		if ($this->defaultEmail) {
+			$entity->user->email = $this->defaultEmail;
 		}
 
 		return $entity;

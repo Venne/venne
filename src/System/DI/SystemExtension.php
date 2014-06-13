@@ -19,12 +19,13 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
+use Venne\Notifications\DI\IEventProvider;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider, ICssProvider, IJsProvider
+class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider, ICssProvider, IJsProvider, IEventProvider
 {
 
 	const TAG_TRAY_COMPONENT = 'venne.trayComponent';
@@ -219,7 +220,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition($this->prefix('authenticationFormFactory'))
 			->setArguments(array(
-				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'),'system.administration.authentication')),
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.authentication')),
 				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity')),
 			))
 			->setClass('Venne\System\AdminModule\AuthenticationFormFactory');
@@ -228,6 +229,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			->setClass('Venne\System\AdminModule\LoginPresenter', array(
 				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
 				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity')),
+				new Statement('@doctrine.dao', array('Venne\System\InvitationEntity')),
 			))
 			->addSetup('$service->setAutologin(?)', array($config['administration']['authentication']['autologin']))
 			->addSetup('$service->setAutoregistration(?)', array($config['administration']['authentication']['autoregistration']));
@@ -689,6 +691,17 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 			'@venne.venne/js/application.js',
 
+		);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getEventTypes()
+	{
+		return array(
+			'Venne\System\Events\InvitationEvent',
 		);
 	}
 

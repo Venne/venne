@@ -17,6 +17,8 @@ use Kdyby\Doctrine\EntityManager;
 use Nette\InvalidArgumentException;
 use Nette\Object;
 use Nette\Security\User;
+use Nette\Utils\Strings;
+use Nette\Utils\Validators;
 use Venne\Notifications\Jobs\NotificationJob;
 use Venne\Notifications\Jobs\NotifyJob;
 use Venne\Security\SecurityManager;
@@ -169,7 +171,7 @@ class NotificationManager extends Object
 		$jobEntity = new JobEntity(NotificationJob::getName(), NULL, array($notificationEntity->id));
 		$jobEntity->user = $user;
 
-		$this->jobManager->scheduleJob(new JobEntity(NotificationJob::getName(), NULL, array($notificationEntity->id)));
+		$this->jobManager->scheduleJob($jobEntity);
 	}
 
 

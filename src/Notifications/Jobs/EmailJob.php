@@ -12,16 +12,7 @@
 namespace Venne\Notifications\Jobs;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\IPresenterFactory;
-use Nette\Application\Responses\TextResponse;
-use Nette\InvalidArgumentException;
-use Nette\InvalidStateException;
-use Nette\Mail\IMailer;
-use Nette\Mail\Message;
-use Nette\Utils\Strings;
-use Venne\Notifications\AdminModule\EmailPresenter;
-use Venne\Notifications\NotificationEntity;
-use Venne\Security\UserEntity;
+use Venne\Notifications\EmailManager;
 use Venne\Queue\Job;
 use Venne\Queue\JobEntity;
 
@@ -37,42 +28,24 @@ class EmailJob extends Job
 	/** @var EntityDao */
 	private $userDao;
 
-	/** @var IMailer */
-	private $mailer;
-
-	/** @var IPresenterFactory */
-	private $presenterFactory;
-
-	/** @var string */
-	private $senderEmail;
-
-	/** @var string */
-	private $senderName;
+	/** @var EmailManager */
+	private $emailManager;
 
 
 	/**
 	 * @param EntityDao $notificationUserDao
 	 * @param EntityDao $userDao
-	 * @param $senderEmail
-	 * @param $senderName
-	 * @param IMailer $mailer
-	 * @param IPresenterFactory $presenterFactory
+	 * @param EmailManager $emailManager
 	 */
 	public function __construct(
 		EntityDao $notificationUserDao,
 		EntityDao $userDao,
-		$senderEmail,
-		$senderName,
-		IMailer $mailer,
-		IPresenterFactory $presenterFactory
+		EmailManager $emailManager
 	)
 	{
 		$this->notificationUserDao = $notificationUserDao;
 		$this->userDao = $userDao;
-		$this->senderEmail = $senderEmail;
-		$this->senderName = $senderName;
-		$this->mailer = $mailer;
-		$this->presenterFactory = $presenterFactory;
+		$this->emailManager = $emailManager;
 	}
 
 
@@ -84,76 +57,10 @@ class EmailJob extends Job
 		$user = $this->userDao->find($jobEntity->arguments['user']);
 		$notification = $this->notificationUserDao->find($jobEntity->arguments['notification']);
 
-		$this->sendEmailToUser($user, $notification->notification, array(
+		$this->emailManager->send($user->email, $user->name, $notification->type->type, $notification->type->action, array(
 			'notification' => $notification,
 			'notificationManager' => $this,
 		));
-	}
-
-
-	/**
-	 * @param UserEntity $entity
-	 * @param NotificationEntity $notificationEntity
-	 * @param array $templateArgs
-	 * @throws \Nette\InvalidArgumentException
-	 */
-	public function sendEmailToUser(UserEntity $entity, NotificationEntity $notificationEntity, array $templateArgs = array())
-	{
-		$presenter = $this->createPresenter();
-		$request = $this->getRequest($notificationEntity->type->type, $notificationEntity->type->action);
-		$response = $presenter->run($request);
-
-		$presenter->template->user = $entity;
-		foreach ($templateArgs as $key => $val) {
-			$presenter->template->$key = $val;
-		}
-
-		if (!$response instanceof TextResponse) {
-			throw new InvalidArgumentException("Type '$type' does not exist.");
-		}
-
-		try {
-			$data = (string)$response->getSource();
-		} catch (\Nette\Application\BadRequestException $e) {
-			if (Strings::startsWith($e->getMessage(), 'Page not found. Missing template')) {
-				throw new InvalidArgumentException("Type '$type' does not exist.");
-			}
-		}
-
-		$message = new Message;
-		$message->setHtmlBody($data);
-		$message->setSubject(ucfirst($notificationEntity->type->action));
-		$message->setFrom($this->senderEmail, $this->senderName ? : NULL);
-		$message->addTo($entity->email, $entity->name);
-
-		$this->mailer->send($message);
-	}
-
-
-	/**
-	 * @param $type
-	 * @param $action
-	 * @return \Nette\Application\Request
-	 */
-	private function getRequest($type, $action)
-	{
-		return new \Nette\Application\Request('Notifications:Admin:Email', 'GET', array('type' => $type, 'action' => $action));
-	}
-
-
-	/**
-	 * @return EmailPresenter
-	 * @throws \Nette\InvalidStateException
-	 */
-	private function createPresenter()
-	{
-		$presenter = $this->presenterFactory->createPresenter('Notifications:Admin:Email');
-
-		if (!$presenter instanceof EmailPresenter) {
-			throw new InvalidStateException("Presenter must be instance of 'Venne\Notification\AdminModule\EmailPresenter'.");
-		}
-
-		return $presenter;
 	}
 
 }

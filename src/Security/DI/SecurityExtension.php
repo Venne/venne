@@ -152,7 +152,7 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 	{
 		return array(
 			'Venne\Security\Events\LoginEvent',
-			'Venne\Security\Events\RegistrationEvent'
+			'Venne\Security\Events\RegistrationEvent',
 		);
 	}
 

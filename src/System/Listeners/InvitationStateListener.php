@@ -12,9 +12,11 @@
 namespace Venne\System\Listeners;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Nette\Application\Application;
+use Venne\Notifications\EmailManager;
 use Venne\Notifications\NotificationManager;
-use Venne\Security\UserEntity;
 use Venne\System\Events\InvitationEvent;
+use Venne\System\InvitationEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,28 +27,39 @@ class InvitationStateListener
 	/** @var NotificationManager */
 	private $notificationManager;
 
+	/** @var EmailManager */
+	private $emailManager;
+
+	/** @var Application */
+	private $application;
+
 	/** @var bool */
 	private static $lock = FALSE;
 
 
-	/**
-	 * @param NotificationManager $notificationManager
-	 */
-	public function __construct(NotificationManager $notificationManager)
+	public function __construct(NotificationManager $notificationManager, EmailManager $emailManager, Application $application)
 	{
 		$this->notificationManager = $notificationManager;
+		$this->emailManager = $emailManager;
+		$this->application = $application;
 	}
 
 
 	/**
-	 * @param UserEntity $entity
+	 * @param InvitationEntity $entity
 	 * @param LifecycleEventArgs $event
 	 */
-	public function postPersist(UserEntity $entity, LifecycleEventArgs $event)
+	public function postPersist(InvitationEntity $entity, LifecycleEventArgs $event)
 	{
-		if (!self::$lock && $entity instanceof UserEntity) {
+		if (!self::$lock) {
 			self::$lock = TRUE;
-			$this->notificationManager->notify(InvitationEvent::getName(), $entity, 'invitation', 'User has been invited.', $entity);
+			$this->emailManager->send($entity->email, NULL, InvitationEvent::getName(), 'invitation', array(
+				'link' => $this->application->presenter->link('//:System:Admin:Login:default', array(
+						'registrationKey' => $entity->registration->id,
+						'hash' => $entity->hash,
+					)),
+			));
+			$this->notificationManager->notify(InvitationEvent::getName(), $entity, 'invitation', 'User has been invited.');
 			self::$lock = FALSE;
 		}
 	}

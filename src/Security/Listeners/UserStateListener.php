@@ -45,7 +45,7 @@ class UserStateListener
 	 */
 	public function postPersist(UserEntity $entity, LifecycleEventArgs $event)
 	{
-		if (!self::$lock && $entity instanceof UserEntity) {
+		if (!self::$lock) {
 			self::$lock = TRUE;
 			$this->notificationManager->notify(RegistrationEvent::getName(), $entity, 'registration', 'User has been registered.', $entity);
 			self::$lock = FALSE;
