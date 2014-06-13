@@ -258,6 +258,21 @@ $(function () {
 		},
 		selector: "form .input-group-btn"
 	});
+	$.nette.ext('gridoBind', {
+		load: function () {
+			this.init($('body'));
+		}
+	}, {
+		init: function (target) {
+			target.find(this.selector).each(function () {
+				if (!$(this).data('gridoCreated')) {
+					$(this).data('gridoCreated', true);
+					$(this).grido();
+				}
+			});
+		},
+		selector: ".grido"
+	});
 	$.nette.init();
 
 	$('a[data-confirm], button[data-confirm], input[data-confirm]').on('click', function (e) {

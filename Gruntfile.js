@@ -18,7 +18,6 @@ module.exports = function(grunt) {
 					{expand: true, cwd: 'bower_components/smalot-bootstrap-datetimepicker/js/', src: 'bootstrap-datetimepicker.min.js', dest: 'Resources/public/vendor/bootstrap-datetimepicker/js/', filter: 'isFile'},
 					{expand: true, cwd: 'bower_components/smalot-bootstrap-datetimepicker/js/locales/', src: '**', dest: 'Resources/public/vendor/bootstrap-datetimepicker/js/locales/'},
 					{expand: true, cwd: 'bower_components/jquery-hashchange/', src: 'jquery.ba-hashchange.min.js', dest: 'Resources/public/vendor/jquery-hashchange/', filter: 'isFile'},
-					{expand: true, cwd: 'bower_components/grido/client-side/', src: '**', dest: 'Resources/public/vendor/grido/'},
 					{expand: true, cwd: 'bower_components/dynatree/dist/', src: 'jquery.dynatree.min.js', dest: 'Resources/public/vendor/dynatree/', filter: 'isFile'},
 					{expand: true, cwd: 'bower_components/dynatree/dist/', src: 'skin/**', dest: 'Resources/public/vendor/dynatree/'},
 					{expand: true, cwd: 'bower_components/dynatree/dist/', src: 'skin-vista/**', dest: 'Resources/public/vendor/dynatree/'},

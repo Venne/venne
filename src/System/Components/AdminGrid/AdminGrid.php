@@ -383,9 +383,9 @@ class AdminGrid extends Control
 
 	public function tableDelete($id, $action, $redirect = TRUE)
 	{
-		if (is_array($id)) {
-			foreach ($id as $item) {
-				$this->tableDelete($item, $action, FALSE);
+		if (is_array($action)) {
+			foreach ($action as $item) {
+				$this->tableDelete($item, NULL, FALSE);
 			}
 		} else {
 			$this->dao->delete($this->dao->find($id));

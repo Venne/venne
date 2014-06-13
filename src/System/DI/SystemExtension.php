@@ -639,7 +639,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			'@venne.venne/vendor/jasny-bootstrap/css/jasny-bootstrap.min.css',
 			'@venne.venne/vendor/font-awesome/css/font-awesome.min.css',
 			'@venne.venne/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css',
-			'@venne.venne/vendor/grido/grido.css',
+			'@o5.grido/grido.css',
 			'@venne.venne/vendor/dynatree/skin-vista/ui.dynatree.css',
 			'@venne.venne/vendor/select2/select2.css',
 			'@venne.venne/vendor/select2/select2-bootstrap.css',
@@ -665,7 +665,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 //			'@venne.venne/vendor/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.$presenter->lang.js',
 
 			'@venne.venne/vendor/jquery-hashchange/jquery.ba-hashchange.min.js',
-			'@venne.venne/vendor/grido/grido.js',
+			'@o5.grido/grido.js',
 			'@venne.venne/vendor/dynatree/jquery.dynatree.min.js',
 
 			'@venne.venne/vendor/select2/select2.min.js',
