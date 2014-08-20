@@ -1,4 +1,4 @@
-{foreach $control->getTrayComponents() as $name => $factory}
+{foreach $control->getTrayComponents() as $name}
 <li class="divider-vertical"></li>
 <li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 	{control $name}

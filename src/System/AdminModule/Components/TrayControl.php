@@ -35,7 +35,7 @@ class TrayControl extends Control
 
 	public function getTrayComponents()
 	{
-		return $this->administrationManager->getTrayWidgetManager()->getWidgets();
+		return $this->administrationManager->getTrayWidgetManager()->getWidgetNames();
 	}
 
 
