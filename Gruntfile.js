@@ -117,5 +117,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-imagemin');
 	grunt.loadNpmTasks('grunt-autoprefixer');
 
-	grunt.registerTask('default', ['copy', 'sass', 'uglify', 'autoprefixer', 'cssmin', 'imagemin', 'watch']);
+	grunt.registerTask('default', ['copy', 'sass', 'uglify', 'autoprefixer', 'cssmin', 'imagemin']);
+	grunt.registerTask('watch', ['watch']);
 };
