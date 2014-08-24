@@ -11,23 +11,19 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class AboutPresenter extends Presenter
+class AboutPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
-
+	use \Venne\System\AdminPresenterTrait;
 
 	public function __construct()
 	{
-		$this->setSecured(FALSE);
+		$this->setSecured(false);
 	}
 
 }

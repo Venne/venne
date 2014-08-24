@@ -11,16 +11,17 @@
 
 namespace Venne\Security;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Nette\Callback;
-use Nette\Security\IIdentity;
+use Nette\Utils\Callback;
+use Nette\Utils\Random;
 use Nette\Utils\Strings;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\EntityListeners({
  *        "\Venne\Security\Listeners\ExtendedUserListener",
@@ -28,50 +29,64 @@ use Venne\Doctrine\Entities\IdentifiedEntityTrait;
  * })
  * @ORM\Table(name="users")
  */
-class UserEntity extends BaseEntity implements IIdentity
+class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\Security\IIdentity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="string", unique=true, length=64)
 	 */
 	protected $email;
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $name = '';
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="text")
 	 */
 	protected $notation = '';
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $password = '';
 
 	/**
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", name="enableByKey", nullable=true)
 	 */
 	protected $key;
 
 	/**
 	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $published = TRUE;
+	protected $published = true;
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $salt;
 
 	/**
-	 * @var \Doctrine\Common\Collections\ArrayCollection
-	 * @ORM\ManyToMany(targetEntity="RoleEntity", cascade={"persist"}, inversedBy="users")
+	 * @var \Venne\Security\RoleEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\ManyToMany(targetEntity="\Venne\Security\RoleEntity", cascade={"persist"}, inversedBy="users")
 	 * @ORM\JoinTable(name="users_roles",
 	 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
@@ -80,45 +95,56 @@ class UserEntity extends BaseEntity implements IIdentity
 	protected $roleEntities;
 
 	/**
-	 * @var LoginEntity[]|ArrayCollection
-	 * @ORM\OneToMany(targetEntity="LoginEntity", mappedBy="user")
+	 * @var \Venne\Security\LoginEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\OneToMany(targetEntity="\Venne\Security\LoginEntity", mappedBy="user")
 	 */
 	protected $logins;
 
 	/**
-	 * @var LoginProviderEntity[]|ArrayCollection
-	 * @ORM\OneToMany(targetEntity="LoginProviderEntity", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+	 * @var \Venne\Security\LoginProviderEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\OneToMany(targetEntity="\Venne\Security\LoginProviderEntity", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
 	 */
 	protected $loginProviders;
 
 	/**
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $socialType;
 
 	/**
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $socialData;
 
 	/**
 	 * @var \DateTime
+	 *
 	 * @ORM\Column(type="datetime")
 	 */
 	protected $created;
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $class;
 
 	/**
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $resetKey;
 
 	/**
-	 * @var ExtendedUserEntity
+	 * @var \Venne\Security\ExtendedUserEntity
 	 */
 	protected $extendedUser;
 
@@ -127,10 +153,10 @@ class UserEntity extends BaseEntity implements IIdentity
 	 */
 	private $extendedUserCallback;
 
-
 	/**
-	 * @var \Doctrine\Common\Collections\ArrayCollection
-	 * @ORM\ManyToMany(targetEntity="UserEntity", cascade={"persist"}, inversedBy="users")
+	 * @var \Venne\Security\UserEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\ManyToMany(targetEntity="\Venne\Security\UserEntity", cascade={"persist"}, inversedBy="users")
 	 * @ORM\JoinTable(name="users_friends",
 	 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")}
@@ -138,18 +164,16 @@ class UserEntity extends BaseEntity implements IIdentity
 	 */
 	protected $friends;
 
-
 	public function __construct()
 	{
-		$this->roleEntities = new ArrayCollection;
-		$this->logins = new ArrayCollection;
-		$this->loginProviders = new ArrayCollection;
-		$this->friends = new ArrayCollection;
-		$this->created = new \DateTime;
+		$this->roleEntities = new ArrayCollection();
+		$this->logins = new ArrayCollection();
+		$this->loginProviders = new ArrayCollection();
+		$this->friends = new ArrayCollection();
+		$this->created = new DateTime();
 
 		$this->generateNewSalt();
 	}
-
 
 	/**
 	 * @param callable $extendedUserCallback
@@ -159,19 +183,17 @@ class UserEntity extends BaseEntity implements IIdentity
 		$this->extendedUserCallback = $extendedUserCallback;
 	}
 
-
 	/**
-	 * @return ExtendedUserEntity
+	 * @return \Venne\Security\ExtendedUserEntity
 	 */
 	public function getExtendedUser()
 	{
 		if (!$this->extendedUser) {
-			$this->extendedUser = Callback::create($this->extendedUserCallback)->invoke();
+			$this->extendedUser = Callback::invoke($this->extendedUserCallback);
 		}
 
 		return $this->extendedUser;
 	}
-
 
 	/**
 	 * Invalidate all user logins.
@@ -179,19 +201,18 @@ class UserEntity extends BaseEntity implements IIdentity
 	public function invalidateLogins()
 	{
 		foreach ($this->logins as $login) {
-			$login->reload = TRUE;
+			$login->reload = true;
 		}
 	}
-
 
 	/**
 	 * Set password.
 	 *
-	 * @param $password
+	 * @param string $password
 	 */
 	public function setPassword($password)
 	{
-		if ($password === NULL) {
+		if ($password === null) {
 			return;
 		}
 
@@ -202,26 +223,24 @@ class UserEntity extends BaseEntity implements IIdentity
 		$this->password = $this->getHash($password);
 	}
 
-
 	/**
 	 * Verify the password.
 	 *
-	 * @param $password
+	 * @param string $password
 	 * @return bool
 	 */
 	public function verifyByPassword($password)
 	{
 		if (!$this->isEnable()) {
-			return FALSE;
+			return false;
 		}
 
 		if ($this->password == $this->getHash($password)) {
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
-
 
 	/**
 	 * Disable user and verify by key.
@@ -231,37 +250,35 @@ class UserEntity extends BaseEntity implements IIdentity
 		$this->generateNewKey();
 	}
 
-
 	/**
 	 * Verify user by key.
 	 *
-	 * @param $key
+	 * @param string $key
 	 * @return bool
 	 */
 	public function enableByKey($key)
 	{
 		if ($this->key == $key) {
-			$this->key = NULL;
-			return TRUE;
-		}
-		return FALSE;
-	}
+			$this->key = null;
 
+			return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * @return string
 	 */
 	public function resetPassword()
 	{
-		return $this->resetKey = Strings::random(30);
+		return $this->resetKey = Random::generate(30);
 	}
-
 
 	public function removeResetKey()
 	{
-		$this->resetKey = NULL;
+		$this->resetKey = null;
 	}
-
 
 	/**
 	 * Check if user is enable.
@@ -271,72 +288,69 @@ class UserEntity extends BaseEntity implements IIdentity
 	public function isEnable()
 	{
 		if (!$this->key && $this->published) {
-			return TRUE;
+			return true;
 		}
-		return FALSE;
-	}
 
+		return false;
+	}
 
 	/**
 	 * @return string
 	 */
 	public function __toString()
 	{
-		return $this->name ? : (string)$this->email;
+		return $this->name ?: (string) $this->email;
 	}
-
 
 	/******************************** Getters and setters **************************************/
 
-
+	/**
+	 * @param string $name
+	 */
 	public function setName($name)
 	{
-		$this->name = $name ? $name : NULL;
+		$this->name = $name ? $name : null;
 	}
 
-
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getName()
 	{
 		return $this->name;
 	}
 
-
 	/**
-	 * @param mixed $notation
+	 * @param string $notation
 	 */
 	public function setNotation($notation)
 	{
 		$this->notation = $notation;
 	}
 
-
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getNotation()
 	{
 		return $this->notation;
 	}
 
-
 	/**
-	 * @param RoleEntity $roleEntity
+	 * @param \Venne\Security\RoleEntity $roleEntity
 	 * @return $this
 	 */
 	public function addRoleEntity(RoleEntity $roleEntity)
 	{
 		$this->roleEntities->add($roleEntity);
+
 		return $this;
 	}
-
 
 	/**
 	 * Returns a list of roles that the user is a member of.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getRoles()
 	{
@@ -344,81 +358,90 @@ class UserEntity extends BaseEntity implements IIdentity
 		foreach ($this->roleEntities as $entity) {
 			$ret[] = $entity->name;
 		}
+
 		return $ret;
 	}
 
-
-	public function setLogins(array $logins)
+	public function addLogin(LoginEntity $login)
 	{
-		$this->logins = new ArrayCollection($logins);
+		$this->logins->add($login);
 	}
 
-
+	/**
+	 * @return \Venne\Security\LoginEntity[]
+	 */
 	public function getLogins()
 	{
 		return $this->logins->toArray();
 	}
 
-
 	/**
-	 * @param $service
+	 * @param string $service
 	 * @return bool
 	 */
 	public function hasLoginProvider($service)
 	{
 		foreach ($this->loginProviders as $login) {
 			if ($login->getType() === $service) {
-				return TRUE;
+				return true;
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
-
+	/**
+	 * @param bool $published
+	 */
 	public function setPublished($published)
 	{
-		$this->published = $published;
+		$this->published = (bool)$published;
 		$this->invalidateLogins();
 	}
 
-
 	/**
-	 * @return boolean
+	 * @return bool
 	 */
 	public function getPublished()
 	{
 		return $this->published;
 	}
 
-
+	/**
+	 * @param string $key
+	 */
 	public function setKey($key)
 	{
 		$this->key = $key;
 	}
 
-
+	/**
+	 * @return null|string
+	 */
 	public function getKey()
 	{
 		return $this->key;
 	}
 
-
+	/**
+	 * @param string $email
+	 */
 	public function setEmail($email)
 	{
 		if (!\Nette\Utils\Validators::isEmail($email)) {
-			throw new \Nette\InvalidArgumentException("E-mail must be in correct format. '{$email}' is given.");
+			throw new \Nette\InvalidArgumentException(sprintf('E-mail must be in correct format. \'%s\' is given.', $email));
 		}
 
 		$this->email = $email;
 	}
 
-
+	/**
+	 * @return string
+	 */
 	public function getEmail()
 	{
 		return $this->email;
 	}
-
 
 	public function addLoginProvider(LoginProviderEntity $loginProvider)
 	{
@@ -426,30 +449,26 @@ class UserEntity extends BaseEntity implements IIdentity
 		$loginProvider->setUser($this);
 	}
 
-
 	public function setLoginProviders(array $loginProviders)
 	{
 		$this->loginProviders = new ArrayCollection($loginProviders);
 	}
 
-
 	/**
-	 * @return LoginProviderEntity[]|ArrayCollection
+	 * @return \Venne\Security\LoginProviderEntity[]
 	 */
 	public function getLoginProviders()
 	{
 		return $this->loginProviders->toArray();
 	}
 
-
 	/**
 	 * @param \DateTime $created
 	 */
-	public function setCreated($created)
+	public function setCreated(DateTime $created)
 	{
 		$this->created = $created;
 	}
-
 
 	/**
 	 * @return \DateTime
@@ -459,42 +478,48 @@ class UserEntity extends BaseEntity implements IIdentity
 		return $this->created;
 	}
 
-
+	/**
+	 * @param string $socialData
+	 */
 	public function setSocialData($socialData)
 	{
 		$this->socialData = $socialData;
 	}
 
-
+	/**
+	 * @return string
+	 */
 	public function getSocialData()
 	{
 		return $this->socialData;
 	}
 
-
+	/**
+	 * @param string $socialType
+	 */
 	public function setSocialType($socialType)
 	{
 		$this->socialType = $socialType;
 	}
 
-
+	/**
+	 * @return string
+	 */
 	public function getSocialType()
 	{
 		return $this->socialType;
 	}
 
-
 	/**
-	 * @param mixed $class
+	 * @param string $class
 	 */
 	public function setClass($class)
 	{
 		$this->class = $class;
 	}
 
-
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getClass()
 	{
@@ -512,7 +537,6 @@ class UserEntity extends BaseEntity implements IIdentity
 		$this->salt = Strings::random(8);
 	}
 
-
 	/**
 	 * Generate random key.
 	 */
@@ -521,11 +545,10 @@ class UserEntity extends BaseEntity implements IIdentity
 		$this->key = Strings::random(30);
 	}
 
-
 	/**
 	 * Get hash of password.
 	 *
-	 * @param $password
+	 * @param string $password
 	 * @return string
 	 */
 	protected function getHash($password)

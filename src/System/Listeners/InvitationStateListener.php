@@ -24,43 +24,41 @@ use Venne\System\InvitationEntity;
 class InvitationStateListener
 {
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
-	/** @var EmailManager */
+	/** @var \Venne\Notifications\EmailManager */
 	private $emailManager;
 
-	/** @var Application */
+	/** @var \Nette\Application\Application */
 	private $application;
 
 	/** @var bool */
-	private static $lock = FALSE;
+	private static $lock = false;
 
-
-	public function __construct(NotificationManager $notificationManager, EmailManager $emailManager, Application $application)
+	public function __construct(
+		NotificationManager $notificationManager,
+		EmailManager $emailManager,
+		Application $application
+	)
 	{
 		$this->notificationManager = $notificationManager;
 		$this->emailManager = $emailManager;
 		$this->application = $application;
 	}
 
-
-	/**
-	 * @param InvitationEntity $entity
-	 * @param LifecycleEventArgs $event
-	 */
 	public function postPersist(InvitationEntity $entity, LifecycleEventArgs $event)
 	{
 		if (!self::$lock) {
-			self::$lock = TRUE;
-			$this->emailManager->send($entity->email, NULL, InvitationEvent::getName(), 'invitation', array(
+			self::$lock = true;
+			$this->emailManager->send($entity->email, null, InvitationEvent::getName(), 'invitation', array(
 				'link' => $this->application->presenter->link('//:System:Admin:Login:default', array(
-						'registrationKey' => $entity->registration->id,
-						'hash' => $entity->hash,
-					)),
+					'registrationKey' => $entity->registration->id,
+					'hash' => $entity->hash,
+				)),
 			));
 			$this->notificationManager->notify(InvitationEvent::getName(), $entity, 'invitation', 'User has been invited.');
-			self::$lock = FALSE;
+			self::$lock = false;
 		}
 	}
 

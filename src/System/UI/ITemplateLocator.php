@@ -19,8 +19,16 @@ use Nette\ComponentModel\Component;
 interface ITemplateLocator
 {
 
+	/**
+	 * @param \Nette\ComponentModel\Component $control
+	 * @return string[]
+	 */
 	public function formatLayoutTemplateFiles(Component $control);
 
+	/**
+	 * @param \Nette\ComponentModel\Component $control
+	 * @return string[]
+	 */
 	public function formatTemplateFiles(Component $control);
 
 }

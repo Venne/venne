@@ -13,13 +13,8 @@ namespace Venne\Security\AdminModule;
 
 use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
 use Nette\Security\User;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Security\RoleEntity;
-use Venne\System\AdminPresenterTrait;
-use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 use Venne\System\InvitationEntity;
 
@@ -29,21 +24,20 @@ use Venne\System\InvitationEntity;
 class InvitationsTableFactory
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $dao;
 
-	/** @var InvitationFormFactory */
+	/** @var \Venne\Security\AdminModule\InvitationFormFactory */
 	private $formFactory;
 
-	/** @var IAdminGridFactory */
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var ITranslator */
+	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	private $user;
-
 
 	public function __construct(
 		EntityDao $dao,
@@ -60,7 +54,9 @@ class InvitationsTableFactory
 		$this->user = $user;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	public function create()
 	{
 		$admin = $this->adminGridFactory->create($this->dao);
@@ -68,7 +64,7 @@ class InvitationsTableFactory
 		// columns
 		$table = $admin->getTable();
 		$table->setModel(new Doctrine($this->dao->createQueryBuilder('a')
-			->andWhere('a.author = :author')->setParameter('author', $this->user->identity->getId())
+				->andWhere('a.author = :author')->setParameter('author', $this->user->identity->getId())
 		));
 		$table->setTranslator($this->translator);
 		$table->addColumnText('email', 'E-mail')
@@ -78,7 +74,7 @@ class InvitationsTableFactory
 			->setFilterText()->setSuggestion();
 
 		$table->addColumnText('type', 'Type')
-			->setCustomRender(function(InvitationEntity $invitationEntity){
+			->setCustomRender(function (InvitationEntity $invitationEntity) {
 				return $invitationEntity->registration->getName();
 			})
 			->getCellPrototype()->width = '40%';
@@ -87,7 +83,7 @@ class InvitationsTableFactory
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->createForm($this->formFactory, 'Role', function() {
+		$form = $admin->createForm($this->formFactory, 'Role', function () {
 			return new InvitationEntity($this->user->identity);
 		});
 

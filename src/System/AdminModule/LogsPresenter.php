@@ -15,10 +15,8 @@ use Grido\DataSources\ArraySource;
 use Grido\Grid;
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\TextResponse;
-use Nette\Application\UI\Presenter;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 use Nette\Utils\Finder;
-use Venne\System\AdminPresenterTrait;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 use Venne\System\Components\INavbarControlFactory;
 
@@ -27,24 +25,23 @@ use Venne\System\Components\INavbarControlFactory;
  *
  * @secured
  */
-class LogsPresenter extends Presenter
+class LogsPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
 	/** @var string */
 	private $logDir;
 
-	/** @var IAdminGridFactory */
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var INavbarControlFactory */
+	/** @var \Venne\System\Components\INavbarControlFactory */
 	private $navbarControlFactory;
 
-
 	/**
-	 * @param $logDir
-	 * @param IAdminGridFactory $adminGridFactory
+	 * @param string $logDir
+	 * @param \Venne\System\Components\AdminGrid\IAdminGridFactory $adminGridFactory
 	 */
 	public function __construct($logDir, IAdminGridFactory $adminGridFactory, INavbarControlFactory $navbarControlFactory)
 	{
@@ -52,7 +49,6 @@ class LogsPresenter extends Presenter
 		$this->adminGridFactory = $adminGridFactory;
 		$this->navbarControlFactory = $navbarControlFactory;
 	}
-
 
 	/**
 	 * @secured(privilege="show")
@@ -62,7 +58,6 @@ class LogsPresenter extends Presenter
 		$this->template->files = $this->getFiles();
 	}
 
-
 	/**
 	 * @secured
 	 */
@@ -70,15 +65,17 @@ class LogsPresenter extends Presenter
 	{
 	}
 
-
 	protected function createComponentNavbar()
 	{
 		$control = $this->navbarControlFactory->create();
 		$control->addSection('delete', 'Delete all', 'remove')->onClick[] = $this->handleDeleteAll;
+
 		return $control;
 	}
 
-
+	/**
+	 * @return \Grido\Grid
+	 */
 	protected function createComponentTable()
 	{
 		$table = new Grid;
@@ -98,7 +95,6 @@ class LogsPresenter extends Presenter
 		return $table;
 	}
 
-
 	/**
 	 * @secured(privilege="show")
 	 */
@@ -115,7 +111,6 @@ class LogsPresenter extends Presenter
 		}
 	}
 
-
 	/**
 	 * @secured(privilege="remove")
 	 */
@@ -125,7 +120,6 @@ class LogsPresenter extends Presenter
 		$this->flashMessage($this->translator->translate('Log has been removed'), 'success');
 		$this->redirect('this');
 	}
-
 
 	/**
 	 * @secured(privilege="remove")
@@ -140,7 +134,9 @@ class LogsPresenter extends Presenter
 		$this->redirect('this');
 	}
 
-
+	/**
+	 * @return mixed[]
+	 */
 	protected function getFiles()
 	{
 		$ret = array();
@@ -154,6 +150,7 @@ class LogsPresenter extends Presenter
 			$ret[$date] = $info;
 		}
 		ksort($ret);
+
 		return array_reverse($ret);
 	}
 

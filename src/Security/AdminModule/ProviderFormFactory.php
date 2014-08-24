@@ -17,29 +17,27 @@ use Venne\Security\SecurityManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ProviderFormFactory implements IFormFactory
+class ProviderFormFactory implements \Venne\Forms\IFormFactory
 {
 
 	/** @var string */
 	private $provider;
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-
 	/**
-	 * @param IFormFactory $formFactory
-	 * @param SecurityManager $securityManager
+	 * @param \Venne\Forms\IFormFactory $formFactory
+	 * @param \Venne\Security\SecurityManager $securityManager
 	 */
 	public function __construct(IFormFactory $formFactory, SecurityManager $securityManager)
 	{
 		$this->formFactory = $formFactory;
 		$this->securityManager = $securityManager;
 	}
-
 
 	/**
 	 * @param string $provider
@@ -48,7 +46,6 @@ class ProviderFormFactory implements IFormFactory
 	{
 		$this->provider = $provider;
 	}
-
 
 	/**
 	 * @return \Nette\Application\UI\Form
@@ -65,7 +62,7 @@ class ProviderFormFactory implements IFormFactory
 		$form->addSubmit('_submit', 'Save')
 			->getControlPrototype()->class[] = 'btn-primary';
 		$form->addSubmit('cancel', 'Cancel')
-			->setValidationScope(FALSE);
+			->setValidationScope(false);
 
 		return $form;
 	}

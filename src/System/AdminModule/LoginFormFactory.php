@@ -17,29 +17,23 @@ use Venne\Security\SecurityManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginFormFactory implements IFormFactory
+class LoginFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 * @param SecurityManager $securityManager
-	 */
 	public function __construct(IFormFactory $formFactory, SecurityManager $securityManager)
 	{
 		$this->formFactory = $formFactory;
 		$this->securityManager = $securityManager;
 	}
 
-
 	/**
-	 * @return \Nette\Forms\Form
+	 * @return \Nette\Application\UI\Form
 	 */
 	public function create()
 	{
@@ -53,7 +47,7 @@ class LoginFormFactory implements IFormFactory
 		$socialButtons = $form->addContainer('socialButtons');
 		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {
 			$socialButtons->addSubmit(str_replace(' ', '_', $loginProvider), $loginProvider)
-				->setValidationScope(FALSE);
+				->setValidationScope(false);
 		}
 
 		return $form;

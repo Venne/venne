@@ -18,7 +18,7 @@ interface ITrayControlFactory
 {
 
 	/**
-	 * @return TrayControl
+	 * @return \Venne\System\AdminModule\Components\TrayControl
 	 */
 	public function create();
 

@@ -17,21 +17,16 @@ use Venne\Forms\IFormFactory;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RoleFormFactory implements IFormFactory
+class RoleFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 */
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
-
 
 	/**
 	 * @return \Nette\Forms\Form

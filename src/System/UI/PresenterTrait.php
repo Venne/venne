@@ -21,30 +21,31 @@ use Venne\Security\IControlVerifier;
 trait PresenterTrait
 {
 
-	use ControlTrait;
+	use \Venne\System\UI\ControlTrait;
 
-	/** @var IControlVerifier */
+	/** @var \Venne\Security\IControlVerifier|null */
 	private $controlVerifier;
 
-	/** @var IPresenterFactory|NULL */
+	/** @var \Nette\Application\IPresenterFactory */
 	private $presenterFactory;
 
-
 	/**
-	 * @param IPresenterFactory $presenterFactory
-	 * @param IControlVerifier $controlVerifier
+	 * @param \Nette\Application\IPresenterFactory $presenterFactory
+	 * @param \Venne\Security\IControlVerifier|null $controlVerifier
 	 */
-	public function injectVennePresenter(IPresenterFactory $presenterFactory, IControlVerifier $controlVerifier = NULL)
+	public function injectVennePresenter(
+		IPresenterFactory $presenterFactory,
+		IControlVerifier $controlVerifier = null
+	)
 	{
 		$this->presenterFactory = $presenterFactory;
 		$this->controlVerifier = $controlVerifier;
 	}
 
-
 	/**
 	 * Checks authorization.
 	 *
-	 * @return void
+	 * @param mixed $element
 	 */
 	public function checkRequirements($element)
 	{
@@ -53,21 +54,19 @@ trait PresenterTrait
 		}
 	}
 
-
 	/**
-	 * @param null $resource
-	 * @param null $privilege
-	 * @return mixed
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return bool
 	 */
-	public function isAllowed($resource = NULL, $privilege = NULL)
+	public function isAllowed($resource = null, $privilege = null)
 	{
 		return $this->getUser()->isAllowed($resource, $privilege);
 	}
 
-
 	/**
-	 * @param  string   destination in format "[[module:]presenter:]action" or "signal!" or "this"
-	 * @param  array|mixed
+	 * @param string $destination in format "[[module:]presenter:]action" or "signal!" or "this"
+	 * @param string []
 	 * @return bool
 	 */
 	public function isAuthorized($destination)
@@ -92,7 +91,7 @@ trait PresenterTrait
 				$link = $link . ($link ? ':' : '') . substr($destination, 0, strrpos($destination, ':'));
 				$action = substr($destination, strrpos($destination, ':') + 1);
 			}
-			$action = $action ? : 'default';
+			$action = $action ?: 'default';
 
 			$class = $this->presenterFactory->getPresenterClass($link);
 		}
@@ -106,7 +105,7 @@ trait PresenterTrait
 			try {
 				$this->controlVerifier->checkRequirements($method);
 			} catch (ForbiddenRequestException $e) {
-				return FALSE;
+				return false;
 			}
 		}
 
@@ -117,11 +116,11 @@ trait PresenterTrait
 			try {
 				$this->controlVerifier->checkRequirements($method);
 			} catch (ForbiddenRequestException $e) {
-				return FALSE;
+				return false;
 			}
 		}
 
-		return TRUE;
+		return true;
 	}
 
 }

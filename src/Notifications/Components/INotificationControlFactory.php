@@ -11,8 +11,6 @@
 
 namespace Venne\Notifications\Components;
 
-use Nette\Application\BadRequestException;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -20,7 +18,7 @@ interface INotificationControlFactory
 {
 
 	/**
-	 * @return NotificationControl
+	 * @return \Venne\Notifications\Components\NotificationControl
 	 */
 	public function create();
 

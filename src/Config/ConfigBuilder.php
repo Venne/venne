@@ -12,30 +12,23 @@
 namespace Venne\Config;
 
 use Nette\DI\Config\Adapters\NeonAdapter;
-use Nette\Object;
 use Nette\OutOfRangeException;
+use Nette\Utils\ArrayHash;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \IteratorAggregate
+class ConfigBuilder extends \Nette\Object implements \ArrayAccess, \Countable, \IteratorAggregate
 {
 
-	/** @var array */
-	protected $data;
-
-	/** @var array */
-	protected $dataOrig;
-
-	/** @var array */
-	protected $sections;
+	/** @var mixed */
+	private $data;
 
 	/** @var string */
-	protected $fileName;
+	private $fileName;
 
-	/** @var NeonAdapter */
-	protected $adapter;
-
+	/** @var \Nette\DI\Config\Adapters\NeonAdapter */
+	private $adapter;
 
 	/**
 	 * @param string $fileName
@@ -47,28 +40,19 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		$this->load();
 	}
 
-
-	/**
-	 * Load data
-	 */
 	public function load()
 	{
-		$this->data = \Nette\ArrayHash::from($this->adapter->load($this->fileName), true);
+		$this->data = ArrayHash::from($this->adapter->load($this->fileName), true);
 	}
 
-
-	/**
-	 * Save data
-	 */
 	public function save()
 	{
-		file_put_contents($this->fileName, $this->adapter->dump((array)$this->data));
+		file_put_contents($this->fileName, $this->adapter->dump((array) $this->data));
 		$this->load();
 	}
 
 
 	/* ------------------------------ Interfaces -------------------------------- */
-
 
 	/**
 	 * Returns items count.
@@ -80,7 +64,6 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		return $this->count($this->data);
 	}
 
-
 	/**
 	 * Returns an iterator over all items.
 	 *
@@ -91,11 +74,10 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		return new \ArrayIterator($this->data);
 	}
 
-
 	/**
 	 * Determines whether a item exists.
 	 *
-	 * @param  mixed
+	 * @param mixed
 	 * @return bool
 	 */
 	public function offsetExists($index)
@@ -103,11 +85,10 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		return $index >= 0 && $index < count($this->data);
 	}
 
-
 	/**
 	 * Returns a item.
 	 *
-	 * @param  mixed
+	 * @param mixed
 	 * @return mixed
 	 */
 	public function offsetGet($index)
@@ -115,32 +96,29 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		if ($index < 0 || $index >= count($this->data)) {
 			throw new OutOfRangeException("Offset invalid or out of range");
 		}
+
 		return $this->data[$index];
 	}
-
 
 	/**
 	 * Replaces or appends a item.
 	 *
-	 * @param  mixed
-	 * @param  mixed
-	 * @return void
+	 * @param mixed
+	 * @param mixed
 	 */
 	public function offsetSet($index, $value)
 	{
-		if ($index === NULL) {
-			$this->data[] = is_array($value) ? \Nette\ArrayHash::from($value, true) : $value;
+		if ($index === null) {
+			$this->data[] = is_array($value) ? ArrayHash::from($value, true) : $value;
 		} else {
-			$this->data[$index] = is_array($value) ? \Nette\ArrayHash::from($value, true) : $value;
+			$this->data[$index] = is_array($value) ? ArrayHash::from($value, true) : $value;
 		}
 	}
-
 
 	/**
 	 * Removes the element from this list.
 	 *
-	 * @param  mixed
-	 * @return void
+	 * @param mixed
 	 */
 	public function offsetUnset($index)
 	{
@@ -149,4 +127,5 @@ class ConfigBuilder extends Object implements \ArrayAccess, \Countable, \Iterato
 		}
 		array_splice($this->data, $index, 1);
 	}
+
 }

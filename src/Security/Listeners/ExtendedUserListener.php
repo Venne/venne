@@ -21,7 +21,12 @@ use Venne\Security\UserEntity;
 class ExtendedUserListener
 {
 
-	/** @ORM\PostLoad */
+	/**
+	 * @ORM\PostLoad
+	 *
+	 * @param \Venne\Security\UserEntity $user
+	 * @param \Doctrine\ORM\Event\LifecycleEventArgs $event
+	 */
 	public function postLoadHandler(UserEntity $user, LifecycleEventArgs $event)
 	{
 		$em = $event->getEntityManager();

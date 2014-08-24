@@ -12,13 +12,6 @@
 namespace Venne\Notifications\Jobs;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\IPresenterFactory;
-use Nette\Application\Responses\TextResponse;
-use Nette\InvalidArgumentException;
-use Nette\InvalidStateException;
-use Nette\Mail\IMailer;
-use Nette\Mail\Message;
-use Nette\Utils\Strings;
 use Venne\Notifications\NotificationUserEntity;
 use Venne\Queue\Job;
 use Venne\Queue\JobEntity;
@@ -31,26 +24,24 @@ use Venne\Security\UserEntity;
 class NotificationJob extends Job
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationUserDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $settingDao;
 
-	/** @var JobManager */
+	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
 
-
-	/**
-	 * @param EntityDao $notificationDao
-	 * @param EntityDao $userDao
-	 * @param EntityDao $settingDao
-	 * @param JobManager $jobManager
-	 */
-	public function __construct(EntityDao $notificationDao, EntityDao $userDao, EntityDao $settingDao, JobManager $jobManager)
+	public function __construct(
+		EntityDao $notificationDao,
+		EntityDao $userDao,
+		EntityDao $settingDao,
+		JobManager $jobManager
+	)
 	{
 		$this->notificationDao = $notificationDao;
 		$this->notificationUserDao = $userDao;
@@ -58,13 +49,9 @@ class NotificationJob extends Job
 		$this->jobManager = $jobManager;
 	}
 
-
-	/**
-	 * @param JobEntity $jobEntity
-	 */
 	public function run(JobEntity $jobEntity)
 	{
-		if (($notificationEntity = $this->notificationDao->find($jobEntity->arguments[0])) === NULL) {
+		if (($notificationEntity = $this->notificationDao->find($jobEntity->arguments[0])) === null) {
 			return;
 		}
 
@@ -102,7 +89,7 @@ class NotificationJob extends Job
 			$this->notificationUserDao->save($notificationUserEntity);
 
 			if ($user['email']) {
-				$this->jobManager->scheduleJob(new JobEntity(EmailJob::getName(), NULL, array(
+				$this->jobManager->scheduleJob(new JobEntity(EmailJob::getName(), null, array(
 					'user' => $user['user'] instanceof UserEntity ? $user['user']->id : $user['user'],
 					'notification' => $notificationUserEntity->id,
 				)));

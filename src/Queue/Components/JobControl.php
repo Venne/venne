@@ -15,25 +15,19 @@ use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
 use Venne\Queue\JobEntity;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class JobControl extends Control
+class JobControl extends \Venne\System\UI\Control
 {
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	private $user;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
 
-
-	/**
-	 * @param EntityDao $jobDao
-	 * @param User $user
-	 */
 	public function __construct(EntityDao $jobDao, User $user)
 	{
 		parent::__construct();
@@ -42,10 +36,12 @@ class JobControl extends Control
 		$this->user = $user;
 	}
 
-
+	/**
+	 * @param int $id
+	 */
 	public function handleRemove($id)
 	{
-		if (($entity = $this->jobDao->find($id)) === NULL) {
+		if (($entity = $this->jobDao->find($id)) === null) {
 			throw new BadRequestException;
 		}
 
@@ -59,7 +55,6 @@ class JobControl extends Control
 			$this->redirect('this');
 		}
 	}
-
 
 	public function render(JobEntity $job)
 	{

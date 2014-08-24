@@ -12,32 +12,31 @@
 namespace Venne\System\AdminModule\Components;
 
 use Venne\System\AdministrationManager;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class TrayControl extends Control
+class TrayControl extends \Venne\System\UI\Control
 {
 
-	/** @var AdministrationManager */
+	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;
 
-
 	/**
-	 * @param AdministrationManager $administrationManager
+	 * @param \Venne\System\AdministrationManager $administrationManager
 	 */
 	public function __construct(AdministrationManager $administrationManager)
 	{
 		$this->administrationManager = $administrationManager;
 	}
 
-
+	/**
+	 * @return string[]
+	 */
 	public function getTrayComponents()
 	{
 		return $this->administrationManager->getTrayWidgetManager()->getWidgetNames();
 	}
-
 
 	public function render()
 	{
@@ -45,7 +44,10 @@ class TrayControl extends Control
 		$this->template->render();
 	}
 
-
+	/**
+	 * @param string $name
+	 * @return \Nette\Application\UI\Control
+	 */
 	protected function createComponent($name)
 	{
 		return $this->administrationManager->getTrayWidgetManager()->getWidget($name);

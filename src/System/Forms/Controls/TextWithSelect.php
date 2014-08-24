@@ -22,38 +22,37 @@ class TextWithSelect extends \Nette\Forms\Controls\TextInput
 	/** @var \Nette\Utils\Html  container element template */
 	protected $container;
 
-	/** @var array */
+	/** @var string[] */
 	private $items = array();
 
-	/** @var array */
+	/** @var string[] */
 	protected $allowed = array();
 
 	/** @var bool */
-	private $prompt = FALSE;
+	private $prompt = false;
 
 	/** @var bool */
-	private $useKeys = TRUE;
+	private $useKeys = true;
 
-
-	public function __construct($label = NULL, $cols = NULL, $maxLength = NULL)
+	public function __construct($label = null, $cols = null, $maxLength = null)
 	{
 		$this->container = Html::el();
 		$this->prompt = true;
 		parent::__construct($label, $cols, $maxLength);
 	}
 
-
 	/**
 	 * Sets items from which to choose.
 	 *
-	 * @param  array
-	 * @return SelectBox  provides a fluent interface
+	 * @param string[] $items
+	 * @param bool $useKeys
+	 * @return $this
 	 */
-	public function setItems(array $items, $useKeys = TRUE)
+	public function setItems(array $items, $useKeys = true)
 	{
 		$this->items = $items;
 		$this->allowed = array();
-		$this->useKeys = (bool)$useKeys;
+		$this->useKeys = (bool) $useKeys;
 
 		foreach ($items as $key => $value) {
 			if (!is_array($value)) {
@@ -75,20 +74,19 @@ class TextWithSelect extends \Nette\Forms\Controls\TextInput
 				$this->allowed[$key2] = $value2;
 			}
 		}
+
 		return $this;
 	}
-
 
 	/**
 	 * Returns items from which to choose.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	final public function getItems()
 	{
 		return $this->items;
 	}
-
 
 	/**
 	 * Generates control's HTML element.
@@ -101,7 +99,7 @@ class TextWithSelect extends \Nette\Forms\Controls\TextInput
 		$container->add(' <div class="input-group">' . parent::getControl());
 
 		$dest = '';
-		$s = NULL;
+		$s = null;
 
 		foreach ($this->items as $key => $value) {
 
@@ -114,7 +112,7 @@ class TextWithSelect extends \Nette\Forms\Controls\TextInput
 					$dest .= '<li><a href="#">' . $value2 . '</a></li>';
 				} else {
 					$key2 = $this->useKeys ? $key2 : $value2;
-					$value2 = $this->translate((string)$value2);
+					$value2 = $this->translate((string) $value2);
 
 					if ($key2 == $this->value) {
 						$s = $value2;
@@ -135,4 +133,5 @@ class TextWithSelect extends \Nette\Forms\Controls\TextInput
 
 		return $container;
 	}
+
 }

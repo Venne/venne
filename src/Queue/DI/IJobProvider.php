@@ -18,7 +18,7 @@ interface IJobProvider
 {
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getJobClasses();
 

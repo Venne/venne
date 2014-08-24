@@ -18,20 +18,19 @@ interface IControlVerifier
 {
 
 	/**
-	 * @param $element
+	 * @param mixed $element
 	 * @return bool
 	 */
 	public function checkRequirements($element);
 
-
 	/**
-	 * @param IControlVerifierReader $reader
+	 * @param \Venne\Security\IControlVerifierReader $reader
 	 */
 	public function setControlVerifierReader(IControlVerifierReader $reader);
 
-
 	/**
-	 * @return IControlVerifierReader
+	 * @return \Venne\Security\IControlVerifierReader
 	 */
 	public function getControlVerifierReader();
+
 }

@@ -11,10 +11,6 @@
 
 namespace Venne\Security;
 
-use Venne\System\Pages\Users\UserEntity;
-use Venne\Security\Entities\LoginProviderEntity;
-use Nette\Forms\Container;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -27,25 +23,22 @@ interface ILoginProvider extends \Nette\Security\IAuthenticator
 	public static function getType();
 
 	/**
-	 * @return LoginProviderEntity
+	 * @return \Venne\Security\LoginProviderEntity
 	 */
 	public function getLoginProviderEntity();
 
-
 	/**
-	 * @param UserEntity $userEntity
+	 * @param \Venne\Security\UserEntity $userEntity
 	 */
 	public function connectWithUser(UserEntity $userEntity);
 
-
 	/**
-	 * @param array $parameters
+	 * @param mixed[] $parameters
 	 */
 	public function setAuthenticationParameters(array $parameters);
 
-
 	/**
-	 * @return Container|NULL
+	 * @return \Nette\Forms\Container|null
 	 */
 	public function getFormContainer();
 

@@ -14,7 +14,7 @@ namespace Venne\Notifications;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-abstract class Event implements IEvent
+abstract class Event implements \Venne\Notifications\IEvent
 {
 
 	/**
@@ -25,14 +25,13 @@ abstract class Event implements IEvent
 		return get_called_class();
 	}
 
-
 	/**
-	 * @param NotificationEntity $log
+	 * @param \Venne\Notifications\NotificationEntity $log
 	 * @return null
 	 */
 	public static function getLink(NotificationEntity $log)
 	{
-		return NULL;
+		return null;
 	}
 
 }

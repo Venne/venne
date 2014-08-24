@@ -11,38 +11,33 @@
 
 namespace Venne\Notifications\AdminModule;
 
-use Nette\Application\UI\Presenter;
 use Venne\Notifications\Components\INotificationControlFactory;
 use Venne\Notifications\NotificationManager;
-use Venne\System\AdminPresenterTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class DefaultPresenter extends Presenter
+class DefaultPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
-	/** @var INotificationControlFactory */
+	/** @var \Venne\Notifications\Components\INotificationControlFactory */
 	private $notificationControlFactory;
 
-
-	/**
-	 * @param NotificationManager $notificationManager
-	 * @param INotificationControlFactory $notificationControlFactory
-	 */
-	public function __construct(NotificationManager $notificationManager, INotificationControlFactory $notificationControlFactory)
+	public function __construct(
+		NotificationManager $notificationManager,
+		INotificationControlFactory $notificationControlFactory
+	)
 	{
 		$this->notificationManager = $notificationManager;
 		$this->notificationControlFactory = $notificationControlFactory;
 	}
-
 
 	/**
 	 * @return \Venne\Notifications\NotificationManager
@@ -52,7 +47,9 @@ class DefaultPresenter extends Presenter
 		return $this->notificationManager;
 	}
 
-
+	/**
+	 * @return \Venne\Notifications\Components\NotificationControl
+	 */
 	protected function createComponentNotification()
 	{
 		return $this->notificationControlFactory->create();

@@ -29,7 +29,7 @@
 		"vojtech-dobes/nette-ajax-history": "@dev"
 	},
 	"require-dev": {
-		"venne/tester": "~1.1.0"
+		"nette/tester": "~1.2.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -52,8 +52,7 @@
 					"notifications": "Venne\\Notifications\\DI\\NotificationsExtension",
 					"security": "Venne\\Security\\DI\\SecurityExtension",
 					"queue": "Venne\\Queue\\DI\\QueueExtension",
-					"system": "Venne\\System\\DI\\SystemExtension",
-					"comments": "Venne\\Comments\\DI\\CommentsExtension"
+					"system": "Venne\\System\\DI\\SystemExtension"
 				}
 			}
 		}

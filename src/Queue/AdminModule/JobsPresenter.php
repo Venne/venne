@@ -12,8 +12,6 @@
 namespace Venne\Queue\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -21,26 +19,20 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
  *
  * @Secured
  */
-class JobsPresenter extends Presenter
+class JobsPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var IAdminGridFactory */
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
 
-	/** @var JobFormFactory */
+	/** @var \Venne\Queue\AdminModule\JobFormFactory */
 	private $jobFormFactory;
 
-
-	/**
-	 * @param EntityDao $jobDao
-	 * @param IAdminGridFactory $adminGridFactory
-	 * @param JobFormFactory $jobFormFactory
-	 */
 	public function __construct(EntityDao $jobDao, IAdminGridFactory $adminGridFactory, JobFormFactory $jobFormFactory)
 	{
 		$this->jobDao = $jobDao;
@@ -48,7 +40,9 @@ class JobsPresenter extends Presenter
 		$this->jobFormFactory = $jobFormFactory;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	protected function createComponentTable()
 	{
 		$admin = $this->adminGridFactory->create($this->jobDao);

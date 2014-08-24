@@ -12,7 +12,6 @@
 namespace Venne\Security\Listeners;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Nette\DI\Container;
 use Venne\Notifications\NotificationManager;
 use Venne\Security\Events\RegistrationEvent;
 use Venne\Security\UserEntity;
@@ -23,32 +22,27 @@ use Venne\Security\UserEntity;
 class UserStateListener
 {
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
 	/** @var bool */
-	private static $lock = FALSE;
+	private static $lock = false;
 
-
-	/**
-	 * @param NotificationManager $notificationManager
-	 */
 	public function __construct(NotificationManager $notificationManager)
 	{
 		$this->notificationManager = $notificationManager;
 	}
 
-
 	/**
-	 * @param UserEntity $entity
-	 * @param LifecycleEventArgs $event
+	 * @param \Venne\Security\UserEntity $entity
+	 * @param \Doctrine\ORM\Event\LifecycleEventArgs $event
 	 */
 	public function postPersist(UserEntity $entity, LifecycleEventArgs $event)
 	{
 		if (!self::$lock) {
-			self::$lock = TRUE;
+			self::$lock = true;
 			$this->notificationManager->notify(RegistrationEvent::getName(), $entity, 'registration', 'User has been registered.', $entity);
-			self::$lock = FALSE;
+			self::$lock = false;
 		}
 	}
 

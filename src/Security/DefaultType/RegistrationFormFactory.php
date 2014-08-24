@@ -12,7 +12,7 @@
 namespace Venne\Security\DefaultType;
 
 use Nette\Forms\Form;
-use Nette\Utils\Strings;
+use Nette\Utils\Random;
 use Venne\Forms\IFormFactory;
 use Venne\Security\ILoginProvider;
 use Venne\Security\IRegistrationForm;
@@ -23,16 +23,17 @@ use Venne\Security\IRegistrationForm;
 class RegistrationFormFactory implements IRegistrationForm, IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
-
 
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -54,13 +55,11 @@ class RegistrationFormFactory implements IRegistrationForm, IFormFactory
 		return $form;
 	}
 
-
 	public function handleAttached(Form $form)
 	{
 		$form->setCurrentGroup();
 		$form->addSaveButton('Sign up');
 	}
-
 
 	/**
 	 * @param Form $form
@@ -71,6 +70,7 @@ class RegistrationFormFactory implements IRegistrationForm, IFormFactory
 		$loginProviderEntity = $loginProvider->getLoginProviderEntity();
 
 		$form['user']['email']->setValue($loginProviderEntity->email);
-		$form['user']['password_confirm']->value = $form['user']['password']->value = Strings::random();
+		$form['user']['password_confirm']->value = $form['user']['password']->value = Random::generate();
 	}
+
 }

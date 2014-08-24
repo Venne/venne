@@ -11,121 +11,102 @@
 
 namespace Venne\Security;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="role")
  */
-class RoleEntity extends BaseEntity
+class RoleEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
+	 * @var string
+	 *
 	 * @ORM\Column(type="string", unique=true, length=32)
 	 */
 	protected $name;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="RoleEntity", mappedBy="parent")
+	 * @var \Venne\Security\RoleEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\OneToMany(targetEntity="\Venne\Security\RoleEntity", mappedBy="parent")
 	 */
 	protected $children;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="RoleEntity", inversedBy="children")
+	 * @var \Venne\Security\RoleEntity
+	 *
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\RoleEntity", inversedBy="children")
 	 * @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $parent;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="PermissionEntity", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
+	 * @var \Venne\Security\PermissionEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\OneToMany(targetEntity="\Venne\Security\PermissionEntity", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
 	 */
 	protected $permissions;
 
 	/**
-	 * @ORM\ManyToMany(targetEntity="UserEntity", mappedBy="roleEntities")
+	 * @var \Venne\Security\UserEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\ManyToMany(targetEntity="\Venne\Security\UserEntity", mappedBy="roleEntities")
 	 */
 	protected $users;
-
-
-	public function __toString()
-	{
-		return (string)$this->name;
-	}
-
-
-	public function __construct()
-	{
-		$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->users = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
-	}
-
 
 	/**
 	 * @return string
 	 */
-	public function getName()
+	public function __toString()
 	{
-		return $this->name;
+		return (string) $this->name;
 	}
 
-
-	/**
-	 * @param string $name
-	 */
-	public function setName($name)
+	public function __construct()
 	{
-		$this->name = $name;
+		$this->permissions = new ArrayCollection();
+		$this->users = new ArrayCollection();
+		$this->children = new ArrayCollection();
 	}
 
-
 	/**
-	 * @return RoleEntity
+	 * @return \Venne\Security\RoleEntity
 	 */
 	public function getParent()
 	{
 		return $this->parent;
 	}
 
-
 	/**
-	 * @param RoleEntity $parent
+	 * @param \Venne\Security\RoleEntity $parent
 	 */
-	public function setParent($parent)
+	public function setParent(RoleEntity $parent)
 	{
 		$this->parent = $parent;
 	}
 
-
 	/**
-	 * @return \Doctrine\Common\Collections\ArrayCollection
+	 * @return \Venne\Security\RoleEntity[]
 	 */
 	public function getChildren()
 	{
-		return $this->children;
+		return $this->children->toArray();
 	}
 
-
 	/**
-	 * @param RoleEntity $children
+	 * @param \Venne\Security\RoleEntity $children
 	 */
-	public function addChildren($children)
+	public function addChildren(RoleEntity $children)
 	{
 		$this->children[] = $children;
-	}
-
-
-	/**
-	 * @return \Doctrine\Common\Collections\ArrayCollection|PermissionEntity[]
-	 */
-	public function getPermissions()
-	{
-		return $this->permissions;
 	}
 
 }

@@ -11,76 +11,63 @@
 
 namespace Venne\Security\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Security\DefaultType\RegistrationFormFactory;
-use Venne\System\Components\AdminGrid\IAdminGridFactory;
-use Venne\System\AdminPresenterTrait;
-use Venne\Security\AdminUserFormFactory;
-use Venne\Security\DefaultType\IAdminFormFactory;
-use Venne\Security\IFormFactory;
-use Venne\Security\LoginEntity;
-use Venne\Security\SecurityManager;
 use Grido\DataSources\ArraySource;
 use Grido\DataSources\Doctrine;
+use Kdyby\Doctrine\EntityDao;
+use Nette\Forms\Form;
 use Nette\Http\Session;
 use Nette\Utils\Html;
-use Venne\Forms\Form;
+use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
+use Venne\Security\DefaultType\RegistrationFormFactory;
+use Venne\Security\LoginEntity;
+use Venne\Security\SecurityManager;
 use Venne\Security\UserEntity;
+use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class AccountPresenter extends Presenter
+class AccountPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
-
-	/** @persistent */
-	public $provider;
-
-	/** @var UserRepository */
-	private $userDao;
-
-	/** @var LoginRepository */
-	private $loginDao;
-
-	/** @var AccountFormFactory */
-	private $accountFormFactory;
-
-	/** @var RegistrationFormFactory */
-	private $userFormFactory;
-
-	/** @var ProviderFormFactory */
-	private $providerFormFactory;
-
-	/** @var SecurityManager */
-	private $securityManager;
-
-	/** @var IAdminGridFactory */
-	private $adminGridFactory;
-
-	/** @var Session */
-	private $session;
-
-	/** @var FormFactoryFactory */
-	private $formFactoryFactory;
-
+	use \Venne\System\AdminPresenterTrait;
 
 	/**
-	 * @param EntityDao $userDao
-	 * @param EntityDao $loginDao
-	 * @param RegistrationFormFactory $userFormFactory
-	 * @param AccountFormFactory $accountFormFactory
-	 * @param ProviderFormFactory $providerFormFactory
-	 * @param SecurityManager $securityManager
-	 * @param IAdminGridFactory $adminGridFactory
-	 * @param Session $session
-	 * @param FormFactoryFactory $formFactoryFactory
+	 * @var string
+	 *
+	 * @persistent
 	 */
+	public $provider;
+
+	/** @var \Kdyby\Doctrine\EntityDao */
+	private $userDao;
+
+	/** @var \Kdyby\Doctrine\EntityDao */
+	private $loginDao;
+
+	/** @var \Venne\Security\AdminModule\AccountFormFactory */
+	private $accountFormFactory;
+
+	/** @var \Venne\Security\DefaultType\RegistrationFormFactory */
+	private $userFormFactory;
+
+	/** @var \Venne\Security\AdminModule\ProviderFormFactory */
+	private $providerFormFactory;
+
+	/** @var \Venne\Security\SecurityManager */
+	private $securityManager;
+
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
+	private $adminGridFactory;
+
+	/** @var \Nette\Http\Session */
+	private $session;
+
+	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
+	private $formFactoryFactory;
+
 	public function __construct(
 		EntityDao $userDao,
 		EntityDao $loginDao,
@@ -104,14 +91,12 @@ class AccountPresenter extends Presenter
 		$this->formFactoryFactory = $formFactoryFactory;
 	}
 
-
 	/**
 	 * @secured(privilege="show")
 	 */
 	public function actionDefault()
 	{
 	}
-
 
 	/**
 	 * @secured
@@ -120,20 +105,22 @@ class AccountPresenter extends Presenter
 	{
 	}
 
-
-	public function handleConnect($service, $parameters = NULL)
+	/**
+	 * @param string $service
+	 * @param string[]|null $parameters
+	 */
+	public function handleConnect($service, $parameters = null)
 	{
 		$login = $this->securityManager->getLoginProviderByName($service);
 
 		if ($parameters) {
-			$login->setAuthenticationParameters(json_decode($parameters, TRUE));
+			$login->setAuthenticationParameters(json_decode($parameters, true));
 		}
 
 		$login->connectWithUser($this->extendedUser->getUser());
 
-		$this->redirect('this', array('provider' => NULL, 'loginTable-id' => NULL, 'loginTable-formName' => NULL));
+		$this->redirect('this', array('provider' => null, 'loginTable-id' => null, 'loginTable-formName' => null));
 	}
-
 
 	public function handleDisconnect($service)
 	{
@@ -148,16 +135,17 @@ class AccountPresenter extends Presenter
 
 		$this->userDao->save($user);
 
-		$this->redirect('this', array('provider' => NULL));
+		$this->redirect('this', array('provider' => null));
 	}
-
 
 	public function renderDefault()
 	{
 		$this->template->securityManager = $this->securityManager;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	protected function createComponentLoginTable()
 	{
 		$_this = $this;
@@ -179,8 +167,7 @@ class AccountPresenter extends Presenter
 		$table->addColumnText('name', 'Name')
 			->getCellPrototype()->width = '100%';
 
-
-		/** @var UserEntity $user */
+		/** @var \Venne\Security\UserEntity $user */
 		$user = $this->user->identity;
 		$securityManager = $this->securityManager;
 		$providerFormFactory = $this->providerFormFactory;
@@ -193,6 +180,7 @@ class AccountPresenter extends Presenter
 				} else {
 					$element->class[] = 'btn-primary';
 				}
+
 				return $element;
 			});
 		$table->getAction('connect')->onClick[] = function ($button, $name) use ($_this, $securityManager, $providerFormFactory, $user) {
@@ -218,12 +206,12 @@ class AccountPresenter extends Presenter
 		$form = $admin->createForm($this->providerFormFactory, 'Provider');
 		$admin->connectFormWithAction($form, $table->getAction('connect'));
 
-
 		$table->addActionEvent('disconnect', 'Disconnect')
 			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
 				if (!$user->hasLoginProvider($entity['name'])) {
 					$element->class[] = 'disabled';
 				};
+
 				return $element;
 			})
 			->setConfirm(function ($entity) {
@@ -237,7 +225,9 @@ class AccountPresenter extends Presenter
 		return $admin;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	protected function createComponentTable()
 	{
 		$session = $this->session;
@@ -255,6 +245,7 @@ class AccountPresenter extends Presenter
 			->setCustomRender(function (LoginEntity $entity) use ($session) {
 				$el = Html::el('span');
 				$el->class[] = 'glyphicon ' . ($session->id == $entity->getSessionId() ? 'glyphicon-ok' : 'glyphicon-remove');
+
 				return $el;
 			})
 			->getCellPrototype()->width = '10%';
@@ -275,7 +266,9 @@ class AccountPresenter extends Presenter
 		return $admin;
 	}
 
-
+	/**
+	 * @return \Nette\Forms\Form
+	 */
 	protected function createComponentAccountForm()
 	{
 		if ($this->user->identity instanceof UserEntity) {
@@ -292,13 +285,14 @@ class AccountPresenter extends Presenter
 		}
 
 		$form->onSuccess[] = $this->accountFormSuccess;
+
 		return $form;
 	}
-
 
 	public function accountFormSuccess()
 	{
 		$this->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
 		$this->redirect('this');
 	}
+
 }

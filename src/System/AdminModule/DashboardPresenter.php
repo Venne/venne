@@ -12,31 +12,24 @@
 namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
 use Venne\Security\UserEntity;
-use Venne\System\AdminPresenterTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class DashboardPresenter extends Presenter
+class DashboardPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $logDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $userDao;
 
-
-	/**
-	 * @param EntityDao $logDao
-	 * @param EntityDao $userDao
-	 */
 	public function __construct(
 		EntityDao $logDao,
 		EntityDao $userDao
@@ -46,17 +39,15 @@ class DashboardPresenter extends Presenter
 		$this->userDao = $userDao;
 	}
 
-
 	/**
 	 * @secured(privilege="show")
 	 */
 	public function actionDefault()
 	{
 		if ($this->user->isLoggedIn() && !$this->user->identity instanceof UserEntity) {
-			$this->flashMessage($this->translator->translate('You are logged as superadministrator. It can be potencialy dangerous.'), 'warning', TRUE);
+			$this->flashMessage($this->translator->translate('You are logged as superadministrator. It can be potencialy dangerous.'), 'warning', true);
 		}
 	}
-
 
 	public function renderDefault()
 	{

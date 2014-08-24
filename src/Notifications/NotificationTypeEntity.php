@@ -13,39 +13,42 @@ namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Nette\InvalidArgumentException;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="notification_type")
  */
-class NotificationTypeEntity extends BaseEntity
+class NotificationTypeEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
-
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var string
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $type;
 
 	/**
-	 * @var string
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $action;
 
 	/**
-	 * @var string
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="text", nullable=true)
 	 */
 	protected $message;
 
-
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return $this->type . ' - ' . $this->action . ' - ' . $this->message;

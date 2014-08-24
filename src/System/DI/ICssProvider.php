@@ -18,7 +18,7 @@ interface ICssProvider
 {
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCssFiles();
 

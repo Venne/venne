@@ -13,55 +13,60 @@ namespace Venne\Security;
 
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="permission")
  */
-class PermissionEntity extends BaseEntity
+class PermissionEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $resource;
 
 	/**
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $privilege;
 
 	/**
+	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
 	protected $allow;
 
 	/**
-	 * @var RoleEntity
-	 * @ORM\ManyToOne(targetEntity="RoleEntity", inversedBy="permissions")
+	 * @var \Venne\Security\RoleEntity
+	 *
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\RoleEntity", inversedBy="permissions")
 	 * @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $role;
 
-
 	/**
-	 * @param RoleEntity $role
-	 * @param $resource
-	 * @param null $privilege
+	 * @param \Venne\Security\RoleEntity $role
+	 * @param string $resource
+	 * @param string $privilege
 	 * @param bool $allow
 	 */
-	public function __construct(RoleEntity $role, $resource, $privilege = NULL, $allow = true)
+	public function __construct(RoleEntity $role, $resource, $privilege = null, $allow = true)
 	{
 		$this->role = $role;
 		$this->resource = $resource;
 		$this->privilege = $privilege;
 		$this->allow = $allow;
 	}
-
 
 	/**
 	 * @return string
@@ -71,15 +76,13 @@ class PermissionEntity extends BaseEntity
 		return $this->resource;
 	}
 
-
 	/**
-	 * @return RoleEntity
+	 * @return \Venne\Security\RoleEntity
 	 */
 	public function getRole()
 	{
 		return $this->role;
 	}
-
 
 	/**
 	 * @return string
@@ -89,7 +92,6 @@ class PermissionEntity extends BaseEntity
 		return $this->privilege;
 	}
 
-
 	/**
 	 * @return string
 	 */
@@ -98,12 +100,12 @@ class PermissionEntity extends BaseEntity
 		return $this->allow;
 	}
 
-
 	/**
-	 * @param string $allow
+	 * @param bool $allow
 	 */
 	public function setAllow($allow)
 	{
-		$this->allow = $allow;
+		$this->allow = (bool) $allow;
 	}
+
 }

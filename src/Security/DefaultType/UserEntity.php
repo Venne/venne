@@ -12,14 +12,14 @@
 namespace Venne\Security\DefaultType;
 
 use Doctrine\ORM\Mapping as ORM;
-use Venne\Security\ExtendedUserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="default_user")
  */
-class UserEntity extends ExtendedUserEntity
+class UserEntity extends \Venne\Security\ExtendedUserEntity
 {
 
 }

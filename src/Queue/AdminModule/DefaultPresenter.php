@@ -13,39 +13,37 @@ namespace Venne\Queue\AdminModule;
 
 use Grido\DataSources\ArraySource;
 use Grido\Grid;
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
-use Venne\System\Components\INavbarControlFactory;
 use Venne\Queue\WorkerManager;
+use Venne\System\Components\INavbarControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @Secured
  */
-class DefaultPresenter extends Presenter
+class DefaultPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var WorkerManager */
+	/** @var \Venne\Queue\WorkerManager */
 	private $workerManager;
 
-	/** @var INavbarControlFactory */
+	/** @var \Venne\System\Components\INavbarControlFactory */
 	private $navbarControlFactory;
 
-
-	/**
-	 * @param WorkerManager $workerManager
-	 * @param INavbarControlFactory $navbarControlFactory
-	 */
-	public function __construct(WorkerManager $workerManager, INavbarControlFactory $navbarControlFactory)
+	public function __construct(
+		WorkerManager $workerManager,
+		INavbarControlFactory $navbarControlFactory
+	)
 	{
 		$this->workerManager = $workerManager;
 		$this->navbarControlFactory = $navbarControlFactory;
 	}
 
-
+	/**
+	 * @return \Grido\Grid
+	 */
 	protected function createComponentTable()
 	{
 		$table = new Grid;
@@ -55,7 +53,7 @@ class DefaultPresenter extends Presenter
 			->getCellPrototype()->width = '40%';
 
 		$table->addColumnText('state', 'State')
-			->setCustomRender(function($data) {
+			->setCustomRender(function ($data) {
 				$lastCheck = \DateTime::createFromFormat('Y-m-d H:i:s', $data['lastCheck']);
 				$lastCheck->modify('+' . ($this->workerManager->getInterval() + 7) . ' second');
 
@@ -81,21 +79,31 @@ class DefaultPresenter extends Presenter
 		return $table;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\NavbarControl
+	 */
 	protected function createComponentNavbar()
 	{
 		$control = $this->navbarControlFactory->create();
 		$control->addSection('new', 'Run new Worker')->onClick[] = $this->navbarWorkerClick;
+
 		return $control;
 	}
 
-
+	/**
+	 * @param int $id
+	 */
 	public function tableDebugClick($id)
 	{
-		$this->redirect(':Queue:Admin:Worker:', array('id' => $id, 'debugMode' => TRUE));
+		$this->redirect(':Queue:Admin:Worker:', array(
+			'id' => $id,
+			'debugMode' => true,
+		));
 	}
 
-
+	/**
+	 * @param int $id
+	 */
 	public function tableStopClick($id)
 	{
 		$worker = $this->workerManager->getWokrer($id);
@@ -103,7 +111,9 @@ class DefaultPresenter extends Presenter
 		$this->redirect('this');
 	}
 
-
+	/**
+	 * @param int $id
+	 */
 	public function tableRestartClick($id)
 	{
 		$ch = curl_init();
@@ -117,7 +127,6 @@ class DefaultPresenter extends Presenter
 
 		$this->redirect('this');
 	}
-
 
 	public function navbarWorkerClick()
 	{

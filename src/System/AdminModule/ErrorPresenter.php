@@ -11,19 +11,17 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Application\UI\Presenter;
-use Venne\System\Content\Repositories\PageRepository;
 use Nette\Diagnostics\Debugger;
+use Venne\System\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ErrorPresenter extends Presenter
+class ErrorPresenter extends \Nette\Application\UI\Presenter
 {
 
 	/** @var PageRepository */
 	protected $pageRepository;
-
 
 	/**
 	 * @param PageRepository $pageRepository
@@ -35,15 +33,13 @@ class ErrorPresenter extends Presenter
 		$this->pageRepository = $pageRepository;
 	}
 
-
 	/**
-	 * @param  Exception
-	 * @return void
+	 * @param string $exception
 	 */
 	public function renderDefault($exception)
 	{
 		if ($this->isAjax()) { // AJAX request? Just note this error in payload.
-			$this->payload->error = TRUE;
+			$this->payload->error = true;
 			$this->terminate();
 		}
 

@@ -12,20 +12,19 @@
 namespace Venne\Notifications;
 
 use Doctrine\Common\EventArgs;
-use Kdyby\Events\LazyEventManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class EventManager extends LazyEventManager
+class EventManager extends \Kdyby\Events\LazyEventManager
 {
 
 	/**
 	 * @param string $eventName
-	 * @param EventArgs $eventArgs
-	 * @return bool|void
+	 * @param \Doctrine\Common\EventArgs $eventArgs
+	 * @return bool|null
 	 */
-	public function dispatchEvent($eventName, EventArgs $eventArgs = NULL)
+	public function dispatchEvent($eventName, EventArgs $eventArgs = null)
 	{
 		parent::dispatchEvent($eventName, $eventArgs);
 	}

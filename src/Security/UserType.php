@@ -11,13 +11,12 @@
 
 namespace Venne\Security;
 
-use Nette\Object;
 use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class UserType extends Object
+class UserType extends \Nette\Object
 {
 
 	/** @var string */
@@ -26,26 +25,24 @@ class UserType extends Object
 	/** @var string */
 	private $entityName;
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $frontFormFactory;
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $registrationFormFactory;
 
-
 	/**
-	 * @param $name
-	 * @param $entityName
+	 * @param string $name
+	 * @param string $entityName
 	 */
 	public function __construct($name, $entityName)
 	{
 		$this->name = $name;
 		$this->entityName = $entityName;
 	}
-
 
 	/**
 	 * @return string
@@ -55,7 +52,6 @@ class UserType extends Object
 		return $this->name;
 	}
 
-
 	/**
 	 * @return string
 	 */
@@ -64,54 +60,39 @@ class UserType extends Object
 		return $this->entityName;
 	}
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 */
 	public function setFormFactory(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
 	/**
-	 * @return IFormFactory
+	 * @return \Venne\Forms\IFormFactory
 	 */
 	public function getFormFactory()
 	{
 		return $this->formFactory;
 	}
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 */
 	public function setFrontFormFactory(IFormFactory $formFactory)
 	{
 		$this->frontFormFactory = $formFactory;
 	}
 
-
 	/**
-	 * @return IFormFactory
+	 * @return \Venne\Forms\IFormFactory
 	 */
 	public function getFrontFormFactory()
 	{
 		return $this->frontFormFactory;
 	}
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 */
 	public function setRegistrationFormFactory(IFormFactory $formFactory)
 	{
 		$this->registrationFormFactory = $formFactory;
 	}
 
-
 	/**
-	 * @return IFormFactory
+	 * @return \Venne\Forms\IFormFactory
 	 */
 	public function getRegistrationFormFactory()
 	{

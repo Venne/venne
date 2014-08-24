@@ -11,31 +11,26 @@
 
 namespace Venne\Notifications;
 
-use Kdyby\Doctrine\EntityDao;
 use Nette\Application\IPresenterFactory;
+use Nette\Application\Request as NetteApplicationRequest;
 use Nette\Application\Responses\TextResponse;
 use Nette\InvalidArgumentException;
 use Nette\InvalidStateException;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
-use Nette\Object;
 use Nette\Utils\Strings;
 use Venne\Notifications\AdminModule\EmailPresenter;
-use Venne\Notifications\NotificationEntity;
-use Venne\Security\UserEntity;
-use Venne\Queue\Job;
-use Venne\Queue\JobEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class EmailManager extends Object
+class EmailManager extends \Nette\Object
 {
 
-	/** @var IMailer */
+	/** @var \Nette\Mail\IMailer */
 	private $mailer;
 
-	/** @var IPresenterFactory */
+	/** @var \Nette\Application\IPresenterFactory */
 	private $presenterFactory;
 
 	/** @var string */
@@ -44,12 +39,11 @@ class EmailManager extends Object
 	/** @var string */
 	private $senderName;
 
-
 	/**
-	 * @param $senderEmail
-	 * @param $senderName
-	 * @param IMailer $mailer
-	 * @param IPresenterFactory $presenterFactory
+	 * @param string $senderEmail
+	 * @param string $senderName
+	 * @param \Nette\Mail\IMailer $mailer
+	 * @param \Nette\Application\IPresenterFactory $presenterFactory
 	 */
 	public function __construct(
 		$senderEmail,
@@ -64,14 +58,12 @@ class EmailManager extends Object
 		$this->presenterFactory = $presenterFactory;
 	}
 
-
 	/**
-	 * @param $user
-	 * @param $name
-	 * @param $type
-	 * @param $action
-	 * @param array $templateArgs
-	 * @throws \Nette\InvalidArgumentException
+	 * @param string $user
+	 * @param string $name
+	 * @param string $type
+	 * @param string $action
+	 * @param mixed[] $templateArgs
 	 */
 	public function send($user, $name, $type, $action, array $templateArgs = array())
 	{
@@ -90,7 +82,7 @@ class EmailManager extends Object
 		}
 
 		try {
-			$data = (string)$response->getSource();
+			$data = (string) $response->getSource();
 		} catch (\Nette\Application\BadRequestException $e) {
 			if (Strings::startsWith($e->getMessage(), 'Page not found. Missing template')) {
 				throw new InvalidArgumentException("Type '$type' does not exist.");
@@ -100,37 +92,34 @@ class EmailManager extends Object
 		$message = new Message;
 		$message->setHtmlBody($data);
 		$message->setSubject(ucfirst($action));
-		$message->setFrom($this->senderEmail, $this->senderName ? : NULL);
+		$message->setFrom($this->senderEmail, $this->senderName ?: null);
 		$message->addTo($user, $name);
 
 		$this->mailer->send($message);
 	}
 
-
 	/**
-	 * @param $type
-	 * @param $action
+	 * @param string $type
+	 * @param string $action
 	 * @return \Nette\Application\Request
 	 */
 	private function getRequest($type, $action)
 	{
-		return new \Nette\Application\Request('Notifications:Admin:Email', 'GET', array('type' => $type, 'action' => $action));
+		return new NetteApplicationRequest('Notifications:Admin:Email', 'GET', array('type' => $type, 'action' => $action));
 	}
 
-
 	/**
-	 * @return EmailPresenter
-	 * @throws \Nette\InvalidStateException
+	 * @return \Venne\Notifications\AdminModule\EmailPresenter
 	 */
 	private function createPresenter()
 	{
 		$presenter = $this->presenterFactory->createPresenter('Notifications:Admin:Email');
 
-		if (!$presenter instanceof EmailPresenter) {
-			throw new InvalidStateException("Presenter must be instance of 'Venne\Notification\AdminModule\EmailPresenter'.");
+		if ($presenter instanceof EmailPresenter) {
+			return $presenter;
 		}
 
-		return $presenter;
+		throw new InvalidStateException('Presenter must be instance of \'Venne\Notification\AdminModule\EmailPresenter\'.');
 	}
 
 }

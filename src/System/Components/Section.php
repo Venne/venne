@@ -11,20 +11,19 @@
 
 namespace Venne\System\Components;
 
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 {
 
-	/** @var array */
+	/** @var callable[] */
 	public $onClick;
 
 	/** @var string */
 	protected $caption;
 
-	/** @var string */
+	/** @var string|null */
 	protected $icon;
 
 	/** @var string */
@@ -33,8 +32,7 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 	/** @var string */
 	private $id;
 
-
-	public function __construct($caption, $icon = NULL)
+	public function __construct($caption, $icon = null)
 	{
 		parent::__construct();
 
@@ -42,17 +40,16 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 		$this->icon = $icon;
 	}
 
-
 	/**
-	 * @param $caption
+	 * @param string $caption
 	 * @return $this
 	 */
 	public function setCaption($caption)
 	{
 		$this->caption = $caption;
+
 		return $this;
 	}
-
 
 	/**
 	 * @return string
@@ -62,122 +59,110 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 		return $this->caption;
 	}
 
-
 	/**
-	 * @param $icon
+	 * @param string|null $icon
 	 * @return $this
 	 */
 	public function setIcon($icon)
 	{
 		$this->icon = $icon;
+
 		return $this;
 	}
 
-
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getIcon()
 	{
 		return $this->icon;
 	}
 
-
 	/**
-	 * @param $name
-	 * @param $icon
-	 * @return Section
+	 * @param string $name
+	 * @param string|null $icon
+	 * @return \Venne\System\Components\Section
 	 */
-	public function addSection($name, $label, $icon = NULL)
+	public function addSection($name, $label, $icon = null)
 	{
 		return $this[$name] = new Section($label, $icon);
 	}
 
-
 	/**
-	 * @param $name
-	 * @return Section
+	 * @param string $name
+	 * @return \Venne\System\Components\Section
 	 */
 	public function getSection($name)
 	{
 		return $this[$name];
 	}
 
-
 	/**
 	 * Returns navbar.
-	 * @param  bool   throw exception if form doesn't exist?
-	 * @return NavbarControl
+	 *
+	 * @param bool
+	 * @return \Venne\System\Components\NavbarControl
 	 */
-	public function getNavbar($need = TRUE)
+	public function getNavbar($need = true)
 	{
 		return $this->lookup('Venne\System\Components\NavbarControl', $need);
 	}
 
-
 	/**
 	 * Returns control's HTML id.
+	 *
 	 * @return string
 	 */
 	public function getId()
 	{
-		if ($this->id === FALSE) {
-			return NULL;
-		} elseif ($this->id === NULL) {
+		if ($this->id === false) {
+			return null;
+		} elseif ($this->id === null) {
 			$this->id = sprintf(self::$idMask, $this->getNavbar()->getName(), $this->lookupPath('Venne\System\Components\NavbarControl'));
 		}
+
 		return $this->id;
 	}
 
 
 	/********************* interface \ArrayAccess ****************d*g**/
 
-
 	/**
-	 * Adds the component to the container.
-	 * @param  string  component name
-	 * @param  Nette\ComponentModel\IComponent
-	 * @return void
+	 * @param string $name
+	 * @param \Nette\ComponentModel\IComponent $component
 	 */
 	final public function offsetSet($name, $component)
 	{
 		$this->addComponent($component, $name);
 	}
 
-
 	/**
-	 * Returns component specified by name. Throws exception if component doesn't exist.
-	 * @param  string  component name
-	 * @return Nette\ComponentModel\IComponent
-	 * @throws Nette\InvalidArgumentException
+	 * @param string $name
+	 * @return \Nette\ComponentModel\IComponent
 	 */
 	final public function offsetGet($name)
 	{
-		return $this->getComponent($name, TRUE);
+		return $this->getComponent($name, true);
 	}
 
-
 	/**
-	 * Does component specified by name exists?
-	 * @param  string  component name
+	 * @param string $name
 	 * @return bool
 	 */
 	final public function offsetExists($name)
 	{
-		return $this->getComponent($name, FALSE) !== NULL;
+		return $this->getComponent($name, false) !== null;
 	}
 
-
 	/**
-	 * Removes component from the container.
-	 * @param  string  component name
-	 * @return void
+	 * @param string $name
 	 */
 	final public function offsetUnset($name)
 	{
-		$component = $this->getComponent($name, FALSE);
-		if ($component !== NULL) {
+		$component = $this->getComponent($name, false);
+		if ($component !== null) {
 			$this->removeComponent($component);
 		}
 	}
+
 }

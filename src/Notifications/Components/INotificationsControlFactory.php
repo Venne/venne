@@ -17,7 +17,9 @@ namespace Venne\Notifications\Components;
 interface INotificationsControlFactory
 {
 
-	/** @return NotificationsControl */
-	function create();
+	/**
+	 * @return \Venne\Notifications\Components\NotificationsControl
+	 */
+	public function create();
 
 }

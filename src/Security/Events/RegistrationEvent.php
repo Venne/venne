@@ -11,14 +11,15 @@
 
 namespace Venne\Security\Events;
 
-use Venne\Notifications\Event;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationEvent extends Event
+class RegistrationEvent extends \Venne\Notifications\Event
 {
 
+	/**
+	 * @return string
+	 */
 	public static function getHumanName()
 	{
 		return 'User registration';

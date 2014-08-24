@@ -18,8 +18,9 @@ interface IControlVerifierReader
 {
 
 	/**
-	 * @param $class
-	 * @return array
+	 * @param string $class
+	 * @return mixed
 	 */
 	public function getSchema($class);
+
 }

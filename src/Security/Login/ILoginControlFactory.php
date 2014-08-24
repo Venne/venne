@@ -18,8 +18,8 @@ interface ILoginControlFactory
 {
 
 	/**
-	 * @return LoginControl
+	 * @return \Venne\Security\Login\LoginControl
 	 */
-	function create();
+	public function create();
 
 }

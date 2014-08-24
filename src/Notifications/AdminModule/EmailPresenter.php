@@ -12,28 +12,29 @@
 namespace Venne\Notifications\AdminModule;
 
 use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class EmailPresenter extends Presenter
+class EmailPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @persistent */
+	/**
+	 * @var string
+	 *
+	 * @persistent
+	 */
 	public $type;
-
 
 	public function __construct()
 	{
-		$this->autoCanonicalize = FALSE;
-		$this->setSecured(FALSE);
+		$this->autoCanonicalize = false;
+		$this->setSecured(false);
 	}
-
 
 	protected function startup()
 	{
@@ -42,7 +43,9 @@ class EmailPresenter extends Presenter
 		parent::startup();
 	}
 
-
+	/**
+	 * @return string[]
+	 */
 	public function formatLayoutTemplateFiles()
 	{
 		$ret = array();

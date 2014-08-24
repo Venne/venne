@@ -11,26 +11,25 @@
 
 namespace Venne\Queue\DI;
 
-use Kdyby\Doctrine\DI\IEntityProvider;
-use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
-use Venne\System\DI\IPresenterProvider;
 use Venne\System\DI\SystemExtension;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class QueueExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider
+class QueueExtension extends \Nette\DI\CompilerExtension
+	implements
+	\Kdyby\Doctrine\DI\IEntityProvider,
+	\Venne\System\DI\IPresenterProvider
 {
 
-	/** @var array */
+	/** @var mixed[] */
 	public $config = array(
 		'interval' => 20,
 		'configDir' => '%appDir%/../temp/worker'
 	);
-
 
 	public function loadConfiguration()
 	{
@@ -70,7 +69,7 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 		$container->addDefinition($this->prefix('workerFactory'))
 			->setImplement('Venne\Queue\IWorkerFactory')
 			->setArguments(array(new PhpLiteral('$id'), new PhpLiteral('$interval'), $container->expand($config['configDir'])))
-			->setAutowired(TRUE);
+			->setAutowired(true);
 
 		$container->addDefinition($this->prefix('jobFormFactory'))
 			->setClass('Venne\Queue\AdminModule\JobFormFactory', array(new Statement('@system.admin.basicFormFactory')));
@@ -78,19 +77,18 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 		$container->addDefinition($this->prefix('jobsControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobsControlFactory')
-			->setInject(TRUE)
+			->setInject(true)
 			->addTag(SystemExtension::TAG_TRAY_COMPONENT)
-			->addTag(WidgetsExtension::TAG_WIDGET,'jobs');
+			->addTag(WidgetsExtension::TAG_WIDGET, 'jobs');
 
 		$container->addDefinition($this->prefix('jobControlFactory'))
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobControlFactory')
-			->setInject(TRUE);
+			->setInject(true);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEntityMappings()
 	{
@@ -99,9 +97,8 @@ class QueueExtension extends CompilerExtension implements IEntityProvider, IPres
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getPresenterMapping()
 	{

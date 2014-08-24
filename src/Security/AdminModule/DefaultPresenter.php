@@ -13,10 +13,8 @@ namespace Venne\Security\AdminModule;
 
 use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
 use Venne\Security\DefaultType\AdminFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\System\AdminPresenterTrait;
 use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
@@ -25,40 +23,40 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
  *
  * @secured
  */
-class DefaultPresenter extends Presenter
+class DefaultPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
-
-	/** @persistent */
-	public $page;
-
-	/** @persistent */
-	public $type;
-
-	/** @var EntityDao */
-	private $userDao;
-
-	/** @var AdminFormFactory */
-	private $form;
-
-	/** @var ProvidersFormFactory */
-	private $providersForm;
-
-	/** @var SecurityManager */
-	private $securityManager;
-
-	/** @var IAdminGridFactory */
-	private $adminGridFactory;
-
+	use \Venne\System\AdminPresenterTrait;
 
 	/**
-	 * @param EntityDao $userDao
-	 * @param AdminFormFactory $form
-	 * @param ProvidersFormFactory $providersForm
-	 * @param SecurityManager $securityManager
-	 * @param IAdminGridFactory $adminGridFactory
+	 * @var string
+	 *
+	 * @persistent
 	 */
+	public $page;
+
+	/**
+	 * @var string
+	 *
+	 * @persistent
+	 */
+	public $type;
+
+	/** @var \Kdyby\Doctrine\EntityDao */
+	private $userDao;
+
+	/** @var \Venne\Security\DefaultType\AdminFormFactory */
+	private $form;
+
+	/** @var \Venne\Security\AdminModule\ProvidersFormFactory */
+	private $providersForm;
+
+	/** @var \Venne\Security\SecurityManager */
+	private $securityManager;
+
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
+	private $adminGridFactory;
+
 	public function __construct(
 		EntityDao $userDao,
 		AdminFormFactory $form,
@@ -74,15 +72,13 @@ class DefaultPresenter extends Presenter
 		$this->adminGridFactory = $adminGridFactory;
 	}
 
-
 	/**
-	 * @return SecurityManager
+	 * @return \Venne\Security\SecurityManager
 	 */
 	public function getSecurityManager()
 	{
 		return $this->securityManager;
 	}
-
 
 	protected function startup()
 	{
@@ -93,7 +89,9 @@ class DefaultPresenter extends Presenter
 		}
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	protected function createComponentTable()
 	{
 		$dao = $this->entityManager->getDao($this->type);
@@ -134,7 +132,7 @@ class DefaultPresenter extends Presenter
 		$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($type) {
 			return new $type;
 		}, Form::TYPE_LARGE);
-		$providerForm = $admin->createForm($this->providersForm, 'Login providers', NULL, Form::TYPE_LARGE);
+		$providerForm = $admin->createForm($this->providersForm, 'Login providers', null, Form::TYPE_LARGE);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
 		$admin->connectFormWithAction($providerForm, $table->getAction('loginProviders'));
@@ -150,7 +148,6 @@ class DefaultPresenter extends Presenter
 
 		return $admin;
 	}
-
 
 	/**
 	 * @return \Venne\Security\UserType

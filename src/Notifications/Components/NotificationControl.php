@@ -16,30 +16,27 @@ use Nette\Application\BadRequestException;
 use Nette\Security\User;
 use Venne\Notifications\NotificationManager;
 use Venne\Notifications\NotificationUserEntity;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationControl extends Control
+class NotificationControl extends \Venne\System\UI\Control
 {
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	private $user;
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationUserDao;
 
-
-	/**
-	 * @param EntityDao $notificationUserDao
-	 * @param NotificationManager $notificationManager
-	 * @param User $user
-	 */
-	public function __construct(EntityDao $notificationUserDao, NotificationManager $notificationManager, User $user)
+	public function __construct(
+		EntityDao $notificationUserDao,
+		NotificationManager $notificationManager,
+		User $user
+	)
 	{
 		parent::__construct();
 
@@ -47,7 +44,6 @@ class NotificationControl extends Control
 		$this->notificationUserDao = $notificationUserDao;
 		$this->notificationManager = $notificationManager;
 	}
-
 
 	/**
 	 * @return \Kdyby\Doctrine\EntityDao
@@ -57,10 +53,12 @@ class NotificationControl extends Control
 		return $this->notificationManager;
 	}
 
-
+	/**
+	 * @param int $id
+	 */
 	public function handleRead($id)
 	{
-		if (($entity = $this->notificationUserDao->find($id)) === NULL) {
+		if (($entity = $this->notificationUserDao->find($id)) === null) {
 			throw new BadRequestException;
 		}
 
@@ -68,7 +66,7 @@ class NotificationControl extends Control
 			throw new BadRequestException;
 		}
 
-		$entity->markRead = TRUE;
+		$entity->markRead = true;
 		$this->notificationUserDao->save($entity);
 
 		if (!$this->presenter->isAjax()) {
@@ -76,10 +74,12 @@ class NotificationControl extends Control
 		}
 	}
 
-
+	/**
+	 * @param int $id
+	 */
 	public function handleRemove($id)
 	{
-		if (($entity = $this->notificationUserDao->find($id)) === NULL) {
+		if (($entity = $this->notificationUserDao->find($id)) === null) {
 			throw new BadRequestException;
 		}
 
@@ -93,7 +93,6 @@ class NotificationControl extends Control
 			$this->redirect('this');
 		}
 	}
-
 
 	public function render(NotificationUserEntity $notification)
 	{

@@ -23,37 +23,36 @@ trait NamedEntityTrait
 {
 
 	/**
+	 * @var int
+	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="integer")
 	 * @ORM\GeneratedValue
-	 * @var integer
 	 */
 	protected $id;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $name;
 
-
 	/**
-	 * @return integer
+	 * @return int
 	 */
 	final public function getId()
 	{
 		return $this->id;
 	}
 
-
 	/**
-	 * @param $name
+	 * @param string $name
 	 */
 	public function setName($name)
 	{
 		$this->name = $name;
 	}
-
 
 	/**
 	 * @return string
@@ -63,13 +62,12 @@ trait NamedEntityTrait
 		return $this->name;
 	}
 
-
 	/**
 	 * @return string
 	 */
 	public function __toString()
 	{
-		return (string)$this->name;
+		return (string) $this->name;
 	}
 
 }

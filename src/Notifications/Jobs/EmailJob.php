@@ -13,30 +13,23 @@ namespace Venne\Notifications\Jobs;
 
 use Kdyby\Doctrine\EntityDao;
 use Venne\Notifications\EmailManager;
-use Venne\Queue\Job;
 use Venne\Queue\JobEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class EmailJob extends Job
+class EmailJob extends \Venne\Queue\Job
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationUserDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $userDao;
 
-	/** @var EmailManager */
+	/** @var \Venne\Notifications\EmailManager */
 	private $emailManager;
 
-
-	/**
-	 * @param EntityDao $notificationUserDao
-	 * @param EntityDao $userDao
-	 * @param EmailManager $emailManager
-	 */
 	public function __construct(
 		EntityDao $notificationUserDao,
 		EntityDao $userDao,
@@ -48,10 +41,6 @@ class EmailJob extends Job
 		$this->emailManager = $emailManager;
 	}
 
-
-	/**
-	 * @param JobEntity $jobEntity
-	 */
 	public function run(JobEntity $jobEntity)
 	{
 		$user = $this->userDao->find($jobEntity->arguments['user']);

@@ -11,29 +11,27 @@
 
 namespace Venne\Security\AdminModule;
 
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class InvitationPresenter extends Presenter
+class InvitationPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var InvitationsTableFactory */
+	/** @var \Venne\Security\AdminModule\InvitationsTableFactory */
 	private $invitationTableFactory;
-
 
 	public function __construct(InvitationsTableFactory $invitationTableFactory)
 	{
 		$this->invitationTableFactory = $invitationTableFactory;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	public function createComponentTable()
 	{
 		return $this->invitationTableFactory->create();

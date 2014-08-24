@@ -11,31 +11,30 @@
 
 namespace Venne\Security\Listeners;
 
-use Kdyby\Events\Subscriber;
 use Nette\DI\Container;
 use Nette\Security\User;
-use Venne\Notifications\NotificationManager;
 use Venne\Security\Events\LoginEvent;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class UserLogListener implements Subscriber
+class UserLogListener implements \Kdyby\Events\Subscriber
 {
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $container;
 
-
 	/**
-	 * @param Container $container
+	 * @param \Nette\DI\Container $container
 	 */
 	public function __construct(Container $container)
 	{
 		$this->container = $container;
 	}
 
-
+	/**
+	 * @return string[]
+	 */
 	public function getSubscribedEvents()
 	{
 		return array(
@@ -44,27 +43,18 @@ class UserLogListener implements Subscriber
 		);
 	}
 
-
-	/**
-	 * @param User $user
-	 */
 	public function onLoggedIn(User $user)
 	{
 		$this->getNotificationManager()->notify(LoginEvent::getName(), $user->identity, 'login', 'User has been logged in');
 	}
 
-
-	/**
-	 * @param User $user
-	 */
 	public function onLoggedOut(User $user)
 	{
 		$this->getNotificationManager()->notify(LoginEvent::getName(), $user->identity, 'logout', 'User has been logged out');
 	}
 
-
 	/**
-	 * @return NotificationManager
+	 * @return \Venne\Notifications\NotificationManager
 	 */
 	private function getNotificationManager()
 	{

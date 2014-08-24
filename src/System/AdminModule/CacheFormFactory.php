@@ -15,30 +15,23 @@ use Nette\Application\UI\Form;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Http\Session;
-use Nette\Object;
 use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class CacheFormFactory extends Object implements IFormFactory
+class CacheFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var IStorage */
+	/** @var \Nette\Caching\IStorage */
 	private $cacheStorage;
 
-	/** @var Session */
+	/** @var \Nette\Http\Session */
 	private $session;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 * @param IStorage $cacheStorage
-	 * @param Session $session
-	 */
 	public function __construct(IFormFactory $formFactory, IStorage $cacheStorage, Session $session)
 	{
 		$this->formFactory = $formFactory;
@@ -46,9 +39,8 @@ class CacheFormFactory extends Object implements IFormFactory
 		$this->session = $session;
 	}
 
-
 	/**
-	 * @return \Nette\Forms\Form
+	 * @return \Nette\Application\UI\Form
 	 */
 	public function create()
 	{
@@ -63,21 +55,22 @@ class CacheFormFactory extends Object implements IFormFactory
 		$form->addSubmit('_submit', 'Clear');
 
 		$form->onSuccess[] = $this->success;
+
 		return $form;
 	}
-
 
 	public function success(Form $form)
 	{
 		$values = $form->getValues();
 
 		if ($values['section'] === 'all') {
-			$this->cacheStorage->clean(array(Cache::ALL => TRUE));
+			$this->cacheStorage->clean(array(Cache::ALL => true));
 			$this->session->destroy();
 		} elseif ($values['section'] === 'cache') {
-			$this->cacheStorage->clean(array(array(Cache::ALL => TRUE)));
+			$this->cacheStorage->clean(array(array(Cache::ALL => true)));
 		} elseif ($values['section'] === 'sessions') {
 			$this->session->destroy();
 		}
 	}
+
 }

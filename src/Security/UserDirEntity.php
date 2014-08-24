@@ -13,24 +13,24 @@ namespace Venne\Security;
 
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\NamedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="user_dir")
  */
-class UserDirEntity extends BaseEntity
+class UserDirEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use NamedEntityTrait;
+	use \Venne\Doctrine\Entities\NamedEntityTrait;
 
 	/**
-	 * @var UserEntity
-	 * @ORM\ManyToOne(targetEntity="UserEntity")
+	 * @var \Venne\Security\UserEntity
+	 *
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
 	 */
 	protected $user;
-
 
 	public function __construct(UserEntity $user)
 	{

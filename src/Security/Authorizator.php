@@ -11,12 +11,10 @@
 
 namespace Venne\Security;
 
-use Nette\Security\Permission;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Authorizator extends Permission
+class Authorizator extends \Nette\Security\Permission
 {
 
 	public function __construct()
@@ -24,7 +22,6 @@ class Authorizator extends Permission
 		$this->addRole('guest');
 		$this->addRole('admin', 'guest');
 	}
-
 
 	public function isAllowed($role = self::ALL, $resource = self::ALL, $privilege = self::ALL)
 	{

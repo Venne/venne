@@ -21,36 +21,27 @@ use Venne\System\AdministrationManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class PermissionsFormFactory implements IFormFactory
+class PermissionsFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var AuthorizatorFactory */
+	/** @var \Venne\Security\AuthorizatorFactory */
 	private $authorizatorFactory;
 
-	/** @var AdministrationManager */
+	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;
 
-	/** @var PresenterFactory */
+	/** @var \Nette\Application\PresenterFactory */
 	private $presenterFactory;
 
-	/** @var IControlVerifierReader */
+	/** @var \Venne\Security\IControlVerifierReader */
 	private $reader;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $roleDao;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 * @param EntityDao $roleDao
-	 * @param AuthorizatorFactory $authorizatorFactory
-	 * @param AdministrationManager $administrationManager
-	 * @param PresenterFactory $presenterFactory
-	 * @param IControlVerifierReader $reader
-	 */
 	public function __construct(
 		IFormFactory $formFactory,
 		EntityDao $roleDao,
@@ -68,7 +59,9 @@ class PermissionsFormFactory implements IFormFactory
 		$this->reader = $reader;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -91,7 +84,7 @@ class PermissionsFormFactory implements IFormFactory
 				$checkbox = $privilegeContainer->addCheckbox($privilege, $privilege);
 				$checkbox->setDefaultValue($permissions->isAllowed($form->data->name, $resource, $privilege));
 				if ($val) {
-					$checkbox->disabled = TRUE;
+					$checkbox->disabled = true;
 				}
 			}
 		}
@@ -101,7 +94,6 @@ class PermissionsFormFactory implements IFormFactory
 
 		return $form;
 	}
-
 
 	public function handleSave($form)
 	{
@@ -113,7 +105,7 @@ class PermissionsFormFactory implements IFormFactory
 		foreach ($values as $resource => $items) {
 			foreach ($items['privileges'] as $privilege => $item) {
 				if ($item) {
-					$entity->permissions[] = new \Venne\Security\Entities\PermissionEntity($entity, $this->unformatName($resource), $privilege);
+					$entity->permissions[] = new \Venne\Security\PermissionEntity($entity, $this->unformatName($resource), $privilege);
 				}
 			}
 		}
@@ -123,12 +115,11 @@ class PermissionsFormFactory implements IFormFactory
 		$this->roleDao->save($form->data);
 	}
 
-
 	protected function addPermissions($entity, $values)
 	{
 		foreach ($values as $class => $items) {
 			if ($items['all']) {
-				$entity->permissions[] = new \Venne\Security\Entities\PermissionEntity($entity, $this->unformatName($class));
+				$entity->permissions[] = new \Venne\Security\PermissionEntity($entity, $this->unformatName($class));
 			}
 
 			if ($class !== 'all' && is_array($items)) {
@@ -137,18 +128,15 @@ class PermissionsFormFactory implements IFormFactory
 		}
 	}
 
-
 	protected function formatName($class)
 	{
 		return str_replace('\\', '_', $class);
 	}
 
-
 	protected function unformatName($name)
 	{
 		return str_replace('_', '\\', $name);
 	}
-
 
 	/**
 	 * Array of all resources.
@@ -167,7 +155,7 @@ class PermissionsFormFactory implements IFormFactory
 					$ret[$item['resource']] = array();
 				}
 
-				$ret[$item['resource']] = array_unique(array_merge($ret[$item['resource']], $item['privilege'] ? (array)$item['privilege'] : array()));
+				$ret[$item['resource']] = array_unique(array_merge($ret[$item['resource']], $item['privilege'] ? (array) $item['privilege'] : array()));
 			}
 		}
 

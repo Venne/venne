@@ -14,6 +14,7 @@ namespace Venne\Doctrine\Mapping;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Nette\InvalidArgumentException;
 use Nette\Utils\Strings;
 
@@ -23,18 +24,16 @@ use Nette\Utils\Strings;
 class DynamicMapperSubscriber implements EventSubscriber
 {
 
-
 	/** @var bool */
-	private $_l = FALSE;
+	private $_l = false;
 
 	/** @var string */
 	private $_lName;
 
-
 	/**
 	 * Array of events.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getSubscribedEvents()
 	{
@@ -43,10 +42,6 @@ class DynamicMapperSubscriber implements EventSubscriber
 		);
 	}
 
-
-	/**
-	 * @param LoadClassMetadataEventArgs $args
-	 */
 	public function loadClassMetadata(LoadClassMetadataEventArgs $args)
 	{
 		$meta = $args->getClassMetadata();
@@ -79,7 +74,7 @@ class DynamicMapperSubscriber implements EventSubscriber
 				$targetMeta = $em->getClassMetadata($target);
 			}
 
-			$this->_l = FALSE;
+			$this->_l = false;
 
 			$meta->associationMappings[$name]['targetEntity'] = $target;
 
@@ -90,23 +85,22 @@ class DynamicMapperSubscriber implements EventSubscriber
 		}
 	}
 
-
 	/**
-	 * @param $meta
-	 * @param $association
+	 * @param \Doctrine\ORM\Mapping\ClassMetadata $meta
+	 * @param string $association
 	 * @return string
-	 * @throws \Nette\InvalidArgumentException
 	 */
-	private function getTargetEntity($meta, $association)
+	private function getTargetEntity(ClassMetadata $meta, $association)
 	{
 		$method = 'get' . ucfirst($association) . 'Name';
 
-		if (($ret = call_user_func(array($meta->name, $method))) === NULL) {
+		if (($ret = call_user_func(array($meta->name, $method))) === null) {
 			throw new InvalidArgumentException("Entity '{$meta->name}' must implemented method '{$method}'.");
 		}
 		if (!class_exists($ret)) {
 			throw new InvalidArgumentException("Class '{$ret}' does not exist.");
 		}
+
 		return $ret;
 	}
 

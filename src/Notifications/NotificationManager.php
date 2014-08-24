@@ -15,65 +15,50 @@ use Kdyby\Doctrine\Entities\BaseEntity;
 use Kdyby\Doctrine\EntityDao;
 use Kdyby\Doctrine\EntityManager;
 use Nette\InvalidArgumentException;
-use Nette\Object;
 use Nette\Security\User;
-use Nette\Utils\Strings;
-use Nette\Utils\Validators;
 use Venne\Notifications\Jobs\NotificationJob;
 use Venne\Notifications\Jobs\NotifyJob;
-use Venne\Security\SecurityManager;
-use Venne\Security\UserEntity;
 use Venne\Queue\JobEntity;
 use Venne\Queue\JobManager;
+use Venne\Security\SecurityManager;
+use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationManager extends Object
+class NotificationManager extends \Nette\Object
 {
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var EntityManager */
+	/** @var \Kdyby\Doctrine\EntityManager */
 	private $entityManager;
 
-	/** @var JobManager */
+	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $logDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $settingDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $typeDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $userDao;
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	private $user;
 
-	/** @var IEvent[] */
+	/** @var \Venne\Notifications\IEvent[] */
 	private $types = array();
 
-
-	/**
-	 * @param EntityDao $logDao
-	 * @param EntityDao $notificationDao
-	 * @param EntityDao $settingDao
-	 * @param EntityDao $typeDao
-	 * @param EntityDao $userDao
-	 * @param User $user
-	 * @param EntityManager $entityManager
-	 * @param SecurityManager $securityManager
-	 * @param JobManager $jobManager
-	 */
 	public function __construct(
 		EntityDao $logDao,
 		EntityDao $notificationDao,
@@ -97,22 +82,20 @@ class NotificationManager extends Object
 		$this->jobManager = $jobManager;
 	}
 
-
 	/**
-	 * @param IEvent $event
+	 * @param \Venne\Notifications\IEvent $event
 	 * @return $this
 	 */
 	public function addType(IEvent $event)
 	{
 		$this->types[$event->getName()] = $event;
+
 		return $this;
 	}
 
-
 	/**
 	 * @param $name
-	 * @return IEvent
-	 * @throws \Nette\InvalidArgumentException
+	 * @return \Venne\Notifications\IEvent
 	 */
 	public function getType($name)
 	{
@@ -123,7 +106,6 @@ class NotificationManager extends Object
 		return $this->types[$name];
 	}
 
-
 	/**
 	 * @return \Venne\Notifications\IEvent[]
 	 */
@@ -132,16 +114,14 @@ class NotificationManager extends Object
 		return $this->types;
 	}
 
-
 	/**
-	 * @param $type
-	 * @param null $target
-	 * @param null $action
-	 * @param null $message
-	 * @param UserEntity $user
-	 * @throws \Nette\InvalidArgumentException
+	 * @param string $type
+	 * @param string|null $target
+	 * @param string|null $action
+	 * @param string|null $message
+	 * @param \Venne\Security\UserEntity|null $user
 	 */
-	public function notify($type, $target = NULL, $action = NULL, $message = NULL, UserEntity $user = NULL)
+	public function notify($type, $target = null, $action = null, $message = null, UserEntity $user = null)
 	{
 		if (!isset($this->types[$type])) {
 			throw new InvalidArgumentException("Type '$type' does not exist.");
@@ -168,18 +148,17 @@ class NotificationManager extends Object
 		$notificationEntity->targetKey = $targetKey;
 		$this->logDao->save($notificationEntity);
 
-		$jobEntity = new JobEntity(NotificationJob::getName(), NULL, array($notificationEntity->id));
+		$jobEntity = new JobEntity(NotificationJob::getName(), null, array($notificationEntity->id));
 		$jobEntity->user = $user;
 
 		$this->jobManager->scheduleJob($jobEntity);
 	}
 
-
 	/**
-	 * @param null $limit
+	 * @param int|null $limit
 	 * @return NotificationUserEntity[]
 	 */
-	public function getNotifications($limit = NULL)
+	public function getNotifications($limit = null)
 	{
 		return $this->notificationDao->createQueryBuilder('a')
 			->leftJoin('a.notification', 'l')
@@ -188,7 +167,6 @@ class NotificationManager extends Object
 			->setMaxResults($limit)
 			->getQuery()->getResult();
 	}
-
 
 	/**
 	 * @return int
@@ -202,25 +180,23 @@ class NotificationManager extends Object
 			->getQuery()->getSingleScalarResult();
 	}
 
-
 	/**
-	 * @return UserEntity|null
+	 * @return \Venne\Security\UserEntity|null
 	 */
 	private function getUser()
 	{
-		return $this->user->identity instanceof UserEntity ? $this->user->identity : NULL;
+		return $this->user->identity instanceof UserEntity ? $this->user->identity : null;
 	}
 
-
 	/**
-	 * @param $type
-	 * @param null $action
-	 * @param null $message
-	 * @return NotificationTypeEntity
+	 * @param string $type
+	 * @param string|null $action
+	 * @param string|null $message
+	 * @return \Venne\Notifications\NotificationTypeEntity
 	 */
-	private function getTypeEntity($type, $action = NULL, $message = NULL)
+	private function getTypeEntity($type, $action = null, $message = null)
 	{
-		if (($typeEntity = $this->typeDao->findOneBy(array('type' => $type, 'action' => $action, 'message' => $message))) === NULL) {
+		if (($typeEntity = $this->typeDao->findOneBy(array('type' => $type, 'action' => $action, 'message' => $message))) === null) {
 			$typeEntity = new NotificationTypeEntity;
 			$typeEntity->type = $type;
 			$typeEntity->action = $action;
@@ -231,16 +207,16 @@ class NotificationManager extends Object
 		return $typeEntity;
 	}
 
-
 	/**
-	 * @param $object
-	 * @return mixed
+	 * @param \Kdyby\Doctrine\Entities\BaseEntity $object
+	 * @return string
 	 */
-	private function detectPrimaryKey($object)
+	private function detectPrimaryKey(BaseEntity $object)
 	{
 		if ($object instanceof BaseEntity) {
 			$meta = $this->entityManager->getClassMetadata(get_class($object));
 			$name = $meta->getSingleIdentifierFieldName();
+
 			return $meta->getFieldValue($object, $name);
 		}
 	}

@@ -11,14 +11,15 @@
 
 namespace Venne\Queue;
 
-use Nette\Object;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-abstract class Job implements IJob
+abstract class Job implements \Venne\Queue\IJob
 {
 
+	/**
+	 * @return string
+	 */
 	public static function getName()
 	{
 		return get_called_class();

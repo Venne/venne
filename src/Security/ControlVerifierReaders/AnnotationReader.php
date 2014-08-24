@@ -11,23 +11,21 @@
 
 namespace Venne\Security\ControlVerifierReaders;
 
-use Nette\Object;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
-use Venne\Security\IControlVerifierReader;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AnnotationReader extends Object implements IControlVerifierReader
+class AnnotationReader extends \Nette\Object implements \Venne\Security\IControlVerifierReader
 {
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $_annotationSchema = array();
 
-
 	/**
-	 * @param $class
+	 * @param string $class
+	 * @return mixed
 	 */
 	public function getSchema($class)
 	{
@@ -60,44 +58,43 @@ class AnnotationReader extends Object implements IControlVerifierReader
 		return $this->_annotationSchema[$class];
 	}
 
-
 	/**
-	 * @param Method $method
-	 * @param $secured
-	 * @return null|string
+	 * @param \Nette\Reflection\Method $method
+	 * @param mixed $secured
+	 * @return mixed|null
 	 */
 	protected function getSchemaOfResource(Method $method, $secured)
 	{
-		$ret = isset($secured['resource']) ? $secured['resource'] : NULL;
+		$ret = isset($secured['resource']) ? $secured['resource'] : null;
 		if (!$ret) {
 			$s = $method->getDeclaringClass()->getAnnotation('secured');
 			$ret = isset($s['resource']) ? $s['resource'] : $method->getDeclaringClass()->getName();
 		}
+
 		return $ret;
 	}
 
-
 	/**
-	 * @param Method $method
-	 * @param $secured
-	 * @return null|string
+	 * @param \Nette\Reflection\Method $method
+	 * @param mixed $secured
+	 * @return mixed|null
 	 */
 	protected function getSchemaOfPrivilege(Method $method, $secured)
 	{
-		$ret = isset($secured['privilege']) ? $secured['privilege'] : NULL;
+		$ret = isset($secured['privilege']) ? $secured['privilege'] : null;
 		if (!$ret) {
 			$name = $method->name;
 			$prefix = substr($name, 0, 6);
 			$ret = ($prefix === 'action' || $prefix === 'handle') ? lcfirst(substr($name, 6)) : $name;
 		}
+
 		return $ret;
 	}
 
-
 	/**
-	 * @param Method $method
-	 * @param $secured
-	 * @return array
+	 * @param \Nette\Reflection\Method $method
+	 * @param mixed $secured
+	 * @return mixed|null
 	 */
 	protected function getSchemaOfRoles(Method $method, $secured)
 	{
@@ -106,16 +103,17 @@ class AnnotationReader extends Object implements IControlVerifierReader
 			array_walk($roles, function (&$val) {
 				$val = trim($val);
 			});
+
 			return $roles;
 		}
+
 		return array();
 	}
 
-
 	/**
-	 * @param Method $method
-	 * @param $secured
-	 * @return array
+	 * @param \Nette\Reflection\Method $method
+	 * @param mixed $secured
+	 * @return mixed|null
 	 */
 	protected function getSchemaOfUsers(Method $method, $secured)
 	{
@@ -127,6 +125,7 @@ class AnnotationReader extends Object implements IControlVerifierReader
 
 			return $users;
 		}
+
 		return array();
 	}
 }

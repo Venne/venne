@@ -11,28 +11,26 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Object;
+use Nette\Application\UI\Form;
 use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdministrationFormFactory extends Object implements IFormFactory
+class AdministrationFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 */
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -45,11 +43,11 @@ class AdministrationFormFactory extends Object implements IFormFactory
 		$form->addSubmit('_submit', 'Save');
 
 		$form->onSuccess[] = $this->handleSuccess;
+
 		return $form;
 	}
 
-
-	public function handleSuccess($form)
+	public function handleSuccess(Form $form)
 	{
 		$form->getPresenter()->absoluteUrls = true;
 		$url = $this->httpRequest->getUrl();
@@ -70,4 +68,5 @@ class AdministrationFormFactory extends Object implements IFormFactory
 		$form->getPresenter()->flashMessage('Administration settings has been updated', 'success');
 		$form->getPresenter()->redirectUrl(str_replace($oldPath, $newPath, $form->getPresenter()->link('this')));
 	}
+
 }

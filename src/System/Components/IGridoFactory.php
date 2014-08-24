@@ -11,8 +11,6 @@
 
 namespace Venne\System\Components;
 
-use Grido\Grid;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -20,8 +18,8 @@ interface IGridoFactory
 {
 
 	/**
-	 * @return Grid
+	 * @return \Grido\Grid
 	 */
-	function create();
+	public function create();
 
 }

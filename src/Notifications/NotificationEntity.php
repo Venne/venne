@@ -11,36 +11,38 @@
 
 namespace Venne\Notifications;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity
- * @ORM\Table(name="notification", indexes={@ORM\Index(name="created_idx", columns={"created"})})
  *
- * @property NotificationTypeEntity $type
- * @property UserEntity $user
+ * @property \Venne\Notifications\NotificationTypeEntity $type
+ * @property \Venne\Security\UserEntity $user
  * @property \DateTime $created
  * @property string $target
  * @property int $targetKey
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="notification", indexes={@ORM\Index(name="created_idx", columns={"created"})})
  */
-class NotificationEntity extends BaseEntity
+class NotificationEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var NotificationTypeEntity
+	 * @var \Venne\Notifications\NotificationTypeEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="NotificationTypeEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $type;
 
 	/**
-	 * @var UserEntity
+	 * @var \Venne\Security\UserEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
@@ -48,46 +50,37 @@ class NotificationEntity extends BaseEntity
 
 	/**
 	 * @var \DateTime
+	 *
 	 * @ORM\Column(type="datetime")
 	 */
 	protected $created;
 
 	/**
-	 * @var string
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $target;
 
 	/**
-	 * @var int
+	 * @var int|null
+	 *
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
 	protected $targetKey;
 
-
-	/**
-	 * @param NotificationTypeEntity $type
-	 */
 	public function __construct(NotificationTypeEntity $type)
 	{
 		$this->type = $type;
-		$this->created = new \DateTime;
+		$this->created = new DateTime();
 	}
 
-
-	/**
-	 * @param NotificationTypeEntity $type
-	 */
 	public function setType(NotificationTypeEntity $type)
 	{
 		$this->type = $type;
 	}
 
-
-	/**
-	 * @param UserEntity $user
-	 */
-	public function setUser(UserEntity $user = NULL)
+	public function setUser(UserEntity $user = null)
 	{
 		$this->user = $user;
 	}

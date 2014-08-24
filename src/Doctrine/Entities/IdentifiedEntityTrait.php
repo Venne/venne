@@ -20,16 +20,16 @@ trait IdentifiedEntityTrait
 {
 
 	/**
+	 * @var int
+	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="integer")
 	 * @ORM\GeneratedValue
-	 * @var integer
 	 */
 	protected $id;
 
-
 	/**
-	 * @return integer
+	 * @return int
 	 */
 	final public function getId()
 	{

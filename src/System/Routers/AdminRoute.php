@@ -11,16 +11,22 @@
 
 namespace Venne\System\Routers;
 
-use Nette;
-use Nette\Application;
+use Nette\Application\Request;
+use Nette\Http\IRequest;
+use Nette\Http\Url;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdminRoute extends Nette\Application\Routers\Route
+class AdminRoute extends \Nette\Application\Routers\Route
 {
 
-	public function __construct($presenter, $adminPrefix, $flags = NULL)
+	/**
+	 * @param string $presenter
+	 * @param string $adminPrefix
+	 * @param int|null $flags
+	 */
+	public function __construct($presenter, $adminPrefix, $flags = null)
 	{
 		$mask = $adminPrefix . '[<presenter .+>]?action=<action>[&id=<id>]';
 		$metadata = array(
@@ -30,21 +36,23 @@ class AdminRoute extends Nette\Application\Routers\Route
 			'presenter' => array(
 				self::VALUE => implode(':', $presenter),
 				self::FILTER_IN => function ($s) {
-						$s = str_replace('/', '.', $s);
-						$s = strtolower($s);
-						$s = preg_replace('#([.-])(?=[a-z])#', '$1 ', $s);
-						$s = ucwords($s);
-						$s = str_replace('. ', ':', $s);
-						$s = str_replace('- ', '', $s);
-						return $s;
-					},
+					$s = str_replace('/', '.', $s);
+					$s = strtolower($s);
+					$s = preg_replace('#([.-])(?=[a-z])#', '$1 ', $s);
+					$s = ucwords($s);
+					$s = str_replace('. ', ':', $s);
+					$s = str_replace('- ', '', $s);
+
+					return $s;
+				},
 				self::FILTER_OUT => function ($s) {
-						$s = strtr($s, ':', '.');
-						$s = preg_replace('#([^.])(?=[A-Z])#', '$1-', $s);
-						$s = strtolower($s);
-						$s = rawurlencode($s);
-						return str_replace('.', '/', $s);
-					},
+					$s = strtr($s, ':', '.');
+					$s = preg_replace('#([^.])(?=[A-Z])#', '$1-', $s);
+					$s = strtolower($s);
+					$s = rawurlencode($s);
+
+					return str_replace('.', '/', $s);
+				},
 			),
 			'action' => 'default',
 		);
@@ -52,11 +60,14 @@ class AdminRoute extends Nette\Application\Routers\Route
 		parent::__construct($mask, $metadata, $flags);
 	}
 
-
-	public function match(Nette\Http\IRequest $httpRequest)
+	/**
+	 * @param \Nette\Http\IRequest $httpRequest
+	 * @return \Nette\Application\Request|null
+	 */
+	public function match(IRequest $httpRequest)
 	{
-		if (($appRequest = parent::match($httpRequest)) === NULL) {
-			return NULL;
+		if (($appRequest = parent::match($httpRequest)) === null) {
+			return null;
 		}
 
 		$name = explode(':', $appRequest->getPresenterName());
@@ -65,8 +76,12 @@ class AdminRoute extends Nette\Application\Routers\Route
 		return $appRequest;
 	}
 
-
-	public function constructUrl(Application\Request $appRequest, Nette\Http\Url $refUrl)
+	/**
+	 * @param \Nette\Application\Request $appRequest
+	 * @param \Nette\Http\Url $refUrl
+	 * @return string|null
+	 */
+	public function constructUrl(Request $appRequest, Url $refUrl)
 	{
 		$name = explode(':', $appRequest->getPresenterName());
 		unset($name[1]);

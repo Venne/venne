@@ -11,12 +11,10 @@
 
 namespace Venne\Queue;
 
-use Nette\Object;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Worker extends Object
+class Worker extends \Nette\Object
 {
 
 	/** @var int */
@@ -25,18 +23,17 @@ class Worker extends Object
 	/** @var string */
 	private $configDir;
 
-	/** @var JobManager */
+	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
 
-	/** @var integer */
+	/** @var int */
 	private $interval;
 
-
 	/**
-	 * @param $id
-	 * @param $interval
-	 * @param $configDir
-	 * @param JobManager $jobManager
+	 * @param int $id
+	 * @param int $interval
+	 * @param string $configDir
+	 * @param \Venne\Queue\JobManager $jobManager
 	 */
 	public function __construct($id, $interval, $configDir, JobManager $jobManager)
 	{
@@ -46,7 +43,6 @@ class Worker extends Object
 		$this->id = $id;
 	}
 
-
 	/**
 	 * @return int
 	 */
@@ -54,7 +50,6 @@ class Worker extends Object
 	{
 		return $this->id;
 	}
-
 
 	/**
 	 * @return int
@@ -64,26 +59,30 @@ class Worker extends Object
 		return $this->interval;
 	}
 
-
 	/**
 	 * @return bool
 	 */
 	public function run()
 	{
 		$this->log('check jobs!');
+
 		return $this->jobManager->doJob($this);
 	}
 
-
+	/**
+	 * @return string
+	 */
 	private function getLogFile()
 	{
 		return $this->configDir . '/worker_' . $this->id . '.log';
 	}
 
-
+	/**
+	 * @param string $message
+	 */
 	public function log($message)
 	{
-		if (file_exists($this->getLogFile())) {
+		if (is_file($this->getLogFile())) {
 			$data = file_get_contents($this->getLogFile());
 			if (($count = substr_count($data, "\n")) > 1000) {
 				for ($x = 1000; $x < $count; $x++) {
@@ -94,7 +93,7 @@ class Worker extends Object
 			$data = '';
 		}
 
-		$data .= date("Y-m-d H:i:s") . ': ' . $message . "\n";
+		$data .= date('Y-m-d H:i:s') . ': ' . $message . "\n";
 		file_put_contents($this->getLogFile(), $data);
 	}
 

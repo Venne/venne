@@ -12,9 +12,9 @@
 namespace Venne\System\Components\AdminGrid;
 
 use Nette\ComponentModel\Component;
+use Venne\Forms\IFormFactory;
 use Venne\System\Components\Table\TableControl;
 use Venne\System\UI\IDoctrineFormFactory;
-use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -35,7 +35,7 @@ class Form extends Component
 	/** @var array */
 	public $onCreate;
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $factory;
 
 	/** @var callable */
@@ -47,14 +47,13 @@ class Form extends Component
 	/** @var string */
 	private $type;
 
-
 	/**
-	 * @param IFormFactory $factory
+	 * @param \Venne\Forms\IFormFactory $factory
 	 * @param string $title
 	 * @param callable $entityFactory
 	 * @param null $type
 	 */
-	public function __construct(IFormFactory $factory, $title, $entityFactory = NULL, $type = NULL)
+	public function __construct(IFormFactory $factory, $title, $entityFactory = null, $type = null)
 	{
 		parent::__construct();
 
@@ -64,26 +63,24 @@ class Form extends Component
 		$this->type = $type;
 	}
 
-
 	/**
 	 * Returns table.
+	 *
 	 * @param  bool   throw exception if form doesn't exist?
 	 * @return TableControl
 	 */
-	public function getTable($need = TRUE)
+	public function getTable($need = true)
 	{
 		return $this->lookup('Venne\System\Components\Table\TableControl', $need);
 	}
 
-
 	/**
-	 * @param IFormFactory $factory
+	 * @param \Venne\Forms\IFormFactory $factory
 	 */
 	public function setFactory(IFormFactory $factory)
 	{
 		$this->factory = $factory;
 	}
-
 
 	/**
 	 * @return IDoctrineFormFactory
@@ -93,7 +90,6 @@ class Form extends Component
 		return $this->factory;
 	}
 
-
 	/**
 	 * @param string $type
 	 */
@@ -101,7 +97,6 @@ class Form extends Component
 	{
 		$this->type = $type;
 	}
-
 
 	/**
 	 * @return string
@@ -111,7 +106,6 @@ class Form extends Component
 		return $this->type;
 	}
 
-
 	/**
 	 * @param string $title
 	 */
@@ -119,7 +113,6 @@ class Form extends Component
 	{
 		$this->title = $title;
 	}
-
 
 	/**
 	 * @return string
@@ -129,7 +122,6 @@ class Form extends Component
 		return $this->title;
 	}
 
-
 	/**
 	 * @param callable $entityFactory
 	 */
@@ -137,7 +129,6 @@ class Form extends Component
 	{
 		$this->entityFactory = $entityFactory;
 	}
-
 
 	/**
 	 * @return callable

@@ -12,7 +12,6 @@
 namespace Venne\System\AdminModule;
 
 use Kdyby\DoctrineForms\IComponentMapper;
-use Nette\Forms\Container;
 use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
 use Venne\System\RegistrationEntity;
@@ -20,15 +19,14 @@ use Venne\System\RegistrationEntity;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationFormFactory implements IFormFactory
+class RegistrationFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
-
 
 	public function __construct(IFormFactory $formFactory, SecurityManager $securityManager)
 	{
@@ -36,7 +34,9 @@ class RegistrationFormFactory implements IFormFactory
 		$this->securityManager = $securityManager;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		\Kdyby\Replicator\Container::register();
@@ -56,7 +56,6 @@ class RegistrationFormFactory implements IFormFactory
 		$form->addSelect('loginProviderMode', 'Login provider mode', RegistrationEntity::getLoginProviderModes());
 		$form->addMultiSelect('roles', 'Roles')
 			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
-
 
 		$form->addSubmit('_submit', 'Save');
 

@@ -18,7 +18,12 @@ interface IRegistrationControlFactory
 {
 
 	/**
-	 * @return RegistrationControl
+	 * @param bool $invitations
+	 * @param string $userType
+	 * @param string $mode
+	 * @param string $loginProviderMode
+	 * @param string[] $roles
+	 * @return \Venne\Security\Registration\RegistrationControl
 	 */
 	function create($invitations, $userType, $mode, $loginProviderMode, $roles);
 

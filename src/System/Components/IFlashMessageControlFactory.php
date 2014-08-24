@@ -18,8 +18,8 @@ interface IFlashMessageControlFactory
 {
 
 	/**
-	 * @return FlashMessageControl
+	 * @return \Venne\System\Components\FlashMessageControl
 	 */
-	function create();
+	public function create();
 
 }

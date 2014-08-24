@@ -11,33 +11,20 @@
 
 namespace Venne\Security\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Security\DefaultType\RegistrationFormFactory;
-use Venne\System\Components\AdminGrid\IAdminGridFactory;
-use Venne\System\AdminPresenterTrait;
+use Venne\Forms\Form;
 use Venne\Security\AdminUserFormFactory;
 use Venne\Security\DefaultType\IAdminFormFactory;
 use Venne\Security\IFormFactory;
-use Venne\Security\LoginEntity;
-use Venne\Security\SecurityManager;
-use Grido\DataSources\ArraySource;
-use Grido\DataSources\Doctrine;
-use Nette\Http\Session;
-use Nette\Utils\Html;
-use Venne\Forms\Form;
-use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class RequestPresenter extends Presenter
+class RequestPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
 	private $requestFormFactory;
 

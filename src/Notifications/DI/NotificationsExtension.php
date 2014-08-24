@@ -11,29 +11,27 @@
 
 namespace Venne\Notifications\DI;
 
-use Kdyby\Doctrine\DI\IEntityProvider;
-use Nette\Application\Routers\Route;
-use Nette\DI\CompilerExtension;
 use Nette\DI\Statement;
-use Venne\Queue\DI\IJobProvider;
-use Venne\System\DI\IPresenterProvider;
 use Venne\System\DI\SystemExtension;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationsExtension extends CompilerExtension implements IJobProvider, IEntityProvider, IPresenterProvider
+class NotificationsExtension extends \Nette\DI\CompilerExtension
+	implements
+	\Venne\Queue\DI\IJobProvider,
+	\Kdyby\Doctrine\DI\IEntityProvider,
+	\Venne\System\DI\IPresenterProvider
 {
 
-	/** @var array */
+	/** @var mixed[] */
 	public $defaults = array(
 		'mailer' => array(
 			'senderEmail' => 'info@venne.cz',
 			'senderName' => 'Venne',
 		),
 	);
-
 
 	public function loadConfiguration()
 	{
@@ -62,13 +60,12 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 			}
 		}
 
-
 		$container->addDefinition($this->prefix('notificationControl'))
 			->setArguments(array(
 				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationUserEntity'))
 			))
 			->setImplement('Venne\Notifications\Components\INotificationControlFactory')
-			->setInject(TRUE);
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('notificationsControl'))
 			->setArguments(array(
@@ -77,7 +74,7 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 			->setImplement('Venne\Notifications\Components\INotificationsControlFactory')
 			->addTag(SystemExtension::TAG_TRAY_COMPONENT)
 			->addTag(WidgetsExtension::TAG_WIDGET, 'notifications')
-			->setInject(TRUE);
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('settingsPresenter'))
 			->setClass('Venne\Notifications\AdminModule\SettingsPresenter', array(new Statement('@doctrine.dao', array('Venne\Notifications\NotificationSettingEntity'))));
@@ -97,7 +94,6 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 			));
 	}
 
-
 	public function beforeCompile()
 	{
 		$container = $this->getContainerBuilder();
@@ -107,9 +103,8 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 		$evm->setClass('Venne\Notifications\EventManager', $evm->factory->arguments);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getJobClasses()
 	{
@@ -119,9 +114,8 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getPresenterMapping()
 	{
@@ -130,9 +124,8 @@ class NotificationsExtension extends CompilerExtension implements IJobProvider, 
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEntityMappings()
 	{

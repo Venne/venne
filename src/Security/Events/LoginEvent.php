@@ -11,16 +11,15 @@
 
 namespace Venne\Security\Events;
 
-use Nette\DI\Container;
-use Nette\Security\User;
-use Venne\Notifications\Event;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginEvent extends Event
+class LoginEvent extends \Venne\Notifications\Event
 {
 
+	/**
+	 * @return string
+	 */
 	public static function getHumanName()
 	{
 		return 'Login event';

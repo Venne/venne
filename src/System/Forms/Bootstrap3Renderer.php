@@ -10,8 +10,8 @@
 
 namespace Venne\System\Forms;
 
-use Nette\Forms\Controls;
 use Nette;
+use Nette\Forms\Controls;
 use Nette\Forms\Rendering\DefaultFormRenderer;
 
 /**
@@ -22,7 +22,7 @@ class Bootstrap3Renderer extends DefaultFormRenderer
 
 	public function __construct()
 	{
-		$this->wrappers['controls']['container'] = NULL;
+		$this->wrappers['controls']['container'] = null;
 		$this->wrappers['pair']['container'] = 'div class=form-group';
 		$this->wrappers['pair']['.error'] = 'has-error';
 		$this->wrappers['control']['container'] = 'div class=col-sm-9';
@@ -31,15 +31,19 @@ class Bootstrap3Renderer extends DefaultFormRenderer
 		$this->wrappers['control']['errorcontainer'] = 'span class=help-block';
 	}
 
-
-	public function render(Nette\Forms\Form $form, $mode = NULL)
+	/**
+	 * @param \Nette\Forms\Form $form
+	 * @param string|null $mode
+	 * @return string
+	 */
+	public function render(Nette\Forms\Form $form, $mode = null)
 	{
 		$form->getElementPrototype()->class[] = 'form-horizontal';
 
 		foreach ($form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
 				$control->setAttribute('class', empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default');
-				$usedPrimary = TRUE;
+				$usedPrimary = true;
 
 			} elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
 				$control->setAttribute('class', 'form-control');

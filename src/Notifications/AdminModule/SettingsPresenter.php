@@ -13,10 +13,8 @@ namespace Venne\Notifications\AdminModule;
 
 use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
 use Venne\Notifications\NotificationManager;
 use Venne\Notifications\NotificationSettingEntity;
-use Venne\System\AdminPresenterTrait;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -24,33 +22,30 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
  *
  * @secured
  */
-class SettingsPresenter extends Presenter
+class SettingsPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationSettingDao;
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
-	/** @var IAdminGridFactory */
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-
-	/**
-	 * @param EntityDao $notificationSettingDao
-	 * @param NotificationManager $notificationManager
-	 * @param IAdminGridFactory $adminGridFactory
-	 */
-	public function __construct(EntityDao $notificationSettingDao, NotificationManager $notificationManager,IAdminGridFactory $adminGridFactory)
+	public function __construct(
+		EntityDao $notificationSettingDao,
+		NotificationManager $notificationManager,
+		IAdminGridFactory $adminGridFactory
+	)
 	{
 		$this->notificationSettingDao = $notificationSettingDao;
 		$this->notificationManager = $notificationManager;
 		$this->adminGridFactory = $adminGridFactory;
 	}
-
 
 	/**
 	 * @return \Venne\Notifications\NotificationManager
@@ -60,7 +55,9 @@ class SettingsPresenter extends Presenter
 		return $this->notificationManager;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	protected function createComponentTable()
 	{
 		$admin = $this->adminGridFactory->create($this->notificationSettingDao);
@@ -73,13 +70,13 @@ class SettingsPresenter extends Presenter
 		// columns
 		$table->addColumnText('type', 'Type')
 			->setSortable()
-			->setCustomRender(function(NotificationSettingEntity $entity) {
+			->setCustomRender(function (NotificationSettingEntity $entity) {
 				return $this->notificationManager->getType($entity->type->type)->getHumanName();
 			})
 			->getCellPrototype()->width = '25%';
 
 		$table->addColumnText('action', 'Action')
-			->setCustomRender(function(NotificationSettingEntity $entity) {
+			->setCustomRender(function (NotificationSettingEntity $entity) {
 				return $entity->type->action;
 			})
 			->getCellPrototype()->width = '25%';
@@ -94,9 +91,8 @@ class SettingsPresenter extends Presenter
 			->getCellPrototype()->width = '20%';
 
 		// actions
-			$table->addActionEvent('edit', 'Edit')
-				->getElementPrototype()->class[] = 'ajax';
-
+		$table->addActionEvent('edit', 'Edit')
+			->getElementPrototype()->class[] = 'ajax';
 
 		$table->addActionEvent('delete', 'Delete')
 			->getElementPrototype()->class[] = 'ajax';

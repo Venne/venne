@@ -12,9 +12,7 @@
 namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
-use Venne\System\AdminPresenterTrait;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -23,18 +21,17 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
 class RegistrationTableFactory
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $dao;
 
-	/** @var RegistrationFormFactory */
+	/** @var \Venne\System\AdminModule\RegistrationFormFactory */
 	private $formFactory;
 
-	/** @var IAdminGridFactory */
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var ITranslator */
+	/** @var \Nette\Localization\ITranslator */
 	private $translator;
-
 
 	public function __construct(
 		EntityDao $dao,
@@ -49,7 +46,9 @@ class RegistrationTableFactory
 		$this->translator = $translator;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	public function create()
 	{
 		$admin = $this->adminGridFactory->create($this->dao);

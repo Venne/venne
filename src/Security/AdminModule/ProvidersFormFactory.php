@@ -18,26 +18,20 @@ use Venne\Security\SecurityManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ProvidersFormFactory implements IFormFactory
+class ProvidersFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 * @param SecurityManager $securityManager
-	 */
 	public function __construct(IFormFactory $formFactory, SecurityManager $securityManager)
 	{
 		$this->formFactory = $formFactory;
 		$this->securityManager = $securityManager;
 	}
-
 
 	/**
 	 * @return \Nette\Application\UI\Form

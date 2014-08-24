@@ -18,7 +18,7 @@ interface INavbarControlFactory
 {
 
 	/**
-	 * @return NavbarControl
+	 * @return \Venne\System\Components\NavbarControl
 	 */
 	function create();
 

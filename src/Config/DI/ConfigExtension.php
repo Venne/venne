@@ -11,18 +11,10 @@
 
 namespace Venne\Config\DI;
 
-use Kdyby\Doctrine\DI\IEntityProvider;
-use Nette\Application\Routers\Route;
-use Nette\DI\CompilerExtension;
-use Nette\DI\ContainerBuilder;
-use Nette\DI\Statement;
-use Venne\Notifications\DI\IEventProvider;
-use Venne\System\DI\IPresenterProvider;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ConfigExtension extends CompilerExtension
+class ConfigExtension extends \Nette\DI\CompilerExtension
 {
 
 	public function loadConfiguration()

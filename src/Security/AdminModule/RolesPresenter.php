@@ -11,28 +11,23 @@
 
 namespace Venne\Security\AdminModule;
 
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class RolesPresenter extends Presenter
+class RolesPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var RolesTableFactory */
+	/** @var \Venne\Security\AdminModule\RolesTableFactory */
 	private $rolesTableFactory;
-
 
 	public function __construct(RolesTableFactory $rolesTableFactory)
 	{
 		$this->rolesTableFactory = $rolesTableFactory;
 	}
-
 
 	protected function createComponentTable()
 	{

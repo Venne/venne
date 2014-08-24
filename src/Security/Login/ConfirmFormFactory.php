@@ -16,19 +16,20 @@ use Venne\Forms\IFormFactory;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ConfirmFormFactory implements IFormFactory
+class ConfirmFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
-
 
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -39,7 +40,6 @@ class ConfirmFormFactory implements IFormFactory
 			->addRule($form::MIN_LENGTH, 'Password is short', 5);
 		$form->addPassword('password_confirm', 'Confirm password')
 			->addRule($form::EQUAL, 'Invalid re password', $form['password']);
-
 
 		$form->addSubmit('_submit', 'Reset password')
 			->getControlPrototype()->class[] = 'btn-primary';

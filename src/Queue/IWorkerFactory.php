@@ -11,8 +11,6 @@
 
 namespace Venne\Queue;
 
-use Nette\Object;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -20,9 +18,9 @@ interface IWorkerFactory
 {
 
 	/**
-	 * @param $id
-	 * @param $interval
-	 * @return Worker
+	 * @param int $id
+	 * @param int $interval
+	 * @return \Venne\Queue\Worker
 	 */
 	public function create($id, $interval);
 

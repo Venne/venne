@@ -13,26 +13,24 @@ namespace Venne\System;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\NamedEntityTrait;
-use Venne\Security\RoleEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity
- * @ORM\Table(name="registrations")
  *
  * @property bool $enabled
  * @property bool $invitation
  * @property string $userType
  * @property string $mode
  * @property string $loginProviderMode
- * @property RoleEntity[] $roles
+ * @property \Venne\Security\RoleEntity[] $roles
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="registrations")
  */
-class RegistrationEntity extends BaseEntity
+class RegistrationEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use NamedEntityTrait;
+	use \Venne\Doctrine\Entities\NamedEntityTrait;
 
 	const MODE_BASIC = 'basic';
 
@@ -46,6 +44,7 @@ class RegistrationEntity extends BaseEntity
 
 	const LOGIN_PROVIDER_MODE_LOAD_AND_SAVE = 'load&save';
 
+	/** @var string[] */
 	private static $modes = array(
 		self::MODE_BASIC => 'basic registration',
 		self::MODE_CHECKUP => 'registration with admin confirmation',
@@ -53,6 +52,7 @@ class RegistrationEntity extends BaseEntity
 		self::MODE_MAIL_CHECKUP => 'registration with e-mail and admin confirmation'
 	);
 
+	/** @var string[] */
 	private static $loginProviderModes = array(
 		self::LOGIN_PROVIDER_MODE_LOAD => 'only load user data',
 		self::LOGIN_PROVIDER_MODE_LOAD_AND_SAVE => 'load user data and save',
@@ -60,58 +60,61 @@ class RegistrationEntity extends BaseEntity
 
 	/**
 	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $enabled = FALSE;
+	protected $enabled = false;
 
 	/**
 	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $invitation = FALSE;
+	protected $invitation = false;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $userType;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $mode;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $loginProviderMode;
 
 	/**
-	 * @var RoleEntity[]
+	 * @var \Venne\Security\RoleEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
 	 * @ORM\ManyToMany(targetEntity="\Venne\Security\RoleEntity")
 	 */
 	protected $roles;
 
-
 	public function __construct()
 	{
-		$this->roles = new ArrayCollection;
+		$this->roles = new ArrayCollection();
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public static function getModes()
 	{
 		return self::$modes;
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public static function getLoginProviderModes()
 	{

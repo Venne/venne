@@ -18,7 +18,7 @@ interface IPresenterProvider
 {
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getPresenterMapping();
 

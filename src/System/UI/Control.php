@@ -26,12 +26,11 @@ abstract class Control extends \Nette\Application\UI\Control
 	use ControlTrait;
 	use WidgetsControlTrait;
 
-	/** @var array */
+	/** @var string[] */
 	private $configZal = array();
 
 	/** @var string */
 	private $variant;
-
 
 	/**
 	 * @return string
@@ -41,16 +40,19 @@ abstract class Control extends \Nette\Application\UI\Control
 		return $this->variant;
 	}
 
-
 	/**
-	 * @return ITranslator
+	 * @return \Nette\Localization\ITranslator
 	 */
 	public function getTranslator()
 	{
 		return $this->presenter->translator;
 	}
 
-
+	/**
+	 * @param string $name
+	 * @param string $args
+	 * @return mixed
+	 */
 	public function __call($name, $args)
 	{
 		if ($name === 'render') {
@@ -79,8 +81,10 @@ abstract class Control extends \Nette\Application\UI\Control
 		return parent::__call($name, $args);
 	}
 
-
-	protected function configureControl($config)
+	/**
+	 * @param mixed[] $config
+	 */
+	protected function configureControl(array $config)
 	{
 		if (isset($config['variant'])) {
 			$this->variant = $config['variant'];
@@ -93,14 +97,13 @@ abstract class Control extends \Nette\Application\UI\Control
 		}
 	}
 
-
 	protected function unconfigureControl()
 	{
 		if (isset($this->configZal['template'])) {
 			$this->template->setFile($this->configZal['template']);
 		}
 
-		$this->variant = NULL;
+		$this->variant = null;
 	}
 
 }

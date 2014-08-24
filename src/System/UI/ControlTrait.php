@@ -11,7 +11,6 @@
 
 namespace Venne\System\UI;
 
-use Nette\Application\UI\ITemplate;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
 
@@ -21,26 +20,27 @@ use Nette\Localization\ITranslator;
 trait ControlTrait
 {
 
-	/** @var ITranslator */
+	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
-	/** @var ITemplateLocator */
+	/** @var \Venne\System\UI\ITemplateLocator */
 	private $templateLocator;
 
-
 	/**
-	 * @param ITranslator $translator
-	 * @param ITemplateLocator $templateLocator
+	 * @param \Nette\Localization\ITranslator $translator
+	 * @param \Venne\System\UI\ITemplateLocator $templateLocator
 	 */
-	public function injectControlTrait(ITranslator $translator, ITemplateLocator $templateLocator)
+	public function injectControlTrait(
+		ITranslator $translator,
+		ITemplateLocator $templateLocator
+	)
 	{
 		$this->translator = $translator;
 		$this->templateLocator = $templateLocator;
 	}
 
-
 	/**
-	 * @return ITemplate
+	 * @return \Nette\Application\UI\ITemplate
 	 */
 	protected function createTemplate()
 	{
@@ -54,7 +54,9 @@ trait ControlTrait
 		return $template;
 	}
 
-
+	/**
+	 * @return string[]
+	 */
 	public function formatTemplateFiles()
 	{
 		if ($this->templateLocator) {
@@ -68,7 +70,9 @@ trait ControlTrait
 		return array();
 	}
 
-
+	/**
+	 * @return string[]
+	 */
 	public function formatLayoutTemplateFiles()
 	{
 		if ($this->templateLocator) {
@@ -80,24 +84,21 @@ trait ControlTrait
 		}
 	}
 
-
 	/**
 	 * Format component template file
 	 *
-	 * @param string
 	 * @return string
-	 * @throws \Nette\InvalidStateException
 	 */
 	protected function formatTemplateFile()
 	{
 		$files = $this->formatTemplateFiles();
 		foreach ($files as $file) {
-			if (file_exists($file)) {
+			if (is_file($file)) {
 				return $file;
 			}
 		}
 
-		throw new \Nette\InvalidStateException("No template files found");
+		throw new \Nette\InvalidStateException('No template files found');
 	}
 }
 

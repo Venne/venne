@@ -13,29 +13,22 @@ namespace Venne\Notifications\Components;
 
 use Kdyby\Doctrine\EntityDao;
 use Venne\Notifications\NotificationManager;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationsControl extends Control
+class NotificationsControl extends \Venne\System\UI\Control
 {
 
-	/** @var NotificationManager */
+	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationUserDao;
 
-	/** @var INotificationControlFactory */
+	/** @var \Venne\Notifications\Components\INotificationControlFactory */
 	private $notificationControlFactory;
 
-
-	/**
-	 * @param EntityDao $notificationUserDao
-	 * @param NotificationManager $notificationManager
-	 * @param INotificationControlFactory $notificationControlFactory
-	 */
 	public function __construct(
 		EntityDao $notificationUserDao,
 		NotificationManager $notificationManager,
@@ -49,7 +42,6 @@ class NotificationsControl extends Control
 		$this->notificationControlFactory = $notificationControlFactory;
 	}
 
-
 	/**
 	 * @return \Kdyby\Doctrine\EntityDao
 	 */
@@ -58,18 +50,21 @@ class NotificationsControl extends Control
 		return $this->notificationManager;
 	}
 
-
+	/**
+	 * @return \Venne\Notifications\NotificationUserEntity[]
+	 */
 	public function getNotifications()
 	{
 		return $this->notificationManager->getNotifications(5);
 	}
 
-
+	/**
+	 * @return \Venne\Notifications\Components\NotificationControl
+	 */
 	protected function createComponentNotification()
 	{
 		return $this->notificationControlFactory->create();
 	}
-
 
 	public function render()
 	{

@@ -18,7 +18,7 @@ interface IEventProvider
 {
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEventTypes();
 

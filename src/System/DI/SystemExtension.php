@@ -12,20 +12,23 @@
 namespace Venne\System\DI;
 
 use Kdyby\Console\DI\ConsoleExtension;
-use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Events\DI\EventsExtension;
-use Kdyby\Translation\DI\ITranslationProvider;
-use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
-use Venne\Notifications\DI\IEventProvider;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemExtension extends CompilerExtension implements IEntityProvider, IPresenterProvider, ITranslationProvider, ICssProvider, IJsProvider, IEventProvider
+class SystemExtension extends \Nette\DI\CompilerExtension
+	implements
+	\Kdyby\Doctrine\DI\IEntityProvider,
+	\Venne\System\DI\IPresenterProvider,
+	\Kdyby\Translation\DI\ITranslationProvider,
+	\Venne\System\DI\ICssProvider,
+	\Venne\System\DI\IJsProvider,
+	\Venne\Notifications\DI\IEventProvider
 {
 
 	const TAG_TRAY_COMPONENT = 'venne.trayComponent';
@@ -40,15 +43,15 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 	const TAG_SIDE_COMPONENT = 'venne.sideComponent';
 
-	/** @var array */
+	/** @var mixed[] */
 	public $defaults = array(
 		'session' => array(),
 		'administration' => array(
 			'routePrefix' => '',
 			'defaultPresenter' => 'System:Admin:Dashboard',
 			'authentication' => array(
-				'autologin' => NULL,
-				'autoregistration' => NULL,
+				'autologin' => null,
+				'autoregistration' => null,
 			),
 			'theme' => 'venne/venne',
 		),
@@ -78,11 +81,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		),
 	);
 
-
-	/**
-	 * Processes configuration data. Intended to be overridden by descendant.
-	 * @return void
-	 */
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
@@ -159,7 +157,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition('authorizator')
 			->setClass('Nette\Security\Permission')
-			->setFactory('@authorizatorFactory::getPermissionsByUser', array('@user', TRUE));
+			->setFactory('@authorizatorFactory::getPermissionsByUser', array('@user', true));
 
 		$container->addDefinition('authenticator')
 			->setClass('Venne\Security\Authenticator', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
@@ -171,12 +169,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		// parameters
 		$parameters = array();
-		$parameters['lang'] = count($languages) > 1 || $config['website']['routePrefix'] ? NULL : $config['website']['defaultLanguage'];
+		$parameters['lang'] = count($languages) > 1 || $config['website']['routePrefix'] ? null : $config['website']['defaultLanguage'];
 
 		// Sitemap
 		$container->addDefinition($this->prefix('robotsRoute'))
 			->setClass('Nette\Application\Routers\Route', array('robots.txt',
-				array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => NULL)
+				array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => null)
 			))
 			->addTag(static::TAG_ROUTE, array('priority' => 999999999));
 		$container->addDefinition($this->prefix('sitemapRoute'))
@@ -194,7 +192,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		if ($config['website']['oneWayRoutePrefix']) {
 			$container->addDefinition($this->prefix('oneWayPageRoute'))
-				->setClass('Venne\System\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnection', $config['website']['oneWayRoutePrefix'], $parameters, $config['website']['languages'], $config['website']['defaultLanguage'], TRUE)
+				->setClass('Venne\System\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnection', $config['website']['oneWayRoutePrefix'], $parameters, $config['website']['languages'], $config['website']['defaultLanguage'], true)
 				)
 				->addTag(static::TAG_ROUTE, array('priority' => 99));
 		}
@@ -255,18 +253,16 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			break;
 		}
 
-
 		$container->addDefinition($this->prefix('templateLocator'))
 			->setClass('Venne\System\UI\AdminTemplateLocator', array(array(
 				$container->parameters['appDir'] . '/templates',
 				$container->parameters['packages']['venne/venne']['path'] . '/Resources/templates',
 			)));
 
-
 		$container->removeDefinition('nette.presenterFactory');
 		$presenterFactory = $container->addDefinition($this->prefix('presenterFactory'))
 			->setClass('Nette\Application\PresenterFactory', array(
-				isset($container->parameters['appDir']) ? $container->parameters['appDir'] : NULL
+				isset($container->parameters['appDir']) ? $container->parameters['appDir'] : null
 			));
 		foreach ($this->compiler->extensions as $extension) {
 			if ($extension instanceof IPresenterProvider) {
@@ -274,12 +270,10 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			}
 		}
 
-
 		$container->addDefinition($this->prefix('trayComponent'))
 			->setImplement('Venne\System\AdminModule\Components\ITrayControlFactory')
-			->setInject(TRUE)
+			->setInject(true)
 			->addTag(WidgetsExtension::TAG_WIDGET, 'tray');
-
 
 		$this->setupSystemLogs($container, $config);
 		$this->setupSystemCache($container, $config);
@@ -287,14 +281,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$this->setupSystem($container, $config);
 	}
 
-
 	public function setupDoctrine(ContainerBuilder $container, array $config)
 	{
 		$container->addDefinition($this->prefix('dynamicMapperSubscriber'))
 			->setClass('Venne\Doctrine\Mapping\DynamicMapperSubscriber')
 			->addTag(EventsExtension::TAG_SUBSCRIBER);
 	}
-
 
 	public function setupSystemLogs(ContainerBuilder $container, array $config)
 	{
@@ -308,7 +300,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				'priority' => 5,
 			));
 	}
-
 
 	public function setupSystemCache(ContainerBuilder $container, array $config)
 	{
@@ -325,7 +316,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				'priority' => 0,
 			));
 	}
-
 
 	public function setupSystemApplication(ContainerBuilder $container, array $config)
 	{
@@ -370,7 +360,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			));
 	}
 
-
 	public function setupSystem(ContainerBuilder $container, array $config)
 	{
 		$container->addDefinition($this->prefix('formRenderer'))
@@ -378,25 +367,25 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition($this->prefix('admin.basicFormFactory'))
 			->setClass('Nette\Application\UI\Form')
-			->setArguments(array(NULL, NULL))
+			->setArguments(array(null, null))
 			->setImplement('Venne\Forms\IFormFactory')
 			->addSetup('setRenderer', array(new Statement($this->prefix('@formRenderer'))))
 			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
-			->setAutowired(FALSE);
+			->setAutowired(false);
 
 		$container->addDefinition($this->prefix('admin.ajaxFormFactory'))
 			->setClass('Nette\Application\UI\Form')
-			->setArguments(array(NULL, NULL))
+			->setArguments(array(null, null))
 			->setImplement('Venne\Forms\IFormFactory')
 			->addSetup('setRenderer', array(new Statement($this->prefix('@formRenderer'))))
 			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
 			->addSetup("\$service->getElementPrototype()->class[] = ?", array('ajax'))
-			->setAutowired(FALSE);
+			->setAutowired(false);
 
 		$container->addDefinition($this->prefix('admin.configFormFactory'))
 			->setClass('Venne\System\UI\ConfigFormFactory', array(new PhpLiteral('$configFile'), new PhpLiteral('$section')))
 			->addSetup('setFormFactory', array(new Statement('@system.admin.basicFormFactory')))
-			->setAutowired(FALSE)
+			->setAutowired(false)
 			->setParameters(array('configFile', 'section'));
 
 		$container->addDefinition($this->prefix('registrationControlFactory'))
@@ -409,7 +398,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				new PhpLiteral('$roles'),
 			))
 			->setImplement('Venne\Security\Registration\IRegistrationControlFactory')
-			->setInject(TRUE);
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('system.loginFormFactory'))
 			->setClass('Venne\System\AdminModule\LoginFormFactory', array(new Statement('@system.admin.basicFormFactory')));
@@ -422,32 +411,31 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		$container->addDefinition($this->prefix('navbarControlFactory'))
 			->setImplement('Venne\System\Components\INavbarControlFactory')
-			->setArguments(array(NULL))
-			->setInject(TRUE);
+			->setArguments(array(null))
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('loginControlFactory'))
 			->setImplement('Venne\Security\Login\ILoginControlFactory')
 			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
-			->setInject(TRUE);
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('gridoFactory'))
 			->setImplement('Venne\System\Components\IGridoFactory')
-			->setArguments(array(NULL, NULL))
-			->setInject(TRUE);
+			->setArguments(array(null, null))
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('gridControlFactory'))
 			->setImplement('Venne\System\Components\AdminGrid\IAdminGridFactory')
 			->setArguments(array(new PhpLiteral('$repository')))
 			->setParameters(array('repository'))
-			->setInject(TRUE);
+			->setInject(true);
 
 		$container->addDefinition($this->prefix('flashMessageControlFactory'))
 			->setImplement('Venne\System\Components\IFlashMessageControlFactory')
-			->setArguments(array(NULL))
-			->setInject(TRUE)
+			->setArguments(array(null))
+			->setInject(true)
 			->addTag(WidgetsExtension::TAG_WIDGET, 'flashMessage');
 	}
-
 
 	public function beforeCompile()
 	{
@@ -458,7 +446,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$this->registerTrayComponents();
 		$this->registerSideComponents();
 	}
-
 
 	public function afterCompile(\Nette\PhpGenerator\ClassType $class)
 	{
@@ -474,7 +461,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$initialize->addBody('$this->parameters[\'basePath\'] = preg_replace("#https?://[^/]+#A", "", $this->parameters["baseUrl"]);');
 	}
 
-
 	private function registerRoutes()
 	{
 		$container = $this->getContainerBuilder();
@@ -482,12 +468,11 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		foreach ($this->getSortedServices(static::TAG_ROUTE) as $route) {
 			$definition = $container->getDefinition($route);
-			$definition->setAutowired(FALSE);
+			$definition->setAutowired(false);
 
 			$router->addSetup('$service[] = $this->getService(?)', array($route));
 		}
 	}
-
 
 	private function registerAdministrationPages()
 	{
@@ -498,13 +483,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 			$tags = $container->getDefinition($item)->tags[static::TAG_ADMINISTRATION];
 			$manager->addSetup('addAdministrationPage', array(
 				$tags['link'],
-				isset($tags['name']) ? $tags['name'] : NULL,
-				isset($tags['description']) ? $tags['description'] : NULL,
-				isset($tags['category']) ? $tags['category'] : NULL,
+				isset($tags['name']) ? $tags['name'] : null,
+				isset($tags['description']) ? $tags['description'] : null,
+				isset($tags['category']) ? $tags['category'] : null,
 			));
 		}
 	}
-
 
 	private function registerUsers()
 	{
@@ -523,7 +507,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 	}
 
-
 	private function registerLoginProvider()
 	{
 		$container = $this->getContainerBuilder();
@@ -537,7 +520,6 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 	}
 
-
 	private function registerTrayComponents()
 	{
 		$container = $this->getContainerBuilder();
@@ -545,12 +527,11 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 
 		foreach ($container->findByTag(static::TAG_TRAY_COMPONENT) as $item => $tags) {
 			$def = $container->getDefinition($item);
-			$name = 'tray__' . str_replace('\\', '_', $def->class ? : $def->implement);
+			$name = 'tray__' . str_replace('\\', '_', $def->class ?: $def->implement);
 
 			$config->addSetup('$service->trayWidgetManager->addWidget(?, ?)', array($name, $item));
 		}
 	}
-
 
 	private function registerSideComponents()
 	{
@@ -567,21 +548,18 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		}
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEntityMappings()
 	{
 		return array(
 			'Venne\System' => dirname(__DIR__) . '/*Entity.php',
-			'Venne\Comments' => dirname(dirname(__DIR__)) . '/Comments/*Entity.php',
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getPresenterMapping()
 	{
@@ -590,9 +568,8 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getTranslationResources()
 	{
@@ -601,10 +578,9 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		);
 	}
 
-
 	/**
 	 * @param $tag
-	 * @return array
+	 * @return string[]
 	 */
 	private function getSortedServices($tag)
 	{
@@ -613,7 +589,7 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		$items = array();
 		$ret = array();
 		foreach ($container->findByTag($tag) as $route => $meta) {
-			$priority = isset($meta['priority']) ? $meta['priority'] : (int)$meta;
+			$priority = isset($meta['priority']) ? $meta['priority'] : (int) $meta;
 			$items[$priority][] = $route;
 		}
 
@@ -624,12 +600,12 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 				$ret[] = $item;
 			}
 		}
+
 		return $ret;
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCssFiles()
 	{
@@ -649,9 +625,8 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getJsFiles()
 	{
@@ -694,9 +669,8 @@ class SystemExtension extends CompilerExtension implements IEntityProvider, IPre
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEventTypes()
 	{

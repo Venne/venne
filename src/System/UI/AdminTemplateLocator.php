@@ -17,19 +17,24 @@ use Nette\ComponentModel\Component;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdminTemplateLocator implements ITemplateLocator
+class AdminTemplateLocator implements \Venne\System\UI\ITemplateLocator
 {
 
 	/** @var array */
 	private $templateDirs = array();
 
-
+	/**
+	 * @param string[] $templateDirs
+	 */
 	public function __construct(array $templateDirs = array())
 	{
 		$this->templateDirs = $templateDirs;
 	}
 
-
+	/**
+	 * @param \Nette\ComponentModel\Component $control
+	 * @return string[]
+	 */
 	public function formatLayoutTemplateFiles(Component $control)
 	{
 		$list = array();
@@ -59,7 +64,10 @@ class AdminTemplateLocator implements ITemplateLocator
 		return $list;
 	}
 
-
+	/**
+	 * @param \Nette\ComponentModel\Component $control
+	 * @return string[]
+	 */
 	public function formatTemplateFiles(Component $control)
 	{
 		$list = array();

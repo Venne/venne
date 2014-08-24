@@ -20,33 +20,43 @@ use Venne\System\UI\Control;
 class FlashMessageControl extends Control
 {
 
-	public function renderDefault($global = FALSE)
+	/**
+	 * @param bool $global
+	 */
+	public function renderDefault($global = false)
 	{
 		$this->template->flashes = $this->getFlashes($global);
 	}
 
-
-	protected function getFlashes($global = FALSE)
+	/**
+	 * @param bool $global
+	 * @return string[]
+	 */
+	protected function getFlashes($global = false)
 	{
 		$component = $this->parent;
 
 		$ret = $this->getFlashesByControl($component);
 
 		if ($global) {
-			foreach ($component->getComponents(TRUE) as $component) {
-				$ret = array_merge($ret, (array)$this->getFlashesByControl($component));
+			foreach ($component->getComponents(true) as $component) {
+				$ret = array_merge($ret, (array) $this->getFlashesByControl($component));
 			}
 		}
 
 		return $ret;
 	}
 
-
+	/**
+	 * @param \Nette\ComponentModel\Component $component
+	 * @return string[]
+	 */
 	protected function getFlashesByControl(Component $component)
 	{
 		if ($component instanceof \Nette\Application\UI\Control) {
 			$id = $component->getParameterId('flash');
-			return (array)$component->presenter->getFlashSession()->$id;
+
+			return (array) $component->presenter->getFlashSession()->$id;
 		}
 	}
 }

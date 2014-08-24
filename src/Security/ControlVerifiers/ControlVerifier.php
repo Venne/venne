@@ -14,67 +14,53 @@ namespace Venne\Security\ControlVerifiers;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\PresenterComponentReflection;
 use Nette\InvalidArgumentException;
-use Nette\Object;
 use Nette\Reflection\Method;
 use Nette\Security\User;
-use Venne\Security\IControlVerifier;
 use Venne\Security\IControlVerifierReader;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ControlVerifier extends Object implements IControlVerifier
+class ControlVerifier extends \Nette\Object implements \Venne\Security\IControlVerifier
 {
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	protected $user;
 
-	/** @var IControlVerifierReader */
+	/** @var \Venne\Security\IControlVerifierReader */
 	protected $reader;
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $_annotationSchema = array();
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $_presenterAllowed = array();
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $_methodAllowed = array();
 
-
-	/**
-	 * @param User $user
-	 * @param IControlVerifierReader $reader
-	 */
 	public function __construct(User $user, IControlVerifierReader $reader)
 	{
 		$this->user = $user;
 		$this->reader = $reader;
 	}
 
-
-	/**
-	 * @param IControlVerifierReader $reader
-	 */
 	public function setControlVerifierReader(IControlVerifierReader $reader)
 	{
 		$this->reader = $reader;
 	}
 
-
 	/**
-	 * @return IControlVerifierReader
+	 * @return \Venne\Security\IControlVerifierReader
 	 */
 	public function getControlVerifierReader()
 	{
 		return $this->reader;
 	}
 
-
 	/**
-	 * @param $element
+	 * @param \Nette\Reflection\Method|\Nette\Application\UI\PresenterComponentReflection $element
 	 * @return bool
-	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function checkRequirements($element)
 	{
@@ -89,9 +75,8 @@ class ControlVerifier extends Object implements IControlVerifier
 		throw new InvalidArgumentException("Argument must be instance of 'Nette\Reflection\Method' OR 'Nette\Application\UI\PresenterComponentReflection'");
 	}
 
-
 	/**
-	 * @param PresenterComponentReflection $element
+	 * @param \Nette\Application\UI\PresenterComponentReflection $element
 	 * @return bool
 	 */
 	protected function isPresenterAllowedCached(PresenterComponentReflection $element)
@@ -103,10 +88,9 @@ class ControlVerifier extends Object implements IControlVerifier
 		return $this->_presenterAllowed[$element->name];
 	}
 
-
 	/**
-	 * @param Method $element
-	 * @return mixed
+	 * @param \Nette\Reflection\Method $element
+	 * @return bool
 	 */
 	protected function isMethodAllowedCached(Method $element)
 	{
@@ -117,27 +101,24 @@ class ControlVerifier extends Object implements IControlVerifier
 		return $this->_methodAllowed[$element->name];
 	}
 
-
 	/**
-	 * @param PresenterComponentReflection $element
+	 * @param \Nette\Application\UI\PresenterComponentReflection $element
 	 * @return bool
 	 */
 	protected function checkPresenter(PresenterComponentReflection $element)
 	{
-		return TRUE;
+		return true;
 	}
 
-
 	/**
-	 * @param Method $element
-	 * @return bool
+	 * @param \Nette\Reflection\Method $element
 	 */
 	protected function checkMethod(Method $element)
 	{
 		$class = $element->class;
 		$name = $element->name;
 		$schema = $this->reader->getSchema($class);
-		$exception = NULL;
+		$exception = null;
 
 		// users
 		if (isset($schema[$name]['users']) && count($schema[$name]['users']) > 0) {
@@ -171,4 +152,5 @@ class ControlVerifier extends Object implements IControlVerifier
 			throw new ForbiddenRequestException($exception);
 		}
 	}
+
 }

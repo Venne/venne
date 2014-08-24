@@ -13,35 +13,31 @@ namespace Venne\Config;
 
 use Nette\ComponentModel\IComponent;
 use Nette\DI\Config\Adapters\NeonAdapter;
-use Nette\Forms\Container;
-use Nette\Object;
+use Nette\Forms\Form;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use Nette\Forms\Form;
 use Venne\Forms\Controls\EventControl;
 
 /**
  * @author     Josef Kříž
  */
-class ConfigMapper extends Object
+class ConfigMapper extends \Nette\Object
 {
-
 
 	/** @var string */
 	protected $fileName;
 
-	/** @var NeonAdapter */
+	/** @var \Nette\DI\Config\Adapters\NeonAdapter */
 	protected $adapter;
 
 	/** @var string */
 	protected $root;
 
-	/** @var array */
+	/** @var mixed */
 	protected $data;
 
-	/** @var Container */
+	/** @var \Nette\Forms\Container */
 	protected $container;
-
 
 	/**
 	 * @param string $fileName
@@ -54,13 +50,17 @@ class ConfigMapper extends Object
 		$this->adapter = new NeonAdapter;
 	}
 
-
+	/**
+	 * @return string
+	 */
 	public function getRoot()
 	{
 		return implode('.', $this->root);
 	}
 
-
+	/**
+	 * @param string $root
+	 */
 	public function setRoot($root)
 	{
 		$root = str_replace('\.', '\\', $root);
@@ -70,25 +70,29 @@ class ConfigMapper extends Object
 		}
 	}
 
-
 	public function setForm(Form $container)
 	{
 		$this->container = $container;
 		$this->container['_eventControl'] = $eventControl = new EventControl('_eventControl');
-		$eventControl->onAttached[] = function() {
+		$eventControl->onAttached[] = function () {
 			$this->load();
 			unset($this->container['_eventControl']);
 		};
 		$this->container->onSuccess[] = $this->saveConfig;
 	}
 
-
+	/**
+	 * @param mixed $data
+	 * @param \Nette\ComponentModel\IComponent $container
+	 */
 	public function assign($data, IComponent $container)
 	{
 
 	}
 
-
+	/**
+	 * @return mixed
+	 */
 	protected function loadConfig()
 	{
 		$this->data = $this->adapter->load($this->fileName);
@@ -101,20 +105,19 @@ class ConfigMapper extends Object
 		return $data;
 	}
 
-
 	public function saveConfig()
 	{
 		$this->save();
 
 		$values = $this->data;
 		$this->loadConfig();
-		$data = & $this->data;
+		$data = &$this->data;
 
 		foreach ($this->root as $item) {
-			$data = & $data[$item];
+			$data = &$data[$item];
 		}
 
-		$data = $data ? : array();
+		$data = $data ?: array();
 		$data = Arrays::mergeTree($values, $data);
 
 		file_put_contents($this->fileName, $this->adapter->dump($this->data));
@@ -124,16 +127,15 @@ class ConfigMapper extends Object
 		}
 	}
 
-
 	/**
-	 * @param null $container
+	 * @param \Nette\Forms\Container|null $container
 	 * @param bool $rec
-	 * @param null $values
-	 * @return array|null
+	 * @param mixed[] $values
+	 * @return mixed
 	 */
-	private function save($container = NULL, $rec = false, $values = NULL)
+	private function save($container = null, $rec = false, array $values = array())
 	{
-		$container = $container ? : $this->container;
+		$container = $container ?: $this->container;
 
 		if (!$rec) {
 			$values = $this->loadConfig();
@@ -147,7 +149,7 @@ class ConfigMapper extends Object
 		foreach ($container->getComponents() as $key => $control) {
 			if (!Strings::startsWith($key, '_')) {
 				if ($control instanceof \Nette\Forms\Container) {
-					$values[$key] = $this->save($control, TRUE, $values);
+					$values[$key] = $this->save($control, true, $values);
 				} else if ($control instanceof \Nette\Forms\IControl) {
 					if (!$control->isOmitted()) {
 						$values[$key] = $control->value;
@@ -163,15 +165,15 @@ class ConfigMapper extends Object
 		}
 	}
 
-
 	/**
-	 * @param null $container
+	 * @param \Nette\Forms\Container|null $container
 	 */
-	private function load($container = NULL)
+	private function load($container = null)
 	{
-		$container = $container ? : $this->container;
+		$container = $container ?: $this->container;
 
 		$values = $this->loadConfig();
 		$container->setDefaults($values);
 	}
+
 }

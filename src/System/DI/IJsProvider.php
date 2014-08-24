@@ -18,7 +18,7 @@ interface IJsProvider
 {
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getJsFiles();
 

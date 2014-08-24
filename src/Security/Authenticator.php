@@ -12,35 +12,27 @@
 namespace Venne\Security;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Object;
 use Nette\Security\AuthenticationException;
-use Nette\Security\IAuthenticator;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Authenticator extends Object implements IAuthenticator
+class Authenticator extends \Nette\Object implements \Nette\Security\IAuthenticator
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $userDao;
 
-
-	/**
-	 * @param $userDao
-	 */
 	public function __construct(EntityDao $userDao)
 	{
 		$this->userDao = $userDao;
 	}
 
-
 	/**
 	 * Performs an authentication
 	 *
-	 * @param  array
+	 * @param string []
 	 * @return \Nette\Security\Identity
-	 * @throws AuthenticationException
 	 */
 	public function authenticate(array $credentials)
 	{

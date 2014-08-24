@@ -11,40 +11,35 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Application\UI\Presenter;
-use Nette\Forms\Form;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\AdminModule\AccountFormFactory;
-use Venne\System\AdminPresenterTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class ApplicationPresenter extends Presenter
+class ApplicationPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var SystemAdministrationFormFactory */
+	/** @var \Venne\System\AdminModule\AdministrationFormFactory */
 	private $systemForm;
 
-	/** @var SystemApplicationFormFactory */
+	/** @var \Venne\System\AdminModule\ApplicationFormFactory */
 	private $applicationForm;
 
-	/** @var SystemAccountFormFactory */
+	/** @var \Venne\Security\AdminModule\AccountFormFactory */
 	private $accountForm;
 
-	/** @var SystemMailerFormFactory */
+	/** @var \Venne\System\AdminModule\MailerFormFactory */
 	private $mailerForm;
 
-	/** @var SystemAuthenticationFormFactory */
+	/** @var \Venne\System\AdminModule\AuthenticationFormFactory */
 	private $authenticationForm;
 
 	/** @var RegistrationTableFactory */
 	private $registrationTableFactory;
-
 
 	public function __construct(
 		ApplicationFormFactory $applicationForm,
@@ -63,14 +58,12 @@ class ApplicationPresenter extends Presenter
 		$this->registrationTableFactory = $registrationTableFactory;
 	}
 
-
 	/**
 	 * @secured(privilege="system")
 	 */
 	public function actionDefault()
 	{
 	}
-
 
 	/**
 	 * @secured
@@ -79,14 +72,12 @@ class ApplicationPresenter extends Presenter
 	{
 	}
 
-
 	/**
 	 * @secured
 	 */
 	public function actionAccount()
 	{
 	}
-
 
 	/**
 	 * @secured
@@ -95,14 +86,12 @@ class ApplicationPresenter extends Presenter
 	{
 	}
 
-
 	/**
 	 * @secured
 	 */
 	public function actionMailer()
 	{
 	}
-
 
 	/**
 	 * @secured
@@ -111,7 +100,6 @@ class ApplicationPresenter extends Presenter
 	{
 	}
 
-
 	/**
 	 * @secured
 	 */
@@ -119,14 +107,19 @@ class ApplicationPresenter extends Presenter
 	{
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentSystemForm()
 	{
 		$form = $this->systemForm->create();
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentApplicationForm()
 	{
 		$form = $this->applicationForm->create();
@@ -134,10 +127,13 @@ class ApplicationPresenter extends Presenter
 			$this->flashMessage($this->translator->translate('Application settings has been updated'), 'success');
 			$this->redirect('this');
 		};
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentAccountForm()
 	{
 		$form = $this->accountForm->create();
@@ -149,10 +145,13 @@ class ApplicationPresenter extends Presenter
 			$this->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
 			$this->redirect('this');
 		};
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentMailerForm()
 	{
 		$form = $this->mailerForm->create();
@@ -160,16 +159,21 @@ class ApplicationPresenter extends Presenter
 			$this->flashMessage($this->translator->translate('Mailer settings has been updated'), 'success');
 			$this->redirect('this');
 		};
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	protected function createComponentRegistrationTable()
 	{
 		return $this->registrationTableFactory->create();
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentAuthenticationForm()
 	{
 		$form = $this->authenticationForm->create();
@@ -177,6 +181,8 @@ class ApplicationPresenter extends Presenter
 			$this->flashMessage($this->translator->translate('Authentication settings has been updated'), 'success');
 			$this->redirect('this');
 		};
+
 		return $form;
 	}
+
 }

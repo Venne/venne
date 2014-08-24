@@ -17,19 +17,20 @@ use Venne\Forms\IFormFactory;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class InvitationFormFactory implements IFormFactory
+class InvitationFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
-
 
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();

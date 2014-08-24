@@ -18,26 +18,20 @@ use Venne\Queue\JobManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class JobFormFactory implements IFormFactory
+class JobFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var JobManager */
+	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 * @param JobManager $jobManager
-	 */
 	public function __construct(IFormFactory $formFactory, JobManager $jobManager)
 	{
 		$this->formFactory = $formFactory;
 		$this->jobManager = $jobManager;
 	}
-
 
 	/**
 	 * @return \Nette\Application\UI\Form
@@ -49,11 +43,11 @@ class JobFormFactory implements IFormFactory
 		$form->addGroup('Job');
 
 		$form->addSelect('type', 'Type')
-			->setItems(array_keys($this->jobManager->getJobs()), FALSE)
+			->setItems(array_keys($this->jobManager->getJobs()), false)
 			->addRule($form::FILLED);
 
 		$form->addSelect('state', 'State')
-			->setItems(array(JobEntity::STATE_SCHEDULED, JobEntity::STATE_IN_PROGRESS, JobEntity::STATE_FAILED), FALSE)
+			->setItems(array(JobEntity::STATE_SCHEDULED, JobEntity::STATE_IN_PROGRESS, JobEntity::STATE_FAILED), false)
 			->addRule($form::FILLED);
 
 		$form->addSelect('priority', 'priority')

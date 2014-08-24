@@ -13,25 +13,25 @@ namespace Venne\Security\DefaultType;
 
 use Kdyby\DoctrineForms\IComponentMapper;
 use Nette\Forms\Form;
-use Nette\Object;
 use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdminFormFactory extends Object implements IFormFactory
+class AdminFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
-
 
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -51,12 +51,12 @@ class AdminFormFactory extends Object implements IFormFactory
 		//$route->addFileEntityInput('photo', 'Avatar');
 
 		$user->setCurrentGroup($form->addGroup('Block by key'));
-		$user->addCheckbox('key_new', 'Enable')->addCondition($form::EQUAL, TRUE)->toggle('setKey');
+		$user->addCheckbox('key_new', 'Enable')->addCondition($form::EQUAL, true)->toggle('setKey');
 		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setKey'));
 		$user->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
 
 		$user->setCurrentGroup($form->addGroup('Password'));
-		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
+		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, true)->toggle('setPasswd');
 		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setPasswd'));
 		$user->addText('password', 'Password')
 			->addConditionOn($user['password_new'], Form::FILLED)
@@ -75,6 +75,7 @@ class AdminFormFactory extends Object implements IFormFactory
 		$form->addSubmit('_submit', 'Save');
 
 		$form->onValidate[] = $this->handleSave;
+
 		return $form;
 	}
 
@@ -108,15 +109,14 @@ class AdminFormFactory extends Object implements IFormFactory
 //		}
 //	}
 
-
 	public function handleSave(Form $form)
 	{
 		if (!$form['user']['password_new']->value) {
-			$form['user']['password']->value = NULL;
+			$form['user']['password']->value = null;
 		}
 		if (!$form['user']['key_new']->value) {
-			$form['user']['key']->value = NULL;
+			$form['user']['key']->value = null;
 		}
-
 	}
+	
 }

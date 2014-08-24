@@ -11,29 +11,29 @@
 
 namespace Venne\Queue;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
-use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- * @ORM\Entity
- * @ORM\Table(name="jobs")
  *
  * @property string $type
- * @property array $arguments
+ * @property mixed[] $arguments
  * @property string $state
  * @property int $priority
  * @property \DateTime $date
- * @property \DateTime $dateInterval
- * @property int|NULL $round
- * @property UserEntity $user
+ * @property \DateTime|null $dateInterval
+ * @property int|null $round
+ * @property \Venne\Security\UserEntity $user
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="jobs")
  */
-class JobEntity extends BaseEntity
+class JobEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	const STATE_SCHEDULED = 'scheduled';
 
@@ -49,84 +49,89 @@ class JobEntity extends BaseEntity
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $type;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="text")
 	 */
 	protected $arguments;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="string")
 	 */
 	protected $state;
 
 	/**
 	 * @var string
+	 *
 	 * @ORM\Column(type="integer")
 	 */
 	protected $priority;
 
 	/**
 	 * @var \DateTime
+	 *
 	 * @ORM\Column(type="datetime")
 	 */
 	protected $date;
 
 	/**
-	 * @var \DateTime
+	 * @var \DateTime|null
+	 *
 	 * @ORM\Column(type="datetime", nullable=true)
 	 */
 	protected $dateInterval;
 
 	/**
-	 * @var int
+	 * @var int|null
+	 *
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
 	protected $round;
 
 	/**
-	 * @var UserEntity
+	 * @var \Nette\Security\UserEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
 
-
 	/**
-	 * @param $type
+	 * @param string $type
 	 * @param \DateTime $date
-	 * @param array $arguments
+	 * @param mixed[] $arguments
 	 */
-	public function __construct($type, \DateTime $date = NULL, array $arguments = array())
+	public function __construct($type, \DateTime $date = null, array $arguments = array())
 	{
-		$this->date = $date ? : new \DateTime;
+		$this->date = $date ?: new \DateTime;
 		$this->setArguments($arguments);
 		$this->type = $type;
 		$this->state = self::STATE_SCHEDULED;
 		$this->priority = self::PRIORITY_NORMAL;
 	}
 
-
 	/**
-	 * @param $arguments
+	 * @param mixed[] $arguments
 	 */
 	public function setArguments(array $arguments = array())
 	{
 		$this->arguments = serialize($arguments);
 	}
 
-
 	/**
-	 * @return array
+	 * @return mixed[]
 	 */
 	public function getArguments()
 	{
-		return $this->arguments ? unserialize($this->arguments) : NULL;
+		return $this->arguments ? unserialize($this->arguments) : null;
 	}
 
 }

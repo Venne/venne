@@ -21,64 +21,64 @@ use Venne\Security\AdminModule\ProviderFormFactory;
 use Venne\Security\SecurityManager;
 use Venne\Security\UserEntity;
 use Venne\System\AdminModule\LoginFormFactory;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginControl extends Control
+class LoginControl extends \Venne\System\UI\Control
 {
 
-	/** @var array */
+	/** @var callable[] */
 	public $onSuccess;
 
-	/** @var array */
+	/** @var callable[] */
 	public $onError;
 
-	/** @persistent */
+	/**
+	 * @var string
+	 *
+	 * @persistent
+	 */
 	public $provider;
 
-	/** @persistent */
+	/**
+	 * @var bool
+	 *
+	 * @persistent
+	 */
 	public $reset;
 
-	/** @persistent */
+	/**
+	 * @var int
+	 *
+	 * @persistent
+	 */
 	public $key;
 
-	/** @var LoginFormFactory */
+	/** @var \Venne\System\AdminModule\LoginFormFactory */
 	private $loginFormFactory;
 
-	/** @var ProviderFormFactory */
+	/** @var \Venne\Security\AdminModule\ProviderFormFactory */
 	private $providerFormFactory;
 
-	/** @var ResetFormFactory */
+	/** @var \Venne\Security\Login\ResetFormFactory */
 	private $resetFormFactory;
 
-	/** @var ConfirmFormFactory */
+	/** @var \Venne\Security\Login\ConfirmFormFactory */
 	private $confirmFormFactory;
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $userDao;
 
-	/** @var IMailer */
+	/** @var \Nette\Mail\IMailer */
 	private $mailer;
 
-	/** @var FormFactoryFactory */
+	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
 	private $formFactoryFactory;
 
-
-	/**
-	 * @param EntityDao $userDao
-	 * @param LoginFormFactory $loginFormFactory
-	 * @param ProviderFormFactory $providerFormFactory
-	 * @param ResetFormFactory $resetFormFactory
-	 * @param ConfirmFormFactory $confirmFormFactory
-	 * @param SecurityManager $securityManager
-	 * @param IMailer $mailer
-	 * @param FormFactoryFactory $formFactoryFactory
-	 */
 	public function __construct(
 		EntityDao $userDao,
 		LoginFormFactory $loginFormFactory,
@@ -102,16 +102,17 @@ class LoginControl extends Control
 		$this->formFactoryFactory = $formFactoryFactory;
 	}
 
-
 	/**
-	 * @return SecurityManager
+	 * @return \Venne\Security\SecurityManager
 	 */
 	public function getSecurityManager()
 	{
 		return $this->securityManager;
 	}
 
-
+	/**
+	 * @return \Nette\Forms\Form
+	 */
 	protected function createComponentForm()
 	{
 		$form = $this->loginFormFactory->create();
@@ -123,37 +124,46 @@ class LoginControl extends Control
 		}
 
 		$form->onSuccess[] = $this->formSuccess;
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentProviderForm()
 	{
 		$this->providerFormFactory->setProvider($this->provider);
 
 		$form = $this->providerFormFactory->invoke();
 		$form['cancel']->onClick[] = function () {
-			$this->redirect('this', array('provider' => NULL));
+			$this->redirect('this', array('provider' => null));
 		};
 		$form->onSuccess[] = $this->providerFormSuccess;
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentResetForm()
 	{
 		$form = $this->resetFormFactory->create();
 		$form['cancel']->onClick[] = function () {
-			$this->redirect('this', array('reset' => NULL));
+			$this->redirect('this', array('reset' => null));
 		};
 		$form->onSuccess[] = $this->resetFormSuccess;
+
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentConfirmForm()
 	{
-		if (($userEntity = $this->userDao->findOneBy(array('resetKey' => $this->key))) === NULL) {
+		if (($userEntity = $this->userDao->findOneBy(array('resetKey' => $this->key))) === null) {
 			throw new BadRequestException;
 		}
 
@@ -163,9 +173,9 @@ class LoginControl extends Control
 			->create();
 
 		$form->onSuccess[] = $this->confirmFormSuccess;
+
 		return $form;
 	}
-
 
 	public function formSuccess(Form $form)
 	{
@@ -173,9 +183,9 @@ class LoginControl extends Control
 		$button = $form->isSubmitted();
 
 		if ($values->remember) {
-			$form->presenter->user->setExpiration('+ 14 days', FALSE);
+			$form->presenter->user->setExpiration('+ 14 days', false);
 		} else {
-			$form->presenter->user->setExpiration('+ 20 minutes', TRUE);
+			$form->presenter->user->setExpiration('+ 20 minutes', true);
 		}
 
 		if ($button === $form['_submit']) {
@@ -193,22 +203,21 @@ class LoginControl extends Control
 		$this->redirect('this');
 	}
 
-
 	public function providerFormSuccess(Form $form)
 	{
-		$this->redirect('login', array($form['provider']->value, json_encode((array)$form['parameters']->values)));
+		$this->redirect('login', array($form['provider']->value, json_encode((array) $form['parameters']->values)));
 	}
-
 
 	public function resetFormSuccess(Form $form)
 	{
-		/** @var UserEntity $user */
+		/** @var \Venne\Security\UserEntity $user */
 		$user = $this->userDao->findOneBy(array('email' => $form['email']->value));
 
 		if (!$user) {
-			$this->flashMessage($this->translator->translate('User with email %email% does not exist.', NULL, array(
+			$this->flashMessage($this->translator->translate('User with email %email% does not exist.', null, array(
 				'email' => $form['email']->value,
 			)), 'warning');
+
 			return;
 		}
 
@@ -216,33 +225,39 @@ class LoginControl extends Control
 		$this->userDao->save($user);
 
 		$this->flashMessage($this->translator->translate('New password has been sended'), 'success');
-		$this->redirect('this', array('reset' => NULL));
+		$this->redirect('this', array(
+			'reset' => null
+		));
 	}
-
 
 	public function confirmFormSuccess()
 	{
-		if (($userEntity = $this->userDao->findOneBy(array('resetKey' => $this->key))) === NULL) {
+		if (($userEntity = $this->userDao->findOneBy(array('resetKey' => $this->key))) === null) {
 			throw new BadRequestException;
 		}
 
 		$this->securityManager->sendChangedPassword($userEntity);
 
 		$this->flashMessage($this->translator->translate('New password has been saved'), 'success');
-		$this->redirect('this', array('key' => NULL));
+		$this->redirect('this', array(
+			'key' => null
+		));
 	}
 
-
-	public function handleLogin($name, $parameters = NULL)
+	/**
+	 * @param string $name
+	 * @param mixed|null $parameters
+	 */
+	public function handleLogin($name, $parameters = null)
 	{
 		$login = $this->securityManager->getLoginProviderByName($name);
 
-		if (($container = $login->getFormContainer()) !== NULL && $parameters == NULL) {
+		if (($container = $login->getFormContainer()) !== null && $parameters == null) {
 			$this->redirect('this', array('provider' => $name));
 
 		} else {
 			if ($parameters) {
-				$parameters = json_decode($parameters, TRUE);
+				$parameters = json_decode($parameters, true);
 			}
 
 			$this->authenticate($name, $parameters);
@@ -251,7 +266,6 @@ class LoginControl extends Control
 		$this->onSuccess($this);
 	}
 
-
 	public function handleLogout()
 	{
 		$this->presenter->user->logout(true);
@@ -259,8 +273,11 @@ class LoginControl extends Control
 		$this->redirect('this');
 	}
 
-
-	private function authenticate($provider, $parameters = NULL)
+	/**
+	 * @param string $provider
+	 * @param mixed|null $parameters
+	 */
+	private function authenticate($provider, $parameters = null)
 	{
 		$login = $this->securityManager->getLoginProviderByName($provider);
 
@@ -277,12 +294,15 @@ class LoginControl extends Control
 		$this->redirect('this');
 	}
 
-
+	/**
+	 * @param \Venne\Security\UserEntity $user
+	 * @param string $key
+	 */
 	private function sendEmail(UserEntity $user, $key)
 	{
 		$absoluteUrls = $this->presenter->absoluteUrls;
 		$this->presenter->absoluteUrls = true;
-		$link = $this->link('this', array('key' => $key, 'reset' => NULL));
+		$link = $this->link('this', array('key' => $key, 'reset' => null));
 		$this->presenter->absoluteUrls = $absoluteUrls;
 
 		$this->securityManager->sendRecoveryUrl($user, $link);

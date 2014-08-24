@@ -11,19 +11,19 @@
 
 namespace Venne\Security\DI;
 
-use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Events\DI\EventsExtension;
-use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
-use Venne\Notifications\DI\IEventProvider;
-use Venne\System\DI\IPresenterProvider;
 use Venne\System\DI\SystemExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SecurityExtension extends CompilerExtension implements IEntityProvider, IEventProvider, IPresenterProvider
+class SecurityExtension extends \Nette\DI\CompilerExtension
+	implements
+	\Kdyby\Doctrine\DI\IEntityProvider,
+	\Venne\Notifications\DI\IEventProvider,
+	\Venne\System\DI\IPresenterProvider
 {
 
 	public function loadConfiguration()
@@ -46,11 +46,9 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 			->setClass('Venne\Security\Listeners\UserLogListener')
 			->addTag(EventsExtension::TAG_SUBSCRIBER);
 
-
 		$this->setupDefaultType($container);
 		$this->setupSecurity($container);
 	}
-
 
 	public function setupSecurity(ContainerBuilder $container)
 	{
@@ -68,7 +66,6 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 
 		$container->addDefinition($this->prefix('providersFormFactory'))
 			->setClass('Venne\Security\AdminModule\ProvidersFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
-
 
 		$container->addDefinition($this->prefix('defaultPresenter'))
 			->setClass('Venne\Security\AdminModule\DefaultPresenter', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
@@ -100,7 +97,6 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 			));
 	}
 
-
 	public function setupDefaultType(ContainerBuilder $container)
 	{
 		$container->addDefinition($this->prefix('userType'))
@@ -122,9 +118,8 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 			->setClass('Venne\Security\DefaultType\RegistrationFormFactory', array(new Statement('@system.admin.basicFormFactory')));
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEntityMappings()
 	{
@@ -133,9 +128,8 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getPresenterMapping()
 	{
@@ -144,9 +138,8 @@ class SecurityExtension extends CompilerExtension implements IEntityProvider, IE
 		);
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getEventTypes()
 	{

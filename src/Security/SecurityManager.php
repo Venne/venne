@@ -11,41 +11,29 @@
 
 namespace Venne\Security;
 
-use Nette\Application\IPresenterFactory;
-use Nette\Application\Responses\TextResponse;
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
-use Nette\InvalidStateException;
-use Nette\Mail\IMailer;
-use Nette\Mail\Message;
-use Nette\Object;
-use Nette\Utils\Strings;
 use Venne\System\AdminModule\EmailPresenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SecurityManager extends Object
+class SecurityManager extends \Nette\Object
 {
 
-	/** @var Container */
+	/** @var \Nette\DI\Container */
 	private $context;
 
-	/** @var UserType[] */
+	/** @var \Venne\Security\UserType[] */
 	private $userTypes = array();
 
-	/** @var ILoginProvider[] */
+	/** @var \Venne\Security\ILoginProvider[] */
 	private $loginProviders = array();
 
-
-	/**
-	 * @param Container $context
-	 */
 	public function __construct(Container $context)
 	{
 		$this->context = $context;
 	}
-
 
 	public function addUserType(UserType $userType)
 	{
@@ -57,50 +45,43 @@ class SecurityManager extends Object
 		$this->userTypes[$type] = $userType;
 	}
 
-
 	/**
-	 * @return UserType[]
+	 * @return \Venne\Security\UserType[]
 	 */
 	public function getUserTypes()
 	{
 		return $this->userTypes;
 	}
 
-
 	/**
-	 * @param $class
-	 * @return UserType
-	 * @throws InvalidArgumentException
+	 * @param string $class
+	 * @return \Venne\Security\UserType
 	 */
 	public function getUserTypeByClass($class)
 	{
 		if (!isset($this->userTypes[$class])) {
-			throw new InvalidArgumentException("Type '$class' does not exist.");
+			throw new InvalidArgumentException(sprintf('Type \'%s\' does not exist.', $class));
 		}
 
 		return $this->userTypes[$class];
 	}
 
-
 	/**
-	 * @param $name
-	 * @param $loginProviderFactoryName
-	 * @throws InvalidArgumentException
+	 * @param string $name
+	 * @param string $loginProviderFactoryName
 	 */
 	public function addLoginProvider($name, $loginProviderFactoryName)
 	{
 		if (isset($this->loginProviders[$name])) {
-			throw new InvalidArgumentException("Social login name '{$name}' is already installed.");
+			throw new InvalidArgumentException(sprintf('Social login name \'%s\' is already installed.', $name));
 		}
 
 		$this->loginProviders[$name] = $loginProviderFactoryName;
 	}
 
-
 	/**
-	 * @param $name
-	 * @return ILoginProvider
-	 * @throws InvalidArgumentException
+	 * @param string $name
+	 * @return \Venne\Security\ILoginProvider
 	 */
 	public function getLoginProviderByName($name)
 	{
@@ -111,9 +92,8 @@ class SecurityManager extends Object
 		return $this->context->getService($this->loginProviders[$name]);
 	}
 
-
 	/**
-	 * @return array|ILoginProvider[]
+	 * @return \Venne\Security\ILoginProvider[]
 	 */
 	public function getLoginProviders()
 	{

@@ -13,22 +13,20 @@ namespace Venne\System\Components\AdminGrid;
 
 use Grido\Components\Actions\Event;
 use Grido\DataSources\Doctrine;
-use Grido\Grid;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Kdyby\Doctrine\EntityDao;
-use Nette\Callback;
+use Nette\Utils\Callback;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Forms\IFormFactory;
 use Venne\System\Components\IGridoFactory;
 use Venne\System\Components\INavbarControlFactory;
 use Venne\System\Components\NavbarControl;
 use Venne\System\Components\Section;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AdminGrid extends Control
+class AdminGrid extends \Venne\System\UI\Control
 {
 
 	const MODE_MODAL = 'modal';
@@ -37,52 +35,54 @@ class AdminGrid extends Control
 
 	/**
 	 * @var string
+	 *
 	 * @persistent
 	 */
 	public $id;
 
 	/**
 	 * @var string
+	 *
 	 * @persistent
 	 */
 	public $formName;
 
 	/**
 	 * @var string
+	 *
 	 * @persistent
 	 */
 	public $mode = self::MODE_MODAL;
 
-	/** @var array */
+	/** @var callable[] */
 	public $onAttached;
 
-	/** @var array */
+	/** @var callable[] */
 	public $onRender;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	protected $dao;
 
-	/** @var INavbarControlFactory */
+	/** @var \Venne\System\Components\INavbarControlFactory */
 	protected $navbarFactory;
 
-	/** @var NavbarControl */
+	/** @var \Venne\System\Components\NavbarControl */
 	protected $navbar;
 
-	/** @var Form[] */
+	/** @var \Venne\System\Components\AdminGrid\Form[] */
 	protected $navbarForms = array();
 
-	/** @var Form[] */
+	/** @var \Venne\System\Components\AdminGrid\Form[] */
 	protected $actionForms = array();
 
-	/** @var FormFactoryFactory */
+	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
 	private $formFactoryFactory;
 
-	/** @var IGridoFactory */
+	/** @var \Venne\System\Components\IGridoFactory */
 	private $gridoFactory;
 
-
 	public function __construct(
-		EntityDao $dao = NULL,
+		EntityDao $dao = null,
 		INavbarControlFactory $navbarFactory,
 		FormFactoryFactory $formFactoryFactory,
 		IGridoFactory $gridoFactory
@@ -96,56 +96,63 @@ class AdminGrid extends Control
 		$this->gridoFactory = $gridoFactory;
 	}
 
-
+	/**
+	 * @param \Nette\ComponentModel\IContainer $presenter
+	 */
 	protected function attached($presenter)
 	{
 		parent::attached($presenter);
 
 		$this->onAttached($this);
 
-		if ($this->presenter->getParameter('do') === NULL && $this->presenter->isAjax()) {
+		if ($this->presenter->getParameter('do') === null && $this->presenter->isAjax()) {
 			$this->redrawControl('table');
 			$this->redrawControl('navbar');
 			$this->redrawControl('breadcrumb');
 		}
 	}
 
-
-	/**
-	 * @param EntityDao $dao
-	 */
 	public function setDao(EntityDao $dao)
 	{
 		$this->dao = $dao;
 	}
 
-
 	/**
-	 * @return EntityDao
+	 * @return \Kdyby\Doctrine\EntityDao
 	 */
 	public function getDao()
 	{
 		return $this->dao;
 	}
 
-
 	public function handleClose()
 	{
-		$this->redirect('this', array('id' => NULL, 'formName' => NULL));
+		$this->redirect('this', array('id' => null, 'formName' => null));
 	}
 
-
+	/**
+	 * @param \Venne\System\Components\AdminGrid\Form $form
+	 * @param \Venne\System\Components\Section $section
+	 * @param string $mode
+	 * @return $this
+	 */
 	public function connectFormWithNavbar(Form $form, Section $section, $mode = self::MODE_MODAL)
 	{
 		$this->navbarForms[$section->getName()] = $form;
 
 		$section->onClick[] = function ($section) use ($mode) {
-			$this->redirect('this', array('id' => NULL, 'mode' => $mode, 'formName' => $section->getName()));
+			$this->redirect('this', array('id' => null, 'mode' => $mode, 'formName' => $section->getName()));
 		};
+
 		return $this;
 	}
 
-
+	/**
+	 * @param \Venne\System\Components\AdminGrid\Form $form
+	 * @param \Grido\Components\Actions\Event $action
+	 * @param string $mode
+	 * @return $this
+	 */
 	public function connectFormWithAction(Form $form, Event $action, $mode = self::MODE_MODAL)
 	{
 		$this->actionForms[$action->getName()] = $form;
@@ -153,10 +160,14 @@ class AdminGrid extends Control
 		$action->onClick[] = function ($id, $action) use ($mode) {
 			$this->redirect('this', array('id' => $id, 'mode' => $mode, 'formName' => $action->getName()));
 		};
+
 		return $this;
 	}
 
-
+	/**
+	 * @param \Grido\Components\Actions\Event $action
+	 * @return $this
+	 */
 	public function connectActionAsDelete(Event $action)
 	{
 		$action->onClick[] = $this->tableDelete;
@@ -164,31 +175,37 @@ class AdminGrid extends Control
 			if (method_exists($entity, '__toString')) {
 				return "Really delete '{$entity}'?";
 			}
+
 			return 'Really delete?';
 		});
 
 		$this->getTable()->setOperation(array('delete' => 'Delete'), $this->tableDelete);
+
 		return $this;
 	}
 
-
-	public function createForm(IFormFactory $formFactory, $title, $entityFactory = NULL, $type = NULL)
+	/**
+	 * @param \Venne\Forms\IFormFactory $formFactory
+	 * @param string $title
+	 * @param callable $entityFactory
+	 * @param string $type
+	 * @return \Venne\System\Components\AdminGrid\Form
+	 */
+	public function createForm(IFormFactory $formFactory, $title, $entityFactory = null, $type = null)
 	{
 		return new Form($formFactory, $title, $entityFactory, $type);
 	}
 
-
 	/**
-	 * @return Grid
+	 * @return \Nette\ComponentModel\IComponent
 	 */
 	public function getTable()
 	{
 		return $this['table'];
 	}
 
-
 	/**
-	 * @return NavbarControl
+	 * @return \Venne\System\Components\NavbarControl
 	 */
 	public function getNavbar()
 	{
@@ -199,8 +216,7 @@ class AdminGrid extends Control
 		return $this->navbar;
 	}
 
-
-	public function setNavbar(NavbarControl $navbar = NULL)
+	public function setNavbar(NavbarControl $navbar = null)
 	{
 		$this->navbar = $navbar;
 
@@ -208,7 +224,6 @@ class AdminGrid extends Control
 			unset($this['navbar']);
 		}
 	}
-
 
 	/**
 	 * @param string $formName
@@ -218,7 +233,6 @@ class AdminGrid extends Control
 		$this->formName = $formName;
 	}
 
-
 	/**
 	 * @return string
 	 */
@@ -227,9 +241,8 @@ class AdminGrid extends Control
 		return $this->formName;
 	}
 
-
 	/**
-	 * @return Grid
+	 * @return \Grido\Grid
 	 */
 	protected function createComponentTable()
 	{
@@ -242,23 +255,25 @@ class AdminGrid extends Control
 		return $grid;
 	}
 
-
 	/**
-	 * @return NavbarControl
+	 * @return \Venne\System\Components\NavbarControl
 	 */
 	protected function createComponentNavbar()
 	{
-		$navbar = $this->navbarFactory ? $this->navbarFactory->create() : new NavbarControl;
+		$navbar = $this->navbarFactory ? $this->navbarFactory->create() : new NavbarControl();
+
 		return $navbar;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\Form
+	 */
 	protected function createComponentNavbarForm()
 	{
 		$form = $this->navbarForms[$this->formName];
 
 		if ($form->getEntityFactory()) {
-			$entity = Callback::create($form->getEntityFactory())->invoke();
+			$entity = Callback::invoke($form->getEntityFactory());
 		} else {
 			$class = $this->dao->getClassName();
 			$entity = new $class;
@@ -279,19 +294,21 @@ class AdminGrid extends Control
 
 		if ($this->mode == self::MODE_PLACE) {
 			$form->addSubmit('_cancel', 'Cancel')
-				->setValidationScope(FALSE)
+				->setValidationScope(false)
 				->onClick[] = function () {
-				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+				$this->redirect('this', array('formName' => null, 'mode' => null));
 			};
 		}
 
 		return $form;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentActionForm()
 	{
-		/** @var Form $form */
+		/** @var \Nette\Application\UI\Form $form */
 		$form = $this->actionForms[$this->formName];
 		$form = $this->formFactoryFactory
 			->create($form->getFactory())
@@ -308,18 +325,17 @@ class AdminGrid extends Control
 
 		if ($this->mode == self::MODE_PLACE) {
 			$form->addSubmit('_cancel', 'Cancel')
-				->setValidationScope(FALSE)
+				->setValidationScope(false)
 				->onClick[] = function () {
-				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+				$this->redirect('this', array('formName' => null, 'mode' => null));
 			};
 		}
 
 		return $form;
 	}
 
-
 	/**
-	 * @return BaseEntity
+	 * @return \Kdyby\Doctrine\Entities\BaseEntity
 	 */
 	public function getCurrentEntity()
 	{
@@ -328,46 +344,42 @@ class AdminGrid extends Control
 		}
 
 		$class = $this->dao->getClassName();
+
 		return new $class;
 	}
-
 
 	public function navbarFormSuccess(\Nette\Application\UI\Form $form)
 	{
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
 			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => NULL, 'mode' => NULL));
+				$this->redirect('this', array('formName' => null, 'mode' => null));
 			}
-			$this->formName = NULL;
-			$this->mode = NULL;
+			$this->formName = null;
+			$this->mode = null;
 		}
 	}
-
 
 	public function actionFormSuccess(\Nette\Application\UI\Form $form)
 	{
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
 			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => NULL, 'id' => NULL, 'mode' => NULL));
+				$this->redirect('this', array('formName' => null, 'id' => null, 'mode' => null));
 			}
-			$this->formName = NULL;
-			$this->id = NULL;
-			$this->mode = NULL;
+			$this->formName = null;
+			$this->id = null;
+			$this->mode = null;
 		}
 	}
-
 
 	public function navbarFormError()
 	{
 		$this->redrawControl('navbarForm');
 	}
 
-
 	public function actionFormError()
 	{
 		$this->redrawControl('actionForm');
 	}
-
 
 	public function render()
 	{
@@ -380,12 +392,16 @@ class AdminGrid extends Control
 		$this->template->render();
 	}
 
-
-	public function tableDelete($id, $action, $redirect = TRUE)
+	/**
+	 * @param integer $id
+	 * @param integer[] $action
+	 * @param bool $redirect
+	 */
+	public function tableDelete($id, $action, $redirect = true)
 	{
 		if (is_array($action)) {
 			foreach ($action as $item) {
-				$this->tableDelete($item, NULL, FALSE);
+				$this->tableDelete($item, null, false);
 			}
 		} else {
 			$this->dao->delete($this->dao->find($id));

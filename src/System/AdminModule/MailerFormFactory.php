@@ -17,24 +17,19 @@ use Venne\Forms\IFormFactory;
  * @author Prokop Simek <prokopsimek@seznam.cz>
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class MailerFormFactory implements IFormFactory
+class MailerFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-
-	/**
-	 * @param IFormFactory $formFactory
-	 */
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
 	/**
-	 * @return \Nette\Forms\Form
+	 * @return \Nette\Application\UI\Form
 	 */
 	public function create()
 	{
@@ -49,16 +44,16 @@ class MailerFormFactory implements IFormFactory
 		$cmsMailer->addText('senderName', 'Sender name')->setDefaultValue('Venne');
 
 		$smtp = $netteMailer->addCheckbox('smtp', 'Use SMTP');
-		$smtp->addCondition($form::EQUAL, TRUE)->toggle('form-smtp');
+		$smtp->addCondition($form::EQUAL, true)->toggle('form-smtp');
 
 		$netteMailer->setCurrentGroup($form->addGroup()->setOption('container', \Nette\Utils\Html::el('div')->id('form-smtp')));
 
 		$netteMailer->addText('host', 'Host')
-			->addConditionOn($smtp, $form::EQUAL, TRUE)
+			->addConditionOn($smtp, $form::EQUAL, true)
 			->addRule($form::FILLED, 'Enter host');
 
 		$netteMailer->addText('port', 'Port')
-			->addConditionOn($smtp, $form::EQUAL, TRUE)
+			->addConditionOn($smtp, $form::EQUAL, true)
 			->addCondition($form::FILLED)
 			->addRule($form::INTEGER, 'Enter number format');
 		$netteMailer['port']->setOption('placeholder', '25');
@@ -67,15 +62,14 @@ class MailerFormFactory implements IFormFactory
 			->setPrompt('-----');
 
 		$netteMailer->addText('username', 'Username')
-			->addConditionOn($smtp, $form::EQUAL, TRUE)
+			->addConditionOn($smtp, $form::EQUAL, true)
 			->addCondition($form::FILLED)
 			->addRule($form::EMAIL, 'Enter email address');
-
 
 		$netteMailer->addPassword('password', 'Password');
 
 		$netteMailer->addText('timeout', 'Timeout')
-			->addConditionOn($smtp, $form::EQUAL, TRUE)
+			->addConditionOn($smtp, $form::EQUAL, true)
 			->addCondition($form::FILLED)
 			->addRule($form::INTEGER, 'Enter number format');
 
@@ -84,4 +78,5 @@ class MailerFormFactory implements IFormFactory
 
 		return $form;
 	}
+
 }

@@ -14,39 +14,36 @@ namespace Venne\Queue;
 use Kdyby\Doctrine\EntityDao;
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
-use Nette\Object;
 use Nette\Security\User;
 use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class JobManager extends Object
+class JobManager extends \Nette\Object
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
 
-	/** @var IJob[] */
+	/** @var \Venne\Queue\IJob[] */
 	private $jobs = array();
 
-	/** @var ConfigManager */
+	/** @var \Venne\Queue\ConfigManager */
 	private $configManager;
 
-	/** @var Container */
+	/** @var \Nette\DI\Container */
 	private $container;
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	private $user;
 
-
-	/**
-	 * @param EntityDao $jobDao
-	 * @param ConfigManager $configManager
-	 * @param User $user
-	 * @param Container $container
-	 */
-	public function __construct(EntityDao $jobDao, ConfigManager $configManager, User $user, Container $container)
+	public function __construct(
+		EntityDao $jobDao,
+		ConfigManager $configManager,
+		User $user,
+		Container $container
+	)
 	{
 		$this->configManager = $configManager;
 		$this->jobDao = $jobDao;
@@ -54,18 +51,17 @@ class JobManager extends Object
 		$this->container = $container;
 	}
 
-
 	/**
-	 * @param IJob|string $job
+	 * @param mixed $job
 	 * @return $this
 	 */
 	public function registerJob($job)
 	{
 		$key = is_object($job) ? get_class($job) : $job;
 		$this->jobs[$key] = $job;
+
 		return $this;
 	}
-
 
 	/**
 	 * @return \Venne\Queue\IJob[]
@@ -75,9 +71,8 @@ class JobManager extends Object
 		return $this->jobs;
 	}
 
-
 	/**
-	 * @param JobEntity $workEntity
+	 * @param \Venne\Queue\JobEntity $workEntity
 	 * @return $this
 	 */
 	public function scheduleJob(JobEntity $workEntity)
@@ -87,12 +82,12 @@ class JobManager extends Object
 		}
 
 		$this->jobDao->save($workEntity);
+
 		return $this;
 	}
 
-
 	/**
-	 * @param Worker $worker
+	 * @param \Venne\Queue\Worker $worker
 	 * @return bool
 	 */
 	public function doJob(Worker $worker)
@@ -120,7 +115,7 @@ class JobManager extends Object
 			try {
 				$job->run($jobEntity);
 			} catch (\Exception $e) {
-				$failed = TRUE;
+				$failed = true;
 				$jobEntity->state = $jobEntity::STATE_FAILED;
 				$this->jobDao->save($jobEntity);
 
@@ -147,24 +142,22 @@ class JobManager extends Object
 			$this->configManager->saveConfigFile($data);
 			$this->configManager->unlock();
 
-			return TRUE;
+			return true;
 		} else {
 			$this->configManager->unlock();
 		}
 
-		return FALSE;
+		return false;
 	}
 
-
 	/**
-	 * @param $type
-	 * @return IJob
-	 * @throws \Nette\InvalidArgumentException
+	 * @param string $type
+	 * @return object|\Venne\Queue\IJob
 	 */
 	public function getJob($type)
 	{
 		if (!isset($this->jobs[$type])) {
-			throw new InvalidArgumentException("Job type '$type' does not exist.");
+			throw new InvalidArgumentException(sprintf('Job type \'%s\' does not exist.', $type));
 		}
 
 		$ret = $this->jobs[$type];

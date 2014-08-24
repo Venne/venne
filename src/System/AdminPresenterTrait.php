@@ -14,12 +14,8 @@ namespace Venne\System;
 use Kdyby\Doctrine\EntityManager;
 use Nette\Application\Application;
 use Nette\InvalidStateException;
-use Nette\Localization\ITranslator;
 use Venne\Packages\PackageManager;
-use Venne\Security\ExtendedUserEntity;
 use Venne\Security\UserEntity;
-use Venne\System\UI\PresenterTrait;
-use Venne\Widgets\WidgetsControlTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,48 +23,49 @@ use Venne\Widgets\WidgetsControlTrait;
 trait AdminPresenterTrait
 {
 
-	use PresenterTrait;
-	use WidgetsControlTrait;
+	use \Venne\System\UI\PresenterTrait;
+	use \Venne\Widgets\WidgetsControlTrait;
 
-	/** @persistent */
+	/**
+	 * @var string
+	 *
+	 * @persistent
+	 */
 	public $sideComponent;
 
-	/** @var AdministrationManager */
+	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;
 
-	/** @var EntityManager */
+	/** @var \Kdyby\Doctrine\EntityManager */
 	private $entityManager;
 
-	/** @var ExtendedUserEntity */
+	/** @var \Venne\Security\ExtendedUserEntity */
 	private $extendedUser;
 
-	/** @var PackageManager */
+	/** @var \Venne\Packages\PackageManager */
 	private $packageManager;
 
-	/** @var Application */
+	/** @var \Nette\Application\Application */
 	private $application;
 
 	/** @var bool */
-	private $secured = TRUE;
-
+	private $secured = true;
 
 	/**
-	 * @param boolean $secured
+	 * @param bool $secured
 	 */
 	public function setSecured($secured)
 	{
-		$this->secured = (bool)$secured;
+		$this->secured = (bool) $secured;
 	}
 
-
 	/**
-	 * @return boolean
+	 * @return bool
 	 */
 	public function getSecured()
 	{
 		return $this->secured;
 	}
-
 
 	public function injectAdminPresenter(
 		AdministrationManager $administrationManager,
@@ -83,64 +80,61 @@ trait AdminPresenterTrait
 		$this->application = $application;
 	}
 
-
 	/**
-	 * @return AdministrationManager
+	 * @return \Venne\System\AdministrationManager
 	 */
 	public function getAdministrationManager()
 	{
 		return $this->administrationManager;
 	}
 
-
 	/**
-	 * @return EntityManager
+	 * @return \Kdyby\Doctrine\EntityManager
 	 */
 	public function getEntityManager()
 	{
 		return $this->entityManager;
 	}
 
-
 	/**
-	 * @return ITranslator
+	 * @return \Nette\Localization\ITranslator
 	 */
 	public function getTranslator()
 	{
 		return $this->translator;
 	}
 
-
 	/**
-	 * @return ExtendedUserEntity
-	 * @throws InvalidStateException
+	 * @return \Venne\Security\ExtendedUserEntity
 	 */
 	public function getExtendedUser()
 	{
 		if (!$this->extendedUser) {
 			if (!$this->user->isLoggedIn()) {
-				throw new InvalidStateException("User is not logged in.");
+				throw new InvalidStateException('User is not logged in.');
 			}
 
 			if (!$this->user->identity instanceof UserEntity) {
-				throw new InvalidStateException("User must be instance of 'Venne\Security\UserEntity'.");
+				throw new InvalidStateException('User must be instance of \'Venne\Security\UserEntity\'.');
 			}
 
 			$this->extendedUser = $this->user->identity->extendedUser;
 		}
+
 		return $this->extendedUser;
 	}
 
-
 	/**
-	 * @return PackageManager
+	 * @return \Venne\Packages\PackageManager
 	 */
 	public function getPackageManager()
 	{
 		return $this->packageManager;
 	}
 
-
+	/**
+	 * @param mixed $element
+	 */
 	public function checkRequirements($element)
 	{
 		$this->application->errorPresenter = 'Admin:Error';
@@ -157,7 +151,7 @@ trait AdminPresenterTrait
 			}
 		}
 
-		if ($this->getParameter('do') === NULL && $this->isAjax()) {
+		if ($this->getParameter('do') === null && $this->isAjax()) {
 			$this->redrawControl('navigation');
 			$this->redrawControl('content');
 			$this->redrawControl('header');
@@ -166,10 +160,9 @@ trait AdminPresenterTrait
 		}
 	}
 
-
 	public function handleLogout()
 	{
-		$this->user->logout(TRUE);
+		$this->user->logout(true);
 		$this->flashMessage($this->translator->translate('Logout success'), 'success');
 
 		if ($this->isAjax()) {
@@ -183,15 +176,21 @@ trait AdminPresenterTrait
 		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
+	/**
+	 * @return \Nette\Application\UI\Control
+	 */
 	protected function createComponentPanel()
 	{
 		$sideComponents = $this->getAdministrationManager()->getSideComponents();
 
 		$control = $sideComponents[$this->sideComponent]['factory']->create();
+
 		return $control;
 	}
 
-
+	/**
+	 * @param string $id
+	 */
 	public function handleChangeSideComponent($id)
 	{
 		if (!$this->isAjax()) {

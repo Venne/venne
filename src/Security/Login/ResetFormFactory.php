@@ -16,19 +16,20 @@ use Venne\Forms\IFormFactory;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ResetFormFactory implements IFormFactory
+class ResetFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
-
 
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -40,7 +41,7 @@ class ResetFormFactory implements IFormFactory
 		$form->addSubmit('_submit', 'Reset password')
 			->getControlPrototype()->class[] = 'btn-primary';
 		$form->addSubmit('cancel', 'Cancel')
-			->setValidationScope(FALSE);
+			->setValidationScope(false);
 
 		return $form;
 	}

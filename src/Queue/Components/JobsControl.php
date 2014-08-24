@@ -13,30 +13,27 @@ namespace Venne\Queue\Components;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Security\User;
-use Venne\System\UI\Control;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class JobsControl extends Control
+class JobsControl extends \Venne\System\UI\Control
 {
 
-	/** @var User */
+	/** @var \Nette\Security\User */
 	private $user;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
 
-	/** @var IJobControlFactory */
+	/** @var \Venne\Queue\Components\IJobControlFactory */
 	private $jobControlFactory;
 
-
-	/**
-	 * @param EntityDao $jobDao
-	 * @param User $user
-	 * @param IJobControlFactory $jobControlFactory
-	 */
-	public function __construct(EntityDao $jobDao, User $user, IJobControlFactory $jobControlFactory)
+	public function __construct(
+		EntityDao $jobDao,
+		User $user,
+		IJobControlFactory $jobControlFactory
+	)
 	{
 		parent::__construct();
 
@@ -44,7 +41,6 @@ class JobsControl extends Control
 		$this->user = $user;
 		$this->jobControlFactory = $jobControlFactory;
 	}
-
 
 	/**
 	 * @return int
@@ -57,7 +53,6 @@ class JobsControl extends Control
 			->getQuery()->getSingleScalarResult();
 	}
 
-
 	/**
 	 * @return int
 	 */
@@ -69,12 +64,13 @@ class JobsControl extends Control
 			->getQuery()->getResult();
 	}
 
-
+	/**
+	 * @return \Venne\Queue\Components\JobControl
+	 */
 	protected function createComponentJob()
 	{
 		return $this->jobControlFactory->create();
 	}
-
 
 	public function render()
 	{

@@ -12,11 +12,8 @@
 namespace Venne\Security\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
-use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
-use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\RoleEntity;
-use Venne\System\AdminPresenterTrait;
 use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
@@ -26,21 +23,20 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
 class RolesTableFactory
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $dao;
 
-	/** @var RoleFormFactory */
+	/** @var \Venne\Security\AdminModule\RoleFormFactory */
 	private $roleForm;
 
-	/** @var PermissionsFormFactory */
+	/** @var \Venne\Security\AdminModule\PermissionsFormFactory */
 	private $permissionsForm;
 
-	/** @var IAdminGridFactory */
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var ITranslator */
+	/** @var \Nette\Localization\ITranslator */
 	private $translator;
-
 
 	public function __construct(
 		EntityDao $dao,
@@ -57,7 +53,9 @@ class RolesTableFactory
 		$this->translator = $translator;
 	}
 
-
+	/**
+	 * @return \Venne\System\Components\AdminGrid\AdminGrid
+	 */
 	public function create()
 	{
 		$admin = $this->adminGridFactory->create($this->dao);
@@ -93,7 +91,7 @@ class RolesTableFactory
 			->getElementPrototype()->class[] = 'ajax';
 
 		$form = $admin->createForm($this->roleForm, 'Role');
-		$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', NULL, Form::TYPE_LARGE);
+		$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', null, Form::TYPE_LARGE);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 		$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'), $admin::MODE_PLACE);

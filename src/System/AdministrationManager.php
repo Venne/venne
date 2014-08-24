@@ -11,24 +11,21 @@
 
 namespace Venne\System;
 
-use Nette\Object;
 use Venne\Widgets\IWidgetManagerFactory;
-use Venne\Widgets\WidgetManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @property-read string $routePrefix
  * @property-read string $defaultPresenter
- * @property-read array $login
  */
-class AdministrationManager extends Object
+class AdministrationManager extends \Nette\Object
 {
 
-	/** @var array */
+	/** @var string[] */
 	private $administrationPages = array();
 
-	/** @var array */
+	/** @var string[] */
 	private $sideComponents = array();
 
 	/** @var string */
@@ -40,26 +37,30 @@ class AdministrationManager extends Object
 	/** @var string */
 	private $theme;
 
-	/** @var WidgetManager */
+	/** @var \Venne\Widgets\WidgetManager */
 	private $trayWidgetManager;
 
-	/** @var IWidgetManagerFactory */
+	/** @var \Venne\Widgets\IWidgetManagerFactory */
 	private $widgetManagerFactory;
 
-	/** @var array */
+	/** @var string[] */
 	private $jsFiles = array();
 
-	/** @var array */
+	/** @var string[] */
 	private $cssFiles = array();
 
-
 	/**
-	 * @param $routePrefix
-	 * @param $defaultPresenter
-	 * @param $theme
-	 * @param IWidgetManagerFactory $widgetManagerFactory
+	 * @param string $routePrefix
+	 * @param string $defaultPresenter
+	 * @param string $theme
+	 * @param \Venne\Widgets\IWidgetManagerFactory $widgetManagerFactory
 	 */
-	public function __construct($routePrefix, $defaultPresenter, $theme, IWidgetManagerFactory $widgetManagerFactory)
+	public function __construct(
+		$routePrefix,
+		$defaultPresenter,
+		$theme,
+		IWidgetManagerFactory $widgetManagerFactory
+	)
 	{
 		$this->routePrefix = $routePrefix;
 		$this->defaultPresenter = $defaultPresenter;
@@ -67,48 +68,45 @@ class AdministrationManager extends Object
 		$this->widgetManagerFactory = $widgetManagerFactory;
 	}
 
-
 	/**
-	 * @param $file
+	 * @param string $file
 	 * @param bool $args
 	 * @return $this
 	 */
-	public function addCssFile($file, $args = TRUE)
+	public function addCssFile($file, $args = true)
 	{
 		$this->cssFiles[trim($file)] = $args;
+
 		return $this;
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCssFiles()
 	{
 		return $this->cssFiles;
 	}
 
-
 	/**
-	 * @param $file
+	 * @param string $file
 	 * @param bool $args
 	 * @return $this
 	 */
-	public function addJsFile($file, $args = TRUE)
+	public function addJsFile($file, $args = true)
 	{
 		$this->jsFiles[trim($file)] = $args;
+
 		return $this;
 	}
 
-
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getJsFiles()
 	{
 		return $this->jsFiles;
 	}
-
 
 	/**
 	 * @return string
@@ -118,7 +116,6 @@ class AdministrationManager extends Object
 		return $this->defaultPresenter;
 	}
 
-
 	/**
 	 * @return string
 	 */
@@ -126,7 +123,6 @@ class AdministrationManager extends Object
 	{
 		return $this->routePrefix;
 	}
-
 
 	/**
 	 * @return string
@@ -136,20 +132,19 @@ class AdministrationManager extends Object
 		return $this->theme;
 	}
 
-
 	/**
-	 * @param $link
-	 * @param $name
-	 * @param $description
-	 * @param null $category
+	 * @param string $link
+	 * @param string $name
+	 * @param string $description
+	 * @param string|null $category
 	 * @return $this
 	 */
-	public function addAdministrationPage($link, $name, $description, $category = NULL)
+	public function addAdministrationPage($link, $name, $description, $category = null)
 	{
 		if ($category) {
-			$pages = & $this->administrationPages[$category];
+			$pages = &$this->administrationPages[$category];
 		} else {
-			$pages = & $this->administrationPages;
+			$pages = &$this->administrationPages;
 		}
 		$pages[] = array(
 			'link' => $link,
@@ -157,26 +152,25 @@ class AdministrationManager extends Object
 			'description' => $description,
 			'category' => $category,
 		);
+
 		return $this;
 	}
-
 
 	/**
 	 * Get Administration pages as array
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getAdministrationPages()
 	{
 		return $this->administrationPages;
 	}
 
-
 	/**
-	 * @param $name
-	 * @param $description
-	 * @param $factory
-	 * @param array $args
+	 * @param string $name
+	 * @param string $description
+	 * @param callable $factory
+	 * @param string[] $args
 	 * @return $this
 	 */
 	public function addSideComponent($name, $description, $factory, array $args = array())
@@ -187,18 +181,17 @@ class AdministrationManager extends Object
 			'factory' => $factory,
 			'args' => $args,
 		);
+
 		return $this;
 	}
 
-
 	/**
-	 * @return array
+	 * @return mixed[][]
 	 */
 	public function getSideComponents()
 	{
 		return $this->sideComponents;
 	}
-
 
 	/**
 	 * @return \Venne\Widgets\WidgetManager

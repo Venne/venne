@@ -14,8 +14,6 @@ namespace Venne\System\Commands;
 use Kdyby\Doctrine\EntityDao;
 use Kdyby\Doctrine\EntityManager;
 use Nette\Utils\Validators;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Venne\Security\DefaultType\UserEntity;
@@ -25,24 +23,18 @@ use Venne\Security\RoleEntity;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class InstallCommand extends Command
+class InstallCommand extends \Symfony\Component\Console\Command\Command
 {
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $roleDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $permissionDao;
 
-	/** @var EntityManager */
+	/** @var \Kdyby\Doctrine\EntityManager */
 	private $entityManager;
 
-
-	/**
-	 * @param EntityDao $roleDao
-	 * @param EntityDao $permissionDao
-	 * @param EntityManager $entityManager
-	 */
 	public function __construct(EntityDao $roleDao, EntityDao $permissionDao, EntityManager $entityManager)
 	{
 		parent::__construct();
@@ -52,10 +44,6 @@ class InstallCommand extends Command
 		$this->entityManager = $entityManager;
 	}
 
-
-	/**
-	 * {@inheritdoc}
-	 */
 	protected function configure()
 	{
 		$this
@@ -63,13 +51,8 @@ class InstallCommand extends Command
 			->setDescription('Create administration account and default roles.');
 	}
 
-
-	/**
-	 * {@inheritdoc}
-	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		/** @var DialogHelper $dialog */
 		$dialog = $this->getHelperSet()->get('dialog');
 
 		$email = $dialog->askAndValidate($output, 'Please enter administrator email: ', function ($email) {
@@ -78,8 +61,9 @@ class InstallCommand extends Command
 					'Email is not valid'
 				);
 			}
+
 			return $email;
-		}, FALSE);
+		}, false);
 
 		$output->writeln(sprintf('Creating role "<info>%s</info>"', $email));
 
@@ -89,8 +73,9 @@ class InstallCommand extends Command
 					'Password is too short'
 				);
 			}
+
 			return $password;
-		}, FALSE);
+		}, false);
 
 		$dialog->askHiddenResponseAndValidate($output, 'Please confirm password: ', function ($password2) use ($password) {
 			if ($password != $password2) {
@@ -98,10 +83,10 @@ class InstallCommand extends Command
 					'Invalid re password'
 				);
 			}
-		}, FALSE);
+		}, false);
 
 		$roles = array();
-		foreach (array('guest' => NULL, 'authenticated' => 'guest', 'admin' => 'authenticated') as $name => $parent) {
+		foreach (array('guest' => null, 'authenticated' => 'guest', 'admin' => 'authenticated') as $name => $parent) {
 
 			$output->writeln(sprintf('Creating role "<info>%s</info>"', $name));
 

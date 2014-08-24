@@ -18,7 +18,7 @@ interface IJobsControlFactory
 {
 
 	/**
-	 * @return JobsControl
+	 * @return \Venne\Queue\Components\JobsControl
 	 */
 	public function create();
 

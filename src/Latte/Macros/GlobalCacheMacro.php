@@ -11,41 +11,44 @@
 
 namespace Venne\Latte\Macros;
 
-use Latte\IMacro;
 use Latte\MacroNode;
 use Latte\PhpWriter;
-use Nette;
+use Nette\Application\UI\Control;
+use Nette\Application\UI\Presenter;
+use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
 use Nette\Latte;
+use Nette\Utils\Strings;
+use stdClass;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class GlobalCacheMacro extends Nette\Object implements IMacro
+class GlobalCacheMacro extends \Nette\Object implements \Latte\IMacro
 {
 
 	/** @var bool */
 	private $used;
 
-	/** @var array */
+	/** @var string[] */
 	private static $parents = array();
 
 	/** @var string */
 	private static $template;
 
-
 	/**
 	 * Initializes before template parsing.
-	 * @return void
 	 */
 	public function initialize()
 	{
-		$this->used = FALSE;
+		$this->used = false;
 	}
-
 
 	/**
 	 * Finishes template parsing.
-	 * @return array(prolog, epilog)
+	 *
+	 * @return string[]
 	 */
 	public function finalize()
 	{
@@ -54,56 +57,40 @@ class GlobalCacheMacro extends Nette\Object implements IMacro
 		}
 	}
 
-
-	/**
-	 * New node is found.
-	 * @return bool
-	 */
 	public function nodeOpened(MacroNode $node)
 	{
-		$this->used = TRUE;
-		$node->isEmpty = FALSE;
+		$this->used = true;
+		$node->isEmpty = false;
 		$node->openingCode = PhpWriter::using($node)
-			->write('<?php if (Venne\Latte\Macros\GlobalCacheMacro::createCache($netteCacheStorage, %var, $presenter->template->_g->caches, ' . var_export(self::$template, TRUE) . ', %node.array?)) { ?>',
-				Nette\Utils\Strings::random()
+			->write('<?php if (Venne\Latte\Macros\GlobalCacheMacro::createCache($netteCacheStorage, %var, $presenter->template->_g->caches, ' . var_export(self::$template, true) . ', %node.array?)) { ?>',
+				Strings::random()
 			);
 	}
 
-
-	/**
-	 * Node is closed.
-	 * @return void
-	 */
 	public function nodeClosed(MacroNode $node)
 	{
 		$node->closingCode = '<?php $_l->tmp = array_pop($presenter->template->_g->caches); if (!$_l->tmp instanceof stdClass) $_l->tmp->end(); Venne\Latte\Macros\GlobalCacheMacro::closeCache(); } ?>';
 	}
 
-
 	/********************* run-time helpers ****************d*g**/
 
-
-	/**
-	 * @return void
-	 */
-	public static function initRuntime(Nette\Application\UI\Control $control, Nette\Templating\FileTemplate $template, \stdClass $global)
+	public static function initRuntime(Control $control, Template $template, stdClass $global)
 	{
 		self::$template = $template->getFile();
-		if (!$control instanceof Nette\Application\UI\Presenter && count(self::$parents)) {
-			end(self::$parents)->dependencies[Nette\Caching\Cache::FILES][] = $template->getFile();
+		if (!$control instanceof Presenter && count(self::$parents)) {
+			end(self::$parents)->dependencies[Cache::FILES][] = $template->getFile();
 		}
 	}
 
-
 	/**
-	 * Starts the output cache. Returns Nette\Caching\OutputHelper object if buffering was started.
-	 * @param  Nette\Caching\IStorage
-	 * @param  string
-	 * @param  Nette\Caching\OutputHelper[]
-	 * @param  array
-	 * @return Nette\Caching\OutputHelper
+	 * @param \Nette\Caching\IStorage $cacheStorage
+	 * @param string $key
+	 * @param mixed $parents
+	 * @param $template
+	 * @param mixed[] $args
+	 * @return \Nette\Caching\OutputHelper
 	 */
-	public static function createCache(Nette\Caching\IStorage $cacheStorage, $key, & $parents, $template, array $args = NULL)
+	public static function createCache(IStorage $cacheStorage, $key, & $parents, $template, array $args = null)
 	{
 		if ($args) {
 			if (array_key_exists('if', $args) && !$args['if']) {
@@ -112,27 +99,27 @@ class GlobalCacheMacro extends Nette\Object implements IMacro
 			$key = array_merge(array($key), array_intersect_key($args, range(0, count($args))));
 		}
 		if ($parents) {
-			end($parents)->dependencies[Nette\Caching\Cache::ITEMS][] = $key;
+			end($parents)->dependencies[Cache::ITEMS][] = $key;
 		}
 		if (count(self::$parents)) {
-			end(self::$parents)->dependencies[Nette\Caching\Cache::ITEMS][] = $key;
+			end(self::$parents)->dependencies[Cache::ITEMS][] = $key;
 		}
 
-		$cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Templating.Cache');
+		$cache = new Cache($cacheStorage, 'Nette.Templating.Cache');
 		if ($helper = $cache->start($key)) {
 			if (isset($args['expire'])) {
 				$args['expiration'] = $args['expire']; // back compatibility
 			}
 			$helper->dependencies = array(
-				Nette\Caching\Cache::TAGS => isset($args['tags']) ? $args['tags'] : NULL,
-				Nette\Caching\Cache::EXPIRATION => isset($args['expiration']) ? $args['expiration'] : '+ 7 days',
-				Nette\Caching\Cache::FILES => array($template),
+				Cache::TAGS => isset($args['tags']) ? $args['tags'] : null,
+				Cache::EXPIRATION => isset($args['expiration']) ? $args['expiration'] : '+ 7 days',
+				Cache::FILES => array($template),
 			);
 			self::$parents[] = $parents[] = $helper;
 		}
+
 		return $helper;
 	}
-
 
 	public static function closeCache()
 	{

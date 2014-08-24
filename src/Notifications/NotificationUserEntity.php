@@ -12,30 +12,30 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
-use Nette\InvalidArgumentException;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="notification_user")
  */
-class NotificationUserEntity extends BaseEntity
+class NotificationUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var UserEntity
+	 * @var \Venne\Security\UserEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
 
 	/**
-	 * @var UserEntity
+	 * @var \Venne\Security\UserEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Notifications\NotificationEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
@@ -43,34 +43,22 @@ class NotificationUserEntity extends BaseEntity
 
 	/**
 	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $markRead = FALSE;
+	protected $markRead = false;
 
-
-	/**
-	 * @param NotificationEntity $notification
-	 * @param UserEntity $user
-	 */
 	public function __construct(NotificationEntity $notification, UserEntity $user)
 	{
 		$this->notification = $notification;
 		$this->user = $user;
 	}
 
-
-	/**
-	 * @param NotificationEntity $log
-	 */
 	public function setNotification(NotificationEntity $log)
 	{
 		$this->notification = $log;
 	}
 
-
-	/**
-	 * @param UserEntity $user
-	 */
 	public function setUser(UserEntity $user)
 	{
 		$this->user = $user;

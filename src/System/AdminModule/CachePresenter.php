@@ -11,32 +11,23 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Application\UI\Form;
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @secured
  */
-class CachePresenter extends Presenter
+class CachePresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @var CacheFormFactory */
+	/** @var \Venne\System\AdminModule\CacheFormFactory */
 	private $cacheFormFactory;
 
-
-	/**
-	 * @param CacheFormFactory $cacheFormFactory
-	 */
 	public function inject(CacheFormFactory $cacheFormFactory)
 	{
 		$this->cacheFormFactory = $cacheFormFactory;
 	}
-
 
 	/**
 	 * @secured(privilege="show")
@@ -44,7 +35,6 @@ class CachePresenter extends Presenter
 	public function actionDefault()
 	{
 	}
-
 
 	public function formSuccess()
 	{
@@ -55,11 +45,15 @@ class CachePresenter extends Presenter
 		}
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	protected function createComponentForm()
 	{
 		$form = $this->cacheFormFactory->create();
 		$form->onSuccess[] = $this->formSuccess;
+
 		return $form;
 	}
+
 }

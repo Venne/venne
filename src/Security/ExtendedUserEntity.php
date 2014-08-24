@@ -13,25 +13,24 @@ namespace Venne\Security;
 
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @ORM\MappedSuperclass
  */
-abstract class ExtendedUserEntity extends BaseEntity
+abstract class ExtendedUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var UserEntity
+	 * @var \Venne\Security\UserEntity
+	 *
 	 * @ORM\OneToOne(targetEntity="\Venne\Security\UserEntity", cascade={"all"})
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;
-
 
 	public function __construct()
 	{
@@ -40,29 +39,28 @@ abstract class ExtendedUserEntity extends BaseEntity
 		$this->startup();
 	}
 
-
 	public function startup()
 	{
 	}
 
-
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return $this->user->__toString();
 	}
 
-
 	/**
-	 * @return UserEntity
+	 * @return \Venne\Security\UserEntity
 	 */
 	public function getUser()
 	{
 		return $this->user;
 	}
 
-
 	/**
-	 * @return UserEntity
+	 * @return \Venne\Security\UserEntity
 	 */
 	private function createUserEntity()
 	{

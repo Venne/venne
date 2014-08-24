@@ -13,40 +13,30 @@ namespace Venne\Security;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette;
-use Nette\Application\IPresenterFactory;
 use Nette\Http\Session;
-use Nette\Http\SessionSection;
-use Nette\Object;
 use Nette\Security\Permission;
 use Venne\System\AdministrationManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AuthorizatorFactory extends Object
+class AuthorizatorFactory extends \Nette\Object
 {
 
 	const SESSION_SECTION = 'Venne.Security.Authorizator';
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $roleDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $permissionDao;
 
-	/** @var SessionSection */
+	/** @var \Nette\Http\SessionSection */
 	private $session;
 
-	/** @var AdministrationManager */
+	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;
 
-
-	/**
-	 * @param EntityDao $roleDao
-	 * @param EntityDao $permissionDao
-	 * @param Session $session
-	 * @param AdministrationManager $administrationManager
-	 */
 	public function __construct(
 		EntityDao $roleDao,
 		EntityDao $permissionDao,
@@ -60,7 +50,6 @@ class AuthorizatorFactory extends Object
 		$this->administrationManager = $administrationManager;
 	}
 
-
 	public function clearPermissionSession()
 	{
 		if (isset($this->session['permission'])) {
@@ -68,31 +57,29 @@ class AuthorizatorFactory extends Object
 		}
 	}
 
-
 	/**
-	 * @param Nette\Security\User $user
+	 * @param \Nette\Security\User $user
 	 * @param bool $fromSession
-	 * @return Permission
+	 * @return \Nette\Security\Permission
 	 */
-	public function getPermissionsByUser(Nette\Security\User $user, $fromSession = FALSE)
+	public function getPermissionsByUser(Nette\Security\User $user, $fromSession = false)
 	{
 		if ($fromSession) {
 			if ($this->session['permission']) {
 				return $this->session['permission'];
 			}
 
-			return $this->session['permission'] = $this->getPermissionsByUser($user, FALSE);
+			return $this->session['permission'] = $this->getPermissionsByUser($user, false);
 		}
 
 		return $this->getPermissionsByRoles($user->roles);
 	}
 
-
 	/**
 	 * Get permission for roles.
 	 *
-	 * @param array $roles
-	 * @return Permission
+	 * @param string $roles
+	 * @return \Nette\Security\Permission
 	 */
 	public function getPermissionsByRoles(array $roles)
 	{
@@ -105,13 +92,12 @@ class AuthorizatorFactory extends Object
 		return $permission;
 	}
 
-
 	/**
 	 * Setup permission by role
 	 *
-	 * @param Permission $permission
+	 * @param \Nette\Security\Permission $permission
 	 * @param string $role
-	 * @return Permission
+	 * @return \Nette\Security\Permission
 	 */
 	private function setPermissionsByRole(Permission $permission, $role)
 	{
@@ -142,15 +128,15 @@ class AuthorizatorFactory extends Object
 			}
 
 			if ($roleEntity && !$permission->hasRole($role)) {
-				$permission->addRole($role, $roleEntity->parent ? $roleEntity->parent->name : NULL);
+				$permission->addRole($role, $roleEntity->parent ? $roleEntity->parent->name : null);
 			}
 
 			foreach ($roleEntity->permissions as $perm) {
 				if ($perm->resource === $permission::ALL || $permission->hasResource($perm->resource)) {
 					if ($perm->allow) {
-						$permission->allow($role, $perm->resource, $perm->privilege ? $perm->privilege : NULL);
+						$permission->allow($role, $perm->resource, $perm->privilege ? $perm->privilege : null);
 					} else {
-						$permission->deny($role, $perm->resource, $perm->privilege ? $perm->privilege : NULL);
+						$permission->deny($role, $perm->resource, $perm->privilege ? $perm->privilege : null);
 					}
 				}
 			}

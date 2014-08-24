@@ -12,51 +12,51 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
-use Nette\InvalidArgumentException;
-use Venne\Doctrine\Entities\IdentifiedEntityTrait;
-use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
  * @ORM\Entity
  * @ORM\Table(name="notification_setting")
  */
-class NotificationSettingEntity extends BaseEntity
+class NotificationSettingEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use IdentifiedEntityTrait;
-
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var NotificationTypeEntity
+	 * @var \Venne\Notifications\NotificationTypeEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="NotificationTypeEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $type;
 
 	/**
-	 * @var string
+	 * @var string|null
+	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
 	protected $target;
 
 	/**
-	 * @var UserEntity
+	 * @var \Venne\Security\UserEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
 	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
 	protected $targetUser;
 
-
 	/**
-	 * @var int
+	 * @var int|null
+	 *
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
 	protected $targetKey;
 
 	/**
-	 * @var UserEntity
+	 * @var \Venne\Security\UserEntity
+	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
@@ -64,15 +64,17 @@ class NotificationSettingEntity extends BaseEntity
 
 	/**
 	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $email = FALSE;
+	protected $email = false;
 
 	/**
 	 * @var bool
+	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $selfNotification = FALSE;
+	protected $selfNotification = false;
 
 }
 

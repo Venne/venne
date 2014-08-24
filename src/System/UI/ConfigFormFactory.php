@@ -12,49 +12,46 @@
 namespace Venne\System\UI;
 
 use Nette\Application\UI\Form;
-use Nette\Object;
 use Venne\Config\ConfigMapper;
 use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class ConfigFormFactory extends Object implements IFormFactory
+class ConfigFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var ConfigMapper */
+	/** @var \Venne\Config\ConfigMapper */
 	private $configMapper;
 
-
 	/**
-	 * @param $file
-	 * @param $section
+	 * @param string $file
+	 * @param string $section
 	 */
 	public function __construct($file, $section)
 	{
 		$this->configMapper = new ConfigMapper($file, $section);
 	}
 
-
 	/**
-	 * @param IFormFactory $formFactory
+	 * @param \Venne\Forms\IFormFactory $formFactory
 	 */
 	public function setFormFactory(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
 	/**
-	 * @return Form
+	 * @return \Nette\Application\UI\Form
 	 */
 	public function create()
 	{
 		$form = $this->formFactory ? $this->formFactory->create() : new Form;
 		$this->configMapper->setForm($form);
+
 		return $form;
 	}
 

@@ -11,8 +11,6 @@
 
 namespace Venne\Queue;
 
-use Nette\Object;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -20,7 +18,7 @@ interface IJob
 {
 
 	/**
-	 * @param JobEntity $jobEntity
+	 * @param \Venne\Queue\JobEntity
 	 */
 	public function run(JobEntity $jobEntity);
 

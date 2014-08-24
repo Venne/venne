@@ -17,10 +17,20 @@ namespace Venne\Notifications;
 interface IEvent
 {
 
+	/**
+	 * @return string
+	 */
 	public static function getName();
 
+	/**
+	 * @return string
+	 */
 	public static function getHumanName();
 
+	/**
+	 * @param \Venne\Notifications\NotificationEntity $log
+	 * @return string
+	 */
 	public static function getLink(NotificationEntity $log);
 
 }

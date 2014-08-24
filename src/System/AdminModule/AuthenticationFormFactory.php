@@ -18,18 +18,17 @@ use Venne\Security\SecurityManager;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class AuthenticationFormFactory implements IFormFactory
+class AuthenticationFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
 
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $registrationDao;
-
 
 	public function __construct(IFormFactory $formFactory, EntityDao $registrationsDao, SecurityManager $securityManager)
 	{
@@ -38,7 +37,9 @@ class AuthenticationFormFactory implements IFormFactory
 		$this->securityManager = $securityManager;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -50,7 +51,7 @@ class AuthenticationFormFactory implements IFormFactory
 
 		$form->addGroup('Authentication');
 		$form->addSelect('autologin', 'Auto login')
-			->setItems($this->securityManager->getLoginProviders(), FALSE)
+			->setItems($this->securityManager->getLoginProviders(), false)
 			->setPrompt('Deactivated')
 			->addCondition($form::EQUAL, '')
 			->elseCondition()->toggle('form-autoregistration');

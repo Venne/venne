@@ -12,10 +12,7 @@
 namespace Venne\Queue\AdminModule;
 
 use Nette\Application\BadRequestException;
-use Nette\Application\UI\Presenter;
-use Nette\Diagnostics\Debugger;
 use Nette\InvalidArgumentException;
-use Nette\Utils\Strings;
 use Venne\Queue\WorkerManager;
 
 /**
@@ -23,34 +20,37 @@ use Venne\Queue\WorkerManager;
  *
  * @Secured
  */
-class WorkerPresenter extends Presenter
+class WorkerPresenter extends \Nette\Application\UI\Presenter
 {
 
-	/** @persistent */
+	/**
+	 * @var int
+	 *
+	 * @persistent
+	 */
 	public $id;
 
-	/** @persistent */
+	/**
+	 * @var bool
+	 *
+	 * @persistent
+	 */
 	public $debugMode;
 
-	/** @var WorkerManager */
+	/** @var \Venne\Queue\WorkerManager */
 	private $workerManager;
 
-
-	/**
-	 * @param WorkerManager $workerManager
-	 */
 	public function __construct(WorkerManager $workerManager)
 	{
 		$this->workerManager = $workerManager;
 	}
-
 
 	public function renderDefault()
 	{
 		$worker = $this->getWorker();
 
 		if (!$this->debugMode) {
-			ignore_user_abort(TRUE);
+			ignore_user_abort(true);
 			header('Cache-Control: no-cache');
 			header('Connection: close');
 			header('Content-length: 0');
@@ -74,13 +74,11 @@ class WorkerPresenter extends Presenter
 		$this->terminate();
 	}
 
-
 	public function handleCreate()
 	{
 		$this->id = $this->workerManager->createWorker()->getId();
 		$this->handleStart();
 	}
-
 
 	public function handleStart()
 	{
@@ -89,20 +87,17 @@ class WorkerPresenter extends Presenter
 		$this->terminate();
 	}
 
-
 	public function handleStop()
 	{
 		$this->workerManager->stopWorker($this->getWorker());
 		$this->terminate();
 	}
 
-
 	public function handlePause()
 	{
 		$this->workerManager->pauseWorker($this->getWorker());
 		$this->terminate();
 	}
-
 
 	private function ping()
 	{
@@ -116,10 +111,8 @@ class WorkerPresenter extends Presenter
 		curl_close($ch);
 	}
 
-
 	/**
 	 * @return \Venne\Queue\Worker
-	 * @throws \Nette\Application\BadRequestException
 	 */
 	private function getWorker()
 	{

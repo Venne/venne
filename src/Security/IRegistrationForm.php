@@ -20,8 +20,8 @@ interface IRegistrationForm
 {
 
 	/**
-	 * @param Form $form
-	 * @param ILoginProvider $loginProvider
+	 * @param \Nette\Forms\Form $form
+	 * @param \Venne\Security\ILoginProvider $loginProvider
 	 */
 	public function connectWithLoginProvider(Form $form, ILoginProvider $loginProvider);
 }

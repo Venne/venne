@@ -12,33 +12,31 @@
 namespace Venne\Queue;
 
 use Nette\InvalidArgumentException;
-use Nette\Object;
 use Nette\Utils\Random;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class WorkerManager extends Object
+class WorkerManager extends \Nette\Object
 {
 
 	const STATE_STARTED = 'started';
 
 	const STATE_PAUSED = 'paused';
 
-	/** @var ConfigManager */
+	/** @var \Venne\Queue\ConfigManager */
 	private $configManager;
 
-	/** @var IWorkerFactory */
+	/** @var \Venne\Queue\IWorkerFactory */
 	private $workerFactory;
 
 	/** @var int */
 	private $interval;
 
-
 	/**
-	 * @param $interval
-	 * @param ConfigManager $configManager
-	 * @param IWorkerFactory $workerFactory
+	 * @param int $interval
+	 * @param \Venne\Queue\ConfigManager $configManager
+	 * @param \Venne\Queue\IWorkerFactory $workerFactory
 	 */
 	public function __construct($interval, ConfigManager $configManager, IWorkerFactory $workerFactory)
 	{
@@ -46,7 +44,6 @@ class WorkerManager extends Object
 		$this->configManager = $configManager;
 		$this->workerFactory = $workerFactory;
 	}
-
 
 	/**
 	 * @return int
@@ -56,9 +53,8 @@ class WorkerManager extends Object
 		return $this->interval;
 	}
 
-
 	/**
-	 * @return Worker
+	 * @return \Venne\Queue\Worker
 	 */
 	public function createWorker()
 	{
@@ -69,8 +65,8 @@ class WorkerManager extends Object
 		$data['worker'][$id] = array(
 			'id' => $id,
 			'state' => self::STATE_PAUSED,
-			'lastCheck' => NULL,
-			'lastJob' => NULL,
+			'lastCheck' => null,
+			'lastJob' => null,
 		);
 		$this->configManager->saveConfigFile($data);
 		$this->configManager->unlock();
@@ -78,9 +74,8 @@ class WorkerManager extends Object
 		return $this->getWokrer($id);
 	}
 
-
 	/**
-	 * @param Worker $worker
+	 * @param \Venne\Queue\Worker $worker
 	 */
 	public function startWorker(Worker $worker)
 	{
@@ -92,9 +87,8 @@ class WorkerManager extends Object
 		$this->configManager->unlock();
 	}
 
-
 	/**
-	 * @param Worker $worker
+	 * @param \Venne\Queue\Worker $worker
 	 */
 	public function stopWorker(Worker $worker)
 	{
@@ -106,9 +100,8 @@ class WorkerManager extends Object
 		$this->configManager->unlock();
 	}
 
-
 	/**
-	 * @param Worker $worker
+	 * @param \Venne\Queue\Worker $worker
 	 */
 	public function pauseWorker(Worker $worker)
 	{
@@ -120,11 +113,9 @@ class WorkerManager extends Object
 		$this->configManager->unlock();
 	}
 
-
 	/**
-	 * @param $id
-	 * @return Worker
-	 * @throws \Nette\InvalidArgumentException
+	 * @param int $id
+	 * @return \Venne\Queue\Worker
 	 */
 	public function getWokrer($id)
 	{
@@ -137,10 +128,13 @@ class WorkerManager extends Object
 		return $this->workerFactory->create($id, $this->interval);
 	}
 
-
+	/**
+	 * @return string[]
+	 */
 	public function getWorkers()
 	{
 		$data = $this->configManager->loadConfigFile();
+
 		return isset($data['worker']) ? $data['worker'] : array();
 	}
 

@@ -13,30 +13,41 @@ namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
-use Nette\Application\UI\Presenter;
-use Venne\System\AdminPresenterTrait;
-use Venne\Security\Registration\IRegistrationControlFactory;
-use Venne\Security\Registration\RegistrationControl;
-use Venne\Security\Login\ILoginControlFactory;
-use Venne\Security\SecurityManager;
 use Nette\Application\UI\Multiplier;
 use Venne\Forms\Form;
+use Venne\Security\Login\ILoginControlFactory;
+use Venne\Security\Login\LoginControl;
+use Venne\Security\Registration\IRegistrationControlFactory;
+use Venne\Security\Registration\RegistrationControl;
+use Venne\Security\SecurityManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LoginPresenter extends Presenter
+class LoginPresenter extends \Nette\Application\UI\Presenter
 {
 
-	use AdminPresenterTrait;
+	use \Venne\System\AdminPresenterTrait;
 
-	/** @persistent */
+	/**
+	 * @var string|null
+	 *
+	 * @persistent
+	 */
 	public $backlink;
 
-	/** @persistent */
+	/**
+	 * @var string|null
+	 *
+	 * @persistent
+	 */
 	public $registrationKey;
 
-	/** @persistent */
+	/**
+	 * @var string|null
+	 *
+	 * @persistent
+	 */
 	public $hash;
 
 	/** @var Callback */
@@ -48,24 +59,20 @@ class LoginPresenter extends Presenter
 	/** @var string */
 	private $autoregistration;
 
-	/** @var array */
-	private $registrations = array();
-
-	/** @var SecurityManager */
+	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $roleDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $registrationDao;
 
-	/** @var EntityDao */
+	/** @var \Kdyby\Doctrine\EntityDao */
 	private $invitationDao;
 
-	/** @var RegistrationControlFactory */
+	/** @var \Venne\Security\Registration\IRegistrationControlFactory */
 	private $registrationControlFactory;
-
 
 	public function __construct(
 		EntityDao $roleDao,
@@ -86,7 +93,6 @@ class LoginPresenter extends Presenter
 		$this->invitationDao = $invitationDao;
 	}
 
-
 	/**
 	 * @param string $autologin
 	 */
@@ -94,7 +100,6 @@ class LoginPresenter extends Presenter
 	{
 		$this->autologin = $autologin;
 	}
-
 
 	/**
 	 * @param string $autoregistration
@@ -104,7 +109,6 @@ class LoginPresenter extends Presenter
 		$this->autoregistration = $autoregistration;
 	}
 
-
 	/**
 	 * @return \Kdyby\Doctrine\EntityDao
 	 */
@@ -112,7 +116,6 @@ class LoginPresenter extends Presenter
 	{
 		return $this->registrationDao;
 	}
-
 
 	protected function startup()
 	{
@@ -131,21 +134,21 @@ class LoginPresenter extends Presenter
 		}
 	}
 
-
 	/**
-	 * Sign in form component factory.
-	 *
-	 * @return Form
+	 * @return \Venne\Security\Login\LoginControl
 	 */
 	protected function createComponentSignInForm()
 	{
 		$form = $this->form->create();
 		$form->onSuccess[] = $this->formSuccess;
 		$form->onError[] = $this->formError;
+
 		return $form;
 	}
 
-
+	/**
+	 * @internal
+	 */
 	public function formSuccess()
 	{
 		if ($this->backlink) {
@@ -155,8 +158,12 @@ class LoginPresenter extends Presenter
 		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
-
-	public function formError($control, $message)
+	/**
+	 * @param \Venne\Security\Login\LoginControl $control
+	 * @param string $message
+	 * @internal
+	 */
+	public function formError(LoginControl $control, $message)
 	{
 		if ($this->autoregistration) {
 			$registration = str_replace(' ', '_', $this->autoregistration);
@@ -167,16 +174,21 @@ class LoginPresenter extends Presenter
 		$this->redirect('this');
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Multiplier
+	 */
 	protected function createComponentRegistration()
 	{
 		return new Multiplier($this->createRegistration);
 	}
 
-
+	/**
+	 * @param string $name
+	 * @return \Venne\Security\Registration\RegistrationControl
+	 */
 	public function createRegistration($name)
 	{
-		if (!$registration = $this->registrationDao->findOneBy(array('id' => $this->registrationKey, 'enabled' => TRUE))) {
+		if (!$registration = $this->registrationDao->findOneBy(array('id' => $this->registrationKey, 'enabled' => true))) {
 			throw new BadRequestException;
 		}
 
@@ -209,12 +221,10 @@ class LoginPresenter extends Presenter
 		return $control;
 	}
 
-
 	public function registrationLoad(RegistrationControl $control)
 	{
 		$this->template->regLoad = $control->name;
 	}
-
 
 	public function registrationSuccess()
 	{
@@ -227,13 +237,11 @@ class LoginPresenter extends Presenter
 		$this->redirect('this');
 	}
 
-
 	public function registrationEnable()
 	{
 		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
 		$this->redirect('this');
 	}
-
 
 	public function registrationError($control, $message)
 	{

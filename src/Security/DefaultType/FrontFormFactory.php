@@ -11,25 +11,26 @@
 
 namespace Venne\Security\DefaultType;
 
-use Venne\Forms\Form;
+use Nette\Forms\Form;
 use Venne\Forms\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FrontFormFactory implements IFormFactory
+class FrontFormFactory implements \Venne\Forms\IFormFactory
 {
 
-	/** @var IFormFactory */
+	/** @var \Venne\Forms\IFormFactory */
 	private $formFactory;
-
 
 	public function __construct(IFormFactory $formFactory)
 	{
 		$this->formFactory = $formFactory;
 	}
 
-
+	/**
+	 * @return \Nette\Application\UI\Form
+	 */
 	public function create()
 	{
 		$form = $this->formFactory->create();
@@ -46,7 +47,7 @@ class FrontFormFactory implements IFormFactory
 		//$route->addFileEntityInput('photo', 'Avatar');
 
 		$user->setCurrentGroup($form->addGroup('Password'));
-		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, TRUE)->toggle('setPasswd');
+		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, true)->toggle('setPasswd');
 		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setPasswd'));
 		$user->addPassword('password', 'Password')
 			->addConditionOn($user['password_new'], $form::FILLED)
@@ -62,7 +63,6 @@ class FrontFormFactory implements IFormFactory
 		return $form;
 	}
 
-
 	public function handleAttached(Form $form)
 	{
 		$form->setCurrentGroup();
@@ -75,7 +75,6 @@ class FrontFormFactory implements IFormFactory
 		}
 	}
 
-
 	public function handleSave(Form $form)
 	{
 		if ($form['user']['password_new']->value) {
@@ -84,4 +83,5 @@ class FrontFormFactory implements IFormFactory
 
 		parent::handleSave($form);
 	}
+
 }
