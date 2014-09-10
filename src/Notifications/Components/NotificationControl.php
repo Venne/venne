@@ -68,16 +68,10 @@ class NotificationControl extends \Venne\System\UI\Control
 			throw new BadRequestException;
 		}
 
-		if ($entity->user !== $this->user->identity) {
-			throw new BadRequestException;
-		}
-
 		$entity->markRead = true;
 		$this->notificationUserDao->save($entity);
 
-		if (!$this->presenter->isAjax()) {
-			$this->redirect('this');
-		}
+		$this->redirect('this');
 	}
 
 	/**
@@ -89,15 +83,9 @@ class NotificationControl extends \Venne\System\UI\Control
 			throw new BadRequestException;
 		}
 
-		if ($entity->user !== $this->user->identity) {
-			throw new BadRequestException;
-		}
-
 		$this->notificationUserDao->delete($entity);
 
-		if (!$this->presenter->isAjax()) {
-			$this->redirect('this');
-		}
+		$this->redirect('this');
 	}
 
 	public function render($id)

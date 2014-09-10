@@ -1,31 +1,23 @@
-<?php
-	try {
-		$event = $control->notificationManager->getType($notification->notification->type->type);
-	} catch (\Exception $e) {
-		$err = TRUE;
-	}
-?>
-
-{if !isset($err)}
-{var $link = $event::getLink($notification->notification)}
+{default $link = ''}
+{*var $link = $event::getLink($notification->notification)*}
 
 <div class="media{if $notification->markRead} text-muted{/if}">
 	<a n:href="remove $notification->id" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
 
 	<a class="pull-left" href="#">
-		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($notification->notification->user->email)))}" alt="$notification->user">
+		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($notification->userEmail)))}" alt="$notification->userName">
 	</a>
 	<div class="media-body">
 		<h4 class="media-heading">
-			{$notification->notification->user} <span class="label label-success">{$notification->notification->type->action}</span>
+			{$notification->userName} <span class="label label-success">{$notification->action}</span>
 		</h4>
 
 		<small class="text-muted">
-			<i class="fa fa-clock-o"></i> {$notification->notification->created|date:'d.m H:i'}
+			<i class="fa fa-clock-o"></i> {$notification->created|date:'d.m H:i'}
 		</small>
 
 		{if $link}<a href="{$link}">{else}<p>{/if}
-			<span>{$notification->notification->type->message}</span><br />
+			<span>{$notification->message}</span><br />
 		{if $link}</a>{else}</p>{/if}
 
 		<div class="btn-group pull-left">
@@ -38,4 +30,3 @@
 		</div>
 	</div>
 </div>
-{/if}

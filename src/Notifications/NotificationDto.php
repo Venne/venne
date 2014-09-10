@@ -15,12 +15,82 @@ namespace Venne\Notifications;
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @property-read integer $id
- * @property \DateTime $created
- * @property string $target
- * @property int $targetKey
+ * @property-read \DateTime $created
+ * @property-read string $target
+ * @property-read integer $targetKey
+ * @property-read boolean $markRead
+ *
+ * @property-read string $userEmail
+ * @property-read string $userName
+ *
+ * @property-read string $action
+ * @property-read string $message
  */
 class NotificationDto extends \Venne\DataTransfer\DataTransferObject
 {
 
-}
+	/**
+	 * @return \DateTime
+	 */
+	protected function getCreated()
+	{
+		return $this->getNotification()->created;
+	}
 
+	/**
+	 * @return string
+	 */
+	protected function getTarget()
+	{
+		return $this->getNotification()->target;
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function getTargetKey()
+	{
+		return $this->getNotification()->targetKey;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getUserName()
+	{
+		return (string)$this->getNotification()->user;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getUserEmail()
+	{
+		return (string)$this->getNotification()->user->email;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getAction()
+	{
+		return $this->getNotification()->type->action;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getMessage()
+	{
+		return $this->getNotification()->type->message;
+	}
+
+	/**
+	 * @return NotificationEntity
+	 */
+	private function getNotification()
+	{
+		return $this->getRawValue('notification');
+	}
+
+}
