@@ -124,6 +124,9 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		}
 
 		// template
+		$container->getDefinition('nette.templateFactory')
+			->setClass('Venne\Latte\TemplateFactory');
+
 		$container->getDefinition('nette.latteFactory')
 			->addSetup('$service->getCompiler()->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->getCompiler()))', array('@self'));
 
