@@ -2,7 +2,7 @@
 	"name": "venne-venne",
 	"version": "2.2.0",
 	"dependencies": {
-		"nette-forms": "*",
+		"nette-forms": "~2.2.2",
 		"jquery": "~1.9",
 		"jquery-ui": "~1.10.4",
 		"bootstrap": "~3.1.1",
@@ -14,7 +14,6 @@
 		"select2": "~3.4.5",
 		"typeahead.js": "~0.10.2",
 		"holderjs": "~2.3.2",
-		"hogan": "~3.0.0",
-		"nette.ajax.js": "~1.2.2"
+		"nette.ajax.js": "https://github.com/pepakriz/nette.ajax.js#master"
 	}
 }

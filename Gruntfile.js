@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 					{expand: true, cwd: 'bower_components/select2/', src: '**', dest: 'Resources/public/vendor/select2/'},
 					{expand: true, cwd: 'bower_components/typeahead.js/dist/', src: 'typeahead.bundle.min.js', dest: 'Resources/public/vendor/typeahead.js/'},
 					{expand: true, cwd: 'bower_components/holderjs/', src: 'holder.js', dest: 'Resources/public/vendor/holder/'},
-					{expand: true, cwd: 'bower_components/hogan/web/builds/2.0.0/', src: 'hogan-2.0.0.min.js', dest: 'Resources/public/vendor/hogan/'},
+					{expand: true, cwd: 'node_modules/hogan.js/web/builds/3.0.2/', src: 'hogan-3.0.2.min.js', dest: 'Resources/public/vendor/hogan/'},
 					{expand: true, cwd: 'bower_components/nette.ajax.js/', src: 'nette.ajax.js', dest: 'Resources/public/vendor/nette.ajax.js/'},
 				]
 			}

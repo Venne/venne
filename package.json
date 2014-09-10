@@ -14,6 +14,7 @@
 		"grunt-contrib-sass": "^0.7.3",
 		"grunt-contrib-imagemin": "0.4.x",
 		"grunt-contrib-watch": "0.5.x",
-		"grunt-autoprefixer": "0.6.x"
+		"grunt-autoprefixer": "0.6.x",
+		"hogan.js": "~3.0.2"
 	}
 }
