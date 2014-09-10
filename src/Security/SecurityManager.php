@@ -13,7 +13,10 @@ namespace Venne\Security;
 
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
-use Venne\System\AdminModule\EmailPresenter;
+use Venne\Notifications\EmailManager;
+use Venne\Notifications\NotificationManager;
+use Venne\Security\Events\NewPasswordEvent;
+use Venne\Security\Events\PasswordRecoveryEvent;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -30,9 +33,17 @@ class SecurityManager extends \Nette\Object
 	/** @var \Venne\Security\ILoginProvider[] */
 	private $loginProviders = array();
 
-	public function __construct(Container $context)
+	/** @var \Venne\Notifications\NotificationManager */
+	private $notificationManager;
+
+	/** @var \Venne\Notifications\EmailManager */
+	private $emailManager;
+
+	public function __construct(Container $context, NotificationManager $notificationManager, EmailManager $emailManager)
 	{
 		$this->context = $context;
+		$this->notificationManager = $notificationManager;
+		$this->emailManager = $emailManager;
 	}
 
 	public function addUserType(UserType $userType)
@@ -98,6 +109,41 @@ class SecurityManager extends \Nette\Object
 	public function getLoginProviders()
 	{
 		return array_keys($this->loginProviders);
+	}
+
+	public function sendNewPassword(UserEntity $user, UserEntity $sendBy = null)
+	{
+		$sendBy = $sendBy !== null ? $sendBy : $user;
+
+		$this->emailManager->send($user->email, null, NewPasswordEvent::getName(), 'newPassword');
+		$this->notificationManager->notify(
+			NewPasswordEvent::getName(),
+			$user,
+			'newPassword',
+			'New user password has been stored.',
+			$sendBy
+		);
+	}
+
+	/**
+	 * @param \Venne\Security\UserEntity $user
+	 * @param string $link
+	 * @param \Venne\Security\UserEntity|null $sendBy
+	 */
+	public function sendRecoveryUrl(UserEntity $user, $link, UserEntity $sendBy = null)
+	{
+		$sendBy = $sendBy !== null ? $sendBy : $user;
+
+		$this->emailManager->send($user->email, null, PasswordRecoveryEvent::getName(), 'passwordRecovery', array(
+			'link' => $link,
+		));
+		$this->notificationManager->notify(
+			PasswordRecoveryEvent::getName(),
+			$user,
+			'passwordRecovery',
+			'Password recovery URL has been sent.',
+			$sendBy
+		);
 	}
 
 }

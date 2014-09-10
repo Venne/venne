@@ -14,6 +14,10 @@ namespace Venne\Security\DI;
 use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
+use Venne\Security\Events\LoginEvent;
+use Venne\Security\Events\NewPasswordEvent;
+use Venne\Security\Events\PasswordRecoveryEvent;
+use Venne\Security\Events\RegistrationEvent;
 use Venne\System\DI\SystemExtension;
 
 /**
@@ -144,8 +148,10 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 	public function getEventTypes()
 	{
 		return array(
-			'Venne\Security\Events\LoginEvent',
-			'Venne\Security\Events\RegistrationEvent',
+			LoginEvent::getName(),
+			RegistrationEvent::getName(),
+			NewPasswordEvent::getName(),
+			PasswordRecoveryEvent::getName(),
 		);
 	}
 

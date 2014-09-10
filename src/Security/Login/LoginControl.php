@@ -236,7 +236,7 @@ class LoginControl extends \Venne\System\UI\Control
 			throw new BadRequestException;
 		}
 
-		$this->securityManager->sendChangedPassword($userEntity);
+		$this->securityManager->sendNewPassword($userEntity);
 
 		$this->flashMessage($this->translator->translate('New password has been saved'), 'success');
 		$this->redirect('this', array(
