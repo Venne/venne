@@ -9,13 +9,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		{foreach $presenter->administrationManager->getCssFiles() as $file => $args}
-			<link rel="stylesheet" href="{path $file}" type="text/css" charset="utf-8" />
-		{/foreach}
+		{control adminCss}
 
-		{foreach $presenter->administrationManager->getJsFiles() as $file => $args}
-			<script type="text/javascript" charset="utf-8" src="{path $file}"></script>
-        {/foreach}
+		{control adminJs}
 
 		<link rel="shortcut icon" href="{path @venne.venne/icon.png}"/>
 		<title n:inner-snippet="title">Venne | {block #title}{include #header}{/block}</title>

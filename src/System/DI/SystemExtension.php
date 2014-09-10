@@ -406,6 +406,18 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 				new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))
 			));
 
+		$container->addDefinition($this->prefix('cssControlFactory'))
+			->setClass('Venne\System\Components\CssControl')
+			->setImplement('Venne\System\Components\CssControlFactory')
+			->setArguments(array(null))
+			->setInject(true);
+
+		$container->addDefinition($this->prefix('jsControlFactory'))
+			->setClass('Venne\System\Components\JsControl')
+			->setImplement('Venne\System\Components\JsControlFactory')
+			->setArguments(array(null))
+			->setInject(true);
+
 		$container->addDefinition($this->prefix('navbarControlFactory'))
 			->setImplement('Venne\System\Components\INavbarControlFactory')
 			->setArguments(array(null))

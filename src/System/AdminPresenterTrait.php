@@ -14,6 +14,8 @@ namespace Venne\System;
 use Kdyby\Doctrine\EntityManager;
 use Nette\Application\Application;
 use Venne\Packages\PackageManager;
+use Venne\System\Components\CssControlFactory;
+use Venne\System\Components\JsControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -43,6 +45,12 @@ trait AdminPresenterTrait
 	/** @var \Nette\Application\Application */
 	private $application;
 
+	/** @var \Venne\System\Components\CssControlFactory */
+	private $cssControlFactory;
+
+	/** @var \Venne\System\Components\JsControlFactory */
+	private $jsControlFactory;
+
 	/** @var bool */
 	private $secured = true;
 
@@ -66,13 +74,17 @@ trait AdminPresenterTrait
 		AdministrationManager $administrationManager,
 		EntityManager $entityManager,
 		PackageManager $packageManager,
-		Application $application
+		Application $application,
+		CssControlFactory $cssControlFactory,
+		JsControlFactory $jsControlFactory
 	)
 	{
 		$this->administrationManager = $administrationManager;
 		$this->entityManager = $entityManager;
 		$this->packageManager = $packageManager;
 		$this->application = $application;
+		$this->cssControlFactory = $cssControlFactory;
+		$this->jsControlFactory = $jsControlFactory;
 	}
 
 	/**
@@ -152,6 +164,19 @@ trait AdminPresenterTrait
 	}
 
 	/**
+	 * @param string $id
+	 */
+	public function handleChangeSideComponent($id)
+	{
+		if (!$this->isAjax()) {
+			$this->redirect('this', array('sideComponent' => $id));
+		}
+
+		$this->sideComponent = $id;
+		$this->redrawControl('sideComponent');
+	}
+
+	/**
 	 * @return \Nette\Application\UI\Control
 	 */
 	protected function createComponentPanel()
@@ -164,16 +189,19 @@ trait AdminPresenterTrait
 	}
 
 	/**
-	 * @param string $id
+	 * @return \Venne\System\Components\CssControl
 	 */
-	public function handleChangeSideComponent($id)
+	protected function createComponentAdminCss()
 	{
-		if (!$this->isAjax()) {
-			$this->redirect('this', array('sideComponent' => $id));
-		}
+		return $this->cssControlFactory->create();
+	}
 
-		$this->sideComponent = $id;
-		$this->redrawControl('sideComponent');
+	/**
+	 * @return \Venne\System\Components\JsControl
+	 */
+	protected function createComponentAdminJs()
+	{
+		return $this->jsControlFactory->create();
 	}
 
 }
