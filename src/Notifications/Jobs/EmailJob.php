@@ -41,10 +41,15 @@ class EmailJob extends \Venne\Queue\Job
 		$this->emailManager = $emailManager;
 	}
 
-	public function run(JobEntity $jobEntity)
+	/**
+	 * @param \Venne\Queue\JobEntity $jobEntity
+	 * @param integer $priority
+	 */
+	public function run(JobEntity $jobEntity, $priority)
 	{
 		$user = $this->userDao->find($jobEntity->arguments['user']);
-		$notification = $this->notificationUserDao->find($jobEntity->arguments['notification']);
+		$notificationUser = $this->notificationUserDao->find($jobEntity->arguments['notification']);
+		$notification = $notificationUser->getNotification();
 
 		$this->emailManager->send($user->email, $user->name, $notification->type->type, $notification->type->action, array(
 			'notification' => $notification,

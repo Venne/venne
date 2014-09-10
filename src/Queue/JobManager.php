@@ -23,6 +23,10 @@ use Venne\Security\UserEntity;
 class JobManager extends \Nette\Object
 {
 
+	const PRIORITY_REALTIME = 0;
+
+	const PRIORITY_DEFAULT = 1;
+
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
 
@@ -72,25 +76,45 @@ class JobManager extends \Nette\Object
 	}
 
 	/**
-	 * @param \Venne\Queue\JobEntity $workEntity
-	 * @return $this
+	 * @param \Venne\Queue\JobEntity $jobEntity
 	 */
-	public function scheduleJob(JobEntity $workEntity)
+	public function scheduleJob(JobEntity $jobEntity, $priority = self::PRIORITY_DEFAULT)
 	{
-		if (!$workEntity->user && $this->user->identity instanceof UserEntity) {
-			$workEntity->user = $this->user->identity;
+		if (!$jobEntity->user && $this->user->identity instanceof UserEntity) {
+			$jobEntity->user = $this->user->identity;
 		}
 
-		$this->jobDao->save($workEntity);
+		if ($priority === self::PRIORITY_REALTIME) {
+			$this->doJob($jobEntity, $priority);
+		} else {
+			$this->jobDao->save($jobEntity);
+		}
+	}
 
-		return $this;
+	private function doJob(JobEntity $jobEntity, $priority)
+	{
+		$jobEntity->state = $jobEntity::STATE_IN_PROGRESS;
+		$this->jobDao->save($jobEntity);
+
+		$job = $this->getJob($jobEntity->type);
+
+		try {
+			$job->run($jobEntity, $priority);
+			$this->jobDao->delete($jobEntity);
+		} catch (\Exception $e) {
+			$jobEntity->state = $jobEntity::STATE_FAILED;
+			$this->jobDao->save($jobEntity);
+
+			throw new JobFailedException(sprintf('Job \'%s\' failed.', $jobEntity->getId()), 0, $e);
+		}
 	}
 
 	/**
 	 * @param \Venne\Queue\Worker $worker
 	 * @return bool
+	 * @internal
 	 */
-	public function doJob(Worker $worker)
+	public function doNextWork(Worker $worker)
 	{
 		$this->configManager->lock();
 		$jobEntity = $this->jobDao->createQueryBuilder('a')
@@ -110,16 +134,14 @@ class JobManager extends \Nette\Object
 			$this->jobDao->save($jobEntity);
 			$this->configManager->unlock();
 
-			$job = $this->getJob($jobEntity->type);
-
 			try {
-				$job->run($jobEntity);
-			} catch (\Exception $e) {
+				$this->doJob($jobEntity, self::PRIORITY_DEFAULT);
+			} catch (JobFailedException $e) {
 				$failed = true;
 				$jobEntity->state = $jobEntity::STATE_FAILED;
 				$this->jobDao->save($jobEntity);
 
-				$worker->log('Error: ' . $e->getMessage());
+				$worker->log('Error: ' . $e->getPrevious()->getMessage());
 			}
 
 			if (!isset($failed)) {
@@ -131,8 +153,6 @@ class JobManager extends \Nette\Object
 					$jobEntity->date = $jobEntity->date->add($diff);
 					$jobEntity->state = $jobEntity::STATE_SCHEDULED;
 					$this->jobDao->save($jobEntity);
-				} else {
-					$this->jobDao->delete($jobEntity);
 				}
 			}
 

@@ -14,13 +14,7 @@ namespace Venne\Queue;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-interface IJob
+class JobFailedException extends \Nette\InvalidStateException
 {
-
-	/**
-	 * @param \Venne\Queue\JobEntity
-	 * @param integer $priority
-	 */
-	public function run(JobEntity $jobEntity, $priority);
 
 }

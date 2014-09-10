@@ -12,6 +12,7 @@
 namespace Venne\Notifications\Jobs;
 
 use Kdyby\Doctrine\EntityDao;
+use Venne\Notifications\NotificationEntity;
 use Venne\Notifications\NotificationUserEntity;
 use Venne\Queue\Job;
 use Venne\Queue\JobEntity;
@@ -49,9 +50,16 @@ class NotificationJob extends Job
 		$this->jobManager = $jobManager;
 	}
 
-	public function run(JobEntity $jobEntity)
+	/**
+	 * @param \Venne\Queue\JobEntity $jobEntity
+	 * @param integer $priority
+	 */
+	public function run(JobEntity $jobEntity, $priority)
 	{
-		if (($notificationEntity = $this->notificationDao->find($jobEntity->arguments[0])) === null) {
+		/** @var NotificationEntity $notificationEntity */
+		$notificationEntity = $this->notificationDao->find($jobEntity->arguments[0]);
+
+		if ($notificationEntity === null) {
 			return;
 		}
 
@@ -72,14 +80,14 @@ class NotificationJob extends Job
 
 		$users = array();
 		foreach ($qb->getQuery()->getResult() as $setting) {
-			$user = $setting->user ?: $notificationEntity->user;
+			$user = $setting->user !== null ? $setting->user : $notificationEntity->user;
 
 			if (isset($users[$user->id]) && !$users[$user->id]['email']) {
 				$users[$user->id]['email'] = $setting->email;
 			} else {
 				$users[$user->id] = array(
 					'user' => $user,
-					'email' => $setting->email,
+					'email' => $setting->user !== null ? $setting->email : $notificationEntity->user->getEmail(),
 				);
 			}
 		}
@@ -92,7 +100,7 @@ class NotificationJob extends Job
 				$this->jobManager->scheduleJob(new JobEntity(EmailJob::getName(), null, array(
 					'user' => $user['user'] instanceof UserEntity ? $user['user']->id : $user['user'],
 					'notification' => $notificationUserEntity->id,
-				)));
+				)), $priority);
 			}
 		}
 	}

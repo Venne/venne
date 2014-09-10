@@ -66,7 +66,7 @@ class Worker extends \Nette\Object
 	{
 		$this->log('check jobs!');
 
-		return $this->jobManager->doJob($this);
+		return $this->jobManager->doNextWork($this);
 	}
 
 	/**
