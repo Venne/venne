@@ -13,6 +13,7 @@ namespace Venne\Notifications\Jobs;
 
 use Kdyby\Doctrine\EntityDao;
 use Venne\Notifications\EmailManager;
+use Venne\Notifications\Events\NotificationEvent;
 use Venne\Queue\JobEntity;
 
 /**
@@ -51,7 +52,11 @@ class EmailJob extends \Venne\Queue\Job
 		$notificationUser = $this->notificationUserDao->find($jobEntity->arguments['notification']);
 		$notification = $notificationUser->getNotification();
 
-		$this->emailManager->send($user->email, $user->name, $notification->type->type, $notification->type->action, array(
+		$this->emailManager->send($user->email, $user->name, NotificationEvent::getName(), 'userNotification', array(
+			'type' => $notification->type->type,
+			'action' => $notification->type->action,
+			'message' => $notification->type->message,
+			'user' => $notification->user,
 			'notification' => $notification,
 			'notificationManager' => $this,
 		));
