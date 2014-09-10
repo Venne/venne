@@ -124,7 +124,7 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 	{
 		$form = $this->applicationForm->create();
 		$form->onSuccess[] = function () {
-			$this->flashMessage($this->translator->translate('Application settings has been updated'), 'success');
+			$this->flashMessage($this->translator->translate('Application settings has been updated.'), 'success');
 			$this->redirect('this');
 		};
 
@@ -142,7 +142,7 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 			'defaultPresenter' => $this->administrationManager->defaultPresenter,
 		));
 		$form->onSuccess[] = function () {
-			$this->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
+			$this->flashMessage($this->translator->translate('Account settings has been updated.'), 'success');
 			$this->redirect('this');
 		};
 
@@ -156,7 +156,7 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 	{
 		$form = $this->mailerForm->create();
 		$form->onSuccess[] = function () {
-			$this->flashMessage($this->translator->translate('Mailer settings has been updated'), 'success');
+			$this->flashMessage($this->translator->translate('Mailer settings has been updated.'), 'success');
 			$this->redirect('this');
 		};
 
@@ -178,7 +178,7 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 	{
 		$form = $this->authenticationForm->create();
 		$form->onSuccess[] = function () {
-			$this->flashMessage($this->translator->translate('Authentication settings has been updated'), 'success');
+			$this->flashMessage($this->translator->translate('Authentication settings has been updated.'), 'success');
 			$this->redirect('this');
 		};
 

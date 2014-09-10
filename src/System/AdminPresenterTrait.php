@@ -13,9 +13,7 @@ namespace Venne\System;
 
 use Kdyby\Doctrine\EntityManager;
 use Nette\Application\Application;
-use Nette\InvalidStateException;
 use Venne\Packages\PackageManager;
-use Venne\Security\UserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -38,9 +36,6 @@ trait AdminPresenterTrait
 
 	/** @var \Kdyby\Doctrine\EntityManager */
 	private $entityManager;
-
-	/** @var \Venne\Security\ExtendedUserEntity */
-	private $extendedUser;
 
 	/** @var \Venne\Packages\PackageManager */
 	private $packageManager;
@@ -105,26 +100,6 @@ trait AdminPresenterTrait
 	}
 
 	/**
-	 * @return \Venne\Security\ExtendedUserEntity
-	 */
-	public function getExtendedUser()
-	{
-		if (!$this->extendedUser) {
-			if (!$this->user->isLoggedIn()) {
-				throw new InvalidStateException('User is not logged in.');
-			}
-
-			if (!$this->user->identity instanceof UserEntity) {
-				throw new InvalidStateException('User must be instance of \'Venne\Security\UserEntity\'.');
-			}
-
-			$this->extendedUser = $this->user->identity->extendedUser;
-		}
-
-		return $this->extendedUser;
-	}
-
-	/**
 	 * @return \Venne\Packages\PackageManager
 	 */
 	public function getPackageManager()
@@ -163,7 +138,7 @@ trait AdminPresenterTrait
 	public function handleLogout()
 	{
 		$this->user->logout(true);
-		$this->flashMessage($this->translator->translate('Logout success'), 'success');
+		$this->flashMessage($this->translator->translate('Logout success.'), 'success');
 
 		if ($this->isAjax()) {
 			$this->redrawControl('navigation');

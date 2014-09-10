@@ -233,13 +233,13 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 			$this->invitationDao->delete($invitation);
 		}
 
-		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
+		$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
 		$this->redirect('this');
 	}
 
 	public function registrationEnable()
 	{
-		$this->flashMessage($this->translator->translate('Your registration is complete'), 'success');
+		$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
 		$this->redirect('this');
 	}
 

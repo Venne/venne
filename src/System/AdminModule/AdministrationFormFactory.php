@@ -65,7 +65,7 @@ class AdministrationFormFactory extends \Nette\Object implements \Venne\Forms\IF
 			$newPath .= '/';
 		}
 
-		$form->getPresenter()->flashMessage('Administration settings has been updated', 'success');
+		$form->getPresenter()->flashMessage('Administration settings has been updated.', 'success');
 		$form->getPresenter()->redirectUrl(str_replace($oldPath, $newPath, $form->getPresenter()->link('this')));
 	}
 

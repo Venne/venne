@@ -291,7 +291,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 
 	public function accountFormSuccess()
 	{
-		$this->flashMessage($this->translator->translate('Account settings has been updated'), 'success');
+		$this->flashMessage($this->translator->translate('Account settings has been updated.'), 'success');
 		$this->redirect('this');
 	}
 

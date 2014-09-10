@@ -224,7 +224,7 @@ class LoginControl extends \Venne\System\UI\Control
 		$this->sendEmail($user, $user->resetPassword());
 		$this->userDao->save($user);
 
-		$this->flashMessage($this->translator->translate('New password has been sended'), 'success');
+		$this->flashMessage($this->translator->translate('New password has been sent.'), 'success');
 		$this->redirect('this', array(
 			'reset' => null
 		));
@@ -238,7 +238,7 @@ class LoginControl extends \Venne\System\UI\Control
 
 		$this->securityManager->sendNewPassword($userEntity);
 
-		$this->flashMessage($this->translator->translate('New password has been saved'), 'success');
+		$this->flashMessage($this->translator->translate('New password has been saved.'), 'success');
 		$this->redirect('this', array(
 			'key' => null
 		));

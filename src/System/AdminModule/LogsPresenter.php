@@ -117,7 +117,7 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 	public function handleDelete($id)
 	{
 		unlink($this->logDir . '/' . $id);
-		$this->flashMessage($this->translator->translate('Log has been removed'), 'success');
+		$this->flashMessage($this->translator->translate('Log has been removed.'), 'success');
 		$this->redirect('this');
 	}
 
@@ -130,7 +130,7 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 			unlink($this->logDir . '/' . $item['id']);
 		}
 
-		$this->flashMessage($this->translator->translate('Logs were removed'), 'success');
+		$this->flashMessage($this->translator->translate('Logs were removed.'), 'success');
 		$this->redirect('this');
 	}
 
