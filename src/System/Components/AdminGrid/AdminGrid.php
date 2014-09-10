@@ -286,6 +286,8 @@ class AdminGrid extends \Venne\System\UI\Control
 
 		$form->onSubmit[] = function () {
 			if ($this->presenter->isAjax()) {
+				$this->formName = null;
+				$this->mode = null;
 				$this->redrawControl('navbarForm');
 			}
 		};
@@ -317,6 +319,8 @@ class AdminGrid extends \Venne\System\UI\Control
 
 		$form->onSubmit[] = function () {
 			if ($this->presenter->isAjax()) {
+				$this->formName = null;
+				$this->mode = null;
 				$this->redrawControl('actionForm');
 			}
 		};
