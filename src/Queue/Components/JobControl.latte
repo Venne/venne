@@ -2,7 +2,7 @@
 	<a n:href="remove $job->id" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
 
 	<a class="pull-left" href="#">
-		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($job->user->email)))}" alt="$job->user">
+		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($job->user)))}" alt="$job->user">
 	</a>
 	<div class="media-body">
 		<h4 class="media-heading">
@@ -18,7 +18,7 @@
 		</p>
 
 		<div class="btn-group pull-left">
-			<a n:href="remove $job->id" class="btn btn-xs btn-default notification-close ajax">
+			<a n:href="remove! $job->id" class="btn btn-xs btn-default notification-close ajax">
 				<i class="glyphicon glyphicon-remove"></i> remove
 			</a>
 			<a class="btn btn-xs btn-default">

@@ -128,9 +128,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			->addSetup('$service->getCompiler()->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->getCompiler()))', array('@self'));
 
 		// security
-		$container->getDefinition('nette.userStorage')
-			->setClass('Venne\Security\UserStorage', array('@session', new Statement('@doctrine.dao', array('Venne\Security\LoginEntity')), new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
-
 		$container->addDefinition($this->prefix('securityManager'))
 			->setClass('Venne\Security\SecurityManager');
 

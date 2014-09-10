@@ -12,7 +12,7 @@
 namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
-use Venne\Security\UserEntity;
+use Venne\DataTransfer\DataTransferManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -30,29 +30,28 @@ class DashboardPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $userDao;
 
+	/** @var \Venne\DataTransfer\DataTransferManager */
+	private $dataTransferManager;
+
 	public function __construct(
 		EntityDao $logDao,
-		EntityDao $userDao
+		EntityDao $userDao,
+		DataTransferManager $dataTransferManager
 	)
 	{
 		$this->logDao = $logDao;
 		$this->userDao = $userDao;
-	}
-
-	/**
-	 * @secured(privilege="show")
-	 */
-	public function actionDefault()
-	{
-		if ($this->user->isLoggedIn() && !$this->user->identity instanceof UserEntity) {
-			$this->flashMessage($this->translator->translate('You are logged as superadministrator. It can be potencialy dangerous.'), 'warning', true);
-		}
+		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	public function renderDefault()
 	{
-		$this->template->logRepository = $this->logDao;
-		$this->template->userRepository = $this->userDao;
+		$this->template->userDto = $this->dataTransferManager
+			->createQuery(UserDto::getClassName(), function () {
+				return $this->userDao->find($this->getUser()->getIdentity()->getId());
+			})
+			->enableCache(sprintf('#%s', $this->getUser()->getIdentity()->getId()))
+			->fetch();
 	}
 
 }

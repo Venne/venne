@@ -14,8 +14,9 @@ namespace Venne\Notifications\Components;
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
+use Venne\DataTransfer\DataTransferManager;
+use Venne\Notifications\NotificationDto;
 use Venne\Notifications\NotificationManager;
-use Venne\Notifications\NotificationUserEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -32,10 +33,14 @@ class NotificationControl extends \Venne\System\UI\Control
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $notificationUserDao;
 
+	/** @var \Venne\DataTransfer\DataTransferManager */
+	private $dataTransferManager;
+
 	public function __construct(
 		EntityDao $notificationUserDao,
 		NotificationManager $notificationManager,
-		User $user
+		User $user,
+		DataTransferManager $dataTransferManager
 	)
 	{
 		parent::__construct();
@@ -43,6 +48,7 @@ class NotificationControl extends \Venne\System\UI\Control
 		$this->user = $user;
 		$this->notificationUserDao = $notificationUserDao;
 		$this->notificationManager = $notificationManager;
+		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	/**
@@ -94,9 +100,14 @@ class NotificationControl extends \Venne\System\UI\Control
 		}
 	}
 
-	public function render(NotificationUserEntity $notification)
+	public function render($id)
 	{
-		$this->template->notification = $notification;
+		$this->template->notification = $this->dataTransferManager
+			->createQuery(NotificationDto::getClassName(), function () use ($id) {
+				return $this->notificationUserDao->find($id);
+			})
+			->enableCache()
+			->fetch();
 		$this->template->render();
 	}
 

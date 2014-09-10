@@ -70,12 +70,8 @@
 							<li class="divider-vertical"></li>
 							<li n:if="$presenter->user->isLoggedIn()" class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-									{if $presenter->user->identity instanceof \Venne\Security\UserEntity}
-										<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 35px; height: 35px;" />
-									{else}
-										<span class="glyphicon glyphicon-user"></span>
-										{$presenter->user->identity->id}
-									{/if}&nbsp;&nbsp;<b class="caret"></b>
+									<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 35px; height: 35px;" />
+									&nbsp;&nbsp;<b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_system.admin.actions}</li>

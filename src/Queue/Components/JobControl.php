@@ -14,6 +14,8 @@ namespace Venne\Queue\Components;
 use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
+use Venne\DataTransfer\DataTransferManager;
+use Venne\Queue\JobDto;
 use Venne\Queue\JobEntity;
 
 /**
@@ -28,12 +30,20 @@ class JobControl extends \Venne\System\UI\Control
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
 
-	public function __construct(EntityDao $jobDao, User $user)
+	/** @var \Venne\DataTransfer\DataTransferManager */
+	private $dataTransferManager;
+
+	public function __construct(
+		EntityDao $jobDao,
+		User $user,
+		DataTransferManager $dataTransferManager
+	)
 	{
 		parent::__construct();
 
 		$this->jobDao = $jobDao;
 		$this->user = $user;
+		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	/**
@@ -56,9 +66,14 @@ class JobControl extends \Venne\System\UI\Control
 		}
 	}
 
-	public function render(JobEntity $job)
+	public function render($id)
 	{
-		$this->template->job = $job;
+		$this->template->job = $this->dataTransferManager
+			->createQuery(JobDto::getClassName(), function () use ($id) {
+				return $this->jobDao->find($id);
+			})
+			->enableCache()
+			->fetch();
 		$this->template->render();
 	}
 

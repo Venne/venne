@@ -42,14 +42,16 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 		$user = $this->userDao->findOneBy(array('email' => $username, 'published' => 1));
 
 		if (!$user) {
-			throw $ex;
+			throw new AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
 		}
 
 		if (!$user->verifyByPassword($password)) {
 			throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
 		}
 
-		return new Identity($user->id, $user->getRoles());
+		return new Identity($user->id, $user->getRoles(), array(
+			'email' => $user->email,
+		));
 	}
 
 }

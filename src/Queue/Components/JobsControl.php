@@ -13,6 +13,8 @@ namespace Venne\Queue\Components;
 
 use Kdyby\Doctrine\EntityDao;
 use Nette\Security\User;
+use Venne\DataTransfer\DataTransferManager;
+use Venne\Queue\JobDto;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -29,10 +31,14 @@ class JobsControl extends \Venne\System\UI\Control
 	/** @var \Venne\Queue\Components\IJobControlFactory */
 	private $jobControlFactory;
 
+	/** @var \Venne\DataTransfer\DataTransferManager */
+	private $dataTransferManager;
+
 	public function __construct(
 		EntityDao $jobDao,
 		User $user,
-		IJobControlFactory $jobControlFactory
+		IJobControlFactory $jobControlFactory,
+		DataTransferManager $dataTransferManager
 	)
 	{
 		parent::__construct();
@@ -40,28 +46,7 @@ class JobsControl extends \Venne\System\UI\Control
 		$this->jobDao = $jobDao;
 		$this->user = $user;
 		$this->jobControlFactory = $jobControlFactory;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function countJobs()
-	{
-		return $this->jobDao->createQueryBuilder('a')
-			->select('COUNT(a.id)')
-			->andWhere('a.user = :user')->setParameter('user', $this->user->identity)
-			->getQuery()->getSingleScalarResult();
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getJobs()
-	{
-		return $this->jobDao->createQueryBuilder('a')
-			->andWhere('a.user = :user')->setParameter('user', $this->user->identity)
-			->orderBy('a.date', 'ASC')
-			->getQuery()->getResult();
+		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	/**
@@ -74,6 +59,15 @@ class JobsControl extends \Venne\System\UI\Control
 
 	public function render()
 	{
+		$this->template->jobs = $this->dataTransferManager
+			->createQuery(JobDto::getClassName(), function () {
+				return $this->jobDao->createQueryBuilder('a')
+					->andWhere('a.user = :user')->setParameter('user', $this->user->getIdentity()->getId())
+					->orderBy('a.date', 'ASC')
+					->getQuery()->getResult();
+			})
+			->enableCache()
+			->fetchAll();
 		$this->template->render();
 	}
 

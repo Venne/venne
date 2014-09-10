@@ -12,6 +12,8 @@
 namespace Venne\Notifications\Components;
 
 use Kdyby\Doctrine\EntityDao;
+use Venne\DataTransfer\DataTransferManager;
+use Venne\Notifications\NotificationDto;
 use Venne\Notifications\NotificationManager;
 
 /**
@@ -29,10 +31,14 @@ class NotificationsControl extends \Venne\System\UI\Control
 	/** @var \Venne\Notifications\Components\INotificationControlFactory */
 	private $notificationControlFactory;
 
+	/** @var \Venne\DataTransfer\DataTransferManager */
+	private $dataTransferManager;
+
 	public function __construct(
 		EntityDao $notificationUserDao,
 		NotificationManager $notificationManager,
-		INotificationControlFactory $notificationControlFactory
+		INotificationControlFactory $notificationControlFactory,
+		DataTransferManager $dataTransferManager
 	)
 	{
 		parent::__construct();
@@ -40,22 +46,7 @@ class NotificationsControl extends \Venne\System\UI\Control
 		$this->notificationUserDao = $notificationUserDao;
 		$this->notificationManager = $notificationManager;
 		$this->notificationControlFactory = $notificationControlFactory;
-	}
-
-	/**
-	 * @return \Kdyby\Doctrine\EntityDao
-	 */
-	public function getNotificationManager()
-	{
-		return $this->notificationManager;
-	}
-
-	/**
-	 * @return \Venne\Notifications\NotificationUserEntity[]
-	 */
-	public function getNotifications()
-	{
-		return $this->notificationManager->getNotifications(5);
+		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	/**
@@ -68,6 +59,12 @@ class NotificationsControl extends \Venne\System\UI\Control
 
 	public function render()
 	{
+		$this->template->notifications = $this->dataTransferManager
+			->createQuery(NotificationDto::getClassName(), function () {
+				return $this->notificationManager->getNotifications(5);
+			})
+			->enableCache()
+			->fetchAll();
 		$this->template->render();
 	}
 
