@@ -41,7 +41,7 @@ class RoleEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $children;
 
 	/**
-	 * @var \Venne\Security\RoleEntity
+	 * @var \Venne\Security\RoleEntity|null
 	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Security\RoleEntity", inversedBy="children")
 	 * @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
@@ -75,38 +75,6 @@ class RoleEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 		$this->permissions = new ArrayCollection();
 		$this->users = new ArrayCollection();
 		$this->children = new ArrayCollection();
-	}
-
-	/**
-	 * @return \Venne\Security\RoleEntity
-	 */
-	public function getParent()
-	{
-		return $this->parent;
-	}
-
-	/**
-	 * @param \Venne\Security\RoleEntity $parent
-	 */
-	public function setParent(RoleEntity $parent)
-	{
-		$this->parent = $parent;
-	}
-
-	/**
-	 * @return \Venne\Security\RoleEntity[]
-	 */
-	public function getChildren()
-	{
-		return $this->children->toArray();
-	}
-
-	/**
-	 * @param \Venne\Security\RoleEntity $children
-	 */
-	public function addChildren(RoleEntity $children)
-	{
-		$this->children[] = $children;
 	}
 
 }
