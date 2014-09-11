@@ -24,6 +24,7 @@ trait AdminPresenterTrait
 {
 
 	use \Venne\System\UI\PresenterTrait;
+	use \Venne\System\AjaxControlTrait;
 	use \Venne\Widgets\WidgetsControlTrait;
 
 	/**
@@ -138,8 +139,9 @@ trait AdminPresenterTrait
 			}
 		}
 
-		if ($this->getParameter('do') === null && $this->isAjax()) {
+		if ($this->getParameter('do') === null) {
 			$this->redrawControl('navigation');
+			$this->redrawControl('sideComponent-navigation');
 			$this->redrawControl('content');
 			$this->redrawControl('header');
 			$this->redrawControl('toolbar');
@@ -149,7 +151,7 @@ trait AdminPresenterTrait
 
 	public function handleLogout()
 	{
-		$this->user->logout(true);
+		$this->getUser()->logout(true);
 		$this->flashMessage($this->translator->translate('Logout success.'), 'success');
 
 		if ($this->isAjax()) {
@@ -163,17 +165,10 @@ trait AdminPresenterTrait
 		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
-	/**
-	 * @param string $id
-	 */
-	public function handleChangeSideComponent($id)
+	public function handleChangeSideComponent()
 	{
-		if (!$this->isAjax()) {
-			$this->redirect('this', array('sideComponent' => $id));
-		}
-
-		$this->sideComponent = $id;
 		$this->redrawControl('sideComponent');
+		$this->redirect('this');
 	}
 
 	/**

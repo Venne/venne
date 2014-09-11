@@ -18,8 +18,8 @@
 {/snippet}
 
 
-{snippet navbarFormContainer}
-	{if $control->getFormName() && !$control->id}
+{snippet formContainer}
+	{if $control->formName}
 		{if $control->mode === $control::MODE_MODAL}
 			<div id="modal-{!$control->getName()}" class="modal fade{if $form->type} {$form->type}{/if}" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
 			<div class="modal-dialog">
@@ -28,8 +28,8 @@
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 						<h3>{_$form->title}</h3>
 					</div>
-					<div class="modal-body" n:snippet="navbarForm">
-						{control navbarForm}
+					<div class="modal-body" n:snippet="form">
+						{control form}
 
 						<script type="text/javascript">
 							$(function () {
@@ -50,7 +50,7 @@
 										$.nette.ajax({ url: {link close!}});
 								});
 
-								{if !$control->getFormName()}
+								{if !$control->formName}
 									$('#modal-{!$control->getName()}').modal('hide');
 								{/if}
 							});
@@ -65,60 +65,7 @@
 		</div>
 		{else}
 			<h2>{_$form->title}</h2>
-			{control navbarForm}
-		{/if}
-	{/if}
-{/snippet}
-
-
-{snippet actionFormContainer}
-	{if $control->getFormName() && $control->id}
-		{if $control->mode === $control::MODE_MODAL}
-		<div id="modal-{!$control->getName()}" class="modal fade{if $form->type} {$form->type}{/if}" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h3>{_$form->title}</h3>
-					</div>
-					<div class="modal-body" n:snippet="actionForm">
-						{control actionForm}
-
-						<script type="text/javascript">
-							$(function () {
-								var input = $('#modal-{!$control->getName()} form input[name="_submit"]');
-								input.hide();
-								if (input.parent().find('input[name!="_submit"]').length === 0) {
-									input.parent().hide();
-								}
-
-								$('#modal-{!$control->getName()} button.btn-primary').off('click.admingrid');
-								$('#modal-{!$control->getName()} button.btn-primary').on('click.admingrid', function (e) {
-									e.preventDefault();
-									$('#modal-{!$control->getName()} form input[name="_submit"]').click();
-								});
-
-								$('#modal-{!$control->getName()}').off('hidden.bs.modal');
-								$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
-										$.nette.ajax({ url: {link close!}});
-								});
-
-								{if !$control->getFormName() || !$control->id}
-									$('#modal-{!$control->getName()}').modal('hide');
-								{/if}
-							});
-						</script>
-					</div>
-					<div class="modal-footer">
-						<button type="button" data-dismiss="modal" class="btn btn-default">{_Close}</button>
-						<button type="button" class="btn btn-primary">{_Save}</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		{else}
-			<h2>{_$form->title}</h2>
-			{control actionForm}
+			{control form}
 		{/if}
 	{/if}
 {/snippet}

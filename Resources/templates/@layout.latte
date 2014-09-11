@@ -89,9 +89,9 @@
 		{snippet sideComponent-container}
 		{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
 			<div n:snippet="sideComponent" class="container-side">
-				<div class="navmenu navmenu-default navmenu-fixed-left" style="margin-top: 40px; padding-top: 50px; width: 60px;">
+				<div n:snippet="sideComponent-navigation" class="navmenu navmenu-default navmenu-fixed-left" style="margin-top: 40px; padding-top: 50px; width: 60px;">
 					<ul n:inner-foreach="$presenter->administrationManager->sideComponents as $name => $values" class="nav navmenu-nav">
-						<li n:class="$presenter->sideComponent == $name ? active"><a data-toggle="tooltip" data-placement="right" title="{_$name}" class="ajax" n:href="changeSideComponent! ($presenter->sideComponent != $name ? $name : NULL)"><i class="{$values['args']['icon']} fa-2x"></i></a></li>
+						<li n:class="$presenter->sideComponent == $name ? active"><a data-toggle="tooltip" data-placement="right" title="{_$name}" class="ajax" n:href="changeSideComponent! sideComponent => ($presenter->sideComponent != $name ? $name : NULL)"><i class="{$values['args']['icon']} fa-2x"></i></a></li>
 					</ul>
 				</div>
 				<div class="side-body{if !$presenter->isAjax()} side-opened{/if}" n:if="$presenter->sideComponent">

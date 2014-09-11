@@ -105,7 +105,7 @@ class AdminGrid extends \Venne\System\UI\Control
 
 		$this->onAttached($this);
 
-		if ($this->presenter->getParameter('do') === null && $this->presenter->isAjax()) {
+		if ($this->presenter->getParameter('do') === null) {
 			$this->redrawControl('table');
 			$this->redrawControl('navbar');
 			$this->redrawControl('breadcrumb');
@@ -127,7 +127,13 @@ class AdminGrid extends \Venne\System\UI\Control
 
 	public function handleClose()
 	{
-		$this->redirect('this', array('id' => null, 'formName' => null));
+		$this->redirect('this', array(
+			'formName' => null,
+			'id' => null,
+			'mode' => null,
+		));
+
+		$this->redrawControl('table');
 	}
 
 	/**
@@ -141,7 +147,14 @@ class AdminGrid extends \Venne\System\UI\Control
 		$this->navbarForms[$section->getName()] = $form;
 
 		$section->onClick[] = function ($section) use ($mode) {
-			$this->redirect('this', array('id' => null, 'mode' => $mode, 'formName' => $section->getName()));
+			$this->redirect('this', array(
+				'formName' => $section->getName(),
+				'id' => null,
+				'mode' => $mode,
+			));
+
+			$this->redrawControl('table');
+			$this->redrawControl('formContainer');
 		};
 
 		return $this;
@@ -158,7 +171,14 @@ class AdminGrid extends \Venne\System\UI\Control
 		$this->actionForms[$action->getName()] = $form;
 
 		$action->onClick[] = function ($id, $action) use ($mode) {
-			$this->redirect('this', array('id' => $id, 'mode' => $mode, 'formName' => $action->getName()));
+			$this->redirect('this', array(
+				'formName' => $action->getName(),
+				'id' => $id,
+				'mode' => $mode,
+			));
+
+			$this->redrawControl('table');
+			$this->redrawControl('formContainer');
 		};
 
 		return $this;
@@ -226,22 +246,6 @@ class AdminGrid extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @param string $formName
-	 */
-	public function setFormName($formName)
-	{
-		$this->formName = $formName;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getFormName()
-	{
-		return $this->formName;
-	}
-
-	/**
 	 * @return \Grido\Grid
 	 */
 	protected function createComponentTable()
@@ -266,72 +270,35 @@ class AdminGrid extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @return \Venne\System\Components\AdminGrid\Form
-	 */
-	protected function createComponentNavbarForm()
-	{
-		$form = $this->navbarForms[$this->formName];
-
-		if ($form->getEntityFactory()) {
-			$entity = Callback::invoke($form->getEntityFactory());
-		} else {
-			$class = $this->dao->getClassName();
-			$entity = new $class;
-		}
-
-		$form = $this->formFactoryFactory
-			->create($form->getFactory())
-			->setEntity($entity)
-			->create();
-
-		$form->onSubmit[] = function () {
-			if ($this->presenter->isAjax()) {
-				$this->formName = null;
-				$this->mode = null;
-				$this->redrawControl('navbarForm');
-			}
-		};
-		$form->onSuccess[] = $this->navbarFormSuccess;
-		$form->onError[] = $this->navbarFormError;
-
-		if ($this->mode == self::MODE_PLACE) {
-			$form->addSubmit('_cancel', 'Cancel')
-				->setValidationScope(false)
-				->onClick[] = function () {
-				$this->redirect('this', array('formName' => null, 'mode' => null));
-			};
-		}
-
-		return $form;
-	}
-
-	/**
 	 * @return \Nette\Application\UI\Form
 	 */
-	protected function createComponentActionForm()
+	protected function createComponentForm()
 	{
 		/** @var \Nette\Application\UI\Form $form */
-		$form = $this->actionForms[$this->formName];
+		$form = $this->id !== null
+			? $this->actionForms[$this->formName]
+			: $this->navbarForms[$this->formName];
 		$form = $this->formFactoryFactory
 			->create($form->getFactory())
 			->setEntity($this->getCurrentEntity())
 			->create();
 
 		$form->onSubmit[] = function () {
-			if ($this->presenter->isAjax()) {
-				$this->formName = null;
-				$this->mode = null;
-				$this->redrawControl('actionForm');
-			}
+			$this->redrawControl('form');
 		};
-		$form->onSuccess[] = $this->actionFormSuccess;
-		$form->onError[] = $this->actionFormError;
+		$form->onSuccess[] = $this->formSuccess;
+		$form->onError[] = $this->formError;
 
 		if ($this->mode == self::MODE_PLACE) {
 			$form->addSubmit('_cancel', 'Cancel')
 				->setValidationScope(false)
 				->onClick[] = function () {
-				$this->redirect('this', array('formName' => null, 'mode' => null));
+				$this->redirect('this', array(
+					'formName' => null,
+					'id' => null,
+					'mode' => null,
+				));
+				$this->redrawControl('form');
 			};
 		}
 
@@ -343,7 +310,15 @@ class AdminGrid extends \Venne\System\UI\Control
 	 */
 	public function getCurrentEntity()
 	{
-		if ($this->id) {
+		$form = $this->id !== null
+			? $this->actionForms[$this->formName]
+			: $this->navbarForms[$this->formName];
+
+		if (is_callable($form->getEntityFactory())) {
+			return Callback::invoke($form->getEntityFactory());
+		}
+
+		if ($this->id !== null) {
 			return $this->getDao()->find($this->id);
 		}
 
@@ -352,37 +327,22 @@ class AdminGrid extends \Venne\System\UI\Control
 		return new $class;
 	}
 
-	public function navbarFormSuccess(\Nette\Application\UI\Form $form)
+	public function formSuccess(\Nette\Application\UI\Form $form)
 	{
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => null, 'mode' => null));
-			}
-			$this->formName = null;
-			$this->mode = null;
+			$this->redirect('this', array(
+				'formName' => null,
+				'id' => null,
+				'mode' => null,
+			));
+
+			$this->redrawControl('table');
 		}
 	}
 
-	public function actionFormSuccess(\Nette\Application\UI\Form $form)
+	public function formError()
 	{
-		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-			if (!$this->presenter->isAjax()) {
-				$this->redirect('this', array('formName' => null, 'id' => null, 'mode' => null));
-			}
-			$this->formName = null;
-			$this->id = null;
-			$this->mode = null;
-		}
-	}
-
-	public function navbarFormError()
-	{
-		$this->redrawControl('navbarForm');
-	}
-
-	public function actionFormError()
-	{
-		$this->redrawControl('actionForm');
+		$this->redrawControl('form');
 	}
 
 	public function render()
@@ -390,7 +350,9 @@ class AdminGrid extends \Venne\System\UI\Control
 		$this->onRender($this);
 
 		if ($this->formName) {
-			$this->template->form = $this->id ? $this->actionForms[$this->formName] : $this->navbarForms[$this->formName];
+			$this->template->form = $this->id
+				? $this->actionForms[$this->formName]
+				: $this->navbarForms[$this->formName];
 		}
 		$this->template->showNavbar = $this->navbar;
 		$this->template->render();
@@ -411,9 +373,8 @@ class AdminGrid extends \Venne\System\UI\Control
 			$this->dao->delete($this->dao->find($id));
 		}
 
-		if ($redirect) {
-			$this->redirect('this');
-		}
+		$this->redirect('this');
+		$this->redrawControl('table');
 	}
 
 }

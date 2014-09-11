@@ -12,7 +12,6 @@
 namespace Venne\System\UI;
 
 use Nette\Localization\ITranslator;
-use Venne\Widgets\WidgetsControlTrait;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -23,8 +22,9 @@ use Venne\Widgets\WidgetsControlTrait;
 abstract class Control extends \Nette\Application\UI\Control
 {
 
-	use ControlTrait;
-	use WidgetsControlTrait;
+	use \Venne\System\UI\ControlTrait;
+	use \Venne\System\AjaxControlTrait;
+	use \Venne\Widgets\WidgetsControlTrait;
 
 	/** @var string[] */
 	private $configZal = array();
