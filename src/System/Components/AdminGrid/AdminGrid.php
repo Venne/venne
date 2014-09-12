@@ -60,6 +60,9 @@ class AdminGrid extends \Venne\System\UI\Control
 	/** @var callable[] */
 	public $onRender;
 
+	/** @var callable[] */
+	public $onClose;
+
 	/** @var \Kdyby\Doctrine\EntityDao */
 	protected $dao;
 
@@ -134,6 +137,7 @@ class AdminGrid extends \Venne\System\UI\Control
 		));
 
 		$this->redrawControl('table');
+		$this->onClose($this);
 	}
 
 	/**
