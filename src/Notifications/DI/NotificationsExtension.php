@@ -92,6 +92,9 @@ class NotificationsExtension extends \Nette\DI\CompilerExtension
 				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationUserEntity')),
 				new Statement('@doctrine.dao', array('Venne\Security\UserEntity')),
 			));
+
+		$container->addDefinition($this->prefix('notificationSettingFormFactory'))
+			->setClass('Venne\Notifications\AdminModule\NotificationSettingFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 	}
 
 	public function beforeCompile()

@@ -36,15 +36,20 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
+	/** @var \Venne\Notifications\AdminModule\NotificationSettingFormFactory */
+	private $notificationSettingFormFactory;
+
 	public function __construct(
 		EntityDao $notificationSettingDao,
 		NotificationManager $notificationManager,
-		IAdminGridFactory $adminGridFactory
+		IAdminGridFactory $adminGridFactory,
+		NotificationSettingFormFactory $notificationSettingFormFactory
 	)
 	{
 		$this->notificationSettingDao = $notificationSettingDao;
 		$this->notificationManager = $notificationManager;
 		$this->adminGridFactory = $adminGridFactory;
+		$this->notificationSettingFormFactory = $notificationSettingFormFactory;
 	}
 
 	/**
@@ -64,22 +69,29 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
 		$table->setModel(new Doctrine($this->notificationSettingDao->createQueryBuilder('a')
-				->andWhere('a.user = :user')->setParameter('user', $this->presenter->user->identity)
+				->andWhere('a.user = :user')->setParameter('user', $this->presenter->user->identity->getId())
 		));
 
 		// columns
+		$table->addColumnText('user', 'User')
+			->getCellPrototype()->width = '15%';
+
 		$table->addColumnText('type', 'Type')
 			->setSortable()
 			->setCustomRender(function (NotificationSettingEntity $entity) {
-				return $this->notificationManager->getType($entity->type->type)->getHumanName();
+				return $entity->type !== null
+					? $this->notificationManager->getType($entity->type->type)->getHumanName()
+					: '';
 			})
-			->getCellPrototype()->width = '25%';
+			->getCellPrototype()->width = '20%';
 
 		$table->addColumnText('action', 'Action')
 			->setCustomRender(function (NotificationSettingEntity $entity) {
-				return $entity->type->action;
+				return $entity->type !== null
+					? $entity->type->action
+					: '';
 			})
-			->getCellPrototype()->width = '25%';
+			->getCellPrototype()->width = '15%';
 
 		$table->addColumnText('target', 'Target')
 			->getCellPrototype()->width = '20%';
@@ -87,12 +99,21 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 		$table->addColumnText('targetKey', 'Target key')
 			->getCellPrototype()->width = '10%';
 
-		$table->addColumnText('user', 'Target user')
+		$table->addColumnText('targetUser', 'Target user')
 			->getCellPrototype()->width = '20%';
 
 		// actions
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
+
+		$form = $admin->createForm($this->notificationSettingFormFactory, 'Notification setting');
+
+		$admin->connectFormWithAction($form, $table->getAction('edit'));
+
+		// Toolbar
+		$toolbar = $admin->getNavbar();
+		$toolbar->addSection('new', 'Create', 'file');
+		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
 
 		$table->addActionEvent('delete', 'Delete')
 			->getElementPrototype()->class[] = 'ajax';
