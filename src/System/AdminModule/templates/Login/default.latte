@@ -14,16 +14,16 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<ul class="nav nav-tabs">
-						<li n:class="!$presenter->registrationKey ? active"><a class="ajax" n:href="this registrationKey => NULL" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
+						<li n:class="!$registration ? active"><a class="ajax" n:href="this registration => NULL" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
 
-						{foreach $presenter->registrationDao->findBy(array('enabled' => TRUE, 'invitation' => FALSE)) as $registration}
-							<li class="pull-right{if $presenter->registrationKey && $presenter->registrationKey == $registration->id} active{/if}"><a class="ajax" n:href="this registrationKey => $registration->id">{_$registration->name}</a></li>
+						{foreach $registrations as $r}
+							<li class="pull-right{if $registration && $registration === $r} active{/if}"><a class="ajax" n:href="this registration => $r->id">{_$r->name}</a></li>
 						{/foreach}
 					</ul>
 				</div>
 				<div class="panel-body">
-					{if $presenter->registrationKey}
-						{control registration-$presenter->registrationKey}
+					{if $registration}
+						{control registration-$registration->id}
 					{else}
 						{control signInForm}
 					{/if}

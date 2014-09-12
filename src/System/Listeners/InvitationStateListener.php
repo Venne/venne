@@ -53,7 +53,7 @@ class InvitationStateListener
 			self::$lock = true;
 			$this->emailManager->send($entity->email, null, InvitationEvent::getName(), 'invitation', array(
 				'link' => $this->application->presenter->link('//:System:Admin:Login:default', array(
-					'registrationKey' => $entity->registration->id,
+					'registration' => $entity->registration->id,
 					'hash' => $entity->hash,
 				)),
 			));

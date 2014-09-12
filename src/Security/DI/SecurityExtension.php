@@ -88,7 +88,8 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 
 		$container->addDefinition($this->prefix('invitationsTableFactory'))
 			->setClass('Venne\Security\AdminModule\InvitationsTableFactory', array(
-				new Statement('@doctrine.dao', array('Venne\System\InvitationEntity'))
+				new Statement('@doctrine.dao', array('Venne\System\InvitationEntity')),
+				new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))
 			));
 
 		$container->addDefinition($this->prefix('rolesPresenter'))

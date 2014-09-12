@@ -20,6 +20,7 @@ use Venne\Security\Login\LoginControl;
 use Venne\Security\Registration\IRegistrationControlFactory;
 use Venne\Security\Registration\RegistrationControl;
 use Venne\Security\SecurityManager;
+use Venne\System\RegistrationEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -35,20 +36,6 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	 * @persistent
 	 */
 	public $backlink;
-
-	/**
-	 * @var string|null
-	 *
-	 * @persistent
-	 */
-	public $registrationKey;
-
-	/**
-	 * @var string|null
-	 *
-	 * @persistent
-	 */
-	public $hash;
 
 	/** @var Callback */
 	private $form;
@@ -73,6 +60,12 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 
 	/** @var \Venne\Security\Registration\IRegistrationControlFactory */
 	private $registrationControlFactory;
+
+	/** @var \Venne\System\RegistrationEntity|null */
+	private $registration;
+
+	/** @var \Venne\System\InvitationEntity|null */
+	private $invitation;
 
 	public function __construct(
 		EntityDao $roleDao,
@@ -134,6 +127,16 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 		}
 	}
 
+	public function renderDefault()
+	{
+		$this->template->invitation = $this->invitation;
+		$this->template->registration = $this->registration;
+		$this->template->registrations = $this->registrationDao->findBy(array(
+			'enabled' => true,
+			'invitation' => false,
+		));
+	}
+
 	/**
 	 * @return \Venne\Security\Login\LoginControl
 	 */
@@ -183,34 +186,21 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @param string $name
 	 * @return \Venne\Security\Registration\RegistrationControl
 	 */
-	public function createRegistration($name)
+	public function createRegistration()
 	{
-		if (!$registration = $this->registrationDao->findOneBy(array('id' => $this->registrationKey, 'enabled' => true))) {
-			throw new BadRequestException;
-		}
-
-		if ($registration->invitation && !$this->hash) {
-			throw new BadRequestException;
-		}
-
-		if ($this->hash && !($invitation = $this->invitationDao->findOneBy(array('hash' => $this->hash, 'registration' => $this->registrationKey)))) {
-			throw new BadRequestException;
-		}
-
 		/** @var RegistrationControl $control */
 		$control = $this->registrationControlFactory->create(
-			$registration->getInvitation(),
-			$registration->userType,
-			$registration->mode,
-			$registration->loginProviderMode,
-			$registration->roles
+			$this->registration->getInvitation(),
+			$this->registration->userType,
+			$this->registration->mode,
+			$this->registration->loginProviderMode,
+			$this->registration->roles
 		);
 
-		if ($this->hash && $invitation) {
-			$control->setDefaultEmail($invitation->email);
+		if ($this->invitation) {
+			$control->setDefaultEmail($this->invitation->getEmail());
 		}
 
 		$control->onLoad[] = $this->registrationLoad;
@@ -228,13 +218,13 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 
 	public function registrationSuccess()
 	{
-		if ($this->hash) {
-			$invitation = $this->invitationDao->findOneBy(array('hash' => $this->hash, 'registration' => $this->registrationKey));
-			$this->invitationDao->delete($invitation);
-		}
+		$this->invitationDao->delete($this->invitation);
 
 		$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
-		$this->redirect('this');
+		$this->redirect('this', array(
+			'hash' => null,
+			'registration' => null,
+		));
 	}
 
 	public function registrationEnable()
@@ -243,10 +233,50 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 		$this->redirect('this');
 	}
 
-	public function registrationError($control, $message)
+	public function registrationError(RegistrationControl $control, $message)
 	{
 		$this->flashMessage($this->translator->translate($message), 'warning');
 		$this->redirect('this');
+	}
+
+	public function loadState(array $params)
+	{
+		if (isset($params['registration'])) {
+			$this->registration = $this->registrationDao->findOneBy(array(
+				'id' => $params['registration'],
+				'enabled' => true,
+			));
+
+			if ($this->registration === null) {
+				$this->error();
+			}
+
+			if (isset($params['hash'])) {
+				$this->invitation = $this->invitationDao->findOneBy(array(
+					'hash' => $params['hash'],
+					'registration' => $params['registration'],
+				));
+
+				if ($this->invitation === null) {
+					$this->error();
+				}
+			}
+		}
+
+		parent::loadState($params);
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		if ($this->registration !== null) {
+			$params['registration'] = $this->registration->getId();
+		}
+
+		if ($this->invitation !== null) {
+			$params['hash'] = $this->invitation->getHash();
+		}
+
+		parent::saveState($params, $reflection);
 	}
 
 }

@@ -25,7 +25,10 @@ class InvitationsTableFactory
 {
 
 	/** @var \Kdyby\Doctrine\EntityDao */
-	private $dao;
+	private $invitationDao;
+
+	/** @var \Kdyby\Doctrine\EntityDao */
+	private $userDao;
 
 	/** @var \Venne\Security\AdminModule\InvitationFormFactory */
 	private $formFactory;
@@ -40,14 +43,16 @@ class InvitationsTableFactory
 	private $user;
 
 	public function __construct(
-		EntityDao $dao,
+		EntityDao $invitationDao,
+		EntityDao $userDao,
 		InvitationFormFactory $formFactory,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator,
 		User $user
 	)
 	{
-		$this->dao = $dao;
+		$this->invitationDao = $invitationDao;
+		$this->userDao = $userDao;
 		$this->formFactory = $formFactory;
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
@@ -59,11 +64,11 @@ class InvitationsTableFactory
 	 */
 	public function create()
 	{
-		$admin = $this->adminGridFactory->create($this->dao);
+		$admin = $this->adminGridFactory->create($this->invitationDao);
 
 		// columns
 		$table = $admin->getTable();
-		$table->setModel(new Doctrine($this->dao->createQueryBuilder('a')
+		$table->setModel(new Doctrine($this->invitationDao->createQueryBuilder('a')
 				->andWhere('a.author = :author')->setParameter('author', $this->user->identity->getId())
 		));
 		$table->setTranslator($this->translator);
@@ -84,7 +89,9 @@ class InvitationsTableFactory
 			->getElementPrototype()->class[] = 'ajax';
 
 		$form = $admin->createForm($this->formFactory, 'Role', function () {
-			return new InvitationEntity($this->user->identity);
+			return new InvitationEntity(
+				$this->userDao->find($this->user->getIdentity()->getId())
+			);
 		});
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
