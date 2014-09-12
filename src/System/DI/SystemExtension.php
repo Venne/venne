@@ -272,8 +272,11 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		$container->addDefinition($this->prefix('trayComponent'))
 			->setImplement('Venne\System\AdminModule\Components\ITrayControlFactory')
-			->setInject(true)
-			->addTag(WidgetsExtension::TAG_WIDGET, 'tray');
+			->setInject(true);
+
+		$container->addDefinition($this->prefix('sideComponentsComponent'))
+			->setImplement('Venne\System\AdminModule\Components\SideComponentsControlFactory')
+			->setInject(true);
 
 		$this->setupSystemLogs($container, $config);
 		$this->setupSystemCache($container, $config);

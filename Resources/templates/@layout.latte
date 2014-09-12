@@ -17,8 +17,8 @@
 		<title n:inner-snippet="title">Venne | {block #title}{include #header}{/block}</title>
 	</head>
 
-	{if $presenter->user->isLoggedIn()}
-	<body n:class="$presenter->sideComponent ? panel-opened : panel-closed">
+	{if $presenter->user->loggedIn}
+	<body n:class="$presenter['sideComponents']->getCurrentSideComponentName() ? panel-opened : panel-closed">
 	{else}
 	<body>
 	{/if}
@@ -87,28 +87,9 @@
 		{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}
 
 		{snippet sideComponent-container}
-		{if $presenter->user->isLoggedIn() && !isset($hideMenuItems)}
-			<div n:snippet="sideComponent" class="container-side">
-				<div n:snippet="sideComponent-navigation" class="navmenu navmenu-default navmenu-fixed-left" style="margin-top: 40px; padding-top: 50px; width: 60px;">
-					<ul n:inner-foreach="$presenter->administrationManager->sideComponents as $name => $values" class="nav navmenu-nav">
-						<li n:class="$presenter->sideComponent == $name ? active"><a data-toggle="tooltip" data-placement="right" title="{_$name}" class="ajax" n:href="changeSideComponent! sideComponent => ($presenter->sideComponent != $name ? $name : NULL)"><i class="{$values['args']['icon']} fa-2x"></i></a></li>
-					</ul>
-				</div>
-				<div class="side-body{if !$presenter->isAjax()} side-opened{/if}" n:if="$presenter->sideComponent">
-					<div id="panel" class="row">
-						<div class="col-md-12">
-							{control panel}
-						</div>
-					</div>
-				</div>
-				<script n:if="$presenter->isAjax()">
-					$(function() {
-						$('.container-side .side-body').animate({ left: '60px'});
-						$('body').animate({ marginLeft: '{!($presenter->sideComponent ? 360 : 60)}px'});
-					});
-				</script>
-			</div>
-		{/if}
+			{if $presenter->user->loggedIn}
+				{control sideComponents}
+			{/if}
 		{/snippet}
 
 		{block #layout}

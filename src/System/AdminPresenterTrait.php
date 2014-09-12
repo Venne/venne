@@ -14,6 +14,8 @@ namespace Venne\System;
 use Kdyby\Doctrine\EntityManager;
 use Nette\Application\Application;
 use Venne\Packages\PackageManager;
+use Venne\System\AdminModule\Components\ITrayControlFactory;
+use Venne\System\AdminModule\Components\SideComponentsControlFactory;
 use Venne\System\Components\CssControlFactory;
 use Venne\System\Components\JsControlFactory;
 
@@ -26,13 +28,6 @@ trait AdminPresenterTrait
 	use \Venne\System\UI\PresenterTrait;
 	use \Venne\System\AjaxControlTrait;
 	use \Venne\Widgets\WidgetsControlTrait;
-
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $sideComponent;
 
 	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;
@@ -51,6 +46,12 @@ trait AdminPresenterTrait
 
 	/** @var \Venne\System\Components\JsControlFactory */
 	private $jsControlFactory;
+
+	/** @var \Venne\System\AdminModule\Components\ITrayControlFactory */
+	private $trayControlFactory;
+
+	/** @var \Venne\System\AdminModule\Components\SideComponentsControlFactory */
+	private $sideComponentsControlFactory;
 
 	/** @var bool */
 	private $secured = true;
@@ -77,7 +78,9 @@ trait AdminPresenterTrait
 		PackageManager $packageManager,
 		Application $application,
 		CssControlFactory $cssControlFactory,
-		JsControlFactory $jsControlFactory
+		JsControlFactory $jsControlFactory,
+		ITrayControlFactory $trayControlFactory,
+		SideComponentsControlFactory $sideComponentsControlFactory
 	)
 	{
 		$this->administrationManager = $administrationManager;
@@ -86,6 +89,8 @@ trait AdminPresenterTrait
 		$this->application = $application;
 		$this->cssControlFactory = $cssControlFactory;
 		$this->jsControlFactory = $jsControlFactory;
+		$this->trayControlFactory = $trayControlFactory;
+		$this->sideComponentsControlFactory = $sideComponentsControlFactory;
 	}
 
 	/**
@@ -165,24 +170,6 @@ trait AdminPresenterTrait
 		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
 	}
 
-	public function handleChangeSideComponent()
-	{
-		$this->redrawControl('sideComponent');
-		$this->redirect('this');
-	}
-
-	/**
-	 * @return \Nette\Application\UI\Control
-	 */
-	protected function createComponentPanel()
-	{
-		$sideComponents = $this->getAdministrationManager()->getSideComponents();
-
-		$control = $sideComponents[$this->sideComponent]['factory']->create();
-
-		return $control;
-	}
-
 	/**
 	 * @return \Venne\System\Components\CssControl
 	 */
@@ -197,6 +184,22 @@ trait AdminPresenterTrait
 	protected function createComponentAdminJs()
 	{
 		return $this->jsControlFactory->create();
+	}
+
+	/**
+	 * @return \Venne\System\AdminModule\Components\TrayControl
+	 */
+	protected function createComponentTray()
+	{
+		return $this->trayControlFactory->create();
+	}
+
+	/**
+	 * @return \Venne\System\AdminModule\Components\SideComponentsControl
+	 */
+	protected function createComponentSideComponents()
+	{
+		return $this->sideComponentsControlFactory->create();
 	}
 
 }

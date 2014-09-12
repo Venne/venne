@@ -41,7 +41,7 @@ class TrayControl extends \Venne\System\UI\Control
 	public function render()
 	{
 		$this->template->administrationManager = $this->administrationManager;
-		$this->template->render();
+		parent::render();
 	}
 
 	/**
