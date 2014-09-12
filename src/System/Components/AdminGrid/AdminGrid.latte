@@ -46,8 +46,13 @@
 								});
 
 								$('#modal-{!$control->getName()}').off('hidden.bs.modal');
-								$('#modal-{!$control->getName()}').modal('show').on('hidden.bs.modal', function () {
-										$.nette.ajax({ url: {link close!}});
+								$('#modal-{!$control->getName()}')
+										.modal('show')
+										.on('shown.bs.modal', function () {
+											$(this).find('.modal-body :input:visible').first().focus();
+										})
+										.on('hidden.bs.modal', function () {
+											$.nette.ajax({ url: {link close!}});
 								});
 
 								{if !$control->formName}
