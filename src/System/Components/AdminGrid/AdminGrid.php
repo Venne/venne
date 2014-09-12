@@ -314,12 +314,12 @@ class AdminGrid extends \Venne\System\UI\Control
 			? $this->actionForms[$this->formName]
 			: $this->navbarForms[$this->formName];
 
-		if (is_callable($form->getEntityFactory())) {
-			return Callback::invoke($form->getEntityFactory());
-		}
-
 		if ($this->id !== null) {
 			return $this->getDao()->find($this->id);
+		}
+
+		if (is_callable($form->getEntityFactory())) {
+			return Callback::invoke($form->getEntityFactory());
 		}
 
 		$class = $this->dao->getClassName();
