@@ -12,6 +12,8 @@
 namespace Venne\Queue\AdminModule;
 
 use Kdyby\Doctrine\EntityDao;
+use Venne\Queue\JobFailedException;
+use Venne\Queue\JobManager;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -24,18 +26,27 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
-	private $adminGridFactory;
-
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $jobDao;
+
+	/** @var \Venne\Queue\JobManager */
+	private $jobManager;
+
+	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
+	private $adminGridFactory;
 
 	/** @var \Venne\Queue\AdminModule\JobFormFactory */
 	private $jobFormFactory;
 
-	public function __construct(EntityDao $jobDao, IAdminGridFactory $adminGridFactory, JobFormFactory $jobFormFactory)
+	public function __construct(
+		EntityDao $jobDao,
+		JobManager $jobManager,
+		IAdminGridFactory $adminGridFactory,
+		JobFormFactory $jobFormFactory
+	)
 	{
 		$this->jobDao = $jobDao;
+		$this->jobManager = $jobManager;
 		$this->adminGridFactory = $adminGridFactory;
 		$this->jobFormFactory = $jobFormFactory;
 	}
@@ -67,6 +78,19 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 			->getCellPrototype()->width = '10%';
 
 		// actions
+		$table->addActionEvent('run', 'Run')
+			->onClick[] = function ($id) {
+			$job = $this->jobDao->find($id);
+
+			try {
+				$this->jobManager->scheduleJob($job, JobManager::PRIORITY_REALTIME);
+				$this->flashMessage($this->getTranslator()->translate('Job has been done.'), 'success');
+			} catch (JobFailedException $e) {
+				$this->flashMessage($this->getTranslator()->translate('Job failed.'), 'warning');
+			}
+
+			$this->redirect('this');
+		};
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
