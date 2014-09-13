@@ -676,7 +676,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			'@venne.venne/vendor/typeahead.js/typeahead.bundle.min.js',
 
 			'@venne.venne/vendor/nette.ajax.js/nette.ajax.js',
-			'@vojtech-dobes.nette-ajax-history/history.ajax.js',
+			'@venne.venne/vendor/history.ajax.js/history.ajax.js',
 			'@venne.venne/js/spinner.ajax.js',
 
 //			'@stringtoslugModule/jquery.stringToSlug.js',

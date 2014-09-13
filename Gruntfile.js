@@ -26,6 +26,7 @@ module.exports = function(grunt) {
 					{expand: true, cwd: 'bower_components/holderjs/', src: 'holder.js', dest: 'Resources/public/vendor/holder/'},
 					{expand: true, cwd: 'node_modules/hogan.js/web/builds/3.0.2/', src: 'hogan-3.0.2.min.js', dest: 'Resources/public/vendor/hogan/'},
 					{expand: true, cwd: 'bower_components/nette.ajax.js/', src: 'nette.ajax.js', dest: 'Resources/public/vendor/nette.ajax.js/'},
+					{expand: true, cwd: 'bower_components/history.nette.ajax.js/client-side', src: 'history.ajax.js', dest: 'Resources/public/vendor/history.ajax.js/'},
 				]
 			}
 		},
