@@ -11,6 +11,7 @@
 
 namespace Venne\Security\AdminModule;
 
+use Doctrine\ORM\Query;
 use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\EntityDao;
 use Venne\Security\DefaultType\AdminFormFactory;
@@ -99,27 +100,20 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
 		$table->setModel(new Doctrine($dao->createQueryBuilder('a')
-				->addSelect('u')
+				->addSelect('u.email')
 				->innerJoin('a.user', 'u'),
-			array('email' => 'u.email')
+			null,
+			null,
+			Query::HYDRATE_ARRAY
 		));
+		$table->setPrimaryKey('user_id');
 
 		// columns
 		$table->addColumnText('email', 'E-mail')
-			->setCustomRender(function ($entity) {
-				return $entity->user->email;
-			})
 			->setSortable()
-			->getCellPrototype()->width = '60%';
+			->getCellPrototype()->width = '100%';
 		$table->getColumn('email')
 			->setFilterText()->setSuggestion();
-
-		$table->addColumnText('roles', 'Roles')
-			->getCellPrototype()->width = '40%';
-		$table->getColumn('roles')
-			->setCustomRender(function ($entity) {
-				return implode(", ", $entity->user->roles);
-			});
 
 		// actions
 		$table->addActionEvent('edit', 'Edit')

@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\Venne\Doctrine\DerivedEntityDao")
  * @ORM\Table(name="default_user")
  */
 class UserEntity extends \Venne\Security\ExtendedUserEntity

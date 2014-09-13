@@ -22,11 +22,10 @@ use Kdyby\Doctrine\Entities\BaseEntity;
 abstract class ExtendedUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
-	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
-
 	/**
 	 * @var \Venne\Security\UserEntity
 	 *
+	 * @ORM\Id
 	 * @ORM\OneToOne(targetEntity="\Venne\Security\UserEntity", cascade={"all"})
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */

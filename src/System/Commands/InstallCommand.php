@@ -112,7 +112,7 @@ class InstallCommand extends \Symfony\Component\Console\Command\Command
 		$user->user->setEmail($email);
 		$user->user->addRoleEntity($roles['admin']);
 
-		$this->entityManager->persist($user);
+		$this->entityManager->getRepository($user::getClassName())->save($user);
 		$this->entityManager->flush();
 	}
 
