@@ -221,7 +221,7 @@ class AdminGrid extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @return \Nette\ComponentModel\IComponent
+	 * @return \Grido\Grid
 	 */
 	public function getTable()
 	{
