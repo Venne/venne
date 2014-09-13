@@ -145,8 +145,6 @@ trait AdminPresenterTrait
 		}
 
 		if ($this->getParameter('do') === null) {
-			$this->redrawControl('navigation');
-			$this->redrawControl('sideComponent-navigation');
 			$this->redrawControl('content');
 			$this->redrawControl('header');
 			$this->redrawControl('toolbar');
