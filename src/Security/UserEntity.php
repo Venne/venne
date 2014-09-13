@@ -42,25 +42,25 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	protected $email;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 *
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $name = '';
+	protected $name;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 *
-	 * @ORM\Column(type="text")
+	 * @ORM\Column(type="text", nullable=true)
 	 */
-	protected $notation = '';
+	protected $notation;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 *
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $password = '';
+	protected $password;
 
 	/**
 	 * @var string|null
@@ -235,7 +235,7 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 			return false;
 		}
 
-		if ($this->password == $this->getHash($password)) {
+		if ($this->password !== null && $this->password === $this->getHash($password)) {
 			return true;
 		}
 
@@ -299,13 +299,13 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	 */
 	public function __toString()
 	{
-		return $this->name ?: (string) $this->email;
+		return $this->name !== null ? $this->name : (string) $this->email;
 	}
 
 	/******************************** Getters and setters **************************************/
 
 	/**
-	 * @param string $name
+	 * @param string|null $name
 	 */
 	public function setName($name)
 	{
@@ -313,7 +313,7 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getName()
 	{
@@ -321,15 +321,15 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	}
 
 	/**
-	 * @param string $notation
+	 * @param string|null $notation
 	 */
 	public function setNotation($notation)
 	{
-		$this->notation = $notation;
+		$this->notation = $notation ? $notation : null;
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getNotation()
 	{
