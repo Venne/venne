@@ -270,6 +270,18 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			}
 		}
 
+		foreach ($this->compiler->extensions as $extension) {
+			if ($extension instanceof \Kdyby\DoctrineForms\DI\FormsExtension) {
+				$container->addDefinition($this->prefix('doctrineForms.textControl'))
+					->setClass('Venne\System\Forms\DoctrineForms\Controls\TextControl');
+
+				$textControlService = $this->prefix('@doctrineForms.textControl');
+				$container->getDefinition($extension->prefix('entityFormMapper'))
+					->addSetup('?->setEntityFormMapper($service);$service->registerMapper(?)', array($textControlService, $textControlService));
+				break;
+			}
+		}
+
 		$container->addDefinition($this->prefix('trayComponent'))
 			->setImplement('Venne\System\AdminModule\Components\ITrayControlFactory')
 			->setInject(true);
