@@ -99,20 +99,13 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 		$admin = $this->adminGridFactory->create($dao);
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
-		$table->setModel(new Doctrine($dao->createQueryBuilder('a')
-				->addSelect('u.email')
-				->innerJoin('a.user', 'u'),
-			null,
-			null,
-			Query::HYDRATE_ARRAY
-		));
-		$table->setPrimaryKey('user_id');
+		$table->setPrimaryKey('user.id');
 
 		// columns
-		$table->addColumnText('email', 'E-mail')
+		$table->addColumnText('user.email', 'E-mail')
 			->setSortable()
 			->getCellPrototype()->width = '100%';
-		$table->getColumn('email')
+		$table->getColumn('user.email')
 			->setFilterText()->setSuggestion();
 
 		// actions

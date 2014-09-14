@@ -18,7 +18,7 @@ interface IGridoFactory
 {
 
 	/**
-	 * @return \Grido\Grid
+	 * @return \Venne\Bridges\Grido\Grid
 	 */
 	public function create();
 
