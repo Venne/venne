@@ -136,6 +136,7 @@ class AdminGrid extends \Venne\System\UI\Control
 			'mode' => null,
 		));
 
+		$this->redrawControl('formContainer');
 		$this->redrawControl('table');
 		$this->onClose($this);
 	}
@@ -302,7 +303,8 @@ class AdminGrid extends \Venne\System\UI\Control
 					'id' => null,
 					'mode' => null,
 				));
-				$this->redrawControl('form');
+				$this->redrawControl('formContainer');
+				$this->redrawControl('table');
 			};
 		}
 
@@ -334,6 +336,10 @@ class AdminGrid extends \Venne\System\UI\Control
 	public function formSuccess(\Nette\Application\UI\Form $form)
 	{
 		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
+			if ($this->mode === self::MODE_PLACE) {
+				$this->redrawControl('formContainer');
+			}
+
 			$this->redirect('this', array(
 				'formName' => null,
 				'id' => null,
