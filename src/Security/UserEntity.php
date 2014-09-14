@@ -14,10 +14,8 @@ namespace Venne\Security;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
 use Nette\Utils\Callback;
 use Nette\Utils\Random;
-use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -534,7 +532,7 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	 */
 	protected function generateNewSalt()
 	{
-		$this->salt = Strings::random(8);
+		$this->salt = Random::generate(8);
 	}
 
 	/**
@@ -542,7 +540,7 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	 */
 	protected function generateNewKey()
 	{
-		$this->key = Strings::random(30);
+		$this->key = Random::generate(30);
 	}
 
 	/**

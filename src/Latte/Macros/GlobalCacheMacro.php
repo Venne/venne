@@ -19,7 +19,7 @@ use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Latte;
-use Nette\Utils\Strings;
+use Nette\Utils\Random;
 use stdClass;
 
 /**
@@ -63,7 +63,7 @@ class GlobalCacheMacro extends \Nette\Object implements \Latte\IMacro
 		$node->isEmpty = false;
 		$node->openingCode = PhpWriter::using($node)
 			->write('<?php if (Venne\Latte\Macros\GlobalCacheMacro::createCache($netteCacheStorage, %var, $presenter->template->_g->caches, ' . var_export(self::$template, true) . ', %node.array?)) { ?>',
-				Strings::random()
+				Random::generate()
 			);
 	}
 
