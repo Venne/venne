@@ -643,12 +643,9 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			'@venne.venne/vendor/font-awesome/css/font-awesome.min.css',
 			'@venne.venne/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css',
 			'@o5.grido/grido.css',
-			'@venne.venne/vendor/dynatree/skin-vista/ui.dynatree.css',
 			'@venne.venne/vendor/select2/select2.css',
 			'@venne.venne/vendor/select2/select2-bootstrap.css',
-
 			'@venne.venne/css/style.css',
-			'@venne.venne/css/fileBrowser.control.css',
 		);
 	}
 
@@ -668,7 +665,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 			'@venne.venne/vendor/jquery-hashchange/jquery.ba-hashchange.min.js',
 			'@o5.grido/grido.js',
-			'@venne.venne/vendor/dynatree/jquery.dynatree.min.js',
 
 			'@venne.venne/vendor/select2/select2.min.js',
 //			'@venne.venne/vendor/select2/select2_locale_$presenter->lang.js',
