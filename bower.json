@@ -14,7 +14,7 @@
 		"select2": "~3.4.5",
 		"typeahead.js": "~0.10.2",
 		"holderjs": "~2.3.2",
-		"nette.ajax.js": "git@github.com:pepakriz/nette.ajax.js.git#venne",
-		"history.nette.ajax.js": "git@github.com:vojtech-dobes/history.nette.ajax.js.git#master"
+		"nette.ajax.js": "#master",
+		"history.nette.ajax.js": "#master"
 	}
 }
