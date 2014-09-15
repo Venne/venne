@@ -2,63 +2,47 @@
 	<div n:snippet="navigation" class="navmenu navmenu-default navmenu-fixed-left" style="margin-top: 40px; padding-top: 50px; width: 60px;">
 		<ul n:inner-foreach="$sideComponents as $name => $values" class="nav navmenu-nav">
 			<li n:class="$currentSideComponentName === $name ? active">
-				<a
-					{if $currentSideComponentName !== $name}href="{link openSideComponent! sideComponent => $name}"
-					{else}href="{link closeSideComponent!}"{/if}
-					data-open-url="{link openSideComponent! sideComponent => $name}"
-					data-close-url="{link closeSideComponent!}"
-					data-target="{$name}"
-					data-toggle="tooltip"
-					data-placement="right"
-					title="{_$name}"
-				>
+				<a n:href="loadSideComponent! sideComponent => $name" title="{_$name}">
 					<i class="{$values['args']['icon']} fa-2x"></i>
 				</a>
 			</li>
 		</ul>
 	</div>
 
-	{foreach $sideComponentNames as $name}
-		<div id="sideComponent-{$name}" class="side-body{if $currentSideComponentName === $name} side-opened{/if}">
-			<div class="row">
-				<div class="col-md-12">
-					{control $name}
-				</div>
+	<div n:snippet="side" n:class="side-body, $currentSideComponentName !== null ? side-opened">
+		<div class="row">
+			<div class="col-md-12">
+				{if $currentSideComponentName !== null}
+				{control sideComponent}
+				{/if}
 			</div>
 		</div>
-	{/foreach}
+	</div>
 
 	<script>
 		$(function() {
 			$('#snippet-sideComponents-navigation ul a').on('click', function (e) {
 				e.preventDefault();
+
 				var $this = $(this);
 				var $li = $this.parent();
-				var name = $this.data('target');
 
-				$.nette.ajax($this.attr('href'));
+				if (!$li.hasClass('active')) {
+					$.nette.ajax($this.attr('href'));
 
-				$('#snippet-sideComponents-navigation ul a').each(function () {
-					$(this).attr('href', $(this).data('open-url'));
-				});
-
-				if ($li.hasClass('active')) {
-					$('#snippet-sideComponents-navigation ul li').removeClass('active');
-					$('body').animate({ marginLeft: '60px'});
-					$('#sideComponent-' + name).animate({ left: '-240px'});
-				} else {
-					$this.attr('href', $this.data('close-url'));
-
-					if ($('#snippet-sideComponents-navigation ul li.active').length) {
-						$('.side-body').animate({ left: '-240px'});
-						$('body').animate({ marginLeft: '60px'});
+					if (!$('#snippet-sideComponents-navigation ul li.active').length) {
+						$('body').animate({ marginLeft: '360px'});
+						$('#snippet-sideComponents-side').animate({ left: '60px'});
 					}
 
-					$('body').animate({ marginLeft: '360px'});
 					$('#snippet-sideComponents-navigation ul li').removeClass('active');
-					$('#sideComponent-' + name).animate({ left: '60px'});
-
 					$li.addClass('active');
+				} else {
+					$.nette.ajax({link closeSideComponent!});
+					$('#snippet-sideComponents-navigation ul li').removeClass('active');
+
+					$('body').animate({ marginLeft: '60px'});
+					$('#snippet-sideComponents-side').animate({ left: '-240px'});
 				}
 			});
 		});

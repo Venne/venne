@@ -37,12 +37,10 @@ class SideComponentsControl extends \Venne\System\UI\Control
 		$this->sessionSection = $session->getSection(self::SESSION_SECTION);
 	}
 
-	public function handleOpenSideComponent()
+	public function handleLoadSideComponent()
 	{
 		$this->redirect('this');
-
-		$this->sessionSection->sideComponent = $this->sideComponent;
-		$this->getPresenter()->sendPayload();
+		$this->redrawControl('side');
 	}
 
 	public function handleCloseSideComponent()
@@ -65,21 +63,22 @@ class SideComponentsControl extends \Venne\System\UI\Control
 
 	public function render()
 	{
-		$this->template->sideComponents = $this->administrationManager->getSideComponents();
-		$this->template->sideComponentNames = array_keys($this->template->sideComponents);
+		if ($this->getParameter('do') === null) {
+			$this->template->sideComponents = $this->administrationManager->getSideComponents();
+		}
+
 		$this->template->currentSideComponentName = $this->sideComponent;
 		parent::render();
 	}
 
 	/**
-	 * @param string $name
 	 * @return \Nette\Application\UI\Control
 	 */
-	protected function createComponent($name)
+	protected function createComponentSideComponent()
 	{
 		$sideComponents = $this->administrationManager->getSideComponents();
 
-		return $sideComponents[$name]['factory']->create();
+		return $sideComponents[$this->sideComponent]['factory']->create();
 	}
 
 	/**
