@@ -308,11 +308,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), ''))
 			));
 
-		$container->addDefinition($this->prefix('system.application.accountFormFactory'))
-			->setClass('Venne\Security\AdminModule\AccountFormFactory', array(
-				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.login'))
-			));
-
 		$container->addDefinition($this->prefix('system.applicationPresenter'))
 			->setClass('Venne\System\AdminModule\ApplicationPresenter')
 			->addTag(static::TAG_ADMINISTRATION, array(

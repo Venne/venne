@@ -47,9 +47,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $loginDao;
 
-	/** @var \Venne\Security\AdminModule\AccountFormFactory */
-	private $accountFormFactory;
-
 	/** @var \Venne\Security\DefaultType\RegistrationFormFactory */
 	private $userFormFactory;
 
@@ -72,7 +69,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		EntityDao $userDao,
 		EntityDao $loginDao,
 		RegistrationFormFactory $userFormFactory,
-		AccountFormFactory $accountFormFactory,
 		ProviderFormFactory $providerFormFactory,
 		SecurityManager $securityManager,
 		IAdminGridFactory $adminGridFactory,
@@ -82,7 +78,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	{
 		$this->userDao = $userDao;
 		$this->loginDao = $loginDao;
-		$this->accountFormFactory = $accountFormFactory;
 		$this->userFormFactory = $userFormFactory;
 		$this->providerFormFactory = $providerFormFactory;
 		$this->securityManager = $securityManager;
@@ -271,18 +266,16 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentAccountForm()
 	{
-		if ($this->user->identity instanceof UserEntity) {
-			$formFactory = $this->securityManager
-				->getUserTypeByClass($this->user->identity->class)
-				->getFrontFormFactory();
+		$user = $this->userDao->find($this->getUser()->getIdentity()->getId());
 
-			$form = $this->formFactoryFactory
-				->create($formFactory)
-				->setEntity($this->user->identity->extendedUser)
-				->create();
-		} else {
-			$form = $this->accountFormFactory->create();
-		}
+		$formFactory = $this->securityManager
+			->getUserTypeByClass($user->getClass())
+			->getFrontFormFactory();
+
+		$form = $this->formFactoryFactory
+			->create($formFactory)
+			->setEntity($user->getExtendedUser())
+			->create();
 
 		$form->onSuccess[] = $this->accountFormSuccess;
 

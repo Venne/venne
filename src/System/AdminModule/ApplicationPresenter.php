@@ -13,7 +13,6 @@ namespace Venne\System\AdminModule;
 
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
-use Venne\Security\AdminModule\AccountFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -31,9 +30,6 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\System\AdminModule\ApplicationFormFactory */
 	private $applicationForm;
 
-	/** @var \Venne\Security\AdminModule\AccountFormFactory */
-	private $accountForm;
-
 	/** @var \Venne\System\AdminModule\MailerFormFactory */
 	private $mailerForm;
 
@@ -45,7 +41,6 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 
 	public function __construct(
 		ApplicationFormFactory $applicationForm,
-		AccountFormFactory $accountForm,
 		AdministrationFormFactory $systemForm,
 		MailerFormFactory $mailerForm,
 		AuthenticationFormFactory $authenticationForm,
@@ -54,7 +49,6 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 	{
 		$this->authenticationForm = $authenticationForm;
 		$this->applicationForm = $applicationForm;
-		$this->accountForm = $accountForm;
 		$this->systemForm = $systemForm;
 		$this->mailerForm = $mailerForm;
 		$this->registrationTableFactory = $registrationTableFactory;
@@ -139,24 +133,6 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 		$form = $this->applicationForm->create();
 		$form->onSuccess[] = function () {
 			$this->flashMessage($this->translator->translate('Application settings has been updated.'), 'success');
-			$this->redirect('this');
-		};
-
-		return $form;
-	}
-
-	/**
-	 * @return \Nette\Application\UI\Form
-	 */
-	protected function createComponentAccountForm()
-	{
-		$form = $this->accountForm->create();
-		$form->setDefaults(array(
-			'routePrefix' => $this->administrationManager->routePrefix,
-			'defaultPresenter' => $this->administrationManager->defaultPresenter,
-		));
-		$form->onSuccess[] = function () {
-			$this->flashMessage($this->translator->translate('Account settings has been updated.'), 'success');
 			$this->redirect('this');
 		};
 
