@@ -55,25 +55,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			),
 			'theme' => 'venne/venne',
 		),
-		'website' => array(
-			'name' => 'Blog',
-			'title' => '%n %s %t',
-			'titleSeparator' => '|',
-			'keywords' => '',
-			'description' => '',
-			'author' => '',
-			'robots' => 'index, follow',
-			'routePrefix' => '',
-			'oneWayRoutePrefix' => '',
-			'languages' => array(),
-			'defaultLanguage' => 'cs',
-			'defaultPresenter' => 'Homepage',
-			'errorPresenter' => 'Cms:Error',
-			'layout' => '@cms/bootstrap',
-			'cacheMode' => '',
-			'cacheValue' => '10',
-			'theme' => '',
-		),
 		'paths' => array(
 			'publicDir' => '%wwwDir%/public',
 			'dataDir' => '%appDir%/data',
@@ -134,10 +115,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('securityManager'))
 			->setClass('Venne\Security\SecurityManager');
 
-		// Application
-		$application = $container->getDefinition('application');
-		$application->addSetup('$service->errorPresenter = ?', array($config['website']['errorPresenter']));
-
 		$container->addDefinition('authorizatorFactory')
 			->setFactory('Venne\Security\AuthorizatorFactory', array(
 				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
@@ -162,40 +139,12 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition('authenticator')
 			->setClass('Venne\Security\Authenticator', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
 
-		// detect prefix
-		$prefix = $config['website']['routePrefix'];
-		$adminPrefix = $config['administration']['routePrefix'];
-		$languages = $config['website']['languages'];
-
-		// parameters
-		$parameters = array();
-		$parameters['lang'] = count($languages) > 1 || $config['website']['routePrefix'] ? null : $config['website']['defaultLanguage'];
-
-		// Sitemap
-		$container->addDefinition($this->prefix('robotsRoute'))
-			->setClass('Nette\Application\Routers\Route', array('robots.txt',
-				array('presenter' => 'Cms:Sitemap', 'action' => 'robots', 'lang' => null)
-			))
-			->addTag(static::TAG_ROUTE, array('priority' => 999999999));
-		$container->addDefinition($this->prefix('sitemapRoute'))
-			->setClass('Nette\Application\Routers\Route', array('[lang-<lang>/][page-<page>/]sitemap.xml',
-				array('presenter' => 'Cms:Sitemap', 'action' => 'sitemap',)
-			))
-			->addTag(static::TAG_ROUTE, array('priority' => 999999998));
-
 		// Administration
 		$presenter = explode(':', $config['administration']['defaultPresenter']);
 		unset($presenter[1]);
 		$container->addDefinition($this->prefix('adminRoute'))
-			->setClass('Venne\System\Routers\AdminRoute', array($presenter, $adminPrefix))
+			->setClass('Venne\System\Routers\AdminRoute', array($presenter, $config['administration']['routePrefix']))
 			->addTag(static::TAG_ROUTE, array('priority' => 100001));
-
-		if ($config['website']['oneWayRoutePrefix']) {
-			$container->addDefinition($this->prefix('oneWayPageRoute'))
-				->setClass('Venne\System\Content\Routes\PageRoute', array('@container', '@cacheStorage', '@doctrine.checkConnection', $config['website']['oneWayRoutePrefix'], $parameters, $config['website']['languages'], $config['website']['defaultLanguage'], true)
-				)
-				->addTag(static::TAG_ROUTE, array('priority' => 99));
-		}
 
 		$am = $container->addDefinition($this->prefix('administrationManager'))
 			->setClass('Venne\System\AdministrationManager', array(
@@ -351,7 +300,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		$container->addDefinition($this->prefix('system.application.systemFormFactory'))
 			->setClass('Venne\System\AdminModule\AdministrationFormFactory', array(
-				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.application'))
+				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration'))
 			));
 
 		$container->addDefinition($this->prefix('system.application.applicationFormFactory'))

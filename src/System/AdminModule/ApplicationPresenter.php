@@ -11,6 +11,8 @@
 
 namespace Venne\System\AdminModule;
 
+use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 use Venne\Security\AdminModule\AccountFormFactory;
 
 /**
@@ -113,6 +115,18 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 	protected function createComponentSystemForm()
 	{
 		$form = $this->systemForm->create();
+		$form->onSuccess[] = function (Form $form, ArrayHash $values) {
+			$routePrefix = $values['routePrefix'];
+			$oldRoutePrefix = $this->getAdministrationManager()->getRoutePrefix();
+
+			$this->flashMessage($this->translator->translate('Application settings has been updated.'), 'success');
+
+			if ($routePrefix !== $oldRoutePrefix) {
+				$this->redirectUrl('/' . $routePrefix . substr($this->link('this'), strlen($oldRoutePrefix) + 1));
+			}
+
+			$this->redirect('this');
+		};
 
 		return $form;
 	}

@@ -11,7 +11,6 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Application\UI\Form;
 use Venne\Forms\IFormFactory;
 
 /**
@@ -37,36 +36,13 @@ class AdministrationFormFactory extends \Nette\Object implements \Venne\Forms\IF
 
 		$form->addGroup('Administration settings');
 		$form->addText('routePrefix', 'Route prefix');
-		$form->addText('defaultPresenter', 'Default presenter');
+		$form->addText('defaultPresenter', 'Default presenter')
+			->setDefaultValue('System:Admin:Dashboard');
 
 		$form->setCurrentGroup();
 		$form->addSubmit('_submit', 'Save');
 
-		$form->onSuccess[] = $this->handleSuccess;
-
 		return $form;
-	}
-
-	public function handleSuccess(Form $form)
-	{
-		$form->getPresenter()->absoluteUrls = true;
-		$url = $this->httpRequest->getUrl();
-
-		$path = "{$url->scheme}://{$url->host}{$url->scriptPath}";
-
-		$oldPath = $path . $this->websiteManager->routePrefix;
-		$newPath = $path . $form['routePrefix']->getValue();
-
-		if ($form['routePrefix']->getValue() == '') {
-			$oldPath .= '/';
-		}
-
-		if ($this->websiteManager->routePrefix == '') {
-			$newPath .= '/';
-		}
-
-		$form->getPresenter()->flashMessage('Administration settings has been updated.', 'success');
-		$form->getPresenter()->redirectUrl(str_replace($oldPath, $newPath, $form->getPresenter()->link('this')));
 	}
 
 }
