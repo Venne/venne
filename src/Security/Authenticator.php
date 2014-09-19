@@ -29,9 +29,7 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 	}
 
 	/**
-	 * Performs an authentication
-	 *
-	 * @param string []
+	 * @param string[] $credentials
 	 * @return \Nette\Security\Identity
 	 */
 	public function authenticate(array $credentials)
@@ -39,6 +37,7 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 
 		list($username, $password) = $credentials;
 
+		/** @var UserEntity $user */
 		$user = $this->userDao->findOneBy(array('email' => $username, 'published' => 1));
 
 		if (!$user) {
@@ -47,6 +46,11 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 
 		if (!$user->verifyByPassword($password)) {
 			throw new AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
+		}
+
+		if ($user->needsRehash()) {
+			$user->setPassword($password);
+			$this->userDao->save($user);
 		}
 
 		return new Identity($user->id, $user->getRoles(), array(

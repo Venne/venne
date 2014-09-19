@@ -14,6 +14,7 @@ namespace Venne\Security;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Nette\Security\Passwords;
 use Nette\Utils\Callback;
 use Nette\Utils\Random;
 
@@ -37,49 +38,42 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	 *
 	 * @ORM\Column(type="string", unique=true, length=64)
 	 */
-	protected $email;
+	private $email;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $name;
+	private $name;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="text", nullable=true)
 	 */
-	protected $notation;
+	private $notation;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $password;
+	private $password;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="string", name="enableByKey", nullable=true)
 	 */
-	protected $key;
+	private $key;
 
 	/**
 	 * @var bool
 	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $published = true;
-
-	/**
-	 * @var string
-	 *
-	 * @ORM\Column(type="string")
-	 */
-	protected $salt;
+	private $published = true;
 
 	/**
 	 * @var \Venne\Security\RoleEntity[]|\Doctrine\Common\Collections\ArrayCollection
@@ -107,32 +101,18 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	protected $loginProviders;
 
 	/**
-	 * @var string|null
-	 *
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	protected $socialType;
-
-	/**
-	 * @var string|null
-	 *
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	protected $socialData;
-
-	/**
 	 * @var \DateTime
 	 *
 	 * @ORM\Column(type="datetime")
 	 */
-	protected $created;
+	private $created;
 
 	/**
 	 * @var string
 	 *
 	 * @ORM\Column(type="string")
 	 */
-	protected $class;
+	private $class;
 
 	/**
 	 * @var string|null
@@ -169,8 +149,6 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 		$this->loginProviders = new ArrayCollection();
 		$this->friends = new ArrayCollection();
 		$this->created = new DateTime();
-
-		$this->generateNewSalt();
 	}
 
 	/**
@@ -204,40 +182,40 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	}
 
 	/**
-	 * Set password.
-	 *
 	 * @param string $password
 	 */
 	public function setPassword($password)
 	{
-		if ($password === null) {
-			return;
-		}
-
-		if (strlen($password) < 5) {
-			throw new \Nette\InvalidArgumentException('Minimal length of password is 5 chars.');
-		}
-
-		$this->password = $this->getHash($password);
+		$this->password = Passwords::hash($password);
 	}
 
 	/**
-	 * Verify the password.
-	 *
+	 * @return null
+	 */
+	public function getPassword()
+	{
+		return null;
+	}
+
+	/**
 	 * @param string $password
-	 * @return bool
+	 * @return boolean
 	 */
 	public function verifyByPassword($password)
 	{
-		if (!$this->isEnable()) {
+		if (!$this->isEnable() || $this->password === null) {
 			return false;
 		}
 
-		if ($this->password !== null && $this->password === $this->getHash($password)) {
-			return true;
-		}
+		return Passwords::verify($password, $this->password);
+	}
 
-		return false;
+	/**
+	 * @return boolean
+	 */
+	public function needsRehash()
+	{
+		return Passwords::needsRehash($this->password);
 	}
 
 	/**
@@ -249,14 +227,12 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	}
 
 	/**
-	 * Verify user by key.
-	 *
 	 * @param string $key
-	 * @return bool
+	 * @return boolean
 	 */
 	public function enableByKey($key)
 	{
-		if ($this->key == $key) {
+		if ($this->key === $key) {
 			$this->key = null;
 
 			return true;
@@ -273,9 +249,19 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 		return $this->resetKey = Random::generate(30);
 	}
 
-	public function removeResetKey()
+	/**
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function removeResetKey($key)
 	{
-		$this->resetKey = null;
+		if ($this->resetKey === $key) {
+			$this->resetKey = null;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -393,7 +379,7 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	 */
 	public function setPublished($published)
 	{
-		$this->published = (bool)$published;
+		$this->published = (bool) $published;
 		$this->invalidateLogins();
 	}
 
@@ -461,14 +447,6 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 	}
 
 	/**
-	 * @param \DateTime $created
-	 */
-	public function setCreated(DateTime $created)
-	{
-		$this->created = $created;
-	}
-
-	/**
 	 * @return \DateTime
 	 */
 	public function getCreated()
@@ -524,34 +502,12 @@ class UserEntity extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\S
 		return $this->class;
 	}
 
-
-	/******************************** protected function ***************************************/
-
-	/**
-	 * Generate random salt.
-	 */
-	protected function generateNewSalt()
-	{
-		$this->salt = Random::generate(8);
-	}
-
 	/**
 	 * Generate random key.
 	 */
 	protected function generateNewKey()
 	{
 		$this->key = Random::generate(30);
-	}
-
-	/**
-	 * Get hash of password.
-	 *
-	 * @param string $password
-	 * @return string
-	 */
-	protected function getHash($password)
-	{
-		return md5($this->salt . $password);
 	}
 
 }

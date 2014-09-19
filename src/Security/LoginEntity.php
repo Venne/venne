@@ -44,7 +44,7 @@ class LoginEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $sessionId;
 
 	/**
-	 * @var bool
+	 * @var boolean
 	 *
 	 * @ORM\Column(type="boolean")
 	 */

@@ -45,78 +45,48 @@ class AdminFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactor
 		$user->addText('name', 'Name');
 		$user->addTextArea('notation', 'Notation', 40, 4)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
-
-		$route = $user->addContainer('route');
-		$route->setCurrentGroup($group);
-		//$route->addFileEntityInput('photo', 'Avatar');
-
-		$user->setCurrentGroup($form->addGroup('Block by key'));
-		$user->addCheckbox('key_new', 'Enable')->addCondition($form::EQUAL, true)->toggle('setKey');
-		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setKey'));
-		$user->addText('key', 'Authentization key')->setOption('description', 'If is set user cannot log in.');
+		$user->addMultiSelect('roleEntities', 'Roles')
+			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
+		$user->addText('key', 'Lock key')
+			->setOption('description', 'If is set user cannot log in.');
 
 		$user->setCurrentGroup($form->addGroup('Password'));
 		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, true)->toggle('setPasswd');
-		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setPasswd'));
-		$user->addText('password', 'Password')
-			->addConditionOn($user['password_new'], Form::FILLED)
-			->addRule(Form::FILLED, 'Enter password')
-			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
-		$user->addText('password_confirm', 'Confirm password')
-			->addConditionOn($user['password_new'], Form::FILLED)
-			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
-
-		$user->setCurrentGroup($form->addGroup('Next informations'));
-		//$user->addManyToMany('roleEntities', 'Roles');
-		$user->addMultiSelect('roleEntities', 'Roles')
-			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
+		$user->setCurrentGroup($form->addGroup()->setOption('container', 'fieldset id=setPasswd'));
+		$this->addPassword($form);
 
 		$form->setCurrentGroup();
 		$form->addSubmit('_submit', 'Save');
 
-		$form->onValidate[] = $this->handleSave;
+		$form->onSuccess[] = $this->success;
+		$form->onError[] = $this->error;
 
 		return $form;
 	}
 
-
-//	public function handleCatchError(Form $form, $e)
-//	{
-//		if ($e instanceof DBALException && $e->getCode() == '23000') {
-//			$form->addError('User is not unique');
-//			return TRUE;
-//		}
-//	}
-//
-//
-//	public function handleAttached(Form $form)
-//	{
-//		$form->setCurrentGroup();
-//		$form->addSaveButton('Save');
-//
-//		if ($form->isSubmitted()) {
-//			if (!$form['user']['password_new']->value) {
-//				unset($form['user']['password']);
-//			}
-//		}
-//	}
-//
-//
-//	public function handleLoad(Form $form)
-//	{
-//		if ($form->data->user->key) {
-//			$form['user']['key_new']->value = TRUE;
-//		}
-//	}
-
-	public function handleSave(Form $form)
+	public function success(Form $form)
 	{
 		if (!$form['user']['password_new']->value) {
-			$form['user']['password']->value = null;
-		}
-		if (!$form['user']['key_new']->value) {
-			$form['user']['key']->value = null;
+			unset($form['user']['password']);
+			unset($form['user']['password_confirm']);
 		}
 	}
-	
+
+	public function error(Form $form)
+	{
+		$this->addPassword($form);
+	}
+
+	private function addPassword(Form $form)
+	{
+		$user = $form->getComponent('user');
+		$user->addPassword('password', 'Password')
+			->addConditionOn($user['password_new'], Form::FILLED)
+			->addRule(Form::FILLED, 'Enter password')
+			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
+		$user->addPassword('password_confirm', 'Confirm password')
+			->addConditionOn($user['password_new'], Form::FILLED)
+			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
+	}
+
 }
