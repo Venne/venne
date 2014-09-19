@@ -5,7 +5,7 @@
 		"nette-forms": "~2.2.2",
 		"jquery": "~1.9",
 		"jquery-ui": "~1.10.4",
-		"bootstrap": "~3.1.1",
+		"bootstrap": "~3.2.0",
 		"jasny-bootstrap": "~3.1.0",
 		"font-awesome": "~4.0.3",
 		"smalot-bootstrap-datetimepicker": "~2.2.0",
