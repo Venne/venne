@@ -273,18 +273,18 @@ $(function () {
 		},
 		selector: ".grido"
 	});
-	$.nette.init();
-
-	$('a[data-confirm], button[data-confirm], input[data-confirm]').on('click', function (e) {
-		var el = $(this);
-		if (el.triggerAndReturn('confirm')) {
-			if (!confirm(el.attr('data-confirm'))) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				return false;
-			}
+	$.nette.ext('alerts', {
+		success: function () {
+			var $alert = $(".alert");
+			$alert.fadeTo(0, 0).fadeTo(500, 1);
+			window.setTimeout(function() {
+				$alert.fadeTo(500, 0).slideUp(500, function(){
+					$(this).remove();
+				});
+			}, 4000);
 		}
 	});
+	$.nette.init();
 
 });
 

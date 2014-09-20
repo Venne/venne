@@ -115,7 +115,7 @@ class SecurityManager extends \Nette\Object
 	{
 		$sendBy = $sendBy !== null ? $sendBy : $user;
 
-		$this->emailManager->send($user->email, null, NewPasswordEvent::getName(), 'newPassword');
+		$this->emailManager->send($user->getEmail(), null, NewPasswordEvent::getName(), 'newPassword');
 		$this->notificationManager->notify(
 			NewPasswordEvent::getName(),
 			$user,
@@ -134,7 +134,7 @@ class SecurityManager extends \Nette\Object
 	{
 		$sendBy = $sendBy !== null ? $sendBy : $user;
 
-		$this->emailManager->send($user->email, null, PasswordRecoveryEvent::getName(), 'passwordRecovery', array(
+		$this->emailManager->send($user->getEmail(), null, PasswordRecoveryEvent::getName(), 'passwordRecovery', array(
 			'link' => $link,
 		));
 		$this->notificationManager->notify(

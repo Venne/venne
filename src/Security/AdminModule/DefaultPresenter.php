@@ -12,7 +12,6 @@
 namespace Venne\Security\AdminModule;
 
 use Doctrine\ORM\Query;
-use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\EntityDao;
 use Venne\Security\DefaultType\AdminFormFactory;
 use Venne\Security\SecurityManager;
