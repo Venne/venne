@@ -136,8 +136,15 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 
 		// Toolbar
 		$toolbar = $admin->getNavbar();
-		$toolbar->addSection('new', 'Create', 'file');
-		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'), $admin::MODE_PLACE);
+		$section = $toolbar->addSection('new', 'Create', 'user');
+
+		foreach ($this->securityManager->getUserTypes() as $type => $value) {
+			$admin->connectFormWithNavbar(
+				$form,
+				$section->addSection(str_replace('\\', '_', $type), $value->getName()),
+				$admin::MODE_PLACE
+			);
+		}
 
 		$table->addActionEvent('delete', 'Delete')
 			->getElementPrototype()->class[] = 'ajax';
