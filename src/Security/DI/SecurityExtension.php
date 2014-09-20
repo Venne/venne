@@ -114,13 +114,13 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 			));
 
 		$container->addDefinition($this->prefix('adminFormFactory'))
-			->setClass('Venne\Security\DefaultType\AdminFormFactory', array(new Statement('@system.admin.basicFormFactory')));
+			->setClass('Venne\Security\DefaultType\AdminFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 
 		$container->addDefinition($this->prefix('frontFormFactory'))
-			->setClass('Venne\Security\DefaultType\FrontFormFactory', array(new Statement('@system.admin.basicFormFactory')));
+			->setClass('Venne\Security\DefaultType\FrontFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 
 		$container->addDefinition($this->prefix('registrationFormFactory'))
-			->setClass('Venne\Security\DefaultType\RegistrationFormFactory', array(new Statement('@system.admin.basicFormFactory')));
+			->setClass('Venne\Security\DefaultType\RegistrationFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 	}
 
 	/**
