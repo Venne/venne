@@ -88,7 +88,7 @@ class InvitationsTableFactory
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->createForm($this->formFactory, 'Role', function () {
+		$form = $admin->addForm('role', 'Role', $this->formFactory, function () {
 			return new InvitationEntity(
 				$this->userDao->find($this->user->getIdentity()->getId())
 			);

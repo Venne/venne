@@ -66,7 +66,7 @@ class RegistrationTableFactory
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->createForm($this->formFactory, 'Role');
+		$form = $admin->addForm('registration', 'Registration', $this->formFactory);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 

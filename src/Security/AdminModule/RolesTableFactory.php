@@ -90,8 +90,8 @@ class RolesTableFactory
 		$table->addActionEvent('permissions', 'Permissions')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->createForm($this->roleForm, 'Role');
-		$permissionsForm = $admin->createForm($this->permissionsForm, 'Permissions', null, Form::TYPE_LARGE);
+		$form = $admin->addForm('role', 'Role', $this->roleForm);
+		$permissionsForm = $admin->addForm('permissions', 'Permissions', $this->permissionsForm, null, Form::TYPE_LARGE);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 		$admin->connectFormWithAction($permissionsForm, $table->getAction('permissions'), $admin::MODE_PLACE);

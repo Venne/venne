@@ -94,7 +94,7 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->createForm($this->jobFormFactory, 'Job');
+		$form = $admin->addForm('job', 'Job', $this->jobFormFactory);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 

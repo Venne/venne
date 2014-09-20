@@ -106,7 +106,7 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->createForm($this->notificationSettingFormFactory, 'Notification setting');
+		$form = $admin->addForm('notification', 'Notification setting', $this->notificationSettingFormFactory);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 

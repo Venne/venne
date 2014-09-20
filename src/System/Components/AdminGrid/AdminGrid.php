@@ -73,6 +73,9 @@ class AdminGrid extends \Venne\System\UI\Control
 	protected $navbar;
 
 	/** @var \Venne\System\Components\AdminGrid\Form[] */
+	protected $forms = array();
+
+	/** @var \Venne\System\Components\AdminGrid\Form[] */
 	protected $navbarForms = array();
 
 	/** @var \Venne\System\Components\AdminGrid\Form[] */
@@ -210,15 +213,25 @@ class AdminGrid extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @param \Venne\Forms\IFormFactory $formFactory
+	 * @param string $name
 	 * @param string $title
+	 * @param \Venne\Forms\IFormFactory $formFactory
 	 * @param callable $entityFactory
 	 * @param string $type
 	 * @return \Venne\System\Components\AdminGrid\Form
 	 */
-	public function createForm(IFormFactory $formFactory, $title, $entityFactory = null, $type = null)
+	public function addForm($name, $title, IFormFactory $formFactory, $entityFactory = null, $type = null)
 	{
-		return new Form($formFactory, $title, $entityFactory, $type);
+		return $this->forms[$name] = new Form($formFactory, $title, $entityFactory, $type);
+	}
+
+	/**
+	 * @param string $name
+	 * @return \Venne\System\Components\AdminGrid\Form
+	 */
+	public function getForm($name)
+	{
+		return $this->forms[$name];
 	}
 
 	/**
@@ -279,19 +292,26 @@ class AdminGrid extends \Venne\System\UI\Control
 	 */
 	protected function createComponentForm()
 	{
-		/** @var \Nette\Application\UI\Form $form */
-		$form = $this->id !== null
+		$formDefinition = $this->id !== null
 			? $this->actionForms[$this->formName]
 			: $this->navbarForms[$this->formName];
+
+		/** @var \Nette\Application\UI\Form $form */
 		$form = $this->formFactoryFactory
-			->create($form->getFactory())
+			->create($formDefinition->getFactory())
 			->setEntity($this->getCurrentEntity())
 			->create();
 
 		$form->onSubmit[] = function () {
 			$this->redrawControl('form');
 		};
+		$form->onSuccess[] = function ($form, $values) use ($formDefinition) {
+			$formDefinition->onSuccess($form, $values);
+		};
 		$form->onSuccess[] = $this->formSuccess;
+		$form->onError[] = function ($form) use ($formDefinition) {
+			$formDefinition->onError($form);
+		};
 		$form->onError[] = $this->formError;
 
 		if ($this->mode == self::MODE_PLACE) {
@@ -320,12 +340,21 @@ class AdminGrid extends \Venne\System\UI\Control
 			? $this->actionForms[$this->formName]
 			: $this->navbarForms[$this->formName];
 
-		if ($this->id !== null) {
-			return $this->getDao()->find($this->id);
+		if (is_callable($form->getEntityFactory())) {
+			$entity = Callback::invoke($form->getEntityFactory());
+
+			if ($this->id !== null) {
+				return $this->getDao()
+					->getEntityManager()
+					->getRepository($entity::getClassName())
+					->find($this->id);
+			}
+
+			return $entity;
 		}
 
-		if (is_callable($form->getEntityFactory())) {
-			return Callback::invoke($form->getEntityFactory());
+		if ($this->id !== null) {
+			return $this->getDao()->find($this->id);
 		}
 
 		$class = $this->dao->getClassName();
@@ -380,7 +409,8 @@ class AdminGrid extends \Venne\System\UI\Control
 				$this->tableDelete($item, null, false);
 			}
 		} else {
-			$this->dao->delete($this->dao->find($id));
+			$this->dao->getEntityManager()->remove($this->dao->find($id));
+			//$this->dao->delete($this->dao->find($id));
 		}
 
 		$this->redirect('this');

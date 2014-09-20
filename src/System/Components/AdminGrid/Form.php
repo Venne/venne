@@ -32,8 +32,11 @@ class Form extends Component
 
 	const TYPE_FULL = 'modal-full';
 
-	/** @var array */
-	public $onCreate;
+	/** @var callable[] */
+	public $onSuccess;
+
+	/** @var callable[] */
+	public $onError;
 
 	/** @var \Venne\Forms\IFormFactory */
 	private $factory;
@@ -64,17 +67,6 @@ class Form extends Component
 	}
 
 	/**
-	 * Returns table.
-	 *
-	 * @param  bool   throw exception if form doesn't exist?
-	 * @return TableControl
-	 */
-	public function getTable($need = true)
-	{
-		return $this->lookup('Venne\System\Components\Table\TableControl', $need);
-	}
-
-	/**
 	 * @param \Venne\Forms\IFormFactory $factory
 	 */
 	public function setFactory(IFormFactory $factory)
@@ -83,7 +75,7 @@ class Form extends Component
 	}
 
 	/**
-	 * @return IDoctrineFormFactory
+	 * @return \Venne\Forms\IFormFactory
 	 */
 	public function getFactory()
 	{

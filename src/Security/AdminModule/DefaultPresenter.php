@@ -116,10 +116,20 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 			->getElementPrototype()->class[] = 'ajax';
 
 		$type = $this->type;
-		$form = $admin->createForm($this->getUserType()->getFormFactory(), 'User', function () use ($type) {
+
+		$form = $admin->addForm('user', 'User', $this->getUserType()->getFormFactory(), function () use ($type) {
 			return new $type;
 		}, Form::TYPE_LARGE);
-		$providerForm = $admin->createForm($this->providersForm, 'Login providers', null, Form::TYPE_LARGE);
+		$form->onSuccess[] = function () {
+			$this->flashMessage('User has been saved.', 'success');
+			$this->redrawControl('flashes');
+		};
+		$form->onError[] = function () {
+			$this->flashMessage('Failed.', 'warning');
+			$this->redrawControl('flashes');
+		};
+
+		$providerForm = $admin->addForm('loginProviders', 'Login providers', $this->providersForm, null, Form::TYPE_LARGE);
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
 		$admin->connectFormWithAction($providerForm, $table->getAction('loginProviders'));

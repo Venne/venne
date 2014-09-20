@@ -198,7 +198,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		$this->providerFormFactory->onSuccess[] = function ($parameters) use ($_this) {
 			$_this->redirect('this');
 		};
-		$form = $admin->createForm($this->providerFormFactory, 'Provider');
+		$form = $admin->addForm('provider', 'Provider', $this->providerFormFactory);
 		$admin->connectFormWithAction($form, $table->getAction('connect'));
 
 		$table->addActionEvent('disconnect', 'Disconnect')

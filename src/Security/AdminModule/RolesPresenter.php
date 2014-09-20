@@ -31,7 +31,18 @@ class RolesPresenter extends \Nette\Application\UI\Presenter
 
 	protected function createComponentTable()
 	{
-		return $this->rolesTableFactory->create();
+		$admin = $this->rolesTableFactory->create();
+		$form = $admin->getForm('role');
+		$form->onSuccess[] = function () {
+			$this->flashMessage('Role has been saved.', 'success');
+			$this->redrawControl('flashes');
+		};
+		$form->onError[] = function () {
+			$this->flashMessage('Failed.', 'warning');
+			$this->redrawControl('flashes');
+		};
+
+		return $admin;
 	}
 
 }
