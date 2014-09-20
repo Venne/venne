@@ -71,8 +71,8 @@
 								</a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-header">{_system.admin.actions}</li>
-									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Security:Admin:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Security:Admin:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
-									<li><a class="ajax" n:href=":Security:Admin:Invitation:"><i class="glyphicon glyphicon-envelope"></i> {_system.admin.invitation}</a></li>
+									<li n:if="!isset($hideMenuItems) && $presenter->isAuthorized(':Admin:Security:Account:')"><a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax{/if}" href="{link :Admin:Security:Account:}"><i class="glyphicon glyphicon-user"></i> {_system.admin.userCard}</a></li>
+									<li><a class="ajax" n:href=":Admin:Security:Invitation:"><i class="glyphicon glyphicon-envelope"></i> {_system.admin.invitation}</a></li>
 									<li><a href="{link logout! mode=>NULL}"><i class="glyphicon glyphicon-off"></i> {_system.admin.logOut}</a></li>
 								</ul>
 							</li>
@@ -113,7 +113,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="container-alerts">
-						<div class="alerts-body">
+						<div class="alerts-body" n:snippet="flashes">
 							{control flashMessage TRUE}
 						</div>
 					</div>
@@ -140,7 +140,7 @@
 		</div>
 		<footer>
 			<p>
-				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span> | <span><a class="ajax" n:href=":System:Admin:About:">{_system.admin.about}</a></span>
+				<span>Copyright © 2011 - 2014 Josef Kříž</span> | <span>version {$presenter->context->parameters['packages']['venne/venne']['version']}</span> | <span><a class="ajax" n:href=":Admin:System:About:">{_system.admin.about}</a></span>
 			</p>
 		</footer>
 		{/block}

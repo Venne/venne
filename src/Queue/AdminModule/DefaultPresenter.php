@@ -95,7 +95,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	 */
 	public function tableDebugClick($id)
 	{
-		$this->redirect(':Queue:Admin:Worker:', array(
+		$this->redirect(':Admin:Queue:Worker:', array(
 			'id' => $id,
 			'debugMode' => true,
 		));
@@ -119,7 +119,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 		$ch = curl_init();
 		$timeout = 5;
 
-		curl_setopt($ch, CURLOPT_URL, $this->link('//:Queue:Admin:Worker:', array('id' => $id)));
+		curl_setopt($ch, CURLOPT_URL, $this->link('//:Admin:Queue:Worker:', array('id' => $id)));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_exec($ch);
@@ -133,7 +133,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 		$ch = curl_init();
 		$timeout = 5;
 
-		curl_setopt($ch, CURLOPT_URL, $this->link('//:Queue:Admin:Worker:', array('do' => 'create')));
+		curl_setopt($ch, CURLOPT_URL, $this->link('//:Admin:Queue:Worker:', array('do' => 'create')));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_exec($ch);

@@ -123,7 +123,7 @@ class NotificationsExtension extends \Nette\DI\CompilerExtension
 	public function getPresenterMapping()
 	{
 		return array(
-			'Notifications' => 'Venne\Notifications\*Module\*Presenter',
+			'Admin:Notifications' => 'Venne\*\AdminModule\*Presenter',
 		);
 	}
 

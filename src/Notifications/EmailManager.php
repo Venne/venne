@@ -105,7 +105,7 @@ class EmailManager extends \Nette\Object
 	 */
 	private function getRequest($type, $action)
 	{
-		return new NetteApplicationRequest('Notifications:Admin:Email', 'GET', array('type' => $type, 'action' => $action));
+		return new NetteApplicationRequest('Admin:Notifications:Email', 'GET', array('type' => $type, 'action' => $action));
 	}
 
 	/**
@@ -113,7 +113,7 @@ class EmailManager extends \Nette\Object
 	 */
 	private function createPresenter()
 	{
-		$presenter = $this->presenterFactory->createPresenter('Notifications:Admin:Email');
+		$presenter = $this->presenterFactory->createPresenter('Admin:Notifications:Email');
 
 		if ($presenter instanceof EmailPresenter) {
 			return $presenter;

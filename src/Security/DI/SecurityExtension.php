@@ -74,7 +74,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('defaultPresenter'))
 			->setClass('Venne\Security\AdminModule\DefaultPresenter', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
 			->addTag(SystemExtension::TAG_ADMINISTRATION, array(
-				'link' => 'Security:Admin:Default:',
+				'link' => 'Admin:Security:Default:',
 				'category' => 'System',
 				'name' => 'Security',
 				'description' => 'Manage users, roles and permissions',
@@ -139,7 +139,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 	public function getPresenterMapping()
 	{
 		return array(
-			'Security' => 'Venne\Security\*Module\*Presenter',
+			'Admin:Security' => 'Venne\*\AdminModule\*Presenter',
 		);
 	}
 

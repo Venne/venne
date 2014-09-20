@@ -14,12 +14,17 @@ namespace Venne\System\Routers;
 use Nette\Application\Request;
 use Nette\Http\IRequest;
 use Nette\Http\Url;
+use Nette\Utils\Strings;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class AdminRoute extends \Nette\Application\Routers\Route
 {
+
+	const SUBMODULE_NAME = 'Admin';
+
+	const DEFAULT_PRESENTER = 'Default';
 
 	/**
 	 * @param string $presenter
@@ -70,8 +75,7 @@ class AdminRoute extends \Nette\Application\Routers\Route
 			return null;
 		}
 
-		$name = explode(':', $appRequest->getPresenterName());
-		$appRequest->setPresenterName(array_shift($name) . ':Admin:' . (count($name) > 0 ? implode(':', $name) : 'Default'));
+		$appRequest->setPresenterName(self::SUBMODULE_NAME . ':' . $appRequest->getPresenterName() . (substr_count($appRequest->getPresenterName(), ':') === 0 ? ':' . self::DEFAULT_PRESENTER : ''));
 
 		return $appRequest;
 	}
@@ -83,14 +87,17 @@ class AdminRoute extends \Nette\Application\Routers\Route
 	 */
 	public function constructUrl(Request $appRequest, Url $refUrl)
 	{
-		$name = explode(':', $appRequest->getPresenterName());
-		unset($name[1]);
+		$presenter = $appRequest->getPresenterName();
 
-		if ($name[2] == 'Default') {
-			unset($name[2]);
+		if (!Strings::startsWith($presenter, self::SUBMODULE_NAME . ':')) {
+			return null;
 		}
 
-		$appRequest->setPresenterName(implode(':', $name));
+		if (Strings::endsWith($presenter, ':' . self::DEFAULT_PRESENTER)) {
+			$presenter = substr($presenter, 0, -strlen(':' . self::DEFAULT_PRESENTER));
+		}
+
+		$appRequest->setPresenterName(substr($presenter, strlen(self::SUBMODULE_NAME . ':')));
 
 		return parent::constructUrl($appRequest, $refUrl);
 	}

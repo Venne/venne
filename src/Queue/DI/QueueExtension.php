@@ -56,7 +56,7 @@ class QueueExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('defaultPresenter'))
 			->setClass('Venne\Queue\AdminModule\DefaultPresenter')
 			->addTag(SystemExtension::TAG_ADMINISTRATION, array(
-				'link' => 'Queue:Admin:Default:',
+				'link' => 'Admin:Queue:Default:',
 				'category' => 'System',
 				'name' => 'Worker manager',
 				'description' => 'Manage workers',
@@ -103,7 +103,7 @@ class QueueExtension extends \Nette\DI\CompilerExtension
 	public function getPresenterMapping()
 	{
 		return array(
-			'Queue' => 'Venne\Queue\*Module\*Presenter',
+			'Admin:Queue' => 'Venne\*\AdminModule\*Presenter',
 		);
 	}
 

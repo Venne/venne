@@ -48,7 +48,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		'session' => array(),
 		'administration' => array(
 			'routePrefix' => '',
-			'defaultPresenter' => 'System:Admin:Dashboard',
+			'defaultPresenter' => 'Admin:System:Dashboard',
 			'authentication' => array(
 				'autologin' => null,
 				'autoregistration' => null,
@@ -141,7 +141,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		// Administration
 		$presenter = explode(':', $config['administration']['defaultPresenter']);
-		unset($presenter[1]);
 		$container->addDefinition($this->prefix('adminRoute'))
 			->setClass('Venne\System\Routers\AdminRoute', array($presenter, $config['administration']['routePrefix']))
 			->addTag(static::TAG_ROUTE, array('priority' => 100001));
@@ -210,7 +209,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		$container->removeDefinition('nette.presenterFactory');
 		$presenterFactory = $container->addDefinition($this->prefix('presenterFactory'))
-			->setClass('Nette\Application\PresenterFactory', array(
+			->setClass('Venne\System\UI\PresenterFactory', array(
 				isset($container->parameters['appDir']) ? $container->parameters['appDir'] : null
 			));
 		foreach ($this->compiler->extensions as $extension) {
@@ -257,7 +256,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('system.logsPresenter'))
 			->setClass('Venne\System\AdminModule\LogsPresenter', array($container->expand('%logDir%')))
 			->addTag(static::TAG_ADMINISTRATION, array(
-				'link' => 'System:Admin:Logs:',
+				'link' => 'Admin:System:Logs:',
 				'category' => 'System',
 				'name' => 'Log browser',
 				'description' => 'Show logs, errors, warnings,...',
@@ -273,7 +272,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('system.cachePresenter'))
 			->setClass('Venne\System\AdminModule\CachePresenter')
 			->addTag(static::TAG_ADMINISTRATION, array(
-				'link' => 'System:Admin:Cache:',
+				'link' => 'Admin:System:Cache:',
 				'category' => 'System',
 				'name' => 'Cache',
 				'description' => 'Clear cache',
@@ -311,7 +310,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('system.applicationPresenter'))
 			->setClass('Venne\System\AdminModule\ApplicationPresenter')
 			->addTag(static::TAG_ADMINISTRATION, array(
-				'link' => 'System:Admin:Application:',
+				'link' => 'Admin:System:Application:',
 				'category' => 'System',
 				'name' => 'System settings',
 				'description' => 'Set up database, environment,...',
@@ -535,7 +534,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 	public function getPresenterMapping()
 	{
 		return array(
-			'System' => 'Venne\System\*Module\*Presenter',
+			'Admin:System' => 'Venne\*\AdminModule\*Presenter',
 		);
 	}
 

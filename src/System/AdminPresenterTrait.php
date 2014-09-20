@@ -136,8 +136,8 @@ trait AdminPresenterTrait
 
 		// check login
 		if ($this->secured && !$this->getUser()->isLoggedIn()) {
-			if ($this->getName() != 'System:Admin:Login') {
-				$this->forward(':System:Admin:Login:', array('backlink' => $this->storeRequest()));
+			if ($this->getName() != 'Admin:System:Login') {
+				$this->forward(':Admin:System:Login:', array('backlink' => $this->storeRequest()));
 			}
 			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
 				$this->flashMessage($this->translator->translate('You have been logged out due to inactivity. Please login again.'), 'info');

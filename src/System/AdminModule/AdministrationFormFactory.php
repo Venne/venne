@@ -37,7 +37,7 @@ class AdministrationFormFactory extends \Nette\Object implements \Venne\Forms\IF
 		$form->addGroup('Administration settings');
 		$form->addText('routePrefix', 'Route prefix');
 		$form->addText('defaultPresenter', 'Default presenter')
-			->setDefaultValue('System:Admin:Dashboard');
+			->setDefaultValue('Admin:System:Dashboard');
 
 		$form->setCurrentGroup();
 		$form->addSubmit('_submit', 'Save');
