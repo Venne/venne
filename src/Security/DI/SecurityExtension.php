@@ -56,12 +56,6 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 
 	public function setupSecurity(ContainerBuilder $container)
 	{
-		$container->addDefinition($this->prefix('permissionsFormFactory'))
-			->setClass('Venne\Security\AdminModule\PermissionsFormFactory', array(
-				new Statement('@system.admin.basicFormFactory'),
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))
-			));
-
 		$container->addDefinition($this->prefix('roleFormFactory'))
 			->setClass('Venne\Security\AdminModule\RoleFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 
