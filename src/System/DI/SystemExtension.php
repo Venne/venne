@@ -48,7 +48,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		'session' => array(),
 		'administration' => array(
 			'routePrefix' => '',
-			'defaultPresenter' => 'Admin:System:Dashboard',
+			'defaultPresenter' => 'System:Dashboard',
 			'authentication' => array(
 				'autologin' => null,
 				'autoregistration' => null,
