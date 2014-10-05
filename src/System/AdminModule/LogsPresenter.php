@@ -141,6 +141,7 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 
 		foreach (Finder::findFiles('exception-*')->in($this->logDir) as $file) {
 			$data = explode('-', $file->getFileName());
+			array_shift($data);
 
 			$date = vsprintf('%s-%s-%s %s:%s:%s', $data);
 			$info = array('date' => DateTime::from($date), 'id' => $file->getFileName());
