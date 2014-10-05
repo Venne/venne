@@ -11,23 +11,22 @@
 
 namespace Venne\Queue\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
+use Venne\Queue\Job;
 use Venne\Queue\JobFailedException;
 use Venne\Queue\JobManager;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @Secured
  */
 class JobsPresenter extends \Nette\Application\UI\Presenter
 {
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $jobDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $jobRepository;
 
 	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
@@ -35,20 +34,20 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var \Venne\Queue\AdminModule\JobFormFactory */
-	private $jobFormFactory;
+	/** @var \Venne\Queue\AdminModule\JobFormService */
+	private $jobFormService;
 
 	public function __construct(
-		EntityDao $jobDao,
+		EntityManager $entityManager,
 		JobManager $jobManager,
 		IAdminGridFactory $adminGridFactory,
-		JobFormFactory $jobFormFactory
+		JobFormService $jobFormService
 	)
 	{
-		$this->jobDao = $jobDao;
+		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->jobManager = $jobManager;
 		$this->adminGridFactory = $adminGridFactory;
-		$this->jobFormFactory = $jobFormFactory;
+		$this->jobFormService = $jobFormService;
 	}
 
 	/**
@@ -56,7 +55,7 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentTable()
 	{
-		$admin = $this->adminGridFactory->create($this->jobDao);
+		$admin = $this->adminGridFactory->create($this->jobRepository);
 		$table = $admin->getTable();
 
 		$table->addColumnText('type', 'Type')
@@ -78,9 +77,8 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 			->getCellPrototype()->width = '10%';
 
 		// actions
-		$table->addActionEvent('run', 'Run')
-			->onClick[] = function ($id) {
-			$job = $this->jobDao->find($id);
+		$table->addActionEvent('run', 'Run')->onClick[] = function ($id) {
+			$job = $this->jobRepository->find($id);
 
 			try {
 				$this->jobManager->scheduleJob($job, JobManager::PRIORITY_REALTIME);
@@ -94,7 +92,9 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->addForm('job', 'Job', $this->jobFormFactory);
+		$form = $admin->addForm('job', 'Job', function (Job $job = null) {
+			return $this->jobFormService->getFormFactory($job !== null ? $job->getId() : null);
+		});
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 

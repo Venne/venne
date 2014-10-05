@@ -28,6 +28,7 @@ trait AdminPresenterTrait
 	use \Venne\System\UI\PresenterTrait;
 	use \Venne\System\AjaxControlTrait;
 	use \Venne\Widgets\WidgetsControlTrait;
+	use \Nextras\Application\UI\SecuredLinksPresenterTrait;
 
 	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;

@@ -1,0 +1,5 @@
+services:
+
+	- Venne\System\AdminModule\RegistrationFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\System\AdminModule\RegistrationFormService
+	- Venne\System\AdminModule\RegistrationTableFactory

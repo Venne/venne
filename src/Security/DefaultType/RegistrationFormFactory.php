@@ -20,7 +20,7 @@ use Venne\Security\IRegistrationForm;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationFormFactory implements IRegistrationForm, IFormFactory
+class RegistrationFormFactory extends \Nette\Object implements IRegistrationForm, IFormFactory
 {
 
 	/** @var \Venne\Forms\IFormFactory */
@@ -49,16 +49,7 @@ class RegistrationFormFactory implements IRegistrationForm, IFormFactory
 		$user->addPassword('password_confirm', 'Confirm password')
 			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
 
-		$form->setCurrentGroup();
-		$form->addSubmit('_submit', 'Register');
-
 		return $form;
-	}
-
-	public function handleAttached(Form $form)
-	{
-		$form->setCurrentGroup();
-		$form->addSaveButton('Sign up');
 	}
 
 	/**

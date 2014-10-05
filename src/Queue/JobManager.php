@@ -11,11 +11,11 @@
 
 namespace Venne\Queue;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
-use Nette\Security\User;
-use Venne\Security\UserEntity;
+use Nette\Security\User as NetteUser;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,8 +27,11 @@ class JobManager extends \Nette\Object
 
 	const PRIORITY_DEFAULT = 1;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $jobDao;
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
+
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $jobRepository;
 
 	/** @var \Venne\Queue\IJob[] */
 	private $jobs = array();
@@ -39,19 +42,20 @@ class JobManager extends \Nette\Object
 	/** @var \Nette\DI\Container */
 	private $container;
 
-	/** @var \Nette\Security\User */
-	private $user;
+	/** @var \Nette\Security\NetteUser */
+	private $netteUser;
 
 	public function __construct(
-		EntityDao $jobDao,
+		EntityManager $entityManager,
 		ConfigManager $configManager,
-		User $user,
+		NetteUser $netteUser,
 		Container $container
 	)
 	{
+		$this->entityManager = $entityManager;
+		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->configManager = $configManager;
-		$this->jobDao = $jobDao;
-		$this->user = $user;
+		$this->netteUser = $netteUser;
 		$this->container = $container;
 	}
 
@@ -76,34 +80,36 @@ class JobManager extends \Nette\Object
 	}
 
 	/**
-	 * @param \Venne\Queue\JobEntity $jobEntity
+	 * @param \Venne\Queue\Job $jobEntity
 	 */
-	public function scheduleJob(JobEntity $jobEntity, $priority = self::PRIORITY_DEFAULT)
+	public function scheduleJob(Job $jobEntity, $priority = self::PRIORITY_DEFAULT)
 	{
-		if (!$jobEntity->user && $this->user->identity instanceof UserEntity) {
-			$jobEntity->user = $this->user->identity;
+		if (!$jobEntity->user && $this->netteUser->identity instanceof User) {
+			$jobEntity->user = $this->netteUser->identity;
 		}
 
 		if ($priority === self::PRIORITY_REALTIME) {
 			$this->doJob($jobEntity, $priority);
 		} else {
-			$this->jobDao->save($jobEntity);
+			$this->entityManager->persist($jobEntity);
+			$this->entityManager->flush($jobEntity);
 		}
 	}
 
-	private function doJob(JobEntity $jobEntity, $priority)
+	private function doJob(Job $jobEntity, $priority)
 	{
 		$jobEntity->state = $jobEntity::STATE_IN_PROGRESS;
-		$this->jobDao->save($jobEntity);
+		$this->entityManager->flush($jobEntity);
 
 		$job = $this->getJob($jobEntity->type);
 
 		try {
 			$job->run($jobEntity, $priority);
-			$this->jobDao->delete($jobEntity);
+			$this->entityManager->remove($jobEntity);
+			$this->entityManager->flush();
 		} catch (\Exception $e) {
 			$jobEntity->state = $jobEntity::STATE_FAILED;
-			$this->jobDao->save($jobEntity);
+			$this->entityManager->flush($jobEntity);
 
 			throw new JobFailedException(sprintf('Job \'%s\' failed.', $jobEntity->getId()), 0, $e);
 		}
@@ -117,11 +123,11 @@ class JobManager extends \Nette\Object
 	public function doNextWork(Worker $worker)
 	{
 		$this->configManager->lock();
-		$jobEntity = $this->jobDao->createQueryBuilder('a')
+		$jobEntity = $this->jobRepository->createQueryBuilder('a')
 			->addOrderBy('a.priority', 'DESC')
 			->addOrderBy('a.date', 'ASC')
 			->andWhere('a.date <= :now')->setParameter('now', new \DateTime)
-			->andWhere('a.state = :state')->setParameter('state', JobEntity::STATE_SCHEDULED)
+			->andWhere('a.state = :state')->setParameter('state', Job::STATE_SCHEDULED)
 			->setMaxResults(1)
 			->getQuery()->getOneOrNullResult();
 
@@ -131,7 +137,7 @@ class JobManager extends \Nette\Object
 
 		if ($jobEntity) {
 			$jobEntity->state = $jobEntity::STATE_IN_PROGRESS;
-			$this->jobDao->save($jobEntity);
+			$this->entityManager->flush($jobEntity);
 			$this->configManager->unlock();
 
 			try {
@@ -139,7 +145,7 @@ class JobManager extends \Nette\Object
 			} catch (JobFailedException $e) {
 				$failed = true;
 				$jobEntity->state = $jobEntity::STATE_FAILED;
-				$this->jobDao->save($jobEntity);
+				$this->entityManager->flush($jobEntity);
 
 				$worker->log('Error: ' . $e->getPrevious()->getMessage());
 			}
@@ -152,7 +158,7 @@ class JobManager extends \Nette\Object
 					$jobEntity->round--;
 					$jobEntity->date = $jobEntity->date->add($diff);
 					$jobEntity->state = $jobEntity::STATE_SCHEDULED;
-					$this->jobDao->save($jobEntity);
+					$this->entityManager->persist($jobEntity);
 				}
 			}
 

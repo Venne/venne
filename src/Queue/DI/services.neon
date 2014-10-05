@@ -1,0 +1,4 @@
+services:
+
+	- Venne\Queue\AdminModule\JobFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Queue\AdminModule\JobFormService

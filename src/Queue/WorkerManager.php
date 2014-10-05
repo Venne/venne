@@ -122,7 +122,7 @@ class WorkerManager extends \Nette\Object
 		$data = $this->configManager->loadConfigFile();
 
 		if (!isset($data['worker'][$id])) {
-			throw new InvalidArgumentException("Worker '$id' does not exist.");
+			throw new InvalidArgumentException(sprintf('Worker \'%d\' does not exist.', $id));
 		}
 
 		return $this->workerFactory->create($id, $this->interval);

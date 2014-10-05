@@ -32,4 +32,3 @@ interface ITemplateLocator
 	public function formatTemplateFiles(Component $control);
 
 }
-

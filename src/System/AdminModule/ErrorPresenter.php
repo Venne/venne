@@ -11,7 +11,7 @@
 
 namespace Venne\System\AdminModule;
 
-use Nette\Diagnostics\Debugger;
+use Tracy\Debugger;
 use Venne\System\Content\Repositories\PageRepository;
 
 /**
@@ -44,7 +44,13 @@ class ErrorPresenter extends \Nette\Application\UI\Presenter
 		}
 
 		$code = $exception->getCode();
-		Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
+		Debugger::log(sprintf(
+			'HTTP code %s: %s in %s:%s',
+			$code,
+			$exception->getMessage(),
+			$exception->getFile(),
+			$exception->getLine()
+		), 'access');
 
 		if (in_array($code, array(403, 404, 500))) {
 			$page = $this->pageRepository->findOneBy(array('special' => $code));
@@ -55,4 +61,3 @@ class ErrorPresenter extends \Nette\Application\UI\Presenter
 		}
 	}
 }
-

@@ -17,6 +17,8 @@ namespace Venne\System\Components;
 class NavbarControl extends \Venne\System\UI\Control
 {
 
+	use \Nextras\Application\UI\SecuredLinksControlTrait;
+
 	/**
 	 * @param string $name
 	 * @param string $label

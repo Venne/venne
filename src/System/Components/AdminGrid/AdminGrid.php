@@ -14,10 +14,8 @@ namespace Venne\System\Components\AdminGrid;
 use Grido\Components\Actions\Event;
 use Grido\DataSources\Doctrine;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Kdyby\Doctrine\EntityDao;
-use Nette\Utils\Callback;
+use Kdyby\Doctrine\EntityRepository;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Forms\IFormFactory;
 use Venne\System\Components\IGridoFactory;
 use Venne\System\Components\INavbarControlFactory;
 use Venne\System\Components\NavbarControl;
@@ -28,6 +26,8 @@ use Venne\System\Components\Section;
  */
 class AdminGrid extends \Venne\System\UI\Control
 {
+
+	use \Venne\System\AjaxControlTrait;
 
 	const MODE_MODAL = 'modal';
 
@@ -63,32 +63,29 @@ class AdminGrid extends \Venne\System\UI\Control
 	/** @var callable[] */
 	public $onClose;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	protected $dao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $repository;
 
 	/** @var \Venne\System\Components\INavbarControlFactory */
-	protected $navbarFactory;
+	private $navbarFactory;
 
 	/** @var \Venne\System\Components\NavbarControl */
-	protected $navbar;
+	private $navbar;
 
 	/** @var \Venne\System\Components\AdminGrid\Form[] */
-	protected $forms = array();
+	private $forms = array();
 
 	/** @var \Venne\System\Components\AdminGrid\Form[] */
-	protected $navbarForms = array();
+	private $navbarForms = array();
 
 	/** @var \Venne\System\Components\AdminGrid\Form[] */
-	protected $actionForms = array();
-
-	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
-	private $formFactoryFactory;
+	private $actionForms = array();
 
 	/** @var \Venne\System\Components\IGridoFactory */
 	private $gridoFactory;
 
 	public function __construct(
-		EntityDao $dao = null,
+		EntityRepository $repository = null,
 		INavbarControlFactory $navbarFactory,
 		FormFactoryFactory $formFactoryFactory,
 		IGridoFactory $gridoFactory
@@ -96,9 +93,8 @@ class AdminGrid extends \Venne\System\UI\Control
 	{
 		parent::__construct();
 
-		$this->dao = $dao;
+		$this->repository = $repository;
 		$this->navbarFactory = $navbarFactory;
-		$this->formFactoryFactory = $formFactoryFactory;
 		$this->gridoFactory = $gridoFactory;
 	}
 
@@ -118,17 +114,17 @@ class AdminGrid extends \Venne\System\UI\Control
 		}
 	}
 
-	public function setDao(EntityDao $dao)
+	public function setRepository(EntityRepository $repository)
 	{
-		$this->dao = $dao;
+		$this->repository = $repository;
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\EntityDao
+	 * @return \Kdyby\Doctrine\EntityRepository
 	 */
-	public function getDao()
+	public function getRepository()
 	{
-		return $this->dao;
+		return $this->repository;
 	}
 
 	public function handleClose()
@@ -201,7 +197,7 @@ class AdminGrid extends \Venne\System\UI\Control
 		$action->onClick[] = $this->tableDelete;
 		$action->setConfirm(function ($entity) {
 			if (method_exists($entity, '__toString')) {
-				return "Really delete '{$entity}'?";
+				return array('Really delete \'%s\'?', (string) $entity);
 			}
 
 			return 'Really delete?';
@@ -215,14 +211,13 @@ class AdminGrid extends \Venne\System\UI\Control
 	/**
 	 * @param string $name
 	 * @param string $title
-	 * @param \Venne\Forms\IFormFactory $formFactory
-	 * @param callable $entityFactory
+	 * @param \Venne\Forms\IFormFactory|\Closure $formFactory
 	 * @param string $type
 	 * @return \Venne\System\Components\AdminGrid\Form
 	 */
-	public function addForm($name, $title, IFormFactory $formFactory, $entityFactory = null, $type = null)
+	public function addForm($name, $title, $formFactory, $type = null)
 	{
-		return $this->forms[$name] = new Form($formFactory, $title, $entityFactory, $type);
+		return $this->forms[$name] = new Form($formFactory, $title, $type);
 	}
 
 	/**
@@ -270,8 +265,8 @@ class AdminGrid extends \Venne\System\UI\Control
 	{
 		$grid = $this->gridoFactory->create();
 
-		if ($this->dao) {
-			$grid->setModel(new Doctrine($this->dao->createQueryBuilder('a')));
+		if ($this->repository) {
+			$grid->setModel(new Doctrine($this->repository->createQueryBuilder('a')));
 		}
 
 		return $grid;
@@ -296,11 +291,14 @@ class AdminGrid extends \Venne\System\UI\Control
 			? $this->actionForms[$this->formName]
 			: $this->navbarForms[$this->formName];
 
+		$formFactory = $formDefinition->getFactory();
+
+		if ($formFactory instanceof \Closure) {
+			$formFactory = $formFactory($this->findCurrentEntity());
+		}
+
 		/** @var \Nette\Application\UI\Form $form */
-		$form = $this->formFactoryFactory
-			->create($formDefinition->getFactory())
-			->setEntity($this->getCurrentEntity())
-			->create();
+		$form = $formFactory->create();
 
 		$form->onSubmit[] = function () {
 			$this->redrawControl('form');
@@ -315,9 +313,10 @@ class AdminGrid extends \Venne\System\UI\Control
 		$form->onError[] = $this->formError;
 
 		if ($this->mode == self::MODE_PLACE) {
-			$form->addSubmit('_cancel', 'Cancel')
-				->setValidationScope(false)
-				->onClick[] = function () {
+			$submit = $form->addSubmit('_cancel', 'Cancel');
+			$submit->setValidationScope(false);
+			$submit->onClick[] = function () use ($form) {
+				$form->onSuccess = array();
 				$this->redirect('this', array(
 					'formName' => null,
 					'id' => null,
@@ -332,34 +331,13 @@ class AdminGrid extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\Entities\BaseEntity
+	 * @return \Kdyby\Doctrine\Entities\BaseEntity|null
 	 */
-	public function getCurrentEntity()
+	public function findCurrentEntity()
 	{
-		$form = $this->id !== null
-			? $this->actionForms[$this->formName]
-			: $this->navbarForms[$this->formName];
-
-		if (is_callable($form->getEntityFactory())) {
-			$entity = Callback::invoke($form->getEntityFactory());
-
-			if ($this->id !== null) {
-				return $this->getDao()
-					->getEntityManager()
-					->getRepository($entity::getClassName())
-					->find($this->id);
-			}
-
-			return $entity;
-		}
-
-		if ($this->id !== null) {
-			return $this->getDao()->find($this->id);
-		}
-
-		$class = $this->dao->getClassName();
-
-		return new $class;
+		return $this->id
+			? $this->getRepository()->find($this->id)
+			: null;
 	}
 
 	public function formSuccess(\Nette\Application\UI\Form $form)
@@ -400,17 +378,16 @@ class AdminGrid extends \Venne\System\UI\Control
 	/**
 	 * @param integer $id
 	 * @param integer[] $action
-	 * @param bool $redirect
 	 */
-	public function tableDelete($id, $action, $redirect = true)
+	public function tableDelete($id, $action)
 	{
 		if (is_array($action)) {
 			foreach ($action as $item) {
-				$this->tableDelete($item, null, false);
+				$this->tableDelete($item, null);
 			}
 		} else {
-			$this->dao->getEntityManager()->remove($this->dao->find($id));
-			//$this->dao->delete($this->dao->find($id));
+			$this->repository->getEntityManager()->remove($this->repository->find($id));
+			$this->repository->getEntityManager()->flush();
 		}
 
 		$this->redirect('this');

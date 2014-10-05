@@ -11,59 +11,61 @@
 
 namespace Venne\Notifications\Jobs;
 
-use Kdyby\Doctrine\EntityDao;
-use Venne\Notifications\NotificationEntity;
-use Venne\Notifications\NotificationUserEntity;
+use Doctrine\ORM\EntityManager;
+use Venne\Notifications\Notification;
+use Venne\Notifications\NotificationSetting;
+use Venne\Notifications\NotificationUser;
 use Venne\Queue\Job;
-use Venne\Queue\JobEntity;
 use Venne\Queue\JobManager;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationJob extends Job
+class NotificationJob extends \Venne\Queue\JobType
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $notificationDao;
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $notificationUserDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $settingDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationUserRepository;
+
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationSettingRepository;
 
 	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
 
 	public function __construct(
-		EntityDao $notificationDao,
-		EntityDao $userDao,
-		EntityDao $settingDao,
+		EntityManager $entityManager,
 		JobManager $jobManager
 	)
 	{
-		$this->notificationDao = $notificationDao;
-		$this->notificationUserDao = $userDao;
-		$this->settingDao = $settingDao;
+		$this->entityManager = $entityManager;
+		$this->notificationRepository = $entityManager->getRepository(Notification::class);
+		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
+		$this->notificationSettingRepository = $entityManager->getRepository(NotificationSetting::class);
 		$this->jobManager = $jobManager;
 	}
 
 	/**
-	 * @param \Venne\Queue\JobEntity $jobEntity
+	 * @param \Venne\Queue\Job $job
 	 * @param integer $priority
 	 */
-	public function run(JobEntity $jobEntity, $priority)
+	public function run(Job $job, $priority)
 	{
-		/** @var NotificationEntity $notificationEntity */
-		$notificationEntity = $this->notificationDao->find($jobEntity->arguments[0]);
+		/** @var Notification $notificationEntity */
+		$notificationEntity = $this->notificationRepository->find($job->arguments[0]);
 
 		if ($notificationEntity === null) {
 			return;
 		}
 
-		$qb = $this->settingDao->createQueryBuilder('a')
+		$qb = $this->notificationSettingRepository->createQueryBuilder('a')
 			->andWhere('a.type IS NULL OR a.type = :type')->setParameter('type', $notificationEntity->type->id);
 
 		if ($notificationEntity->user) {
@@ -93,13 +95,15 @@ class NotificationJob extends Job
 		}
 
 		foreach ($users as $user) {
-			$notificationUserEntity = new NotificationUserEntity($notificationEntity, $user['user']);
-			$this->notificationUserDao->save($notificationUserEntity);
+			$notificationUser = new NotificationUser($notificationEntity, $user['user']);
+
+			$this->entityManager->persist($notificationUser);
+			$this->entityManager->flush($notificationUser);
 
 			if ($user['email']) {
-				$this->jobManager->scheduleJob(new JobEntity(EmailJob::getName(), null, array(
-					'user' => $user['user'] instanceof UserEntity ? $user['user']->id : $user['user'],
-					'notification' => $notificationUserEntity->id,
+				$this->jobManager->scheduleJob(new Job(EmailJob::getName(), null, array(
+					'user' => $user['user'] instanceof User ? $user['user']->id : $user['user'],
+					'notification' => $notificationUser->id,
 				)), $priority);
 			}
 		}

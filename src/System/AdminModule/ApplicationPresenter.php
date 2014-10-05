@@ -16,8 +16,6 @@ use Nette\Utils\ArrayHash;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class ApplicationPresenter extends \Nette\Application\UI\Presenter
 {

@@ -18,8 +18,6 @@ use Venne\Security\IFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class RequestPresenter extends \Nette\Application\UI\Presenter
 {

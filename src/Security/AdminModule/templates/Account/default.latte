@@ -19,14 +19,14 @@
 <div class="media">
 	<a class="pull-left" href="#">
 		{var $user = $presenter->user->identity}
-		{if $user instanceof \Venne\Security\UserEntity}
+		{if $user instanceof \Venne\Security\User}
 			<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 96px; height: 96px;" />
 		{/if}
 	</a>
 
 	<div class="media-body">
 		<h4 class="media-heading">
-			{if $user instanceof \CmsModule\Pages\Users\UserEntity}{$user}{else}Administrator{/if}
+			{if $user instanceof \CmsModule\Pages\Users\User}{$user}{else}Administrator{/if}
 		</h4>
 
 		<dl class="dl-horizontal">
@@ -40,7 +40,7 @@
 	</div>
 </div>
 
-{if $user instanceof \CmsModule\Pages\Users\UserEntity}
+{if $user instanceof \CmsModule\Pages\Users\User}
 	<hr />
 
 	<h2>{_Authentication}</h2>

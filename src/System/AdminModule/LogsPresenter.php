@@ -22,8 +22,6 @@ use Venne\System\Components\INavbarControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class LogsPresenter extends \Nette\Application\UI\Presenter
 {
@@ -103,7 +101,7 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 		if (!is_string($name)) { // be aware of arrays and other inputs
 			throw new BadRequestException;
 		}
-		if (preg_match("#^exception-([0-9a-zA-Z\-]+)\.html$#D", $name)) {
+		if (preg_match('#^exception-([0-9a-zA-Z\-]+)\.html$#D', $name)) {
 			$this->sendResponse(new TextResponse(file_get_contents($this->logDir . '/' . $name)));
 		} else {
 			// prevent directory traversal
@@ -144,7 +142,7 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 		foreach (Finder::findFiles('exception-*')->in($this->logDir) as $file) {
 			$data = explode('-', $file->getFileName());
 
-			$date = "{$data[1]}-{$data[2]}-{$data[3]} {$data[4]}:{$data[5]}:{$data[6]}";
+			$date = vsprintf('%s-%s-%s %s:%s:%s', $data);
 			$info = array('date' => DateTime::from($date), 'id' => $file->getFileName());
 
 			$ret[$date] = $info;

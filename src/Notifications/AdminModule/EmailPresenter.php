@@ -15,8 +15,6 @@ use Nette\Application\UI\Presenter;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class EmailPresenter extends \Nette\Application\UI\Presenter
 {

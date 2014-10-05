@@ -25,19 +25,19 @@ class ControlVerifier extends \Nette\Object implements \Venne\Security\IControlV
 {
 
 	/** @var \Nette\Security\User */
-	protected $user;
+	private $user;
 
 	/** @var \Venne\Security\IControlVerifierReader */
-	protected $reader;
+	private $reader;
 
 	/** @var mixed[] */
-	protected $_annotationSchema = array();
+	private $annotationSchema = array();
 
 	/** @var mixed[] */
-	protected $_presenterAllowed = array();
+	private $presenterAllowed = array();
 
 	/** @var mixed[] */
-	protected $_methodAllowed = array();
+	private $methodAllowed = array();
 
 	public function __construct(User $user, IControlVerifierReader $reader)
 	{
@@ -81,11 +81,11 @@ class ControlVerifier extends \Nette\Object implements \Venne\Security\IControlV
 	 */
 	protected function isPresenterAllowedCached(PresenterComponentReflection $element)
 	{
-		if (!array_key_exists($element->name, $this->_presenterAllowed)) {
-			$this->_presenterAllowed[$element->name] = $this->isPresenterAllowed($element);
+		if (!array_key_exists($element->name, $this->presenterAllowed)) {
+			$this->presenterAllowed[$element->name] = $this->isPresenterAllowed($element);
 		}
 
-		return $this->_presenterAllowed[$element->name];
+		return $this->presenterAllowed[$element->name];
 	}
 
 	/**
@@ -94,11 +94,11 @@ class ControlVerifier extends \Nette\Object implements \Venne\Security\IControlV
 	 */
 	protected function isMethodAllowedCached(Method $element)
 	{
-		if (!array_key_exists($element->name, $this->_methodAllowed)) {
-			$this->_methodAllowed[$element->name] = $this->isMethodAllowed($element);
+		if (!array_key_exists($element->name, $this->methodAllowed)) {
+			$this->methodAllowed[$element->name] = $this->isMethodAllowed($element);
 		}
 
-		return $this->_methodAllowed[$element->name];
+		return $this->methodAllowed[$element->name];
 	}
 
 	/**
@@ -125,12 +125,15 @@ class ControlVerifier extends \Nette\Object implements \Venne\Security\IControlV
 			$users = $schema[$name]['users'];
 
 			if (!in_array($this->user->getId(), $users)) {
-				$exception = "Access denied for your username: '{$this->user->getId()}'. Require: '" . implode(', ', $users) . "'";
+				$exception = sprintf(
+					'Access denied for your username: \'%s\'. Require: \'%s\'',
+					$this->user->getId(),
+					implode(', ', $users)
+				);
 			} else {
 				return;
 			}
-		} // roles
-		else if (isset($schema[$name]['roles']) && count($schema[$name]['roles']) > 0) {
+		} elseif (isset($schema[$name]['roles']) && count($schema[$name]['roles']) > 0) {
 			$userRoles = $this->user->getRoles();
 			$roles = $schema[$name]['roles'];
 
@@ -139,10 +142,13 @@ class ControlVerifier extends \Nette\Object implements \Venne\Security\IControlV
 			} else {
 				return;
 			}
-		} // resource & privilege
-		else if (isset($schema[$name]['resource']) && $schema[$name]['resource']) {
+		} elseif (isset($schema[$name]['resource']) && $schema[$name]['resource']) {
 			if (!$this->user->isAllowed($schema[$name]['resource'], $schema[$name]['privilege'])) {
-				$exception = "Access denied for resource: {$schema[$name]['resource']}" . ($schema[$name]['privilege'] ? " and privilege: {$schema[$name]['privilege']}" : '');
+				$exception = sprintf(
+					'Access denied for resource: \'%s\' and privilege: \'%s\'',
+					$schema[$name]['resource'],
+					$schema[$name]['privilege']
+				);
 			} else {
 				return;
 			}

@@ -16,7 +16,7 @@ use Nette\Application\Application;
 use Venne\Notifications\EmailManager;
 use Venne\Notifications\NotificationManager;
 use Venne\System\Events\InvitationEvent;
-use Venne\System\InvitationEntity;
+use Venne\System\Invitation;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -47,7 +47,7 @@ class InvitationStateListener
 		$this->application = $application;
 	}
 
-	public function postPersist(InvitationEntity $entity, LifecycleEventArgs $event)
+	public function postPersist(Invitation $entity, LifecycleEventArgs $event)
 	{
 		if (!self::$lock) {
 			self::$lock = true;

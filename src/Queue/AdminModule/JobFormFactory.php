@@ -12,7 +12,7 @@
 namespace Venne\Queue\AdminModule;
 
 use Venne\Forms\IFormFactory;
-use Venne\Queue\JobEntity;
+use Venne\Queue\Job;
 use Venne\Queue\JobManager;
 
 /**
@@ -47,14 +47,14 @@ class JobFormFactory implements \Venne\Forms\IFormFactory
 			->addRule($form::FILLED);
 
 		$form->addSelect('state', 'State')
-			->setItems(array(JobEntity::STATE_SCHEDULED, JobEntity::STATE_IN_PROGRESS, JobEntity::STATE_FAILED), false)
+			->setItems(array(Job::STATE_SCHEDULED, Job::STATE_IN_PROGRESS, Job::STATE_FAILED), false)
 			->addRule($form::FILLED);
 
 		$form->addSelect('priority', 'priority')
 			->setItems(array(
-				JobEntity::PRIORITY_LOW => 'low',
-				JobEntity::PRIORITY_NORMAL => 'normal',
-				JobEntity::PRIORITY_HIGH => 'high',
+				Job::PRIORITY_LOW => 'low',
+				Job::PRIORITY_NORMAL => 'normal',
+				Job::PRIORITY_HIGH => 'high',
 			))
 			->addRule($form::FILLED);
 
@@ -66,9 +66,6 @@ class JobFormFactory implements \Venne\Forms\IFormFactory
 
 		$form->addText('round', 'Round')
 			->addCondition($form::FILLED)->addRule($form::INTEGER);
-
-		$form->setCurrentGroup();
-		$form->addSubmit('_submit', 'Save');
 
 		return $form;
 	}

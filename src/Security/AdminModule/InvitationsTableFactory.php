@@ -11,12 +11,13 @@
 
 namespace Venne\Security\AdminModule;
 
+use Doctrine\ORM\EntityManager;
 use Grido\DataSources\Doctrine;
-use Kdyby\Doctrine\EntityDao;
 use Nette\Localization\ITranslator;
-use Nette\Security\User;
+use Venne\Security\NetteUser;
+use Venne\Security\User;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
-use Venne\System\InvitationEntity;
+use Venne\System\Invitation;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,14 +25,11 @@ use Venne\System\InvitationEntity;
 class InvitationsTableFactory
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $invitationDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $invitationRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
-
-	/** @var \Venne\Security\AdminModule\InvitationFormFactory */
-	private $formFactory;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
 	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
@@ -39,24 +37,26 @@ class InvitationsTableFactory
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
-	/** @var \Nette\Security\User */
-	private $user;
+	/** @var \Nette\Security\NetteUser */
+	private $netteUser;
+
+	/** @var \Venne\Security\AdminModule\InvitationFormService */
+	private $invitationFormService;
 
 	public function __construct(
-		EntityDao $invitationDao,
-		EntityDao $userDao,
-		InvitationFormFactory $formFactory,
+		EntityManager $entityManager,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator,
-		User $user
+		NetteUser $user,
+		InvitationFormService $invitationFormService
 	)
 	{
-		$this->invitationDao = $invitationDao;
-		$this->userDao = $userDao;
-		$this->formFactory = $formFactory;
+		$this->invitationRepository = $entityManager->getRepository(Invitation::class);
+		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
-		$this->user = $user;
+		$this->netteUser = $user;
+		$this->invitationFormService = $invitationFormService;
 	}
 
 	/**
@@ -64,13 +64,15 @@ class InvitationsTableFactory
 	 */
 	public function create()
 	{
-		$admin = $this->adminGridFactory->create($this->invitationDao);
+		$admin = $this->adminGridFactory->create($this->invitationRepository);
+		$qb = $this
+			->invitationRepository
+			->createQueryBuilder('a')
+			->andWhere('a.author = :author')->setParameter('author', $this->netteUser->identity->getId());
 
 		// columns
 		$table = $admin->getTable();
-		$table->setModel(new Doctrine($this->invitationDao->createQueryBuilder('a')
-				->andWhere('a.author = :author')->setParameter('author', $this->user->identity->getId())
-		));
+		$table->setModel(new Doctrine($qb));
 		$table->setTranslator($this->translator);
 		$table->addColumnText('email', 'E-mail')
 			->setSortable()
@@ -79,7 +81,7 @@ class InvitationsTableFactory
 			->setFilterText()->setSuggestion();
 
 		$table->addColumnText('type', 'Type')
-			->setCustomRender(function (InvitationEntity $invitationEntity) {
+			->setCustomRender(function (Invitation $invitationEntity) {
 				return $invitationEntity->registration->getName();
 			})
 			->getCellPrototype()->width = '40%';
@@ -88,10 +90,8 @@ class InvitationsTableFactory
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->addForm('role', 'Role', $this->formFactory, function () {
-			return new InvitationEntity(
-				$this->userDao->find($this->user->getIdentity()->getId())
-			);
+		$form = $admin->addForm('invitation', 'Invitation', function (Invitation $invitation = null) {
+			return $this->invitationFormService->getFormFactory($invitation !== null ? $invitation->getId() : null);
 		});
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));

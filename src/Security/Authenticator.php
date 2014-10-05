@@ -11,7 +11,7 @@
 
 namespace Venne\Security;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\Security\AuthenticationException;
 
 /**
@@ -20,12 +20,16 @@ use Nette\Security\AuthenticationException;
 class Authenticator extends \Nette\Object implements \Nette\Security\IAuthenticator
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
 
-	public function __construct(EntityDao $userDao)
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
+
+	public function __construct(EntityManager $entityManager)
 	{
-		$this->userDao = $userDao;
+		$this->entityManager = $entityManager;
+		$this->userRepository = $entityManager->getRepository(User::class);
 	}
 
 	/**
@@ -34,11 +38,10 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 	 */
 	public function authenticate(array $credentials)
 	{
-
 		list($username, $password) = $credentials;
 
-		/** @var UserEntity $user */
-		$user = $this->userDao->findOneBy(array('email' => $username, 'published' => 1));
+		/** @var User $user */
+		$user = $this->userRepository->findOneBy(array('email' => $username, 'published' => 1));
 
 		if (!$user) {
 			throw new AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
@@ -50,11 +53,11 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 
 		if ($user->needsRehash()) {
 			$user->setPassword($password);
-			$this->userDao->save($user);
+			$this->entityManager->flush($user);
 		}
 
-		return new Identity($user->id, $user->getRoles(), array(
-			'email' => $user->email,
+		return new Identity($user->getId(), $user->getRoles(), array(
+			'email' => $user->getEmail(),
 		));
 	}
 

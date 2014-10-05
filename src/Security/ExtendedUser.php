@@ -19,14 +19,14 @@ use Kdyby\Doctrine\Entities\BaseEntity;
  *
  * @ORM\MappedSuperclass
  */
-abstract class ExtendedUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+abstract class ExtendedUser extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
 	 * @ORM\Id
-	 * @ORM\OneToOne(targetEntity="\Venne\Security\UserEntity", cascade={"all"})
+	 * @ORM\OneToOne(targetEntity="\Venne\Security\User", cascade={"all"})
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;
@@ -51,7 +51,7 @@ abstract class ExtendedUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
-	 * @return \Venne\Security\UserEntity
+	 * @return \Venne\Security\User
 	 */
 	public function getUser()
 	{
@@ -59,11 +59,11 @@ abstract class ExtendedUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
-	 * @return \Venne\Security\UserEntity
+	 * @return \Venne\Security\User
 	 */
 	private function createUserEntity()
 	{
-		return new UserEntity;
+		return new User();
 	}
 
 }

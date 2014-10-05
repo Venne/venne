@@ -11,14 +11,13 @@
 
 namespace Venne\System\Commands;
 
-use Kdyby\Doctrine\EntityDao;
 use Kdyby\Doctrine\EntityManager;
 use Nette\Utils\Validators;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Venne\Security\DefaultType\UserEntity;
-use Venne\Security\PermissionEntity;
-use Venne\Security\RoleEntity;
+use Venne\Security\DefaultType\User;
+use Venne\Security\Permission;
+use Venne\Security\Role;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -26,21 +25,21 @@ use Venne\Security\RoleEntity;
 class InstallCommand extends \Symfony\Component\Console\Command\Command
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $roleDao;
-
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $permissionDao;
-
 	/** @var \Kdyby\Doctrine\EntityManager */
 	private $entityManager;
 
-	public function __construct(EntityDao $roleDao, EntityDao $permissionDao, EntityManager $entityManager)
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $roleRepository;
+
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $permissionRepository;
+
+	public function __construct(EntityManager $entityManager)
 	{
 		parent::__construct();
 
-		$this->roleDao = $roleDao;
-		$this->permissionDao = $permissionDao;
+		$this->roleRepository = $entityManager->getRepository(Role::class);
+		$this->permissionRepository = $entityManager->getRepository(Permission::class);
 		$this->entityManager = $entityManager;
 	}
 
@@ -90,29 +89,30 @@ class InstallCommand extends \Symfony\Component\Console\Command\Command
 
 			$output->writeln(sprintf('Creating role "<info>%s</info>"', $name));
 
-			$roles[$name] = $role = new RoleEntity;
+			$roles[$name] = $role = new Role;
 			$role->setName($name);
 
 			if ($parent) {
 				$role->setParent($roles[$parent]);
 			}
 
-			$this->roleDao->save($role);
+			$this->entityManager->persist($role);
 		}
+		$this->entityManager->flush($roles);
 
 		$output->writeln('Setting permission for administrator');
 
-		$permission = new PermissionEntity($roles['admin']);
-		$this->permissionDao->save($permission);
+		$permission = new Permission($roles['admin']);
+		$this->entityManager->persist($permission);
 
 		$output->writeln('Creating administrator account');
 
-		$user = new UserEntity;
+		$user = new User;
 		$user->user->setPassword($password);
 		$user->user->setEmail($email);
 		$user->user->addRoleEntity($roles['admin']);
 
-		$this->entityManager->getRepository($user::getClassName())->save($user);
+		$this->entityManager->persist($user);
 		$this->entityManager->flush();
 	}
 

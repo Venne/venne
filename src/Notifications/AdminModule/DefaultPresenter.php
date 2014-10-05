@@ -16,8 +16,6 @@ use Venne\Notifications\NotificationManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class DefaultPresenter extends \Nette\Application\UI\Presenter
 {

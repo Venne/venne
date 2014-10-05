@@ -11,12 +11,13 @@
 
 namespace Venne\Notifications\Components;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
 use Venne\DataTransfer\DataTransferManager;
 use Venne\Notifications\NotificationDto;
 use Venne\Notifications\NotificationManager;
+use Venne\Notifications\NotificationUser;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -30,14 +31,17 @@ class NotificationControl extends \Venne\System\UI\Control
 	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $notificationUserDao;
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
+
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationUserRepository;
 
 	/** @var \Venne\DataTransfer\DataTransferManager */
 	private $dataTransferManager;
 
 	public function __construct(
-		EntityDao $notificationUserDao,
+		EntityManager $entityManager,
 		NotificationManager $notificationManager,
 		User $user,
 		DataTransferManager $dataTransferManager
@@ -45,14 +49,15 @@ class NotificationControl extends \Venne\System\UI\Control
 	{
 		parent::__construct();
 
+		$this->entityManager = $entityManager;
+		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
 		$this->user = $user;
-		$this->notificationUserDao = $notificationUserDao;
 		$this->notificationManager = $notificationManager;
 		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\EntityDao
+	 * @return \Venne\Notifications\NotificationManager
 	 */
 	public function getNotificationManager()
 	{
@@ -64,12 +69,12 @@ class NotificationControl extends \Venne\System\UI\Control
 	 */
 	public function handleRead($id)
 	{
-		if (($entity = $this->notificationUserDao->find($id)) === null) {
+		if (($entity = $this->notificationUserRepository->find($id)) === null) {
 			throw new BadRequestException;
 		}
 
 		$entity->markRead = true;
-		$this->notificationUserDao->save($entity);
+		$this->entityManager->flush($entity);
 
 		$this->redirect('this');
 	}
@@ -79,11 +84,11 @@ class NotificationControl extends \Venne\System\UI\Control
 	 */
 	public function handleRemove($id)
 	{
-		if (($entity = $this->notificationUserDao->find($id)) === null) {
+		if (($entity = $this->notificationUserRepository->find($id)) === null) {
 			throw new BadRequestException;
 		}
 
-		$this->notificationUserDao->delete($entity);
+		$this->notificationUserRepository->delete($entity);
 
 		$this->redirect('this');
 	}
@@ -91,8 +96,8 @@ class NotificationControl extends \Venne\System\UI\Control
 	public function render($id)
 	{
 		$this->template->notification = $this->dataTransferManager
-			->createQuery(NotificationDto::getClassName(), function () use ($id) {
-				return $this->notificationUserDao->find($id);
+			->createQuery(NotificationDto::class, function () use ($id) {
+				return $this->notificationUserRepository->find($id);
 			})
 			->enableCache()
 			->fetch();

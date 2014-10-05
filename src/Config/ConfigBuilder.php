@@ -94,7 +94,7 @@ class ConfigBuilder extends \Nette\Object implements \ArrayAccess, \Countable, \
 	public function offsetGet($index)
 	{
 		if ($index < 0 || $index >= count($this->data)) {
-			throw new OutOfRangeException("Offset invalid or out of range");
+			throw new OutOfRangeException('Offset invalid or out of range');
 		}
 
 		return $this->data[$index];
@@ -123,7 +123,7 @@ class ConfigBuilder extends \Nette\Object implements \ArrayAccess, \Countable, \
 	public function offsetUnset($index)
 	{
 		if ($index < 0 || $index >= count($this->data)) {
-			throw new OutOfRangeException("Offset invalid or out of range");
+			throw new OutOfRangeException('Offset invalid or out of range');
 		}
 		array_splice($this->data, $index, 1);
 	}

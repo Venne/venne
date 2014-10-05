@@ -17,8 +17,6 @@ use Venne\Queue\WorkerManager;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @Secured
  */
 class WorkerPresenter extends \Nette\Application\UI\Presenter
 {

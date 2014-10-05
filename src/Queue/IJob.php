@@ -18,9 +18,9 @@ interface IJob
 {
 
 	/**
-	 * @param \Venne\Queue\JobEntity
+	 * @param \Venne\Queue\Job
 	 * @param integer $priority
 	 */
-	public function run(JobEntity $jobEntity, $priority);
+	public function run(Job $jobEntity, $priority);
 
 }

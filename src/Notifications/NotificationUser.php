@@ -12,7 +12,7 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,23 +20,23 @@ use Venne\Security\UserEntity;
  * @ORM\Entity
  * @ORM\Table(name="notification_user")
  */
-class NotificationUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class NotificationUser extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Notifications\NotificationEntity")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Notifications\Notification")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $notification;
@@ -48,21 +48,20 @@ class NotificationUserEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	 */
 	protected $markRead = false;
 
-	public function __construct(NotificationEntity $notification, UserEntity $user)
+	public function __construct(Notification $notification, User $user)
 	{
 		$this->notification = $notification;
 		$this->user = $user;
 	}
 
-	public function setNotification(NotificationEntity $log)
+	public function setNotification(Notification $log)
 	{
 		$this->notification = $log;
 	}
 
-	public function setUser(UserEntity $user)
+	public function setUser(User $user)
 	{
 		$this->user = $user;
 	}
 
 }
-

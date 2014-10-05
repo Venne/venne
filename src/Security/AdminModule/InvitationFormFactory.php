@@ -42,8 +42,6 @@ class InvitationFormFactory implements \Venne\Forms\IFormFactory
 			->addRule($form::FILLED)
 			->addRule($form::EMAIL);
 
-		$form->addSubmit('_submit', 'Send');
-
 		return $form;
 	}
 

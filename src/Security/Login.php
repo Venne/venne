@@ -21,7 +21,7 @@ use Kdyby\Doctrine\Entities\BaseEntity;
  * @ORM\Entity
  * @ORM\Table(name="login",indexes={@ORM\Index(name="session_idx", columns={"session_id"})})
  */
-class LoginEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class Login extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -29,9 +29,9 @@ class LoginEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	const USER_ADMIN = null;
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity", inversedBy="logins")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User", inversedBy="logins")
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
 	protected $user;
@@ -59,9 +59,9 @@ class LoginEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 
 	/**
 	 * @param string $sessionId
-	 * @param \Venne\Security\UserEntity $user
+	 * @param \Venne\Security\User $user
 	 */
-	public function __construct($sessionId, UserEntity $user = null)
+	public function __construct($sessionId, User $user = null)
 	{
 		$this->setUser($user);
 		$this->setSessionId($sessionId);
@@ -85,13 +85,13 @@ class LoginEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 		return $this->sessionId;
 	}
 
-	public function setUser(UserEntity $user)
+	public function setUser(User $user)
 	{
 		$this->user = $user;
 	}
 
 	/**
-	 * @return \Venne\Security\UserEntity
+	 * @return \Venne\Security\User
 	 */
 	public function getUser()
 	{

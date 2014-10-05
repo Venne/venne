@@ -78,14 +78,14 @@ class EmailManager extends \Nette\Object
 		}
 
 		if (!$response instanceof TextResponse) {
-			throw new InvalidArgumentException("Type '$type' does not exist.");
+			throw new InvalidArgumentException(sprintf('Type \'%s\' does not exist.', $type));
 		}
 
 		try {
 			$data = (string) $response->getSource();
 		} catch (\Nette\Application\BadRequestException $e) {
 			if (Strings::startsWith($e->getMessage(), 'Page not found. Missing template')) {
-				throw new InvalidArgumentException("Type '$type' does not exist.");
+				throw new InvalidArgumentException(sprintf('Type \'%s\' does not exist.', $type));
 			}
 		}
 

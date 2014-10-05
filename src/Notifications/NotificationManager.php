@@ -11,16 +11,14 @@
 
 namespace Venne\Notifications;
 
+use Doctrine\ORM\EntityManager;
 use Kdyby\Doctrine\Entities\BaseEntity;
-use Kdyby\Doctrine\EntityDao;
-use Kdyby\Doctrine\EntityManager;
 use Nette\InvalidArgumentException;
-use Nette\Security\User;
+use Nette\Security\User as NetteUser;
 use Venne\Notifications\Jobs\NotificationJob;
-use Venne\Notifications\Jobs\NotifyJob;
-use Venne\Queue\JobEntity;
+use Venne\Queue\Job;
 use Venne\Queue\JobManager;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -38,44 +36,36 @@ class NotificationManager extends \Nette\Object
 	/** @var \Venne\Queue\JobManager */
 	private $jobManager;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $logDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationUserRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $notificationDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $settingRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $settingDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $typeRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $typeDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
-
-	/** @var \Nette\Security\User */
-	private $user;
+	/** @var \Nette\Security\NetteUser */
+	private $netteUser;
 
 	/** @var \Venne\Notifications\IEvent[] */
 	private $types = array();
 
 	public function __construct(
-		EntityDao $logDao,
-		EntityDao $notificationDao,
-		EntityDao $settingDao,
-		EntityDao $typeDao,
-		EntityDao $userDao,
-		User $user,
+		EntityManager $entityManager,
+		NetteUser $netteUser,
 		EntityManager $entityManager,
 		JobManager $jobManager
 	)
 	{
-		$this->logDao = $logDao;
-		$this->notificationDao = $notificationDao;
-		$this->settingDao = $settingDao;
-		$this->typeDao = $typeDao;
-		$this->userDao = $userDao;
-		$this->user = $user;
+		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
+		$this->settingRepository = $entityManager->getRepository(NotificationSetting::class);
+		$this->typeRepository = $entityManager->getRepository(NotificationType::class);
+		$this->userRepository = $entityManager->getRepository(User::class);
+		$this->netteUser = $netteUser;
 		$this->entityManager = $entityManager;
 		$this->jobManager = $jobManager;
 	}
@@ -98,7 +88,7 @@ class NotificationManager extends \Nette\Object
 	public function getType($name)
 	{
 		if (!isset($this->types[$name])) {
-			throw new InvalidArgumentException("Type '$name' does not exist.");
+			throw new InvalidArgumentException(sprintf('Type \'%s\' does not exist.', $name));
 		}
 
 		return $this->types[$name];
@@ -117,17 +107,17 @@ class NotificationManager extends \Nette\Object
 	 * @param string|null $target
 	 * @param string|null $action
 	 * @param string|null $message
-	 * @param \Venne\Security\UserEntity|null $user
+	 * @param \Venne\Security\User|null $user
 	 * @param integer $priority
 	 */
-	public function notify($type, $target = null, $action = null, $message = null, UserEntity $user = null, $priority = NotificationManager::PRIORITY_DEFAULT)
+	public function notify($type, $target = null, $action = null, $message = null, User $user = null, $priority = NotificationManager::PRIORITY_DEFAULT)
 	{
 		if (!isset($this->types[$type])) {
-			throw new InvalidArgumentException("Type '$type' does not exist.");
+			throw new InvalidArgumentException(sprintf('Type \'%s\' does not exist.', $type));
 		}
 
 		if ($target && !is_object($target)) {
-			throw new InvalidArgumentException("Target must be object");
+			throw new InvalidArgumentException('Target must be object');
 		}
 
 		$targetKey = $this->detectPrimaryKey($target);
@@ -141,25 +131,24 @@ class NotificationManager extends \Nette\Object
 
 		$typeEntity = $this->getTypeEntity($type, $action, $message);
 
-		$notificationEntity = new NotificationEntity($typeEntity);
-		$notificationEntity->user = $user = $user !== null ? $user : $this->getUser();
-		$notificationEntity->target = $target;
-		$notificationEntity->targetKey = $targetKey;
-		$this->logDao->save($notificationEntity);
+		$user = $user !== null ? $user : $this->getUser();
+		$notification = new Notification($typeEntity, $user, $target, $targetKey);
+		$this->entityManager->persist($notification);
+		$this->entityManager->flush();
 
-		$jobEntity = new JobEntity(NotificationJob::getName(), null, array($notificationEntity->id));
-		$jobEntity->user = $user;
+		$job = new Job(NotificationJob::getName(), null, array($notification->id));
+		$job->user = $user;
 
-		$this->jobManager->scheduleJob($jobEntity, $priority);
+		$this->jobManager->scheduleJob($job, $priority);
 	}
 
 	/**
 	 * @param int|null $limit
-	 * @return NotificationUserEntity[]
+	 * @return NotificationUser[]
 	 */
 	public function getNotifications($limit = null)
 	{
-		return $this->notificationDao->createQueryBuilder('a')
+		return $this->notificationUserRepository->createQueryBuilder('a')
 			->leftJoin('a.notification', 'l')
 			->andWhere('a.user = :user')->setParameter('user', $this->getUser()->getId())
 			->orderBy('l.created', 'DESC')
@@ -172,7 +161,7 @@ class NotificationManager extends \Nette\Object
 	 */
 	public function countNotifications()
 	{
-		return $this->notificationDao->createQueryBuilder('a')
+		return $this->notificationUserRepository->createQueryBuilder('a')
 			->select('COUNT(a.id)')
 			->leftJoin('a.notification', 'l')
 			->andWhere('a.user = :user')->setParameter('user', $this->getUser()->getId())
@@ -180,27 +169,29 @@ class NotificationManager extends \Nette\Object
 	}
 
 	/**
-	 * @return \Venne\Security\UserEntity|null
+	 * @return \Venne\Security\User|null
 	 */
 	private function getUser()
 	{
-		return $this->user->isLoggedIn() ? $this->userDao->find($this->user->getIdentity()->getId()) : null;
+		return $this->netteUser->isLoggedIn() ? $this->userRepository->find($this->netteUser->getIdentity()->getId()) : null;
 	}
 
 	/**
 	 * @param string $type
 	 * @param string|null $action
 	 * @param string|null $message
-	 * @return \Venne\Notifications\NotificationTypeEntity
+	 * @return \Venne\Notifications\NotificationType
 	 */
 	private function getTypeEntity($type, $action = null, $message = null)
 	{
-		if (($typeEntity = $this->typeDao->findOneBy(array('type' => $type, 'action' => $action, 'message' => $message))) === null) {
-			$typeEntity = new NotificationTypeEntity;
+		if (($typeEntity = $this->typeRepository->findOneBy(array('type' => $type, 'action' => $action, 'message' => $message))) === null) {
+			$typeEntity = new NotificationType;
 			$typeEntity->type = $type;
 			$typeEntity->action = $action;
 			$typeEntity->message = $message;
-			$this->typeDao->save($typeEntity);
+
+			$this->entityManager->persist($typeEntity);
+			$this->entityManager->flush($typeEntity);
 		}
 
 		return $typeEntity;
@@ -221,4 +212,3 @@ class NotificationManager extends \Nette\Object
 	}
 
 }
-

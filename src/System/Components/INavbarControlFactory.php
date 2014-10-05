@@ -20,6 +20,6 @@ interface INavbarControlFactory
 	/**
 	 * @return \Venne\System\Components\NavbarControl
 	 */
-	function create();
+	public function create();
 
 }

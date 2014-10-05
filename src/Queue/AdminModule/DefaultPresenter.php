@@ -18,8 +18,6 @@ use Venne\System\Components\INavbarControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @Secured
  */
 class DefaultPresenter extends \Nette\Application\UI\Presenter
 {

@@ -50,7 +50,7 @@ class SecurityManager extends \Nette\Object
 	{
 		$type = $userType->getEntityName();
 		if (isset($this->userTypes[$type])) {
-			throw new InvalidArgumentException("Type '$type' is already exists.");
+			throw new InvalidArgumentException(sprintf('Type \'%s\' is already exists.', $type));
 		}
 
 		$this->userTypes[$type] = $userType;
@@ -97,7 +97,7 @@ class SecurityManager extends \Nette\Object
 	public function getLoginProviderByName($name)
 	{
 		if (!isset($this->loginProviders[$name])) {
-			throw new InvalidArgumentException("Social login name '{$name}' has not been registered.");
+			throw new InvalidArgumentException(sprintf('Social login name \'%s\' has not been registered.', $name));
 		}
 
 		return $this->context->getService($this->loginProviders[$name]);
@@ -111,7 +111,7 @@ class SecurityManager extends \Nette\Object
 		return array_keys($this->loginProviders);
 	}
 
-	public function sendNewPassword(UserEntity $user, UserEntity $sendBy = null)
+	public function sendNewPassword(User $user, User $sendBy = null)
 	{
 		$sendBy = $sendBy !== null ? $sendBy : $user;
 
@@ -126,11 +126,11 @@ class SecurityManager extends \Nette\Object
 	}
 
 	/**
-	 * @param \Venne\Security\UserEntity $user
+	 * @param \Venne\Security\User $user
 	 * @param string $link
-	 * @param \Venne\Security\UserEntity|null $sendBy
+	 * @param \Venne\Security\User|null $sendBy
 	 */
-	public function sendRecoveryUrl(UserEntity $user, $link, UserEntity $sendBy = null)
+	public function sendRecoveryUrl(User $user, $link, User $sendBy = null)
 	{
 		$sendBy = $sendBy !== null ? $sendBy : $user;
 

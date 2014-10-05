@@ -25,6 +25,6 @@ interface IRegistrationControlFactory
 	 * @param string[] $roles
 	 * @return \Venne\Security\Registration\RegistrationControl
 	 */
-	function create($invitations, $userType, $mode, $loginProviderMode, $roles);
+	public function create($invitations, $userType, $mode, $loginProviderMode, $roles);
 
 }

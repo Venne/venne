@@ -19,15 +19,15 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="notification_setting")
  */
-class NotificationSettingEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class NotificationSetting extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var \Venne\Notifications\NotificationTypeEntity
+	 * @var \Venne\Notifications\NotificationType
 	 *
-	 * @ORM\ManyToOne(targetEntity="NotificationTypeEntity")
+	 * @ORM\ManyToOne(targetEntity="NotificationType")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $type;
@@ -40,9 +40,9 @@ class NotificationSettingEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $target;
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
 	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
 	protected $targetUser;
@@ -55,9 +55,9 @@ class NotificationSettingEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $targetKey;
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
@@ -77,4 +77,3 @@ class NotificationSettingEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $selfNotification = false;
 
 }
-

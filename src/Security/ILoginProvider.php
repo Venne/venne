@@ -23,14 +23,14 @@ interface ILoginProvider extends \Nette\Security\IAuthenticator
 	public static function getType();
 
 	/**
-	 * @return \Venne\Security\LoginProviderEntity
+	 * @return \Venne\Security\LoginProvider
 	 */
 	public function getLoginProviderEntity();
 
 	/**
-	 * @param \Venne\Security\UserEntity $userEntity
+	 * @param \Venne\Security\User $user
 	 */
-	public function connectWithUser(UserEntity $userEntity);
+	public function connectWithUser(User $user);
 
 	/**
 	 * @param mixed[] $parameters

@@ -9,17 +9,17 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Venne\Security\DefaultType;
-
-use Doctrine\ORM\Mapping as ORM;
+namespace Venne\Security\DI;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @ORM\Entity(repositoryClass="\Venne\Doctrine\DerivedEntityDao")
- * @ORM\Table(name="default_user")
  */
-class UserEntity extends \Venne\Security\ExtendedUserEntity
+interface UserTypeProvider
 {
+
+	/**
+	 * @return \Venne\Security\DI\UserType[]
+	 */
+	public function getUserTypes();
 
 }

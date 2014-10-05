@@ -101,4 +101,3 @@ trait ControlTrait
 		throw new \Nette\InvalidStateException('No template files found');
 	}
 }
-

@@ -11,7 +11,6 @@
 
 namespace Venne\System\DI;
 
-use Kdyby\Console\DI\ConsoleExtension;
 use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
@@ -33,10 +32,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 	const TAG_TRAY_COMPONENT = 'venne.trayComponent';
 
-	const TAG_USER = 'venne.user';
-
-	const TAG_LOGIN_PROVIDER = 'venne.loginProvider';
-
 	const TAG_ROUTE = 'venne.route';
 
 	const TAG_ADMINISTRATION = 'venne.administration';
@@ -53,7 +48,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 				'autologin' => null,
 				'autoregistration' => null,
 			),
-			'theme' => 'venne/venne',
+			'theme' => null, //'venne/venne',
 		),
 		'paths' => array(
 			'publicDir' => '%wwwDir%/public',
@@ -65,6 +60,10 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
+		$this->compiler->parseServices(
+			$container,
+			$this->loadFromFile(__DIR__ . '/services.neon')
+		);
 		$config = $this->getConfig($this->defaults);
 
 		foreach ($config['paths'] as $name => $path) {
@@ -90,7 +89,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			->setClass('Venne\Security\ControlVerifierReaders\AnnotationReader');
 
 		$container->getDefinition('user')
-			->setClass('Venne\Security\User');
+			->setClass(\Venne\Security\NetteUser::class);
 
 		// http
 		$container->getDefinition('httpResponse')
@@ -110,34 +109,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		$container->getDefinition('nette.latteFactory')
 			->addSetup('$service->getCompiler()->addMacro(\'cache\', new Venne\Latte\Macros\GlobalCacheMacro(?->getCompiler()))', array('@self'));
-
-		// security
-		$container->addDefinition($this->prefix('securityManager'))
-			->setClass('Venne\Security\SecurityManager');
-
-		$container->addDefinition('authorizatorFactory')
-			->setFactory('Venne\Security\AuthorizatorFactory', array(
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
-				new Statement('@doctrine.dao', array('Venne\Security\PermissionEntity'))
-			, '@session'));
-
-		$container->addDefinition('installCommand')
-			->setFactory('Venne\System\Commands\InstallCommand', array(
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
-				new Statement('@doctrine.dao', array('Venne\Security\PermissionEntity'))
-			))
-			->addTag(ConsoleExtension::COMMAND_TAG);
-
-		$container->getDefinition('packageManager.packageManager')
-			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array('@authorizatorFactory'))
-			->addSetup('$service->onUninstall[] = ?->clearPermissionSession', array('@authorizatorFactory'));
-
-		$container->addDefinition('authorizator')
-			->setClass('Nette\Security\Permission')
-			->setFactory('@authorizatorFactory::getPermissionsByUser', array('@user', true));
-
-		$container->addDefinition('authenticator')
-			->setClass('Venne\Security\Authenticator', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))));
 
 		// Administration
 		$presenter = explode(':', $config['administration']['defaultPresenter']);
@@ -167,26 +138,13 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		$container->addDefinition($this->prefix('authenticationFormFactory'))
 			->setArguments(array(
 				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration.authentication')),
-				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity')),
 			))
 			->setClass('Venne\System\AdminModule\AuthenticationFormFactory');
 
 		$container->addDefinition($this->prefix('admin.loginPresenter'))
-			->setClass('Venne\System\AdminModule\LoginPresenter', array(
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
-				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity')),
-				new Statement('@doctrine.dao', array('Venne\System\InvitationEntity')),
-			))
+			->setClass('Venne\System\AdminModule\LoginPresenter')
 			->addSetup('$service->setAutologin(?)', array($config['administration']['authentication']['autologin']))
 			->addSetup('$service->setAutoregistration(?)', array($config['administration']['authentication']['autoregistration']));
-
-		$container->addDefinition($this->prefix('invitationFormFactory'))
-			->setClass('Venne\Security\AdminModule\InvitationFormFactory', array(
-				new Statement('@system.admin.basicFormFactory')
-			));
-
-		$container->addDefinition($this->prefix('invitationPresenter'))
-			->setClass('Venne\Security\AdminModule\InvitationPresenter');
 
 		$container->addDefinition($this->prefix('invitationStateListener'))
 			->setClass('Venne\System\Listeners\InvitationStateListener');
@@ -287,16 +245,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), ''))
 			));
 
-		$container->addDefinition($this->prefix('system.application.registrationFormFactory'))
-			->setClass('Venne\System\AdminModule\RegistrationFormFactory', array(
-				new Statement('@system.admin.basicFormFactory'),
-			));
-
-		$container->addDefinition($this->prefix('registrationTableFactory'))
-			->setClass('Venne\System\AdminModule\RegistrationTableFactory', array(
-				new Statement('@doctrine.dao', array('Venne\System\RegistrationEntity'))
-			));
-
 		$container->addDefinition($this->prefix('system.application.systemFormFactory'))
 			->setClass('Venne\System\AdminModule\AdministrationFormFactory', array(
 				new Statement('@system.admin.configFormFactory', array($container->expand('%configDir%/config.neon'), 'system.administration'))
@@ -337,7 +285,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			->setImplement('Venne\Forms\IFormFactory')
 			->addSetup('setRenderer', array(new Statement($this->prefix('@formRenderer'))))
 			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
-			->addSetup("\$service->getElementPrototype()->class[] = ?", array('ajax'))
+			->addSetup('$service->getElementPrototype()->class[] = ?', array('ajax'))
 			->setAutowired(false);
 
 		$container->addDefinition($this->prefix('admin.configFormFactory'))
@@ -348,7 +296,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		$container->addDefinition($this->prefix('registrationControlFactory'))
 			->setClass('Venne\Security\Registration\RegistrationControl', array(
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity')),
 				new PhpLiteral('$invitations'),
 				new PhpLiteral('$userType'),
 				new PhpLiteral('$mode'),
@@ -362,10 +309,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 			->setClass('Venne\System\AdminModule\LoginFormFactory', array(new Statement('@system.admin.basicFormFactory')));
 
 		$container->addDefinition($this->prefix('system.dashboardPresenter'))
-			->setClass('Venne\System\AdminModule\DashboardPresenter', array(
-				new Statement('@doctrine.dao', array('Venne\Notifications\NotificationEntity')),
-				new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))
-			));
+			->setClass('Venne\System\AdminModule\DashboardPresenter');
 
 		$container->addDefinition($this->prefix('cssControlFactory'))
 			->setClass('Venne\System\Components\CssControl')
@@ -386,7 +330,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 
 		$container->addDefinition($this->prefix('loginControlFactory'))
 			->setImplement('Venne\Security\Login\ILoginControlFactory')
-			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
 			->setInject(true);
 
 		$container->addDefinition($this->prefix('gridoFactory'))
@@ -411,8 +354,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 	{
 		$this->registerRoutes();
 		$this->registerAdministrationPages();
-		$this->registerUsers();
-		$this->registerLoginProvider();
 		$this->registerTrayComponents();
 		$this->registerSideComponents();
 	}
@@ -460,36 +401,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 		}
 	}
 
-	private function registerUsers()
-	{
-		$container = $this->getContainerBuilder();
-		$config = $container->getDefinition($this->prefix('securityManager'));
-
-		foreach ($container->findByTag(static::TAG_USER) as $item => $tags) {
-			$arguments = $container->getDefinition($item)->factory->arguments;
-
-			$container->getDefinition($item)->factory->arguments = array(
-				0 => is_array($tags) ? $tags['name'] : $tags,
-				1 => $arguments[0],
-			);
-
-			$config->addSetup('addUserType', array("@{$item}"));
-		}
-	}
-
-	private function registerLoginProvider()
-	{
-		$container = $this->getContainerBuilder();
-		$config = $container->getDefinition($this->prefix('securityManager'));
-
-		foreach ($container->findByTag(static::TAG_LOGIN_PROVIDER) as $item => $tags) {
-			$class = '\\' . $container->getDefinition($item)->class;
-			$type = $class::getType();
-
-			$config->addSetup('addLoginProvider', array($type, "{$item}"));
-		}
-	}
-
 	private function registerTrayComponents()
 	{
 		$container = $this->getContainerBuilder();
@@ -524,7 +435,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 	public function getEntityMappings()
 	{
 		return array(
-			'Venne\System' => dirname(__DIR__) . '/*Entity.php',
+			'Venne\System' => dirname(__DIR__) . '/*.php',
 		);
 	}
 

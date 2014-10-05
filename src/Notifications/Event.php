@@ -26,10 +26,10 @@ abstract class Event implements \Venne\Notifications\IEvent
 	}
 
 	/**
-	 * @param \Venne\Notifications\NotificationEntity $log
+	 * @param \Venne\Notifications\Notification $log
 	 * @return null
 	 */
-	public static function getLink(NotificationEntity $log)
+	public static function getLink(Notification $log)
 	{
 		return null;
 	}

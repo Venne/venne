@@ -12,7 +12,6 @@
 namespace Venne\Security\Registration;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\EntityDao;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
@@ -20,8 +19,10 @@ use Nette\Mail\IMailer;
 use Nette\Security\AuthenticationException;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\AuthorizatorFactory;
-use Venne\Security\ExtendedUserEntity;
+use Venne\Security\ExtendedUser;
+use Venne\Security\Role;
 use Venne\Security\SecurityManager;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -48,7 +49,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 	/** @var callable[] */
 	public $onLoad;
 
-	/** @var bool */
+	/** @var boolean */
 	private $invitaions;
 
 	/** @var string */
@@ -63,17 +64,17 @@ class RegistrationControl extends \Venne\System\UI\Control
 	/** @var string|array */
 	private $roles;
 
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
+
 	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
 	/** @var \Venne\Security\AuthorizatorFactory */
 	private $authorizatorFactory;
 
-	/** @var \Kdyby\Doctrine\EntityManager */
-	private $entityManager;
-
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $roleDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $roleRepository;
 
 	/** @var \Nette\Mail\IMailer */
 	private $mailer;
@@ -81,25 +82,23 @@ class RegistrationControl extends \Venne\System\UI\Control
 	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
 	private $formFactoryFactory;
 
-	/** @var \Venne\Security\ExtendedUserEntity */
-	private $_currentUser;
+	/** @var \Venne\Security\ExtendedUser */
+	private $currentUser;
 
 	/** @var string */
 	private $defaultEmail;
 
 	/**
-	 * @param \Kdyby\Doctrine\EntityDao $roleDao
 	 * @param boolean $invitaions
 	 * @param string $userType
 	 * @param string $mode
 	 * @param string $loginProviderMode
 	 * @param string[] $roles
 	 */
-	public function __construct(EntityDao $roleDao, $invitaions, $userType, $mode, $loginProviderMode, $roles)
+	public function __construct($invitaions, $userType, $mode, $loginProviderMode, $roles)
 	{
 		parent::__construct();
 
-		$this->roleDao = $roleDao;
 		$this->invitaions = $invitaions;
 		$this->loginProviderMode = $loginProviderMode;
 		$this->mode = $mode;
@@ -108,13 +107,15 @@ class RegistrationControl extends \Venne\System\UI\Control
 	}
 
 	public function inject(
+		EntityManager $entityManager,
 		SecurityManager $securityManager,
 		AuthorizatorFactory $authorizatorFactory,
-		EntityManager $entityManager,
 		IMailer $mailer,
 		FormFactoryFactory $formFactoryFactory
 	)
 	{
+		$this->entityManager = $entityManager;
+		$this->roleRepository = $entityManager->getRepository(Role::class);
 		$this->securityManager = $securityManager;
 		$this->authorizatorFactory = $authorizatorFactory;
 		$this->entityManager = $entityManager;
@@ -176,7 +177,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 					$this->redirect('this');
 				}
 			}
-		} else if ($this->loginProviderMode === 'load') {
+		} elseif ($this->loginProviderMode === 'load') {
 			$this->onLoad($this);
 		}
 	}
@@ -197,16 +198,16 @@ class RegistrationControl extends \Venne\System\UI\Control
 	public function createComponentForm()
 	{
 		$userType = $this->securityManager->getUserTypeByClass($this->userType);
-		$this->_currentUser = $this->createNewUser();
+		$this->currentUser = $this->createNewUser();
 		$form = $this->formFactoryFactory
 			->create($userType->getRegistrationFormFactory())
-			->setEntity($this->_currentUser)
+			->setEntity($this->currentUser)
 			->create();
 
 		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {
-			$form->addSubmit('_submit_' . str_replace(' ', '_', $loginProvider), $loginProvider)
-				->setValidationScope(false)
-				->onClick[] = function () use ($loginProvider) {
+			$submit = $form->addSubmit('_submit_' . str_replace(' ', '_', $loginProvider), $loginProvider);
+			$submit->setValidationScope(false);
+			$submit->onClick[] = function () use ($loginProvider) {
 				$this->redirect('load!', array($loginProvider));
 			};
 		}
@@ -219,7 +220,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 	public function formSuccess(Form $form)
 	{
 		if ($this->mode === 'basic') {
-			$this->presenter->user->login($this->_currentUser->user->email, $form['user']['password']->value);
+			$this->presenter->user->login($this->currentUser->user->email, $form['user']['password']->value);
 		}
 
 		if ($this->mode === 'mail' || $this->mode === 'mail&checkup') {
@@ -248,7 +249,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 		));
 
 		$mail = $this->presenter->context->nette->createMail();
-		$mail->setFrom("{$this->emailSender} <{$this->emailFrom}>")
+		$mail->setFrom(sprintf('%s <%s>', $this->emailSender, $this->emailFrom))
 			->addTo($user->user->email)
 			->setSubject($this->emailSubject)
 			->setHTMLBody($text);
@@ -256,15 +257,15 @@ class RegistrationControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @return \Venne\Security\ExtendedUserEntity
+	 * @return \Venne\Security\ExtendedUser
 	 */
 	protected function createNewUser()
 	{
-		/** @var \Kdyby\Doctrine\EntityDao $dao */
-		$dao = $this->entityManager->getDao($this->userType);
-		$class = $dao->getClassName();
+		/** @var \Kdyby\Doctrine\EntityRepository $repository */
+		$repository = $this->entityManager->getRepository($this->userType);
+		$class = $repository->getClassName();
 
-		/** @var $entity ExtendedUserEntity */
+		/** @var $entity ExtendedUser */
 		$entity = new $class;
 		if ($this->mode === 'checkup') {
 			$entity->getUser()->setPublished(false);
@@ -288,13 +289,13 @@ class RegistrationControl extends \Venne\System\UI\Control
 	protected function enable()
 	{
 		if ($this->mode === 'mail' || $this->mode === 'mail&checkup') {
-			$repository = $this->entityManager->getRepository('Venne\System\Pages\Users\UserEntity');
+			$repository = $this->entityManager->getRepository(User::class);
 			$user = $repository->findOneByKey($this->key);
 			if (!$user) {
 				throw new BadRequestException;
 			} else {
 				$user->enableByKey($this->key);
-				$repository->save($user);
+				$this->entityManager->flush($user);
 			}
 		}
 	}

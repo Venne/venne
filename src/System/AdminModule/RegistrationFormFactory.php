@@ -14,7 +14,7 @@ namespace Venne\System\AdminModule;
 use Kdyby\DoctrineForms\IComponentMapper;
 use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\System\RegistrationEntity;
+use Venne\System\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -52,12 +52,10 @@ class RegistrationFormFactory implements \Venne\Forms\IFormFactory
 		$form->addText('name', 'Name');
 		$form->addHidden('key');
 		$form->addSelect('userType', 'Type', $userTypes);
-		$form->addSelect('mode', 'Mode', RegistrationEntity::getModes());
-		$form->addSelect('loginProviderMode', 'Login provider mode', RegistrationEntity::getLoginProviderModes());
+		$form->addSelect('mode', 'Mode', Registration::getModes());
+		$form->addSelect('loginProviderMode', 'Login provider mode', Registration::getLoginProviderModes());
 		$form->addMultiSelect('roles', 'Roles')
 			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
-
-		$form->addSubmit('_submit', 'Save');
 
 		return $form;
 	}

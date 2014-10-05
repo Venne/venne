@@ -25,10 +25,10 @@ class DynamicMapperSubscriber implements EventSubscriber
 {
 
 	/** @var bool */
-	private $_l = false;
+	private $l = false;
 
 	/** @var string */
-	private $_lName;
+	private $lName;
 
 	/**
 	 * Array of events.
@@ -46,9 +46,9 @@ class DynamicMapperSubscriber implements EventSubscriber
 	{
 		$meta = $args->getClassMetadata();
 
-		if ($this->_l) {
-			if (Strings::endsWith($meta->associationMappings[$this->_lName]['targetEntity'], '::dynamic')) {
-				$meta->associationMappings[$this->_lName]['targetEntity'] = $this->getTargetEntity($meta->name, $this->_l);
+		if ($this->l) {
+			if (Strings::endsWith($meta->associationMappings[$this->lName]['targetEntity'], '::dynamic')) {
+				$meta->associationMappings[$this->lName]['targetEntity'] = $this->getTargetEntity($meta->name, $this->l);
 			}
 
 			return;
@@ -63,23 +63,23 @@ class DynamicMapperSubscriber implements EventSubscriber
 			$em = $args->getEntityManager();
 			$target = $this->getTargetEntity($meta, $name);
 
-			$this->_l = $meta->name;
-			$this->_lName = $meta->associationMappings[$name]['inversedBy'];
+			$this->l = $meta->name;
+			$this->lName = $meta->associationMappings[$name]['inversedBy'];
 
-			if (!$this->_lName) {
-				$this->_lName = $meta->associationMappings[$name]['mappedBy'];
+			if (!$this->lName) {
+				$this->lName = $meta->associationMappings[$name]['mappedBy'];
 			}
 
-			if ($this->_lName) {
+			if ($this->lName) {
 				$targetMeta = $em->getClassMetadata($target);
 			}
 
-			$this->_l = false;
+			$this->l = false;
 
 			$meta->associationMappings[$name]['targetEntity'] = $target;
 
-			if ($this->_lName) {
-				$targetMeta->associationMappings[$this->_lName]['targetEntity'] = $meta->name;
+			if ($this->lName) {
+				$targetMeta->associationMappings[$this->lName]['targetEntity'] = $meta->name;
 			}
 
 		}
@@ -95,14 +95,13 @@ class DynamicMapperSubscriber implements EventSubscriber
 		$method = 'get' . ucfirst($association) . 'Name';
 
 		if (($ret = call_user_func(array($meta->name, $method))) === null) {
-			throw new InvalidArgumentException("Entity '{$meta->name}' must implemented method '{$method}'.");
+			throw new InvalidArgumentException(sprintf('Entity \'%s\' must implemented method \'%s\'.', $meta->name, $method));
 		}
 		if (!class_exists($ret)) {
-			throw new InvalidArgumentException("Class '{$ret}' does not exist.");
+			throw new InvalidArgumentException(sprintf('Class \'%s\' does not exist.', $ret));
 		}
 
 		return $ret;
 	}
 
 }
-

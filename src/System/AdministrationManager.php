@@ -206,4 +206,3 @@ class AdministrationManager extends \Nette\Object
 	}
 
 }
-

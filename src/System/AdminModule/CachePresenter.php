@@ -13,8 +13,6 @@ namespace Venne\System\AdminModule;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class CachePresenter extends \Nette\Application\UI\Presenter
 {

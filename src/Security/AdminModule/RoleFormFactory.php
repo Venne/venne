@@ -13,11 +13,12 @@ namespace Venne\Security\AdminModule;
 
 use Kdyby\DoctrineForms\IComponentMapper;
 use Venne\Forms\IFormFactory;
+use Venne\Security\Role;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RoleFormFactory implements \Venne\Forms\IFormFactory
+class RoleFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactory
 {
 
 	/** @var \Venne\Forms\IFormFactory */
@@ -29,7 +30,7 @@ class RoleFormFactory implements \Venne\Forms\IFormFactory
 	}
 
 	/**
-	 * @return \Nette\Forms\Form
+	 * @return \Nette\Application\UI\Form
 	 */
 	public function create()
 	{
@@ -37,10 +38,10 @@ class RoleFormFactory implements \Venne\Forms\IFormFactory
 
 		$form->addText('name', 'Name');
 		$form->addSelect('parent', 'Parent')
-			->setOption(IComponentMapper::ITEMS_TITLE, 'name')
+			->setOption(IComponentMapper::ITEMS_TITLE, function (Role $role) {
+				return $role->getName();
+			})
 			->setPrompt('root');
-
-		$form->addSubmit('_submit', 'Save');
 
 		return $form;
 	}

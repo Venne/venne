@@ -11,10 +11,11 @@
 
 namespace Venne\Queue\Components;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\Security\User;
 use Venne\DataTransfer\DataTransferManager;
 use Venne\Queue\JobDto;
+use Venne\Queue\Job;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,8 +26,8 @@ class JobsControl extends \Venne\System\UI\Control
 	/** @var \Nette\Security\User */
 	private $user;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $jobDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $jobRepository;
 
 	/** @var \Venne\Queue\Components\IJobControlFactory */
 	private $jobControlFactory;
@@ -35,7 +36,7 @@ class JobsControl extends \Venne\System\UI\Control
 	private $dataTransferManager;
 
 	public function __construct(
-		EntityDao $jobDao,
+		EntityManager $entityManager,
 		User $user,
 		IJobControlFactory $jobControlFactory,
 		DataTransferManager $dataTransferManager
@@ -43,7 +44,7 @@ class JobsControl extends \Venne\System\UI\Control
 	{
 		parent::__construct();
 
-		$this->jobDao = $jobDao;
+		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->user = $user;
 		$this->jobControlFactory = $jobControlFactory;
 		$this->dataTransferManager = $dataTransferManager;
@@ -60,8 +61,8 @@ class JobsControl extends \Venne\System\UI\Control
 	public function render()
 	{
 		$this->template->jobs = $this->dataTransferManager
-			->createQuery(JobDto::getClassName(), function () {
-				return $this->jobDao->createQueryBuilder('a')
+			->createQuery(JobDto::class, function () {
+				return $this->jobRepository->createQueryBuilder('a')
 					->andWhere('a.user = :user')->setParameter('user', $this->user->getIdentity()->getId())
 					->orderBy('a.date', 'ASC')
 					->getQuery()->getResult();

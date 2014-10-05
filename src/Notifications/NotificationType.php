@@ -20,7 +20,7 @@ use Kdyby\Doctrine\Entities\BaseEntity;
  * @ORM\Entity
  * @ORM\Table(name="notification_type")
  */
-class NotificationTypeEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class NotificationType extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -55,4 +55,3 @@ class NotificationTypeEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 }
-

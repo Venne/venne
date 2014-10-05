@@ -21,7 +21,7 @@ class AnnotationReader extends \Nette\Object implements \Venne\Security\IControl
 {
 
 	/** @var mixed[] */
-	protected $_annotationSchema = array();
+	private $annotationSchema = array();
 
 	/**
 	 * @param string $class
@@ -29,7 +29,7 @@ class AnnotationReader extends \Nette\Object implements \Venne\Security\IControl
 	 */
 	public function getSchema($class)
 	{
-		if (!isset($this->_annotationSchema[$class])) {
+		if (!isset($this->annotationSchema[$class])) {
 			$schema = array();
 			$ref = ClassType::from($class);
 
@@ -52,10 +52,10 @@ class AnnotationReader extends \Nette\Object implements \Venne\Security\IControl
 				}
 			}
 
-			$this->_annotationSchema[$class] = $schema;
+			$this->annotationSchema[$class] = $schema;
 		}
 
-		return $this->_annotationSchema[$class];
+		return $this->annotationSchema[$class];
 	}
 
 	/**

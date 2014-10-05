@@ -28,9 +28,9 @@ interface IEvent
 	public static function getHumanName();
 
 	/**
-	 * @param \Venne\Notifications\NotificationEntity $log
+	 * @param \Venne\Notifications\Notification $log
 	 * @return string
 	 */
-	public static function getLink(NotificationEntity $log);
+	public static function getLink(Notification $log);
 
 }

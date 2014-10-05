@@ -11,44 +11,43 @@
 
 namespace Venne\System\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Venne\DataTransfer\DataTransferManager;
+use Venne\Security\Login;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class DashboardPresenter extends \Nette\Application\UI\Presenter
 {
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $logDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $logRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
 	/** @var \Venne\DataTransfer\DataTransferManager */
 	private $dataTransferManager;
 
 	public function __construct(
-		EntityDao $logDao,
-		EntityDao $userDao,
+		EntityManager $entityManager,
 		DataTransferManager $dataTransferManager
 	)
 	{
-		$this->logDao = $logDao;
-		$this->userDao = $userDao;
+		$this->logRepository = $entityManager->getRepository(Login::class);
+		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->dataTransferManager = $dataTransferManager;
 	}
 
 	public function renderDefault()
 	{
 		$this->template->userDto = $this->dataTransferManager
-			->createQuery(UserDto::getClassName(), function () {
-				return $this->userDao->find($this->getUser()->getIdentity()->getId());
+			->createQuery(UserDto::class, function () {
+				return $this->userRepository->find($this->getUser()->getIdentity()->getId());
 			})
 			->enableCache(sprintf('#%s', $this->getUser()->getIdentity()->getId()))
 			->fetch();

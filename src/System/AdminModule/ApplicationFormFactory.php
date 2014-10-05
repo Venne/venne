@@ -81,8 +81,7 @@ class ApplicationFormFactory implements \Venne\Forms\IFormFactory
 		$container = $nette->addContainer('session');
 		$container->setCurrentGroup($form->addGroup('Sessions'));
 		$container->addCheckbox('autoStart', 'Autostart')->setDefaultValue(false);
-		$container->addText /*WithSelect*/
-		('expiration', 'Expiration'); //->setItems(array('+ 1 day', '+ 10 days', '+ 30 days', '+ 1 year'), false);
+		$container->addText('expiration', 'Expiration');
 		$container->addText('cookiePath', 'Cookie path')->setDefaultValue('/');
 		$container->addText('cookieDomain', 'Cookie domain');
 

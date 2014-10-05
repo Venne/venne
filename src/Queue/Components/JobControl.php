@@ -11,12 +11,12 @@
 
 namespace Venne\Queue\Components;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
 use Venne\DataTransfer\DataTransferManager;
 use Venne\Queue\JobDto;
-use Venne\Queue\JobEntity;
+use Venne\Queue\Job;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,21 +27,21 @@ class JobControl extends \Venne\System\UI\Control
 	/** @var \Nette\Security\User */
 	private $user;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $jobDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $jobRepository;
 
 	/** @var \Venne\DataTransfer\DataTransferManager */
 	private $dataTransferManager;
 
 	public function __construct(
-		EntityDao $jobDao,
+		EntityManager $entityManager,
 		User $user,
 		DataTransferManager $dataTransferManager
 	)
 	{
 		parent::__construct();
 
-		$this->jobDao = $jobDao;
+		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->user = $user;
 		$this->dataTransferManager = $dataTransferManager;
 	}
@@ -51,7 +51,7 @@ class JobControl extends \Venne\System\UI\Control
 	 */
 	public function handleRemove($id)
 	{
-		if (($entity = $this->jobDao->find($id)) === null) {
+		if (($entity = $this->jobRepository->find($id)) === null) {
 			throw new BadRequestException;
 		}
 
@@ -59,7 +59,7 @@ class JobControl extends \Venne\System\UI\Control
 			throw new BadRequestException;
 		}
 
-		$this->jobDao->delete($entity);
+		$this->jobRepository->delete($entity);
 
 		if (!$this->presenter->isAjax()) {
 			$this->redirect('this');
@@ -69,8 +69,8 @@ class JobControl extends \Venne\System\UI\Control
 	public function render($id)
 	{
 		$this->template->job = $this->dataTransferManager
-			->createQuery(JobDto::getClassName(), function () use ($id) {
-				return $this->jobDao->find($id);
+			->createQuery(JobDto::class, function () use ($id) {
+				return $this->jobRepository->find($id);
 			})
 			->enableCache()
 			->fetch();

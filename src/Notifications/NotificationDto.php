@@ -58,7 +58,7 @@ class NotificationDto extends \Venne\DataTransfer\DataTransferObject
 	 */
 	protected function getUserName()
 	{
-		return (string)$this->getNotification()->user;
+		return (string) $this->getNotification()->user;
 	}
 
 	/**
@@ -66,7 +66,7 @@ class NotificationDto extends \Venne\DataTransfer\DataTransferObject
 	 */
 	protected function getUserEmail()
 	{
-		return (string)$this->getNotification()->user->email;
+		return (string) $this->getNotification()->user->email;
 	}
 
 	/**
@@ -86,7 +86,7 @@ class NotificationDto extends \Venne\DataTransfer\DataTransferObject
 	}
 
 	/**
-	 * @return NotificationEntity
+	 * @return Notification
 	 */
 	private function getNotification()
 	{

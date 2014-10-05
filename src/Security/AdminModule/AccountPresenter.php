@@ -11,23 +11,21 @@
 
 namespace Venne\Security\AdminModule;
 
+use Doctrine\ORM\EntityManager;
 use Grido\DataSources\ArraySource;
 use Grido\DataSources\Doctrine;
-use Kdyby\Doctrine\EntityDao;
 use Nette\Forms\Form;
 use Nette\Http\Session;
 use Nette\Utils\Html;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\DefaultType\RegistrationFormFactory;
-use Venne\Security\LoginEntity;
+use Venne\Security\Login;
 use Venne\Security\SecurityManager;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class AccountPresenter extends \Nette\Application\UI\Presenter
 {
@@ -41,11 +39,11 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	 */
 	public $provider;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $loginDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $loginRepository;
 
 	/** @var \Venne\Security\DefaultType\RegistrationFormFactory */
 	private $userFormFactory;
@@ -66,8 +64,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	private $formFactoryFactory;
 
 	public function __construct(
-		EntityDao $userDao,
-		EntityDao $loginDao,
+		EntityManager $entityManager,
 		RegistrationFormFactory $userFormFactory,
 		ProviderFormFactory $providerFormFactory,
 		SecurityManager $securityManager,
@@ -76,8 +73,8 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		FormFactoryFactory $formFactoryFactory
 	)
 	{
-		$this->userDao = $userDao;
-		$this->loginDao = $loginDao;
+		$this->userRepository = $entityManager->getRepository(User::class);
+		$this->loginRepository = $entityManager->getRepository(Login::class);
 		$this->userFormFactory = $userFormFactory;
 		$this->providerFormFactory = $providerFormFactory;
 		$this->securityManager = $securityManager;
@@ -128,7 +125,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 			}
 		}
 
-		$this->userDao->save($user);
+		$this->getEntityManager()->flush($user);
 
 		$this->redirect('this', array('provider' => null));
 	}
@@ -153,7 +150,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 			);
 		}
 
-		$admin = $this->adminGridFactory->create($this->loginDao);
+		$admin = $this->adminGridFactory->create($this->loginRepository);
 
 		// columns
 		$table = $admin->getTable();
@@ -162,7 +159,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		$table->addColumnText('name', 'Name')
 			->getCellPrototype()->width = '100%';
 
-		/** @var \Venne\Security\UserEntity $user */
+		/** @var \Venne\Security\User $user */
 		$user = $this->user->identity;
 		$securityManager = $this->securityManager;
 		$providerFormFactory = $this->providerFormFactory;
@@ -210,7 +207,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 				return $element;
 			})
 			->setConfirm(function ($entity) {
-				return "Really disconnect from '{$entity['name']}'?";
+				return array('Really disconnect from \'%s\'?', $entity['name']);
 			});
 		$table->getAction('disconnect')->onClick[] = function ($button, $name) use ($_this) {
 			$_this->handleDisconnect(str_replace('_', ' ', $name));
@@ -226,18 +223,18 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	protected function createComponentTable()
 	{
 		$session = $this->session;
-		$admin = $this->adminGridFactory->create($this->loginDao);
+		$admin = $this->adminGridFactory->create($this->loginRepository);
 
 		// columns
 		$table = $admin->getTable();
-		if ($this->user->identity instanceof UserEntity) {
-			$table->setModel(new Doctrine($this->loginDao->createQueryBuilder('a')->andWhere('a.user = :user')->setParameter('user', $this->user->identity)));
+		if ($this->user->identity instanceof User) {
+			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user = :user')->setParameter('user', $this->user->identity)));
 		} else {
-			$table->setModel(new Doctrine($this->loginDao->createQueryBuilder('a')->andWhere('a.user IS NULL')));
+			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user IS NULL')));
 		}
 		$table->setTranslator($this->translator);
 		$table->addColumnDate('current', 'Current')
-			->setCustomRender(function (LoginEntity $entity) use ($session) {
+			->setCustomRender(function (Login $entity) use ($session) {
 				$el = Html::el('span');
 				$el->class[] = 'glyphicon ' . ($session->id == $entity->getSessionId() ? 'glyphicon-ok' : 'glyphicon-remove');
 
@@ -252,9 +249,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 
 		// actions
 		$table->addActionEvent('delete', 'Delete')
-			->setConfirm(function ($entity) {
-				return "Really delete session '{$entity->sessionId}'?";
-			})
 			->getElementPrototype()->class[] = 'ajax';
 		$admin->connectActionAsDelete($table->getAction('delete'));
 
@@ -266,15 +260,14 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentAccountForm()
 	{
-		$user = $this->userDao->find($this->getUser()->getIdentity()->getId());
+		$user = $this->userRepository->find($this->getUser()->getIdentity()->getId());
 
-		$formFactory = $this->securityManager
+		$formService = $this->securityManager
 			->getUserTypeByClass($user->getClass())
-			->getFrontFormFactory();
+			->getFrontFormService();
 
-		$form = $this->formFactoryFactory
-			->create($formFactory)
-			->setEntity($user->getExtendedUser())
+		$form = $formService
+			->createFormFactory($user->getExtendedUser())
 			->create();
 
 		$form->onSuccess[] = $this->accountFormSuccess;

@@ -46,19 +46,19 @@ class AdminTemplateLocator implements \Venne\System\UI\ITemplateLocator
 
 		foreach ($this->templateDirs as $dir) {
 			$name = $control->getName();
-			$list[] = "$dir/$absolutePresenter/@$layout.latte";
-
-			$dir = dirname("$dir/$absolutePresenter");
+			$dir = sprintf('%s/%s', $dir, $absolutePresenter);
 			do {
-				$list[] = "$dir/@$layout.latte";
+				$list[] = sprintf('%s/@%s.latte', $dir, $layout);
 				$dir = dirname($dir);
 			} while ($dir && ($name = substr($name, 0, strrpos($name, ':'))));
+
+			$list[] = sprintf('%s/@%s.latte', $dir, $layout);
 		}
 
 		$dir = dirname($control->getReflection()->getFileName());
 		foreach (array($dir . '/templates') as $dir) {
-			$list[] = "$dir/$presenter/@$layout.latte";
-			$list[] = "$dir/@$layout.latte";
+			$list[] = sprintf('%s/%s/@%s.latte', $dir, $presenter, $layout);
+			$list[] = sprintf('%s/@%s.latte', $dir, $layout);
 		}
 
 		return $list;
@@ -91,7 +91,7 @@ class AdminTemplateLocator implements \Venne\System\UI\ITemplateLocator
 			foreach (array($file, $layout) as $dir) {
 				do {
 					$dir = dirname($dir);
-					$list[] = "$dir/components/$name.latte";
+					$list[] = sprintf('%s/components/%s.latte', $dir, $name);
 				} while ($dir && substr($dir, strrpos($dir, '/') + 1) !== 'templates');
 			}
 
@@ -104,18 +104,17 @@ class AdminTemplateLocator implements \Venne\System\UI\ITemplateLocator
 		$absolutePresenter = str_replace(':', '/', $name);
 
 		foreach ($this->templateDirs as $dir) {
-			$list[] = "$dir/$absolutePresenter/$control->view.latte";
-			$list[] = "$dir/$absolutePresenter.$control->view.latte";
+			$list[] = sprintf('%s/%s/%s.latte', $dir, $absolutePresenter, $control->view);
+			$list[] = sprintf('%s/%s.%s.latte', $dir, $absolutePresenter, $control->view);
 		}
 
 		$dir = dirname($control->getReflection()->getFileName());
 		foreach (array($dir . '/templates') as $dir) {
-			$list[] = "$dir/$presenter/$control->view.latte";
-			$list[] = "$dir/$presenter.$control->view.latte";
+			$list[] = sprintf('%s/%s/%s.latte', $dir, $presenter, $control->view);
+			$list[] = sprintf('%s/%s.%s.latte', $dir, $presenter, $control->view);
 		}
 
 		return $list;
 	}
 
 }
-

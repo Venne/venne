@@ -13,8 +13,6 @@ namespace Venne\Security\AdminModule;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class InvitationPresenter extends \Nette\Application\UI\Presenter
 {

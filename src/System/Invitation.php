@@ -14,13 +14,13 @@ namespace Venne\System;
 use Doctrine\ORM\Mapping as ORM;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Nette\Utils\Random;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
- * @property \Venne\System\RegistrationEntity $registration
- * @property \Venne\Security\UserEntity $author
+ * @property \Venne\System\Registration $registration
+ * @property \Venne\Security\User $author
  * @property string $email
  * @property string $hash
  *
@@ -30,21 +30,21 @@ use Venne\Security\UserEntity;
  *        "\Venne\System\Listeners\InvitationStateListener"
  * })
  */
-class InvitationEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class Invitation extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var \Venne\System\RegistrationEntity
-	 * @ORM\ManyToOne(targetEntity="\Venne\System\RegistrationEntity")
+	 * @var \Venne\System\Registration
+	 * @ORM\ManyToOne(targetEntity="\Venne\System\Registration")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $registration;
 
 	/**
-	 * @var \Venne\Security\UserEntity
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity")
+	 * @var \Venne\Security\User
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $author;
@@ -63,7 +63,7 @@ class InvitationEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	 */
 	protected $hash;
 
-	public function __construct(UserEntity $author)
+	public function __construct(User $author)
 	{
 		$this->author = $author;
 		$this->hash = Random::generate(20);

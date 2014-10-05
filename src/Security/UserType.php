@@ -11,7 +11,7 @@
 
 namespace Venne\Security;
 
-use Venne\Forms\IFormFactory;
+use Venne\System\DoctrineFormService;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,23 +25,29 @@ class UserType extends \Nette\Object
 	/** @var string */
 	private $entityName;
 
-	/** @var \Venne\Forms\IFormFactory */
-	private $formFactory;
+	/** @var \Venne\System\DoctrineFormService */
+	private $formService;
 
-	/** @var \Venne\Forms\IFormFactory */
-	private $frontFormFactory;
+	/** @var \Venne\System\DoctrineFormService */
+	private $frontFormService;
 
-	/** @var \Venne\Forms\IFormFactory */
-	private $registrationFormFactory;
+	/** @var \Venne\System\DoctrineFormService */
+	private $registrationFormService;
 
 	/**
 	 * @param string $name
 	 * @param string $entityName
+	 * @param \Venne\System\DoctrineFormService $formService
+	 * @param \Venne\System\DoctrineFormService $frontFormService
+	 * @param \Venne\System\DoctrineFormService $registrationFormService
 	 */
-	public function __construct($name, $entityName)
+	public function __construct($name, $entityName, DoctrineFormService $formService, DoctrineFormService $frontFormService, DoctrineFormService $registrationFormService)
 	{
 		$this->name = $name;
 		$this->entityName = $entityName;
+		$this->formService = $formService;
+		$this->frontFormService = $frontFormService;
+		$this->registrationFormService = $registrationFormService;
 	}
 
 	/**
@@ -60,42 +66,28 @@ class UserType extends \Nette\Object
 		return $this->entityName;
 	}
 
-	public function setFormFactory(IFormFactory $formFactory)
+	/**
+	 * @return \Venne\System\DoctrineFormService
+	 */
+	public function getFormService()
 	{
-		$this->formFactory = $formFactory;
+		return $this->formService;
 	}
 
 	/**
-	 * @return \Venne\Forms\IFormFactory
+	 * @return \Venne\System\DoctrineFormService
 	 */
-	public function getFormFactory()
+	public function getFrontFormService()
 	{
-		return $this->formFactory;
-	}
-
-	public function setFrontFormFactory(IFormFactory $formFactory)
-	{
-		$this->frontFormFactory = $formFactory;
+		return $this->frontFormService;
 	}
 
 	/**
-	 * @return \Venne\Forms\IFormFactory
+	 * @return \Venne\System\DoctrineFormService
 	 */
-	public function getFrontFormFactory()
+	public function getRegistrationFormService()
 	{
-		return $this->frontFormFactory;
+		return $this->registrationFormService;
 	}
 
-	public function setRegistrationFormFactory(IFormFactory $formFactory)
-	{
-		$this->registrationFormFactory = $formFactory;
-	}
-
-	/**
-	 * @return \Venne\Forms\IFormFactory
-	 */
-	public function getRegistrationFormFactory()
-	{
-		return $this->registrationFormFactory;
-	}
 }

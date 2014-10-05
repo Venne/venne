@@ -22,12 +22,12 @@ use Doctrine\ORM\Mapping as ORM;
  * @property string $userType
  * @property string $mode
  * @property string $loginProviderMode
- * @property \Venne\Security\RoleEntity[] $roles
+ * @property \Venne\Security\Role[] $roles
  *
  * @ORM\Entity
  * @ORM\Table(name="registrations")
  */
-class RegistrationEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class Registration extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\NamedEntityTrait;
@@ -94,9 +94,9 @@ class RegistrationEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $loginProviderMode;
 
 	/**
-	 * @var \Venne\Security\RoleEntity[]|\Doctrine\Common\Collections\ArrayCollection
+	 * @var \Venne\Security\Role[]|\Doctrine\Common\Collections\ArrayCollection
 	 *
-	 * @ORM\ManyToMany(targetEntity="\Venne\Security\RoleEntity")
+	 * @ORM\ManyToMany(targetEntity="\Venne\Security\Role")
 	 */
 	protected $roles;
 

@@ -11,9 +11,10 @@
 
 namespace Venne\System\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
+use Venne\System\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -27,13 +28,13 @@ class AuthenticationFormFactory implements \Venne\Forms\IFormFactory
 	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $registrationDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $registrationRepository;
 
-	public function __construct(IFormFactory $formFactory, EntityDao $registrationsDao, SecurityManager $securityManager)
+	public function __construct(IFormFactory $formFactory, EntityManager $entityManager, SecurityManager $securityManager)
 	{
 		$this->formFactory = $formFactory;
-		$this->registrationDao = $registrationsDao;
+		$this->registrationRepository = $entityManager->getRepository(Registration::class);
 		$this->securityManager = $securityManager;
 	}
 
@@ -45,7 +46,7 @@ class AuthenticationFormFactory implements \Venne\Forms\IFormFactory
 		$form = $this->formFactory->create();
 
 		$reg = array();
-		foreach ($this->registrationDao->findAll() as $registration) {
+		foreach ($this->registrationRepository->findAll() as $registration) {
 			$reg[$registration->id] = $registration->name;
 		}
 

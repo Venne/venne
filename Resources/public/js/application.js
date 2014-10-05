@@ -275,13 +275,19 @@ $(function () {
 	});
 	$.nette.ext('alerts', {
 		success: function () {
-			var $alert = $(".alert");
-			$alert.fadeTo(0, 0).fadeTo(500, 1);
-			window.setTimeout(function() {
-				$alert.fadeTo(500, 0).slideUp(500, function(){
-					$(this).remove();
-				});
-			}, 4000);
+			$('#snippet--flashes .alert').each(function () {
+				var $alert = $(this);
+
+				if (!$alert.data('venne-animation-apply')) {
+					$alert.attr('data-venne-animation-apply', true);
+					$alert.fadeTo(0, 0).fadeTo(500, 1);
+					window.setTimeout(function () {
+						$alert.fadeTo(500, 0).slideUp(500, function () {
+							$(this).remove();
+						});
+					}, 4000);
+				}
+			});
 		}
 	});
 	$.nette.init();

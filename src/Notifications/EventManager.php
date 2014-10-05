@@ -30,4 +30,3 @@ class EventManager extends \Kdyby\Events\LazyEventManager
 	}
 
 }
-

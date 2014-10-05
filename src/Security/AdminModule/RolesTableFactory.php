@@ -11,9 +11,9 @@
 
 namespace Venne\Security\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\Localization\ITranslator;
-use Venne\Security\RoleEntity;
+use Venne\Security\Role;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -22,11 +22,11 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
 class RolesTableFactory
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $dao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $roleRepository;
 
-	/** @var \Venne\Security\AdminModule\RoleFormFactory */
-	private $roleForm;
+	/** @var \Venne\Security\AdminModule\RoleFormService */
+	private $roleFormService;
 
 	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
@@ -35,14 +35,14 @@ class RolesTableFactory
 	private $translator;
 
 	public function __construct(
-		EntityDao $dao,
-		RoleFormFactory $roleForm,
+		EntityManager $entityManager,
+		RoleFormService $roleFormService,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator
 	)
 	{
-		$this->dao = $dao;
-		$this->roleForm = $roleForm;
+		$this->roleRepository = $entityManager->getRepository(Role::class);
+		$this->roleFormService = $roleFormService;
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
 	}
@@ -52,7 +52,7 @@ class RolesTableFactory
 	 */
 	public function create()
 	{
-		$admin = $this->adminGridFactory->create($this->dao);
+		$admin = $this->adminGridFactory->create($this->roleRepository);
 
 		// columns
 		$table = $admin->getTable();
@@ -67,7 +67,7 @@ class RolesTableFactory
 			->setSortable()
 			->getCellPrototype()->width = '60%';
 		$table->getColumn('parent')
-			->setCustomRender(function (RoleEntity $entity) {
+			->setCustomRender(function (Role $entity) {
 				$entities = array();
 				$en = $entity;
 				while (($en = $en->getParent())) {
@@ -84,7 +84,9 @@ class RolesTableFactory
 		$table->addActionEvent('permissions', 'Permissions')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->addForm('role', 'Role', $this->roleForm);
+		$form = $admin->addForm('role', 'Role', function (Role $role = null) {
+			return $this->roleFormService->getFormFactory($role ? $role->getId() : null);
+		});
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 

@@ -22,7 +22,7 @@ trait AjaxControlTrait
 	 * @param string|mixed[] $destination
 	 * @param mixed[]|null $args
 	 */
-	public function redirect($code, $destination = NULL, $args = array())
+	public function redirect($code, $destination = null, $args = array())
 	{
 		$presenter = $this->getPresenter();
 

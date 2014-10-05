@@ -11,17 +11,17 @@
 
 namespace Venne\Security\AdminModule;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
-use Kdyby\Doctrine\EntityDao;
 use Venne\Security\DefaultType\AdminFormFactory;
+use Venne\Security\ExtendedUser;
 use Venne\Security\SecurityManager;
+use Venne\Security\User;
 use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class DefaultPresenter extends \Nette\Application\UI\Presenter
 {
@@ -42,8 +42,8 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	 */
 	public $type;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
 	/** @var \Venne\Security\DefaultType\AdminFormFactory */
 	private $form;
@@ -58,14 +58,14 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	private $adminGridFactory;
 
 	public function __construct(
-		EntityDao $userDao,
+		EntityManager $entityManager,
 		AdminFormFactory $form,
 		ProvidersFormFactory $providersForm,
 		SecurityManager $securityManager,
 		IAdminGridFactory $adminGridFactory
 	)
 	{
-		$this->userDao = $userDao;
+		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->form = $form;
 		$this->providersForm = $providersForm;
 		$this->securityManager = $securityManager;
@@ -94,8 +94,8 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentTable()
 	{
-		$dao = $this->entityManager->getDao($this->type);
-		$admin = $this->adminGridFactory->create($dao);
+		$repository = $this->entityManager->getRepository($this->type);
+		$admin = $this->adminGridFactory->create($repository);
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
 		$table->setPrimaryKey('user.id');
@@ -116,10 +116,10 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 
 		$type = $this->type;
 
-		$form = $admin->addForm('user', 'User', $this->getUserType()->getFormFactory(), function () use ($type) {
-			return new $type;
+		$form = $admin->addForm('user', 'User', function (ExtendedUser $extendedUser = null) {
+			return $this->getUserType()->getFormService()->getFormFactory($extendedUser ? $extendedUser->getUser()->getId() : null);
 		}, Form::TYPE_LARGE);
-		$form->onSuccess[] = function () {
+		$form->onSuccess[] = function (\Nette\Application\UI\Form $form) {
 			$this->flashMessage('User has been saved.', 'success');
 			$this->redrawControl('flashes');
 		};

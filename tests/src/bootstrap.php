@@ -1,6 +1,21 @@
 <?php
 
-require __DIR__ . '/../../vendor/autoload.php';
+$autoloadPaths = array(
+	__DIR__ . '/../../vendor/autoload.php',
+	__DIR__ . '/../../../../autoload.php'
+);
+
+foreach ($autoloadPaths as $path) {
+	if (is_file($path)) {
+		require $path;
+		break;
+	}
+}
+
+if (!class_exists('Tester\Environment')) {
+	echo 'Install Nette Tester using `composer update --dev`';
+	exit(1);
+}
 
 // configure environment
 Tester\Environment::setup();

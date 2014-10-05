@@ -14,7 +14,7 @@ namespace Venne\Security\Listeners;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Venne\Notifications\NotificationManager;
 use Venne\Security\Events\RegistrationEvent;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -34,10 +34,10 @@ class UserStateListener
 	}
 
 	/**
-	 * @param \Venne\Security\UserEntity $entity
+	 * @param \Venne\Security\User $entity
 	 * @param \Doctrine\ORM\Event\LifecycleEventArgs $event
 	 */
-	public function postPersist(UserEntity $entity, LifecycleEventArgs $event)
+	public function postPersist(User $entity, LifecycleEventArgs $event)
 	{
 		if (!self::$lock) {
 			self::$lock = true;

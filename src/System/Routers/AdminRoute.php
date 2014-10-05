@@ -103,4 +103,3 @@ class AdminRoute extends \Nette\Application\Routers\Route
 	}
 
 }
-

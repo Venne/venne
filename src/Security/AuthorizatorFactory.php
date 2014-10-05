@@ -11,10 +11,9 @@
 
 namespace Venne\Security;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette;
 use Nette\Http\Session;
-use Nette\Security\Permission;
 use Venne\System\AdministrationManager;
 
 /**
@@ -25,11 +24,11 @@ class AuthorizatorFactory extends \Nette\Object
 
 	const SESSION_SECTION = 'Venne.Security.Authorizator';
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $roleDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $roleRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $permissionDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $permissionRepository;
 
 	/** @var \Nette\Http\SessionSection */
 	private $session;
@@ -38,14 +37,13 @@ class AuthorizatorFactory extends \Nette\Object
 	private $administrationManager;
 
 	public function __construct(
-		EntityDao $roleDao,
-		EntityDao $permissionDao,
+		EntityManager $entityManager,
 		Session $session,
 		AdministrationManager $administrationManager
 	)
 	{
-		$this->roleDao = $roleDao;
-		$this->permissionDao = $permissionDao;
+		$this->roleRepository = $entityManager->getRepository(Role::class);
+		$this->permissionRepository = $entityManager->getRepository(Permission::class);
 		$this->session = $session->getSection(self::SESSION_SECTION);
 		$this->administrationManager = $administrationManager;
 	}
@@ -79,7 +77,7 @@ class AuthorizatorFactory extends \Nette\Object
 	 * Get permission for roles.
 	 *
 	 * @param string $roles
-	 * @return \Nette\Security\Permission
+	 * @return \Venne\Security\Authorizator
 	 */
 	public function getPermissionsByRoles(array $roles)
 	{
@@ -95,11 +93,11 @@ class AuthorizatorFactory extends \Nette\Object
 	/**
 	 * Setup permission by role
 	 *
-	 * @param \Nette\Security\Permission $permission
+	 * @param \Venne\Security\Authorizator $permission
 	 * @param string $role
-	 * @return \Nette\Security\Permission
+	 * @return \Venne\Security\Authorizator
 	 */
-	private function setPermissionsByRole(Permission $permission, $role)
+	private function setPermissionsByRole(Authorizator $permission, $role)
 	{
 		// add role
 		if (!$permission->hasRole($role)) {
@@ -107,7 +105,7 @@ class AuthorizatorFactory extends \Nette\Object
 		}
 
 		// add resources
-		$resources = $this->permissionDao->createQueryBuilder('a')
+		$resources = $this->permissionRepository->createQueryBuilder('a')
 			->select('a.resource')
 			->andWhere('a.role = :role')->setParameter('role', $role)
 			->groupBy('a.resource')
@@ -121,7 +119,7 @@ class AuthorizatorFactory extends \Nette\Object
 		}
 
 		// set allow/deny
-		$roleEntity = $this->roleDao->findOneByName($role);
+		$roleEntity = $this->roleRepository->findOneByName($role);
 		if ($roleEntity) {
 			if ($roleEntity->parent) {
 				$this->setPermissionsByRole($permission, $roleEntity->parent->name);

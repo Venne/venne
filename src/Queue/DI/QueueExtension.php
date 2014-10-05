@@ -34,6 +34,10 @@ class QueueExtension extends \Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
+		$this->compiler->parseServices(
+			$container,
+			$this->loadFromFile(__DIR__ . '/services.neon')
+		);
 		$config = $this->getConfig($this->config);
 
 		$container->addDefinition($this->prefix('configManager'))
@@ -43,7 +47,7 @@ class QueueExtension extends \Nette\DI\CompilerExtension
 			->setClass('Venne\Queue\WorkerManager', array($config['interval']));
 
 		$jobManager = $container->addDefinition($this->prefix('jobManager'))
-			->setClass('Venne\Queue\JobManager', array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))));
+			->setClass('Venne\Queue\JobManager');
 
 		foreach ($this->compiler->getExtensions() as $extension) {
 			if ($extension instanceof IJobProvider) {
@@ -64,25 +68,20 @@ class QueueExtension extends \Nette\DI\CompilerExtension
 			));
 
 		$container->addDefinition($this->prefix('jobsPresenter'))
-			->setClass('Venne\Queue\AdminModule\JobsPresenter', array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))));
+			->setClass('Venne\Queue\AdminModule\JobsPresenter');
 
 		$container->addDefinition($this->prefix('workerFactory'))
 			->setImplement('Venne\Queue\IWorkerFactory')
 			->setArguments(array(new PhpLiteral('$id'), new PhpLiteral('$interval'), $container->expand($config['configDir'])))
 			->setAutowired(true);
 
-		$container->addDefinition($this->prefix('jobFormFactory'))
-			->setClass('Venne\Queue\AdminModule\JobFormFactory', array(new Statement('@system.admin.basicFormFactory')));
-
 		$container->addDefinition($this->prefix('jobsControlFactory'))
-			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobsControlFactory')
 			->setInject(true)
 			->addTag(SystemExtension::TAG_TRAY_COMPONENT)
 			->addTag(WidgetsExtension::TAG_WIDGET, 'jobs');
 
 		$container->addDefinition($this->prefix('jobControlFactory'))
-			->setArguments(array(new Statement('@doctrine.dao', array('Venne\Queue\JobEntity'))))
 			->setImplement('Venne\Queue\Components\IJobControlFactory')
 			->setInject(true);
 	}
@@ -93,7 +92,7 @@ class QueueExtension extends \Nette\DI\CompilerExtension
 	public function getEntityMappings()
 	{
 		return array(
-			'Venne\Queue' => dirname(__DIR__) . '/*Entity.php',
+			'Venne\Queue' => dirname(__DIR__) . '/*.php',
 		);
 	}
 

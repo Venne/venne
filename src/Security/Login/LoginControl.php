@@ -11,7 +11,7 @@
 
 namespace Venne\Security\Login;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
@@ -19,7 +19,7 @@ use Nette\Security\AuthenticationException;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\AdminModule\ProviderFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 use Venne\System\AdminModule\LoginFormFactory;
 
 /**
@@ -55,6 +55,9 @@ class LoginControl extends \Venne\System\UI\Control
 	 */
 	public $key;
 
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
+
 	/** @var \Venne\System\AdminModule\LoginFormFactory */
 	private $loginFormFactory;
 
@@ -70,8 +73,8 @@ class LoginControl extends \Venne\System\UI\Control
 	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
 	/** @var \Nette\Mail\IMailer */
 	private $mailer;
@@ -80,7 +83,7 @@ class LoginControl extends \Venne\System\UI\Control
 	private $formFactoryFactory;
 
 	public function __construct(
-		EntityDao $userDao,
+		EntityManager $entityManager,
 		LoginFormFactory $loginFormFactory,
 		ProviderFormFactory $providerFormFactory,
 		ResetFormFactory $resetFormFactory,
@@ -92,12 +95,13 @@ class LoginControl extends \Venne\System\UI\Control
 	{
 		parent::__construct();
 
+		$this->entityManager = $entityManager;
+		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->loginFormFactory = $loginFormFactory;
 		$this->providerFormFactory = $providerFormFactory;
 		$this->resetFormFactory = $resetFormFactory;
 		$this->confirmFormFactory = $confirmFormFactory;
 		$this->securityManager = $securityManager;
-		$this->userDao = $userDao;
 		$this->mailer = $mailer;
 		$this->formFactoryFactory = $formFactoryFactory;
 	}
@@ -163,13 +167,13 @@ class LoginControl extends \Venne\System\UI\Control
 	 */
 	protected function createComponentConfirmForm()
 	{
-		if (($userEntity = $this->userDao->findOneBy(array('resetKey' => $this->key))) === null) {
+		if (($user = $this->userRepository->findOneBy(array('resetKey' => $this->key))) === null) {
 			throw new BadRequestException;
 		}
 
 		$form = $this->formFactoryFactory
 			->create($this->confirmFormFactory)
-			->setEntity($userEntity)
+			->setEntity($user)
 			->create();
 
 		$form->onSuccess[] = $this->confirmFormSuccess;
@@ -210,8 +214,8 @@ class LoginControl extends \Venne\System\UI\Control
 
 	public function resetFormSuccess(Form $form)
 	{
-		/** @var \Venne\Security\UserEntity $user */
-		$user = $this->userDao->findOneBy(array('email' => $form['email']->value));
+		/** @var \Venne\Security\User $user */
+		$user = $this->userRepository->findOneBy(array('email' => $form['email']->value));
 
 		if (!$user) {
 			$this->flashMessage($this->translator->translate('User with email %email% does not exist.', null, array(
@@ -222,7 +226,7 @@ class LoginControl extends \Venne\System\UI\Control
 		}
 
 		$this->sendEmail($user, $user->resetPassword());
-		$this->userDao->save($user);
+		$this->entityManager->flush($user);
 
 		$this->flashMessage($this->translator->translate('New password has been sent.'), 'success');
 		$this->redirect('this', array(
@@ -232,11 +236,11 @@ class LoginControl extends \Venne\System\UI\Control
 
 	public function confirmFormSuccess()
 	{
-		if (($userEntity = $this->userDao->findOneBy(array('resetKey' => $this->key))) === null) {
+		if (($user = $this->userRepository->findOneBy(array('resetKey' => $this->key))) === null) {
 			throw new BadRequestException;
 		}
 
-		$this->securityManager->sendNewPassword($userEntity);
+		$this->securityManager->sendNewPassword($user);
 
 		$this->flashMessage($this->translator->translate('New password has been saved.'), 'success');
 		$this->redirect('this', array(
@@ -295,10 +299,10 @@ class LoginControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @param \Venne\Security\UserEntity $user
+	 * @param \Venne\Security\User $user
 	 * @param string $key
 	 */
-	private function sendEmail(UserEntity $user, $key)
+	private function sendEmail(User $user, $key)
 	{
 		$absoluteUrls = $this->presenter->absoluteUrls;
 		$this->presenter->absoluteUrls = true;

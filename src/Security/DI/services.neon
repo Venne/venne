@@ -1,0 +1,22 @@
+services:
+
+	- Venne\Security\Login\ResetFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\Login\ConfirmFormFactory (@system.admin.ajaxFormFactory)
+
+	- Venne\Security\AdminModule\ProviderFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\AdminModule\ProvidersFormFactory (@system.admin.ajaxFormFactory)
+
+	- Venne\Security\AdminModule\InvitationFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\AdminModule\InvitationFormService
+	- Venne\Security\AdminModule\InvitationsTableFactory
+
+	- Venne\Security\AdminModule\RoleFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\AdminModule\RoleFormService
+	- Venne\Security\AdminModule\RolesTableFactory
+
+	- Venne\Security\DefaultType\AdminFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\DefaultType\AdminFormService
+	- Venne\Security\DefaultType\FrontFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\DefaultType\FrontFormService
+	- Venne\Security\DefaultType\RegistrationFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\DefaultType\RegistrationFormService

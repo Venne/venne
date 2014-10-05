@@ -17,6 +17,6 @@ namespace venne\System\Adminmodule;
  * @property-read string $email
  * @property-read \Datetime $created
  */
-class userdto extends \Venne\DataTransfer\DataTransferObject
+class UserDto extends \Venne\DataTransfer\DataTransferObject
 {
 }

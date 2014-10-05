@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="venne/venne" default="build">
+
+	<property name="path.bin" value="${path.root}/vendor/bin"/>
+	<property name="path.root" value="${project.basedir}"/>
+	<property name="path.venne.venne.root" value="${path.root}"/>
+
+	<import file="${path.root}/venne-phing.xml"/>
+
+</project>

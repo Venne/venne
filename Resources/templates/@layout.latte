@@ -27,7 +27,7 @@
 		<div class="container-fluid">
 
 			<div class="navbar-header">
-					<a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax {/if}navbar-brand" href="{$presenter->link(':' . $presenter->administrationManager->defaultPresenter . ':')}"><img src="{path @venne.venne/img/logo-panel.png}" alt="Venne:CMS" /></a>
+					<a class="{if !$presenter instanceof CmsModule\Administration\Presenters\PanelPresenter}ajax {/if}navbar-brand" href="{$presenter->link(':Admin:' . $presenter->administrationManager->defaultPresenter . ':')}"><img src="{path @venne.venne/img/logo-panel.png}" alt="Venne:CMS" /></a>
 			</div>
 
 					<div class="navbar-collapse collapse">
@@ -102,7 +102,7 @@
 					{block #breadcrumb-container}
 						<ul class="breadcrumb breadcrumb-master pull-left">
 							{block #breadcrumb}
-								<li><a class="ajax" href="{$presenter->link(':'. $presenter->administrationManager->defaultPresenter . ':')}"><span class="glyphicon glyphicon-globe"></span> {_system.admin.dashboardBreadcrumb}</a></li>
+								<li><a class="ajax" href="{$presenter->link(':Admin:'. $presenter->administrationManager->defaultPresenter . ':')}"><span class="glyphicon glyphicon-globe"></span> {_system.admin.dashboardBreadcrumb}</a></li>
 							{/block}
 						</ul>
 					{/block}
@@ -113,7 +113,7 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="container-alerts">
-						<div class="alerts-body" n:snippet="flashes">
+						<div class="alerts-body" n:snippet="flashes" data-ajax-append="true">
 							{control flashMessage TRUE}
 						</div>
 					</div>

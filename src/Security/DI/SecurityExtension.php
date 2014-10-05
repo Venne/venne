@@ -11,6 +11,7 @@
 
 namespace Venne\Security\DI;
 
+use Kdyby\Console\DI\ConsoleExtension;
 use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
@@ -27,21 +28,22 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 	implements
 	\Kdyby\Doctrine\DI\IEntityProvider,
 	\Venne\Notifications\DI\IEventProvider,
-	\Venne\System\DI\IPresenterProvider
+	\Venne\System\DI\IPresenterProvider,
+	\Venne\Security\DI\UserTypeProvider
 {
+
+	const TAG_LOGIN_PROVIDER = 'venne.loginProvider';
 
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
+		$this->compiler->parseServices(
+			$container,
+			$this->loadFromFile(__DIR__ . '/services.neon')
+		);
 
 		$container->addDefinition($this->prefix('listeners.userStateListener'))
 			->setClass('Venne\Security\Listeners\UserStateListener');
-
-		$container->addDefinition($this->prefix('resetFormFactory'))
-			->setClass('Venne\Security\Login\ResetFormFactory', array(new Statement('@system.admin.basicFormFactory')));
-
-		$container->addDefinition($this->prefix('confirmFormFactory'))
-			->setClass('Venne\Security\Login\ConfirmFormFactory', array(new Statement('@system.admin.basicFormFactory')));
 
 		$container->addDefinition($this->prefix('extendedUserListener'))
 			->setClass('Venne\Security\Listeners\ExtendedUserListener');
@@ -50,23 +52,40 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 			->setClass('Venne\Security\Listeners\UserLogListener')
 			->addTag(EventsExtension::TAG_SUBSCRIBER);
 
-		$this->setupDefaultType($container);
+		$container->addDefinition($this->prefix('securityManager'))
+			->setClass('Venne\Security\SecurityManager');
+
+		$container->addDefinition($this->prefix('authorizatorFactory'))
+			->setFactory('Venne\Security\AuthorizatorFactory');
+
+		$container->getDefinition('packageManager.packageManager')
+			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array($this->prefix('@authorizatorFactory')))
+			->addSetup('$service->onUninstall[] = ?->clearPermissionSession', array($this->prefix('@authorizatorFactory')));
+
+		$container->addDefinition('authorizator')
+			->setClass('Nette\Security\Permission')
+			->setFactory($this->prefix('@authorizatorFactory') . '::getPermissionsByUser', array('@user', true));
+
+		$container->addDefinition('authenticator')
+			->setClass('Venne\Security\Authenticator');
+
+		$container->addDefinition($this->prefix('installCommand'))
+			->setFactory('Venne\System\Commands\InstallCommand')
+			->addTag(ConsoleExtension::COMMAND_TAG);
+
 		$this->setupSecurity($container);
+		$this->registerUsers();
+	}
+
+	public function beforeCompile()
+	{
+		$this->registerLoginProvider();
 	}
 
 	public function setupSecurity(ContainerBuilder $container)
 	{
-		$container->addDefinition($this->prefix('roleFormFactory'))
-			->setClass('Venne\Security\AdminModule\RoleFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
-
-		$container->addDefinition($this->prefix('providerFormFactory'))
-			->setClass('Venne\Security\AdminModule\ProviderFormFactory', array(new Statement('@system.admin.basicFormFactory')));
-
-		$container->addDefinition($this->prefix('providersFormFactory'))
-			->setClass('Venne\Security\AdminModule\ProvidersFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
-
 		$container->addDefinition($this->prefix('defaultPresenter'))
-			->setClass('Venne\Security\AdminModule\DefaultPresenter', array(new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))))
+			->setClass('Venne\Security\AdminModule\DefaultPresenter')
 			->addTag(SystemExtension::TAG_ADMINISTRATION, array(
 				'link' => 'Admin:Security:Default:',
 				'category' => 'System',
@@ -75,46 +94,38 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 				'priority' => 60,
 			));
 
-		$container->addDefinition($this->prefix('rolesTableFactory'))
-			->setClass('Venne\Security\AdminModule\RolesTableFactory', array(
-				new Statement('@doctrine.dao', array('Venne\Security\RoleEntity'))
-			));
-
-		$container->addDefinition($this->prefix('invitationsTableFactory'))
-			->setClass('Venne\Security\AdminModule\InvitationsTableFactory', array(
-				new Statement('@doctrine.dao', array('Venne\System\InvitationEntity')),
-				new Statement('@doctrine.dao', array('Venne\Security\UserEntity'))
-			));
-
-		$container->addDefinition($this->prefix('rolesPresenter'))
-			->setClass('Venne\Security\AdminModule\RolesPresenter');
-
 		$container->addDefinition($this->prefix('accountPresenter'))
-			->setClass('Venne\Security\AdminModule\AccountPresenter', array(
-				new Statement('@doctrine.dao', array('Venne\Security\UserEntity')),
-				new Statement('@doctrine.dao', array('Venne\Security\LoginEntity'))
-			));
+			->setClass('Venne\Security\AdminModule\AccountPresenter');
 	}
 
-	public function setupDefaultType(ContainerBuilder $container)
+	private function registerUsers()
 	{
-		$container->addDefinition($this->prefix('userType'))
-			->setClass('Venne\Security\UserType', array('Venne\Security\DefaultType\UserEntity'))
-			->addSetup('setFormFactory', array(new Statement('@Venne\Security\DefaultType\AdminFormFactory')))
-			->addSetup('setFrontFormFactory', array(new Statement('@Venne\Security\DefaultType\FrontFormFactory')))
-			->addSetup('setRegistrationFormFactory', array(new Statement('@Venne\Security\DefaultType\RegistrationFormFactory')))
-			->addTag(SystemExtension::TAG_USER, array(
-				'name' => 'Default user',
-			));
+		$container = $this->getContainerBuilder();
+		$config = $container->getDefinition($this->prefix('securityManager'));
 
-		$container->addDefinition($this->prefix('adminFormFactory'))
-			->setClass('Venne\Security\DefaultType\AdminFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
+		foreach ($this->compiler->extensions as $extension) {
+			if ($extension instanceof UserTypeProvider) {
+				foreach ($extension->getUserTypes() as $type) {
+					$config->addSetup(
+						'$service->addUserType(new Venne\Security\UserType(?, ?, ?, ?, ?));',
+						$type->getArguments()
+					);
+				}
+			}
+		}
+	}
 
-		$container->addDefinition($this->prefix('frontFormFactory'))
-			->setClass('Venne\Security\DefaultType\FrontFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
+	private function registerLoginProvider()
+	{
+		$container = $this->getContainerBuilder();
+		$config = $container->getDefinition($this->prefix('securityManager'));
 
-		$container->addDefinition($this->prefix('registrationFormFactory'))
-			->setClass('Venne\Security\DefaultType\RegistrationFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
+		foreach ($container->findByTag(static::TAG_LOGIN_PROVIDER) as $item => $tags) {
+			$class = '\\' . $container->getDefinition($item)->class;
+			$type = $class::getType();
+
+			$config->addSetup('addLoginProvider', array($type, (string) $item));
+		}
 	}
 
 	/**
@@ -123,7 +134,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 	public function getEntityMappings()
 	{
 		return array(
-			'Venne\Security' => dirname(__DIR__) . '/*Entity.php',
+			'Venne\Security' => dirname(__DIR__) . '/*.php',
 		);
 	}
 
@@ -147,6 +158,22 @@ class SecurityExtension extends \Nette\DI\CompilerExtension
 			RegistrationEvent::getName(),
 			NewPasswordEvent::getName(),
 			PasswordRecoveryEvent::getName(),
+		);
+	}
+
+	/**
+	 * @return \Venne\Security\UserType[]
+	 */
+	public function getUserTypes()
+	{
+		return array(
+			new UserType(
+				'Default user',
+				\Venne\Security\DefaultType\User::class,
+				new Statement('@' . \Venne\Security\DefaultType\AdminFormService::getReflection()->getName()),
+				new Statement('@' . \Venne\Security\DefaultType\FrontFormService::getReflection()->getName()),
+				new Statement('@' . \Venne\Security\DefaultType\RegistrationFormService::getReflection()->getName())
+			),
 		);
 	}
 

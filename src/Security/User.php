@@ -11,219 +11,503 @@
 
 namespace Venne\Security;
 
-use Nette\Application\UI\Control;
-use Nette\DI\Container;
-use Nette\Reflection\ClassType;
-use Nette\Security\IAuthorizator;
-use Nette\Security\IUserStorage;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Nette\Security\Passwords;
+use Nette\Utils\Callback;
+use Nette\Utils\Random;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @ORM\Entity
+ * @ORM\EntityListeners({
+ *        "\Venne\Security\Listeners\ExtendedUserListener",
+ *        "\Venne\Security\Listeners\UserStateListener"
+ * })
+ * @ORM\Table(name="users")
  */
-class User extends \Nette\Security\User
+class User extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\Security\IIdentity
 {
 
-	/** @var string[] */
-	protected $_presenterAllowed = array();
-
-	/** @var string[] */
-	protected $_methodAllowed = array();
-
-	/** @var \Nette\DI\Container */
-	private $context;
-
-	public function __construct(IUserStorage $storage, Container $context)
-	{
-		parent::__construct($storage, null);
-
-		$this->context = $context;
-	}
+	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @return \Nette\Security\IAuthenticator
-	 */
-	public function getAuthenticator($need = true)
-	{
-		return $this->context->getByType('Nette\Security\IAuthenticator');
-	}
-
-	/**
-	 * @return \Nette\Security\IAuthorizator
-	 */
-	public function getAuthorizator($need = true)
-	{
-		return $this->context->getByType('Nette\Security\IAuthorizator');
-	}
-
-	/**
-	 * Has a user effective access to the Resource?
-	 * If $resource is NULL, then the query applies to all resources.
+	 * @var string
 	 *
-	 * @param string $resource
-	 * @param string $privilege
-	 * @return bool
+	 * @ORM\Column(type="string", unique=true, length=64)
 	 */
-	public function isAllowed($resource = IAuthorizator::ALL, $privilege = IAuthorizator::ALL)
+	private $email;
+
+	/**
+	 * @var string|null
+	 *
+	 * @ORM\Column(type="string", nullable=true)
+	 */
+	private $name;
+
+	/**
+	 * @var string|null
+	 *
+	 * @ORM\Column(type="text", nullable=true)
+	 */
+	private $notation;
+
+	/**
+	 * @var string|null
+	 *
+	 * @ORM\Column(type="string", nullable=true)
+	 */
+	private $password;
+
+	/**
+	 * @var string|null
+	 *
+	 * @ORM\Column(type="string", name="enableByKey", nullable=true)
+	 */
+	private $key;
+
+	/**
+	 * @var bool
+	 *
+	 * @ORM\Column(type="boolean")
+	 */
+	private $published = true;
+
+	/**
+	 * @var \Venne\Security\Role[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\ManyToMany(targetEntity="\Venne\Security\Role", cascade={"persist"}, inversedBy="users")
+	 * @ORM\JoinTable(name="users_roles",
+	 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
+	 *      )
+	 */
+	protected $roleEntities;
+
+	/**
+	 * @var \Venne\Security\Login[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\OneToMany(targetEntity="\Venne\Security\Login", mappedBy="user")
+	 */
+	protected $logins;
+
+	/**
+	 * @var \Venne\Security\LoginProvider[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\OneToMany(targetEntity="\Venne\Security\LoginProvider", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+	 */
+	protected $loginProviders;
+
+	/**
+	 * @var \DateTime
+	 *
+	 * @ORM\Column(type="datetime")
+	 */
+	private $created;
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(type="string")
+	 */
+	private $class;
+
+	/**
+	 * @var string|null
+	 *
+	 * @ORM\Column(type="string", nullable=true)
+	 */
+	protected $resetKey;
+
+	/**
+	 * @var \Venne\Security\ExtendedUser
+	 */
+	protected $extendedUser;
+
+	/**
+	 * @var callable
+	 */
+	private $extendedUserCallback;
+
+	/**
+	 * @var \Venne\Security\User[]|\Doctrine\Common\Collections\ArrayCollection
+	 *
+	 * @ORM\ManyToMany(targetEntity="\Venne\Security\User", cascade={"persist"}, inversedBy="users")
+	 * @ORM\JoinTable(name="users_friends",
+	 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")}
+	 *      )
+	 */
+	protected $friends;
+
+	public function __construct()
 	{
-		if ($resource instanceof \Nette\Reflection\Method) {
-			return $this->isMethodAllowedCached($resource);
-		}
-
-		if ($resource instanceof \Nette\Application\UI\PresenterComponentReflection) {
-			return $this->isPresenterAllowedCached($resource);
-		}
-
-		if ($resource instanceof Control) {
-			return $this->isControlAllowed($resource);
-		}
-
-		return parent::isAllowed($resource, $privilege);
+		$this->roleEntities = new ArrayCollection();
+		$this->logins = new ArrayCollection();
+		$this->loginProviders = new ArrayCollection();
+		$this->friends = new ArrayCollection();
+		$this->created = new DateTime();
 	}
 
 	/**
-	 * @param \Nette\Application\UI\PresenterComponentReflection $element
-	 * @return bool
+	 * @param callable $extendedUserCallback
 	 */
-	protected function isPresenterAllowedCached(\Nette\Application\UI\PresenterComponentReflection $element)
+	public function setExtendedUserCallback($extendedUserCallback)
 	{
-		if (!array_key_exists($element->name, $this->_presenterAllowed)) {
-			$this->_presenterAllowed[$element->name] = $this->isPresenterAllowed($element);
-		}
-
-		return $this->_presenterAllowed[$element->name];
+		$this->extendedUserCallback = $extendedUserCallback;
 	}
 
 	/**
-	 * @param \Nette\Reflection\Method $element
-	 * @return bool
+	 * @return \Venne\Security\ExtendedUser
 	 */
-	protected function isMethodAllowedCached(\Nette\Reflection\Method $element)
+	public function getExtendedUser()
 	{
-		if (!array_key_exists($element->name, $this->_methodAllowed)) {
-			$this->_methodAllowed[$element->name] = $this->isMethodAllowed($element);
+		if (!$this->extendedUser) {
+			$this->extendedUser = Callback::invoke($this->extendedUserCallback);
 		}
 
-		return $this->_methodAllowed[$element->name];
+		return $this->extendedUser;
 	}
 
 	/**
-	 * @param \Nette\Application\UI\PresenterComponentReflection $element
-	 * @return bool
+	 * Invalidate all user logins.
 	 */
-	protected function isPresenterAllowed(\Nette\Application\UI\PresenterComponentReflection $element)
+	public function invalidateLogins()
 	{
-		$ref = ClassType::from($element->name);
+		foreach ($this->logins as $login) {
+			$login->reload = true;
+		}
+	}
 
-		// is not secured
-		if (!$ref->hasAnnotation('secured')) {
+	/**
+	 * @param string $password
+	 */
+	public function setPassword($password)
+	{
+		$this->password = Passwords::hash($password);
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getPassword()
+	{
+		return null;
+	}
+
+	/**
+	 * @param string $password
+	 * @return boolean
+	 */
+	public function verifyByPassword($password)
+	{
+		if (!$this->isEnable() || $this->password === null) {
+			return false;
+		}
+
+		return Passwords::verify($password, $this->password);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function needsRehash()
+	{
+		return Passwords::needsRehash($this->password);
+	}
+
+	/**
+	 * Disable user and verify by key.
+	 */
+	public function disableByKey()
+	{
+		$this->generateNewKey();
+	}
+
+	/**
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function enableByKey($key)
+	{
+		if ($this->key === $key) {
+			$this->key = null;
+
 			return true;
 		}
 
-		// resource & privilege
-		$secured = $ref->getAnnotation('secured');
-		$resource = isset($secured['resource']) ? $secured['resource'] : $ref->getNamespaceName();
-		$privilege = isset($secured['privilege']) ? $secured['privilege'] : null;
-		if (!parent::isAllowed($resource, $privilege)) {
-			return false;
-		}
-
-		// roles
-		if (isset($secured['roles'])) {
-			$userRoles = $this->getRoles();
-			$roles = explode(',', $secured['roles']);
-			array_walk($roles, function (&$val) {
-				$val = trim($val);
-			});
-
-			if (count(array_intersect($userRoles, $roles)) == 0) {
-				return false;
-			}
-		}
-
-		// users
-		if (isset($secured['users'])) {
-			$users = explode(',', $secured['users']);
-			array_walk($users, function (&$val) {
-				$val = trim($val);
-			});
-
-			$users = (array) $element->getAnnotation('User');
-			if (in_array($this->getId(), $users)) {
-				return false;
-			}
-		}
-
-		return true;
+		return false;
 	}
 
 	/**
-	 * @param \Nette\Reflection\Method $element
-	 * @return bool
+	 * @return string
 	 */
-	protected function isMethodAllowed(\Nette\Reflection\Method $element)
+	public function resetPassword()
 	{
-		$classRef = new \Nette\Application\UI\PresenterComponentReflection($element->class);
-		$ref = ClassType::from($element->class);
+		return $this->resetKey = Random::generate(30);
+	}
 
-		if (!$this->isPresenterAllowedCached($classRef)) {
-			return false;
-		}
+	/**
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function removeResetKey($key)
+	{
+		if ($this->resetKey === $key) {
+			$this->resetKey = null;
 
-		$ref = $ref->getMethod($element->name);
-
-		// is not secured
-		if (!$ref->hasAnnotation('secured')) {
 			return true;
 		}
 
-		// resource & privilege
-		$secured = $ref->getAnnotation('secured');
-		$resource = isset($secured['resource']) ? $secured['resource'] : null;
-		if (!$resource) {
-			$s = $classRef->getAnnotation('secured');
-			$resource = isset($s['resource']) ? $s['resource'] : $classRef->getNamespaceName();
-		}
-		$privilege = isset($secured['privilege']) ? $secured['privilege'] : $element->name;
-		if (!parent::isAllowed($resource, $privilege)) {
-			return false;
-		}
-
-		// roles
-		if (isset($secured['roles'])) {
-			$userRoles = $this->getRoles();
-			$roles = explode(',', $secured['roles']);
-			array_walk($roles, function (&$val) {
-				$val = trim($val);
-			});
-
-			if (count(array_intersect($userRoles, $roles)) == 0) {
-				return false;
-			}
-		}
-
-		// users
-		if (isset($secured['users'])) {
-			$users = explode(',', $secured['users']);
-			array_walk($users, function (&$val) {
-				$val = trim($val);
-			});
-
-			$users = (array) $element->getAnnotation('User');
-			if (in_array($this->getId(), $users)) {
-				return false;
-			}
-		}
-
-		return true;
+		return false;
 	}
 
 	/**
-	 * @param \Nette\Application\UI\Control $control
+	 * Check if user is enable.
+	 *
 	 * @return bool
 	 */
-	protected function isControlAllowed(Control $control)
+	public function isEnable()
 	{
-		return true;
+		if (!$this->key && $this->published) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->name !== null ? $this->name : (string) $this->email;
+	}
+
+	/******************************** Getters and setters **************************************/
+
+	/**
+	 * @param string|null $name
+	 */
+	public function setName($name)
+	{
+		$this->name = $name ? $name : null;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * @param string|null $notation
+	 */
+	public function setNotation($notation)
+	{
+		$this->notation = $notation ? $notation : null;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getNotation()
+	{
+		return $this->notation;
+	}
+
+	/**
+	 * @param \Venne\Security\Role $roleEntity
+	 * @return $this
+	 */
+	public function addRoleEntity(Role $roleEntity)
+	{
+		$this->roleEntities->add($roleEntity);
+
+		return $this;
+	}
+
+	/**
+	 * Returns a list of roles that the user is a member of.
+	 *
+	 * @return string[]
+	 */
+	public function getRoles()
+	{
+		$ret = array();
+		foreach ($this->roleEntities as $entity) {
+			$ret[] = $entity->name;
+		}
+
+		return $ret;
+	}
+
+	public function addLogin(Login $login)
+	{
+		$this->logins->add($login);
+	}
+
+	/**
+	 * @return \Venne\Security\Login[]
+	 */
+	public function getLogins()
+	{
+		return $this->logins->toArray();
+	}
+
+	/**
+	 * @param string $service
+	 * @return bool
+	 */
+	public function hasLoginProvider($service)
+	{
+		foreach ($this->loginProviders as $login) {
+			if ($login->getType() === $service) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param bool $published
+	 */
+	public function setPublished($published)
+	{
+		$this->published = (bool) $published;
+		$this->invalidateLogins();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getPublished()
+	{
+		return $this->published;
+	}
+
+	/**
+	 * @param string $key
+	 */
+	public function setKey($key)
+	{
+		$this->key = $key;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getKey()
+	{
+		return $this->key;
+	}
+
+	/**
+	 * @param string $email
+	 */
+	public function setEmail($email)
+	{
+		if (!\Nette\Utils\Validators::isEmail($email)) {
+			throw new \Nette\InvalidArgumentException(sprintf('E-mail must be in correct format. \'%s\' is given.', $email));
+		}
+
+		$this->email = $email;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getEmail()
+	{
+		return $this->email;
+	}
+
+	public function addLoginProvider(LoginProvider $loginProvider)
+	{
+		$this->loginProviders[] = $loginProvider;
+		$loginProvider->setUser($this);
+	}
+
+	public function setLoginProviders(array $loginProviders)
+	{
+		$this->loginProviders = new ArrayCollection($loginProviders);
+	}
+
+	/**
+	 * @return \Venne\Security\LoginProvider[]
+	 */
+	public function getLoginProviders()
+	{
+		return $this->loginProviders->toArray();
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getCreated()
+	{
+		return $this->created;
+	}
+
+	/**
+	 * @param string $socialData
+	 */
+	public function setSocialData($socialData)
+	{
+		$this->socialData = $socialData;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSocialData()
+	{
+		return $this->socialData;
+	}
+
+	/**
+	 * @param string $socialType
+	 */
+	public function setSocialType($socialType)
+	{
+		$this->socialType = $socialType;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSocialType()
+	{
+		return $this->socialType;
+	}
+
+	/**
+	 * @param string $class
+	 */
+	public function setClass($class)
+	{
+		$this->class = $class;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return $this->class;
+	}
+
+	/**
+	 * Generate random key.
+	 */
+	protected function generateNewKey()
+	{
+		$this->key = Random::generate(30);
 	}
 
 }

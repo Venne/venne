@@ -11,16 +11,17 @@
 
 namespace Venne\System\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
-use Nette\Application\BadRequestException;
+use Doctrine\ORM\EntityManager;
 use Nette\Application\UI\Multiplier;
 use Venne\Forms\Form;
 use Venne\Security\Login\ILoginControlFactory;
 use Venne\Security\Login\LoginControl;
 use Venne\Security\Registration\IRegistrationControlFactory;
 use Venne\Security\Registration\RegistrationControl;
+use Venne\Security\Role;
 use Venne\Security\SecurityManager;
-use Venne\System\RegistrationEntity;
+use Venne\System\Invitation;
+use Venne\System\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -49,28 +50,26 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $roleDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $roleRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $registrationDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $registrationRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $invitationDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $invitationRepository;
 
 	/** @var \Venne\Security\Registration\IRegistrationControlFactory */
 	private $registrationControlFactory;
 
-	/** @var \Venne\System\RegistrationEntity|null */
+	/** @var \Venne\System\Registration|null */
 	private $registration;
 
-	/** @var \Venne\System\InvitationEntity|null */
+	/** @var \Venne\System\Invitation|null */
 	private $invitation;
 
 	public function __construct(
-		EntityDao $roleDao,
-		EntityDao $registrationDao,
-		EntityDao $invitationDao,
+		EntityManager $entityManager,
 		ILoginControlFactory $form,
 		IRegistrationControlFactory $registrationControlFactory,
 		SecurityManager $securityManager
@@ -78,12 +77,12 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	{
 		parent::__construct();
 
+		$this->roleRepository = $entityManager->getRepository(Role::class);
+		$this->registrationRepository = $entityManager->getRepository(Registration::class);
+		$this->invitationRepository = $entityManager->getRepository(Invitation::class);
 		$this->form = $form;
 		$this->registrationControlFactory = $registrationControlFactory;
 		$this->securityManager = $securityManager;
-		$this->roleDao = $roleDao;
-		$this->registrationDao = $registrationDao;
-		$this->invitationDao = $invitationDao;
 	}
 
 	/**
@@ -103,11 +102,11 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\EntityDao
+	 * @return \Kdyby\Doctrine\EntityRepository
 	 */
-	public function getRegistrationDao()
+	public function getRegistrationRepository()
 	{
-		return $this->registrationDao;
+		return $this->registrationRepository;
 	}
 
 	protected function startup()
@@ -131,7 +130,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	{
 		$this->template->invitation = $this->invitation;
 		$this->template->registration = $this->registration;
-		$this->template->registrations = $this->registrationDao->findBy(array(
+		$this->template->registrations = $this->registrationRepository->findBy(array(
 			'enabled' => true,
 			'invitation' => false,
 		));
@@ -218,7 +217,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 
 	public function registrationSuccess()
 	{
-		$this->invitationDao->delete($this->invitation);
+		$this->invitationRepository->delete($this->invitation);
 
 		$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
 		$this->redirect('this', array(
@@ -242,7 +241,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	public function loadState(array $params)
 	{
 		if (isset($params['registration'])) {
-			$this->registration = $this->registrationDao->findOneBy(array(
+			$this->registration = $this->registrationRepository->findOneBy(array(
 				'id' => $params['registration'],
 				'enabled' => true,
 			));
@@ -252,7 +251,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 			}
 
 			if (isset($params['hash'])) {
-				$this->invitation = $this->invitationDao->findOneBy(array(
+				$this->invitation = $this->invitationRepository->findOneBy(array(
 					'hash' => $params['hash'],
 					'registration' => $params['registration'],
 				));

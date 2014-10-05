@@ -63,7 +63,9 @@ class TextControl extends \Kdyby\DoctrineForms\Controls\TextControl
 		try {
 			$value = $this->accessor->getValue($entity, $name);
 			$component->setValue($value);
-		} catch (\Exception $e) {}
+		} catch (\Exception $e) {
+
+		}
 
 		return true;
 	}
@@ -88,7 +90,9 @@ class TextControl extends \Kdyby\DoctrineForms\Controls\TextControl
 
 		try {
 			$this->accessor->setValue($entity, $name, $component->getValue());
-		} catch (\Exception $e) {}
+		} catch (\Exception $e) {
+
+		}
 
 		return true;
 	}

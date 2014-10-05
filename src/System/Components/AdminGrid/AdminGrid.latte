@@ -9,7 +9,7 @@
 			{if $control->formName}
 				<ul class="breadcrumb">
 					<li><a class="ajax" n:href="this mode => NULL, formName=>NULL, id=>NULL">{_Root}</a></li>
-					<li class="active">{$control->currentEntity}</li>
+					<li class="active">{$control->findCurrentEntity()}</li>
 				</ul>
 			{else}
 				{control table}
@@ -49,7 +49,10 @@
 								$('#modal-{!$control->getName()}')
 										.modal('show')
 										.on('shown.bs.modal', function () {
-											$(this).find('.modal-body :input:visible').first().focus();
+											var $input = $(this).find('.modal-body :input:visible').first();
+											var strLength= $input.val().length;
+											$input.focus();
+											$input[0].setSelectionRange(strLength, strLength);
 										})
 										.on('hidden.bs.modal', function () {
 											$.nette.ajax({ url: {link close!}});

@@ -11,24 +11,22 @@
 
 namespace Venne\Notifications\AdminModule;
 
+use Doctrine\ORM\EntityManager;
 use Grido\DataSources\Doctrine;
-use Kdyby\Doctrine\EntityDao;
 use Venne\Notifications\NotificationManager;
-use Venne\Notifications\NotificationSettingEntity;
+use Venne\Notifications\NotificationSetting;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
- *
- * @secured
  */
 class SettingsPresenter extends \Nette\Application\UI\Presenter
 {
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $notificationSettingDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationSettingRepository;
 
 	/** @var \Venne\Notifications\NotificationManager */
 	private $notificationManager;
@@ -40,13 +38,13 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 	private $notificationSettingFormFactory;
 
 	public function __construct(
-		EntityDao $notificationSettingDao,
+		EntityManager $entityManager,
 		NotificationManager $notificationManager,
 		IAdminGridFactory $adminGridFactory,
 		NotificationSettingFormFactory $notificationSettingFormFactory
 	)
 	{
-		$this->notificationSettingDao = $notificationSettingDao;
+		$this->notificationSettingRepository = $entityManager->getRepository(NotificationSetting::class);
 		$this->notificationManager = $notificationManager;
 		$this->adminGridFactory = $adminGridFactory;
 		$this->notificationSettingFormFactory = $notificationSettingFormFactory;
@@ -65,12 +63,15 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentTable()
 	{
-		$admin = $this->adminGridFactory->create($this->notificationSettingDao);
+		$qb = $this
+			->notificationSettingRepository
+			->createQueryBuilder('a')
+			->andWhere('a.user = :user')->setParameter('user', $this->presenter->user->identity->getId());
+
+		$admin = $this->adminGridFactory->create($this->notificationSettingRepository);
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
-		$table->setModel(new Doctrine($this->notificationSettingDao->createQueryBuilder('a')
-				->andWhere('a.user = :user')->setParameter('user', $this->presenter->user->identity->getId())
-		));
+		$table->setModel(new Doctrine($qb));
 
 		// columns
 		$table->addColumnText('user', 'User')
@@ -78,7 +79,7 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 
 		$table->addColumnText('type', 'Type')
 			->setSortable()
-			->setCustomRender(function (NotificationSettingEntity $entity) {
+			->setCustomRender(function (NotificationSetting $entity) {
 				return $entity->type !== null
 					? $this->notificationManager->getType($entity->type->type)->getHumanName()
 					: '';
@@ -86,7 +87,7 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 			->getCellPrototype()->width = '20%';
 
 		$table->addColumnText('action', 'Action')
-			->setCustomRender(function (NotificationSettingEntity $entity) {
+			->setCustomRender(function (NotificationSetting $entity) {
 				return $entity->type !== null
 					? $entity->type->action
 					: '';

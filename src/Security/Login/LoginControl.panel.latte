@@ -2,7 +2,7 @@
 	<ul class="nav navbar-nav navbar-right">
 		<li class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-				<span class="glyphicon glyphicon-user"></span> {if $presenter->user->identity instanceof \Venne\System\Pages\Users\UserEntity}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b>
+				<span class="glyphicon glyphicon-user"></span> {if $presenter->user->identity instanceof \Venne\System\Pages\Users\User}{$presenter->user->identity}{else}{$presenter->user->identity->id}{/if} <b class="caret"></b>
 			</a>
 			<ul class="dropdown-menu">
 				<li class="dropdown-header">{_Actions}</li>

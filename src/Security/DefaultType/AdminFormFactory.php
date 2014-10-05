@@ -51,42 +51,18 @@ class AdminFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactor
 			->setOption('description', 'If is set user cannot log in.');
 
 		$user->setCurrentGroup($form->addGroup('Password'));
-		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, true)->toggle('setPasswd');
+		$passwordNew = $user->addCheckbox('password_new', 'Change password');
+		$passwordNew->addCondition($form::EQUAL, true)->toggle('setPasswd');
 		$user->setCurrentGroup($form->addGroup()->setOption('container', 'fieldset id=setPasswd'));
-		$this->addPassword($form);
-
-		$form->setCurrentGroup();
-		$form->addSubmit('_submit', 'Save');
-
-		$form->onSuccess[] = $this->success;
-		$form->onError[] = $this->error;
-
-		return $form;
-	}
-
-	public function success(Form $form)
-	{
-		if (!$form['user']['password_new']->value) {
-			unset($form['user']['password']);
-			unset($form['user']['password_confirm']);
-		}
-	}
-
-	public function error(Form $form)
-	{
-		$this->addPassword($form);
-	}
-
-	private function addPassword(Form $form)
-	{
-		$user = $form->getComponent('user');
 		$user->addPassword('password', 'Password')
-			->addConditionOn($user['password_new'], Form::FILLED)
+			->addConditionOn($passwordNew, Form::FILLED)
 			->addRule(Form::FILLED, 'Enter password')
 			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
 		$user->addPassword('password_confirm', 'Confirm password')
-			->addConditionOn($user['password_new'], Form::FILLED)
+			->addConditionOn($passwordNew, Form::FILLED)
 			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
+
+		return $form;
 	}
 
 }

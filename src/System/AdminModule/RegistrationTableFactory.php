@@ -11,9 +11,10 @@
 
 namespace Venne\System\AdminModule;
 
-use Kdyby\Doctrine\EntityDao;
+use Kdyby\Doctrine\EntityManager;
 use Nette\Localization\ITranslator;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
+use Venne\System\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -21,11 +22,8 @@ use Venne\System\Components\AdminGrid\IAdminGridFactory;
 class RegistrationTableFactory
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $dao;
-
-	/** @var \Venne\System\AdminModule\RegistrationFormFactory */
-	private $formFactory;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $registrationRepository;
 
 	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
@@ -33,17 +31,20 @@ class RegistrationTableFactory
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
+	/** @var \Venne\System\AdminModule\RegistrationFormService */
+	private $registrationFormService;
+
 	public function __construct(
-		EntityDao $dao,
-		RegistrationFormFactory $formFactory,
+		EntityManager $entityManager,
 		IAdminGridFactory $adminGridFactory,
-		ITranslator $translator
+		ITranslator $translator,
+		RegistrationFormService $registrationFormService
 	)
 	{
-		$this->dao = $dao;
-		$this->formFactory = $formFactory;
+		$this->registrationRepository = $entityManager->getRepository(Registration::class);
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
+		$this->registrationFormService = $registrationFormService;
 	}
 
 	/**
@@ -51,7 +52,7 @@ class RegistrationTableFactory
 	 */
 	public function create()
 	{
-		$admin = $this->adminGridFactory->create($this->dao);
+		$admin = $this->adminGridFactory->create($this->registrationRepository);
 
 		// columns
 		$table = $admin->getTable();
@@ -66,7 +67,9 @@ class RegistrationTableFactory
 		$table->addActionEvent('edit', 'Edit')
 			->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->addForm('registration', 'Registration', $this->formFactory);
+		$form = $admin->addForm('registration', 'Registration', function (Registration $registration = null) {
+			return $this->registrationFormService->getFormFactory($registration !== null ? $registration->getId() : null);
+		});
 
 		$admin->connectFormWithAction($form, $table->getAction('edit'));
 

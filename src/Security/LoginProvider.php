@@ -44,7 +44,7 @@ use Nette\InvalidArgumentException;
  *     uniqueConstraints={@ORM\UniqueConstraint(name="uniqueId", columns={"uid", "type"})}
  * )
  */
-class LoginProviderEntity extends \Kdyby\Doctrine\Entities\BaseEntity
+class LoginProvider extends \Kdyby\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -56,9 +56,9 @@ class LoginProviderEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	const GENDER_FEMALE = 'female';
 
 	/**
-	 * @var \Venne\Security\UserEntity
+	 * @var \Venne\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\UserEntity", inversedBy="loginProviders")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User", inversedBy="loginProviders")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
@@ -228,9 +228,9 @@ class LoginProviderEntity extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
-	 * @param \Venne\Security\UserEntity $user
+	 * @param \Venne\Security\User $user
 	 */
-	public function setUser(UserEntity $user)
+	public function setUser(User $user)
 	{
 		$this->user = $user;
 	}

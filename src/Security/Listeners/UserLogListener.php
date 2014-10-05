@@ -11,10 +11,14 @@
 
 namespace Venne\Security\Listeners;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
 use Nette\DI\Container;
-use Nette\Security\User;
+use Nette\Security\User as NetteUser;
 use Venne\Security\Events\LoginEvent;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,21 +48,21 @@ class UserLogListener implements \Kdyby\Events\Subscriber
 		);
 	}
 
-	public function onLoggedIn(User $user)
+	public function onLoggedIn(NetteUser $netteUser)
 	{
 		$this->getNotificationManager()->notify(
 			LoginEvent::getName(),
-			$this->getUserDao()->find($user->getIdentity()->getId()),
+			$this->getUserRepository()->find($netteUser->getIdentity()->getId()),
 			'login',
 			'User has been logged in'
 		);
 	}
 
-	public function onLoggedOut(User $user)
+	public function onLoggedOut(NetteUser $netteUser)
 	{
 		$this->getNotificationManager()->notify(
 			LoginEvent::getName(),
-			$this->getUserDao()->find($user->getIdentity()->getId()),
+			$this->getUserRepository()->find($netteUser->getIdentity()->getId()),
 			'logout',
 			'User has been logged out'
 		);
@@ -69,16 +73,17 @@ class UserLogListener implements \Kdyby\Events\Subscriber
 	 */
 	private function getNotificationManager()
 	{
-		return $this->container->getByType('Venne\Notifications\NotificationManager');
+		return $this->container->getByType(\Venne\Notifications\NotificationManager::class);
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\EntityDao
+	 * @return \Kdyby\Doctrine\EntityRepository
 	 */
-	private function getUserDao()
+	private function getUserRepository()
 	{
-		$entityManager = $this->container->getByType('Doctrine\ORM\EntityManager');
-		return $entityManager->getRepository('Venne\Security\UserEntity');
+		$entityManager = $this->container->getByType(\Doctrine\ORM\EntityManager::class);
+
+		return $entityManager->getRepository(User::class);
 	}
 
 }

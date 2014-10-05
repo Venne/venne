@@ -11,45 +11,46 @@
 
 namespace Venne\Notifications\Jobs;
 
-use Kdyby\Doctrine\EntityDao;
+use Doctrine\ORM\EntityManager;
 use Venne\Notifications\EmailManager;
 use Venne\Notifications\Events\NotificationEvent;
-use Venne\Queue\JobEntity;
+use Venne\Notifications\NotificationUser;
+use Venne\Queue\Job;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class EmailJob extends \Venne\Queue\Job
+class EmailJob extends \Venne\Queue\JobType
 {
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $notificationUserDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $notificationUserRepository;
 
-	/** @var \Kdyby\Doctrine\EntityDao */
-	private $userDao;
+	/** @var \Kdyby\Doctrine\EntityRepository */
+	private $userRepository;
 
 	/** @var \Venne\Notifications\EmailManager */
 	private $emailManager;
 
 	public function __construct(
-		EntityDao $notificationUserDao,
-		EntityDao $userDao,
+		EntityManager $entityManager,
 		EmailManager $emailManager
 	)
 	{
-		$this->notificationUserDao = $notificationUserDao;
-		$this->userDao = $userDao;
+		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
+		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->emailManager = $emailManager;
 	}
 
 	/**
-	 * @param \Venne\Queue\JobEntity $jobEntity
+	 * @param \Venne\Queue\Job $job
 	 * @param integer $priority
 	 */
-	public function run(JobEntity $jobEntity, $priority)
+	public function run(Job $job, $priority)
 	{
-		$user = $this->userDao->find($jobEntity->arguments['user']);
-		$notificationUser = $this->notificationUserDao->find($jobEntity->arguments['notification']);
+		$user = $this->userRepository->find($job->arguments['user']);
+		$notificationUser = $this->notificationUserRepository->find($job->arguments['notification']);
 		$notification = $notificationUser->getNotification();
 
 		$this->emailManager->send($user->email, $user->name, NotificationEvent::getName(), 'userNotification', array(

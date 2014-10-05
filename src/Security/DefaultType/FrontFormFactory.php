@@ -17,7 +17,7 @@ use Venne\Forms\IFormFactory;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class FrontFormFactory implements \Venne\Forms\IFormFactory
+class FrontFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactory
 {
 
 	/** @var \Venne\Forms\IFormFactory */
@@ -57,31 +57,7 @@ class FrontFormFactory implements \Venne\Forms\IFormFactory
 			->addConditionOn($user['password_new'], $form::FILLED)
 			->addRule($form::EQUAL, 'Invalid re password', $user['password']);
 
-		$form->setCurrentGroup();
-		$form->addSubmit('_submit', 'Save');
-
 		return $form;
-	}
-
-	public function handleAttached(Form $form)
-	{
-		$form->setCurrentGroup();
-		$form->addSaveButton('Save');
-
-		if ($form->isSubmitted()) {
-			if (!$form['user']['password_new']->value) {
-				unset($form['user']['password']);
-			}
-		}
-	}
-
-	public function handleSave(Form $form)
-	{
-		if ($form['user']['password_new']->value) {
-			$form->data->user->setPassword($form['user']['password']->value);
-		}
-
-		parent::handleSave($form);
 	}
 
 }

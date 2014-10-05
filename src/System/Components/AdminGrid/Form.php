@@ -38,11 +38,8 @@ class Form extends Component
 	/** @var callable[] */
 	public $onError;
 
-	/** @var \Venne\Forms\IFormFactory */
+	/** @var \Venne\Forms\IFormFactory|\Closure */
 	private $factory;
-
-	/** @var callable */
-	private $entityFactory;
 
 	/** @var string */
 	private $title;
@@ -51,43 +48,25 @@ class Form extends Component
 	private $type;
 
 	/**
-	 * @param \Venne\Forms\IFormFactory $factory
+	 * @param \Venne\Forms\IFormFactory|\Closure $factory
 	 * @param string $title
-	 * @param callable $entityFactory
 	 * @param null $type
 	 */
-	public function __construct(IFormFactory $factory, $title, $entityFactory = null, $type = null)
+	public function __construct($factory, $title, $type = null)
 	{
 		parent::__construct();
 
 		$this->factory = $factory;
 		$this->title = $title;
-		$this->entityFactory = $entityFactory;
 		$this->type = $type;
 	}
 
 	/**
-	 * @param \Venne\Forms\IFormFactory $factory
-	 */
-	public function setFactory(IFormFactory $factory)
-	{
-		$this->factory = $factory;
-	}
-
-	/**
-	 * @return \Venne\Forms\IFormFactory
+	 * @return \Venne\Forms\IFormFactory|\Closure
 	 */
 	public function getFactory()
 	{
 		return $this->factory;
-	}
-
-	/**
-	 * @param string $type
-	 */
-	public function setType($type)
-	{
-		$this->type = $type;
 	}
 
 	/**
@@ -99,14 +78,6 @@ class Form extends Component
 	}
 
 	/**
-	 * @param string $title
-	 */
-	public function setTitle($title)
-	{
-		$this->title = $title;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getTitle()
@@ -114,19 +85,4 @@ class Form extends Component
 		return $this->title;
 	}
 
-	/**
-	 * @param callable $entityFactory
-	 */
-	public function setEntityFactory($entityFactory)
-	{
-		$this->entityFactory = $entityFactory;
-	}
-
-	/**
-	 * @return callable
-	 */
-	public function getEntityFactory()
-	{
-		return $this->entityFactory;
-	}
 }

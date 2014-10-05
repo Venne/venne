@@ -13,7 +13,7 @@ namespace Venne\Security\Listeners;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use Venne\Security\UserEntity;
+use Venne\Security\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -24,10 +24,10 @@ class ExtendedUserListener
 	/**
 	 * @ORM\PostLoad
 	 *
-	 * @param \Venne\Security\UserEntity $user
+	 * @param \Venne\Security\User $user
 	 * @param \Doctrine\ORM\Event\LifecycleEventArgs $event
 	 */
-	public function postLoadHandler(UserEntity $user, LifecycleEventArgs $event)
+	public function postLoadHandler(User $user, LifecycleEventArgs $event)
 	{
 		$em = $event->getEntityManager();
 		$user->setExtendedUserCallback(function () use ($em, $user) {
