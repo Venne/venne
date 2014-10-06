@@ -13,7 +13,10 @@
 		"select2": "~3.4.5",
 		"typeahead.js": "~0.10.2",
 		"holderjs": "~2.3.2",
-		"nette.ajax.js": "#master",
-		"history.nette.ajax.js": "#master"
+		"nette.ajax.js": "master",
+		"history.nette.ajax.js": "master"
+	},
+	"resolutions": {
+		"nette.ajax.js": "master"
 	}
 }
