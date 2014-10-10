@@ -136,11 +136,12 @@ trait AdminPresenterTrait
 
 		// check login
 		if ($this->secured && !$this->getUser()->isLoggedIn()) {
-			if ($this->getName() != 'Admin:System:Login') {
+			if ($this->getName() !== 'Admin:System:Login') {
+				if ($this->getUser()->getLogoutReason() === \Nette\Security\IUserStorage::INACTIVITY) {
+					$this->flashMessage($this->getTranslator()->translate('You have been logged out due to inactivity. Please login again.'), 'info');
+				}
+
 				$this->forward(':Admin:System:Login:', array('backlink' => $this->storeRequest()));
-			}
-			if ($this->getUser()->logoutReason === \Nette\Security\IUserStorage::INACTIVITY) {
-				$this->flashMessage($this->translator->translate('You have been logged out due to inactivity. Please login again.'), 'info');
 			}
 		}
 
@@ -165,7 +166,7 @@ trait AdminPresenterTrait
 			$this->redrawControl('title');
 		}
 
-		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
+		$this->redirect(':Admin:' . $this->administrationManager->defaultPresenter . ':');
 	}
 
 	/**
