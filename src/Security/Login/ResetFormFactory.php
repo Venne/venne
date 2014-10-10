@@ -38,11 +38,6 @@ class ResetFormFactory implements \Venne\Forms\IFormFactory
 			->addRule($form::FILLED)
 			->addRule($form::EMAIL);
 
-		$form->addSubmit('_submit', 'Reset password')
-			->getControlPrototype()->class[] = 'btn-primary';
-		$form->addSubmit('cancel', 'Cancel')
-			->setValidationScope(false);
-
 		return $form;
 	}
 

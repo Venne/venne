@@ -22,6 +22,8 @@ use Nette\Application\UI\Form;
 class RegistrationFormService extends \Venne\System\DoctrineFormService
 {
 
+	const SUBMIT_CAPTION = 'Register';
+
 	public function __construct(
 		RegistrationFormFactory $formFactory,
 		EntityManager $entityManager,

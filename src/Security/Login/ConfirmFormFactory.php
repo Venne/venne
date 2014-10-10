@@ -41,9 +41,6 @@ class ConfirmFormFactory implements \Venne\Forms\IFormFactory
 		$form->addPassword('password_confirm', 'Confirm password')
 			->addRule($form::EQUAL, 'Invalid re password', $form['password']);
 
-		$form->addSubmit('_submit', 'Reset password')
-			->getControlPrototype()->class[] = 'btn-primary';
-
 		return $form;
 	}
 

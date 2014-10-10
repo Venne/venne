@@ -116,7 +116,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 		$this->redrawControl('sideComponent-container');
 
 		if ($this->user->isLoggedIn()) {
-			$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
+			$this->redirect(':Admin:' . $this->administrationManager->defaultPresenter . ':');
 		}
 
 		if ($this->autologin && !$this->getParameter('do') && !$this->template->flashes && !$this['signInForm']['form']->isSubmitted()) {
@@ -124,6 +124,12 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 				$this->redirect('this', array('do' => 'signInForm-login', 'signInForm-name' => $this->autologin));
 			}
 		}
+	}
+
+	public function handleChange()
+	{
+		$this->redirect('this');
+		$this->redrawControl('loginContent');
 	}
 
 	public function renderDefault()

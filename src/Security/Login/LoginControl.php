@@ -55,29 +55,23 @@ class LoginControl extends \Venne\System\UI\Control
 	 */
 	public $key;
 
-	/** @var \Doctrine\ORM\EntityManager */
-	private $entityManager;
-
 	/** @var \Venne\System\AdminModule\LoginFormFactory */
 	private $loginFormFactory;
 
 	/** @var \Venne\Security\AdminModule\ProviderFormFactory */
 	private $providerFormFactory;
 
-	/** @var \Venne\Security\Login\ResetFormFactory */
-	private $resetFormFactory;
+	/** @var \Venne\Security\Login\ResetFormService */
+	private $resetFormService;
 
-	/** @var \Venne\Security\Login\ConfirmFormFactory */
-	private $confirmFormFactory;
+	/** @var \Venne\Security\Login\ConfirmFormService */
+	private $confirmFormService;
 
 	/** @var \Venne\Security\SecurityManager */
 	private $securityManager;
 
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $userRepository;
-
-	/** @var \Nette\Mail\IMailer */
-	private $mailer;
 
 	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
 	private $formFactoryFactory;
@@ -86,8 +80,8 @@ class LoginControl extends \Venne\System\UI\Control
 		EntityManager $entityManager,
 		LoginFormFactory $loginFormFactory,
 		ProviderFormFactory $providerFormFactory,
-		ResetFormFactory $resetFormFactory,
-		ConfirmFormFactory $confirmFormFactory,
+		ResetFormService $resetFormService,
+		ConfirmFormService $confirmFormService,
 		SecurityManager $securityManager,
 		IMailer $mailer,
 		FormFactoryFactory $formFactoryFactory
@@ -95,15 +89,15 @@ class LoginControl extends \Venne\System\UI\Control
 	{
 		parent::__construct();
 
-		$this->entityManager = $entityManager;
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->loginFormFactory = $loginFormFactory;
 		$this->providerFormFactory = $providerFormFactory;
-		$this->resetFormFactory = $resetFormFactory;
-		$this->confirmFormFactory = $confirmFormFactory;
+		$this->resetFormService = $resetFormService;
+		$this->confirmFormService = $confirmFormService;
 		$this->securityManager = $securityManager;
-		$this->mailer = $mailer;
 		$this->formFactoryFactory = $formFactoryFactory;
+
+		$this->redrawControl('content');
 	}
 
 	/**
@@ -153,11 +147,23 @@ class LoginControl extends \Venne\System\UI\Control
 	 */
 	protected function createComponentResetForm()
 	{
-		$form = $this->resetFormFactory->create();
-		$form['cancel']->onClick[] = function () {
-			$this->redirect('this', array('reset' => null));
+		$form = $this
+			->resetFormService
+			->getFormFactory(function ($key) {
+				return $this->link('this', array('key' => $key, 'reset' => null));
+			})->create();
+
+		$cancel = $form->addSubmit('cancel', 'Cancel');
+		$cancel->setValidationScope(false);
+		$form->onSuccess[] = function (Form $form) {
+			if ($form->isSubmitted() === $form['_submit']) {
+				$this->flashMessage($this->translator->translate('New password has been sent.'), 'success');
+			}
+
+			$this->redirect('this', array(
+				'reset' => null
+			));
 		};
-		$form->onSuccess[] = $this->resetFormSuccess;
 
 		return $form;
 	}
@@ -172,7 +178,7 @@ class LoginControl extends \Venne\System\UI\Control
 		}
 
 		$form = $this->formFactoryFactory
-			->create($this->confirmFormFactory)
+			->create($this->confirmFormService)
 			->setEntity($user)
 			->create();
 
@@ -210,28 +216,6 @@ class LoginControl extends \Venne\System\UI\Control
 	public function providerFormSuccess(Form $form)
 	{
 		$this->redirect('login', array($form['provider']->value, json_encode((array) $form['parameters']->values)));
-	}
-
-	public function resetFormSuccess(Form $form)
-	{
-		/** @var \Venne\Security\User $user */
-		$user = $this->userRepository->findOneBy(array('email' => $form['email']->value));
-
-		if (!$user) {
-			$this->flashMessage($this->translator->translate('User with email %email% does not exist.', null, array(
-				'email' => $form['email']->value,
-			)), 'warning');
-
-			return;
-		}
-
-		$this->sendEmail($user, $user->resetPassword());
-		$this->entityManager->flush($user);
-
-		$this->flashMessage($this->translator->translate('New password has been sent.'), 'success');
-		$this->redirect('this', array(
-			'reset' => null
-		));
 	}
 
 	public function confirmFormSuccess()
@@ -296,20 +280,6 @@ class LoginControl extends \Venne\System\UI\Control
 		}
 
 		$this->redirect('this');
-	}
-
-	/**
-	 * @param \Venne\Security\User $user
-	 * @param string $key
-	 */
-	private function sendEmail(User $user, $key)
-	{
-		$absoluteUrls = $this->presenter->absoluteUrls;
-		$this->presenter->absoluteUrls = true;
-		$link = $this->link('this', array('key' => $key, 'reset' => null));
-		$this->presenter->absoluteUrls = $absoluteUrls;
-
-		$this->securityManager->sendRecoveryUrl($user, $link);
 	}
 
 }

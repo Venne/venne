@@ -8,7 +8,7 @@
 
 {block #content-container}
 
-<div class="container login-container">
+<div class="container login-container" n:snippet="loginContent">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
@@ -17,7 +17,7 @@
 						<li n:class="!$registration ? active"><a class="ajax" n:href="this registration => NULL" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
 
 						{foreach $registrations as $r}
-							<li class="pull-right{if $registration && $registration === $r} active{/if}"><a class="ajax" n:href="this registration => $r->id">{_$r->name}</a></li>
+							<li class="pull-right{if $registration && $registration === $r} active{/if}"><a class="ajax" n:href="change! registration => $r->id">{_$r->name}</a></li>
 						{/foreach}
 					</ul>
 				</div>

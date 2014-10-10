@@ -199,9 +199,12 @@ class RegistrationControl extends \Venne\System\UI\Control
 	{
 		$userType = $this->securityManager->getUserTypeByClass($this->userType);
 		$this->currentUser = $this->createNewUser();
-		$form = $this->formFactoryFactory
-			->create($userType->getRegistrationFormFactory())
-			->setEntity($this->currentUser)
+
+		$userType->getRegistrationFormService()->getFormFactory();
+
+		$form = $userType
+			->getRegistrationFormService()
+			->getFormFactory()
 			->create();
 
 		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {

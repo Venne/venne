@@ -1,7 +1,10 @@
 services:
 
 	- Venne\Security\Login\ResetFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\Login\ResetFormService
+
 	- Venne\Security\Login\ConfirmFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\Login\ConfirmFormService
 
 	- Venne\Security\AdminModule\ProviderFormFactory (@system.admin.ajaxFormFactory)
 	- Venne\Security\AdminModule\ProvidersFormFactory (@system.admin.ajaxFormFactory)
