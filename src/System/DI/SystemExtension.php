@@ -15,6 +15,7 @@ use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
+use Venne\DataTransfer\DI\DataTransferExtension;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
@@ -185,6 +186,12 @@ class SystemExtension extends \Nette\DI\CompilerExtension
 				$container->getDefinition($extension->prefix('entityFormMapper'))
 					->addSetup('?->setEntityFormMapper($service);$service->registerMapper(?)', array($textControlService, $textControlService));
 				break;
+			}
+		}
+
+		foreach ($this->compiler->extensions as $extension) {
+			if ($extension instanceof DataTransferExtension) {
+				$extension->setDriverClass('Venne\Bridges\Kdyby\Doctrine\DataTransfer\EntityDriver');
 			}
 		}
 
