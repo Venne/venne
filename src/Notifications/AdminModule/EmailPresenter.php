@@ -42,6 +42,14 @@ class EmailPresenter extends \Nette\Application\UI\Presenter
 	}
 
 	/**
+	 * @return boolean
+	 */
+	public function isAjax()
+	{
+		return false;
+	}
+
+	/**
 	 * @return string[]
 	 */
 	public function formatLayoutTemplateFiles()
