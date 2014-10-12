@@ -29,7 +29,7 @@ abstract class ExtendedUser extends \Kdyby\Doctrine\Entities\BaseEntity
 	 * @ORM\OneToOne(targetEntity="\Venne\Security\User", cascade={"all"})
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
 	 */
-	protected $user;
+	private $user;
 
 	public function __construct()
 	{

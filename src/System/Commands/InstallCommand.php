@@ -15,6 +15,7 @@ use Kdyby\Doctrine\EntityManager;
 use Nette\Utils\Validators;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tracy\Debugger;
 use Venne\Security\DefaultType\User;
 use Venne\Security\Permission;
 use Venne\Security\Role;
@@ -84,36 +85,47 @@ class InstallCommand extends \Symfony\Component\Console\Command\Command
 			}
 		}, false);
 
-		$roles = array();
-		foreach (array('guest' => null, 'authenticated' => 'guest', 'admin' => 'authenticated') as $name => $parent) {
+		$this->entityManager->beginTransaction();
+		try {
+			$roles = array();
+			foreach (array('guest' => null, 'authenticated' => 'guest', 'admin' => 'authenticated') as $name => $parent) {
 
-			$output->writeln(sprintf('Creating role "<info>%s</info>"', $name));
+				$output->writeln(sprintf('Creating role "<info>%s</info>"', $name));
 
-			$roles[$name] = $role = new Role;
-			$role->setName($name);
+				$roles[$name] = $role = new Role;
+				$role->setName($name);
 
-			if ($parent) {
-				$role->setParent($roles[$parent]);
+				if ($parent) {
+					$role->setParent($roles[$parent]);
+				}
+
+				$this->entityManager->persist($role);
 			}
+			$this->entityManager->flush($roles);
 
-			$this->entityManager->persist($role);
+			$output->writeln('Setting permission for administrator');
+
+			$permission = new Permission($roles['admin']);
+			$this->entityManager->persist($permission);
+
+			$output->writeln('Creating administrator account');
+
+			$user = new User;
+			$user->getUser()->setPassword($password);
+			$user->getUser()->setEmail($email);
+			$user->getUser()->addRoleEntity($roles['admin']);
+
+			$this->entityManager->persist($user->getUser());
+			$this->entityManager->flush($user->getUser());
+			$this->entityManager->persist($user);
+			$this->entityManager->flush($user);
+
+			$this->entityManager->commit();
+		} catch (\Exception $e) {
+			$this->entityManager->rollback();
+
+			throw $e;
 		}
-		$this->entityManager->flush($roles);
-
-		$output->writeln('Setting permission for administrator');
-
-		$permission = new Permission($roles['admin']);
-		$this->entityManager->persist($permission);
-
-		$output->writeln('Creating administrator account');
-
-		$user = new User;
-		$user->user->setPassword($password);
-		$user->user->setEmail($email);
-		$user->user->addRoleEntity($roles['admin']);
-
-		$this->entityManager->persist($user);
-		$this->entityManager->flush();
 	}
 
 }
