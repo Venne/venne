@@ -82,6 +82,14 @@ class SideComponentsControl extends \Venne\System\UI\Control
 	}
 
 	/**
+	 * @return \Nette\Application\UI\Control|null
+	 */
+	public function getSideComponent()
+	{
+		return $this->sideComponent !== null ? $this['sideComponent'] : null;
+	}
+
+	/**
 	 * @param mixed[] $params
 	 */
 	public function loadState(array $params)

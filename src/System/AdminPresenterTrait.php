@@ -201,4 +201,12 @@ trait AdminPresenterTrait
 		return $this->sideComponentsControlFactory->create();
 	}
 
+	/**
+	 * @return \Venne\System\AdminModule\Components\SideComponentsControl
+	 */
+	protected function getSideComponents()
+	{
+		return $this['sideComponents'];
+	}
+
 }
