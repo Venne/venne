@@ -169,9 +169,9 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 			new UserType(
 				'Default user',
 				\Venne\Security\DefaultType\User::class,
-				new Statement('@' . \Venne\Security\DefaultType\AdminFormService::getReflection()->getName()),
-				new Statement('@' . \Venne\Security\DefaultType\FrontFormService::getReflection()->getName()),
-				new Statement('@' . \Venne\Security\DefaultType\RegistrationFormService::getReflection()->getName())
+				new Statement('@' . \Venne\Security\DefaultType\AdminFormService::class),
+				new Statement('@' . \Venne\Security\DefaultType\FrontFormService::class),
+				new Statement('@' . \Venne\Security\DefaultType\RegistrationFormService::class)
 			),
 		);
 	}
