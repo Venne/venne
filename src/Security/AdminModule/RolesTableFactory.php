@@ -53,19 +53,17 @@ class RolesTableFactory
 	{
 		$admin = $this->adminGridFactory->create($this->roleRepository);
 
-		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
-		$table->addColumnText('name', 'Name')
+		$name = $table->addColumnText('name', 'Name');
+		$name
 			->setSortable()
 			->getCellPrototype()->width = '40%';
-		$table->getColumn('name')
+		$name
 			->setFilterText()->setSuggestion();
 
 		$table->addColumnText('parent', 'Parent')
 			->setSortable()
-			->getCellPrototype()->width = '60%';
-		$table->getColumn('parent')
 			->setCustomRender(function (Role $entity) {
 				$entities = array();
 				$en = $entity;
@@ -74,29 +72,28 @@ class RolesTableFactory
 				}
 
 				return implode(', ', $entities);
-			});
-
-		// actions
-		$table->addActionEvent('edit', 'Edit')
-			->getElementPrototype()->class[] = 'ajax';
-
-		$table->addActionEvent('permissions', 'Permissions')
-			->getElementPrototype()->class[] = 'ajax';
+			})
+			->getCellPrototype()->width = '60%';
 
 		$form = $admin->addForm('role', 'Role', function (Role $role = null) {
 			return $this->roleFormService->getFormFactory($role ? $role->getId() : null);
 		});
 
-		$admin->connectFormWithAction($form, $table->getAction('edit'));
-
-		// Toolbar
 		$toolbar = $admin->getNavbar();
-		$toolbar->addSection('new', 'Create', 'file');
-		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+		$newSection = $toolbar->addSection('new', 'Create', 'file');
 
-		$table->addActionEvent('delete', 'Delete')
-			->getElementPrototype()->class[] = 'ajax';
-		$admin->connectActionAsDelete($table->getAction('delete'));
+		$editAction = $table->addActionEvent('edit', 'Edit');
+		$editAction->getElementPrototype()->class[] = 'ajax';
+
+		$permissionAction = $table->addActionEvent('permissions', 'Permissions');
+		$permissionAction->getElementPrototype()->class[] = 'ajax';
+
+		$deleteAction = $table->addActionEvent('delete', 'Delete');
+		$deleteAction->getElementPrototype()->class[] = 'ajax';
+
+		$admin->connectFormWithNavbar($form, $newSection);
+		$admin->connectFormWithAction($form, $editAction);
+		$admin->connectActionAsDelete($deleteAction);
 
 		return $admin;
 	}

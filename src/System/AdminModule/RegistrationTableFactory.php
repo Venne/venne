@@ -53,7 +53,6 @@ class RegistrationTableFactory
 	{
 		$admin = $this->adminGridFactory->create($this->registrationRepository);
 
-		// columns
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
 		$table->addColumnText('name', 'Name')
@@ -62,24 +61,22 @@ class RegistrationTableFactory
 		$table->getColumn('name')
 			->setFilterText()->setSuggestion();
 
-		// actions
-		$table->addActionEvent('edit', 'Edit')
-			->getElementPrototype()->class[] = 'ajax';
-
 		$form = $admin->addForm('registration', 'Registration', function (Registration $registration = null) {
 			return $this->registrationFormService->getFormFactory($registration !== null ? $registration->getId() : null);
 		});
 
-		$admin->connectFormWithAction($form, $table->getAction('edit'));
-
-		// Toolbar
 		$toolbar = $admin->getNavbar();
-		$toolbar->addSection('new', 'Create', 'file');
-		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+		$newSection = $toolbar->addSection('new', 'Create', 'file');
 
-		$table->addActionEvent('delete', 'Delete')
-			->getElementPrototype()->class[] = 'ajax';
-		$admin->connectActionAsDelete($table->getAction('delete'));
+		$editAction = $table->addActionEvent('edit', 'Edit');
+		$editAction->getElementPrototype()->class[] = 'ajax';
+
+		$deleteAction = $table->addActionEvent('delete', 'Delete');
+		$deleteAction->getElementPrototype()->class[] = 'ajax';
+
+		$admin->connectFormWithNavbar($form, $newSection);
+		$admin->connectFormWithAction($form, $editAction);
+		$admin->connectActionAsDelete($deleteAction);
 
 		return $admin;
 	}

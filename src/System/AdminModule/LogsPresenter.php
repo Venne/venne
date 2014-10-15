@@ -87,8 +87,15 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 			->setSortable()
 			->getCellPrototype()->width = '30%';
 
-		$table->addActionEvent('show', 'Show')->onClick[] = $this->handleShow;
-		$table->addActionEvent('delete', 'Delete')->onClick[] = $this->handleDelete;
+		$event = $table->addActionEvent('show', 'Show');
+		$event->onClick[] = $this->handleShow;
+
+		$event = $table->addActionEvent('delete', 'Delete');
+		$event->getElementPrototype()->class[] = 'ajax';
+		$event->onClick[] = $this->handleDelete;
+		$event->setConfirm(function () {
+			return 'Really delete?';
+		});
 
 		return $table;
 	}
@@ -117,6 +124,9 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 		unlink($this->logDir . '/' . $id);
 		$this->flashMessage($this->translator->translate('Log has been removed.'), 'success');
 		$this->redirect('this');
+
+		unset($this['table']);
+		$this->redrawControl('content');
 	}
 
 	/**
@@ -130,6 +140,9 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 
 		$this->flashMessage($this->translator->translate('Logs were removed.'), 'success');
 		$this->redirect('this');
+
+		unset($this['table']);
+		$this->redrawControl('content');
 	}
 
 	/**

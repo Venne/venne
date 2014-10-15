@@ -103,21 +103,23 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 			->getCellPrototype()->width = '20%';
 
 		// actions
-		$table->addActionEvent('edit', 'Edit')
-			->getElementPrototype()->class[] = 'ajax';
+		$event = $table->addActionEvent('edit', 'Edit');
+		$event->getElementPrototype()->class[] = 'ajax';
 
-		$form = $admin->addForm('notification', 'Notification setting', $this->notificationSettingFormFactory);
+		$form = $admin->addForm('notification', 'Notification setting', function (NotificationSetting $notificationSetting = null) {
+			return $this->notificationSettingFormService->getFormFactory($notificationSetting !== null ? $notificationSetting->getId() : null);
+		});
 
-		$admin->connectFormWithAction($form, $table->getAction('edit'));
+		$admin->connectFormWithAction($form, $event);
 
 		// Toolbar
 		$toolbar = $admin->getNavbar();
-		$toolbar->addSection('new', 'Create', 'file');
-		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+		$section = $toolbar->addSection('new', 'Create', 'file');
+		$admin->connectFormWithNavbar($form, $section);
 
-		$table->addActionEvent('delete', 'Delete')
-			->getElementPrototype()->class[] = 'ajax';
-		$admin->connectActionAsDelete($table->getAction('delete'));
+		$deleteEvent = $table->addActionEvent('delete', 'Delete');
+		$deleteEvent->getElementPrototype()->class[] = 'ajax';
+		$admin->connectActionAsDelete($deleteEvent);
 
 		return $admin;
 	}

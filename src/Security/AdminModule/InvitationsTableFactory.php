@@ -69,7 +69,6 @@ class InvitationsTableFactory
 			->createQueryBuilder('a')
 			->andWhere('a.author = :author')->setParameter('author', $this->netteUser->identity->getId());
 
-		// columns
 		$table = $admin->getTable();
 		$table->setModel(new Doctrine($qb));
 		$table->setTranslator($this->translator);
@@ -85,24 +84,22 @@ class InvitationsTableFactory
 			})
 			->getCellPrototype()->width = '40%';
 
-		// actions
-		$table->addActionEvent('edit', 'Edit')
-			->getElementPrototype()->class[] = 'ajax';
-
 		$form = $admin->addForm('invitation', 'Invitation', function (Invitation $invitation = null) {
 			return $this->invitationFormService->getFormFactory($invitation !== null ? $invitation->getId() : null);
 		});
 
-		$admin->connectFormWithAction($form, $table->getAction('edit'));
-
-		// Toolbar
 		$toolbar = $admin->getNavbar();
-		$toolbar->addSection('new', 'Create', 'file');
-		$admin->connectFormWithNavbar($form, $toolbar->getSection('new'));
+		$newSection = $toolbar->addSection('new', 'Create', 'file');
 
-		$table->addActionEvent('delete', 'Delete')
-			->getElementPrototype()->class[] = 'ajax';
-		$admin->connectActionAsDelete($table->getAction('delete'));
+		$editAction = $table->addActionEvent('edit', 'Edit');
+		$editAction->getElementPrototype()->class[] = 'ajax';
+
+		$deleteAction = $table->addActionEvent('delete', 'Delete');
+		$deleteAction->getElementPrototype()->class[] = 'ajax';
+
+		$admin->connectFormWithNavbar($form, $newSection);
+		$admin->connectFormWithAction($form, $editAction);
+		$admin->connectActionAsDelete($deleteAction);
 
 		return $admin;
 	}

@@ -99,21 +99,11 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 		$table->setTranslator($this->translator);
 		$table->setPrimaryKey('user.id');
 
-		// columns
 		$table->addColumnText('user.email', 'E-mail')
 			->setSortable()
 			->getCellPrototype()->width = '100%';
 		$table->getColumn('user.email')
 			->setFilterText()->setSuggestion();
-
-		// actions
-		$table->addActionEvent('edit', 'Edit')
-			->getElementPrototype()->class[] = 'ajax';
-
-		$table->addActionEvent('loginProviders', 'Login providers')
-			->getElementPrototype()->class[] = 'ajax';
-
-		$type = $this->type;
 
 		$form = $admin->addForm('user', 'User', function (ExtendedUser $extendedUser = null) {
 			return $this->getUserType()->getFormService()->getFormFactory($extendedUser ? $extendedUser->getUser()->getId() : null);
@@ -129,13 +119,21 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 
 		$providerForm = $admin->addForm('loginProviders', 'Login providers', $this->providersForm, null, Form::TYPE_LARGE);
 
-		$admin->connectFormWithAction($form, $table->getAction('edit'), $admin::MODE_PLACE);
-		$admin->connectFormWithAction($providerForm, $table->getAction('loginProviders'));
-
-		// Toolbar
 		$toolbar = $admin->getNavbar();
 		$section = $toolbar->addSection('new', 'Create', 'user');
 
+		$editAction = $table->addActionEvent('edit', 'Edit');
+		$editAction->getElementPrototype()->class[] = 'ajax';
+
+		$loginProviders = $table->addActionEvent('loginProviders', 'Login providers');
+		$loginProviders->getElementPrototype()->class[] = 'ajax';
+
+		$deleteAction = $table->addActionEvent('delete', 'Delete');
+		$deleteAction->getElementPrototype()->class[] = 'ajax';
+
+		$admin->connectFormWithAction($form, $editAction, $admin::MODE_PLACE);
+		$admin->connectFormWithAction($providerForm, $loginProviders);
+		$admin->connectActionAsDelete($deleteAction);
 		foreach ($this->securityManager->getUserTypes() as $type => $value) {
 			$admin->connectFormWithNavbar(
 				$form,
@@ -143,10 +141,6 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 				$admin::MODE_PLACE
 			);
 		}
-
-		$table->addActionEvent('delete', 'Delete')
-			->getElementPrototype()->class[] = 'ajax';
-		$admin->connectActionAsDelete($table->getAction('delete'));
 
 		return $admin;
 	}

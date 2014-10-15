@@ -163,8 +163,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		$securityManager = $this->securityManager;
 		$providerFormFactory = $this->providerFormFactory;
 
-		// actions
-		$table->addActionEvent('connect', 'Connect')
+		$connectAction = $table->addActionEvent('connect', 'Connect')
 			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
 				if ($user->hasLoginProvider($entity['name'])) {
 					$element->class[] = 'disabled';
@@ -174,7 +173,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 
 				return $element;
 			});
-		$table->getAction('connect')->onClick[] = function ($button, $name) use ($_this, $securityManager, $providerFormFactory, $user) {
+		$connectAction->onClick[] = function ($button, $name) use ($_this, $securityManager, $providerFormFactory, $user) {
 			if (!$securityManager->getLoginProviderByName(str_replace('_', ' ', $name))->getFormContainer()) {
 				$_this->redirect('connect!', str_replace('_', ' ', $name));
 			} else {
@@ -182,7 +181,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 				$providerFormFactory->setProvider($_this->provider);
 			}
 		};
-		$table->getAction('connect');
 
 		$this->providerFormFactory->setUser($user);
 		if ($this->provider) {
@@ -195,7 +193,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 			$_this->redirect('this');
 		};
 		$form = $admin->addForm('provider', 'Provider', $this->providerFormFactory);
-		$admin->connectFormWithAction($form, $table->getAction('connect'));
 
 		$table->addActionEvent('disconnect', 'Disconnect')
 			->setCustomRender(function ($entity, $element) use ($securityManager, $user) {
@@ -213,6 +210,8 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		};
 		$table->getAction('disconnect')->getElementPrototype()->class[] = 'ajax';
 
+		$admin->connectFormWithAction($form, $connectAction);
+
 		return $admin;
 	}
 
@@ -224,7 +223,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		$session = $this->session;
 		$admin = $this->adminGridFactory->create($this->loginRepository);
 
-		// columns
 		$table = $admin->getTable();
 		if ($this->user->identity instanceof User) {
 			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user = :user')->setParameter('user', $this->user->identity)));
@@ -246,10 +244,10 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		$table->addColumnText('sessionId', 'Session ID')
 			->getCellPrototype()->width = '50%';
 
-		// actions
-		$table->addActionEvent('delete', 'Delete')
-			->getElementPrototype()->class[] = 'ajax';
-		$admin->connectActionAsDelete($table->getAction('delete'));
+		$deleteAction = $table->addActionEvent('delete', 'Delete');
+		$deleteAction->getElementPrototype()->class[] = 'ajax';
+
+		$admin->connectActionAsDelete($deleteAction);
 
 		return $admin;
 	}
@@ -266,18 +264,17 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 			->getFrontFormService();
 
 		$form = $formService
-			->createFormFactory($user->getExtendedUser())
+			->getFormFactory($user->getId())
 			->create();
 
-		$form->onSuccess[] = $this->accountFormSuccess;
+		$form->onSuccess[] = function () {
+			$this->flashMessage($this->translator->translate('Account settings has been updated.'), 'success');
+			$this->redirect('this');
+
+			$this->redrawControl('content');
+		};
 
 		return $form;
-	}
-
-	public function accountFormSuccess()
-	{
-		$this->flashMessage($this->translator->translate('Account settings has been updated.'), 'success');
-		$this->redirect('this');
 	}
 
 }
