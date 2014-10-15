@@ -16,6 +16,8 @@ use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
 use Venne\DataTransfer\DI\DataTransferExtension;
+use Venne\System\Events\InvitationEvent;
+use Venne\System\Forms\DoctrineForms\Controls\TextControl;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
@@ -27,6 +29,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 	\Kdyby\Translation\DI\ITranslationProvider,
 	\Venne\System\DI\ICssProvider,
 	\Venne\System\DI\IJsProvider,
+	\Venne\System\DI\IFormMapperProvider,
 	\Venne\Notifications\DI\IEventProvider
 {
 
@@ -176,14 +179,21 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 			}
 		}
 
+		$container->addDefinition($this->prefix('doctrineForms.textControl'))
+			->setClass('Venne\System\Forms\DoctrineForms\Controls\TextControl');
+
 		foreach ($this->compiler->extensions as $extension) {
 			if ($extension instanceof \Kdyby\DoctrineForms\DI\FormsExtension) {
-				$container->addDefinition($this->prefix('doctrineForms.textControl'))
-					->setClass('Venne\System\Forms\DoctrineForms\Controls\TextControl');
+				$entityFormMapper = $container->getDefinition($extension->prefix('entityFormMapper'));
 
-				$textControlService = $this->prefix('@doctrineForms.textControl');
-				$container->getDefinition($extension->prefix('entityFormMapper'))
-					->addSetup('?->setEntityFormMapper($service);$service->registerMapper(?)', array($textControlService, $textControlService));
+				foreach ($this->compiler->extensions as $extension) {
+					if ($extension instanceof IFormMapperProvider) {
+						foreach ($extension->getFormMappers() as $definition) {
+							$entityFormMapper->addSetup('?->setEntityFormMapper($service);$service->registerMapper(?)', array('@' . $definition, '@' . $definition));
+						}
+					}
+				}
+
 				break;
 			}
 		}
@@ -559,6 +569,16 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 	{
 		return array(
 			InvitationEvent::getName(),
+		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getFormMappers()
+	{
+		return array(
+			TextControl::class,
 		);
 	}
 
