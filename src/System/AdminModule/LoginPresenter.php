@@ -165,7 +165,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 			$this->restoreRequest($this->backlink);
 		}
 
-		$this->redirect(':' . $this->administrationManager->defaultPresenter . ':');
+		$this->redirect(':Admin:' . $this->administrationManager->defaultPresenter . ':');
 	}
 
 	/**
