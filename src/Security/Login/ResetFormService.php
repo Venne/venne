@@ -49,6 +49,7 @@ class ResetFormService extends \Nette\Object
 		SecurityManager $securityManager
 	) {
 		$this->formFactory = $formFactory;
+		$this->entityManager = $entityManager;
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->securityManager = $securityManager;
 	}
@@ -93,8 +94,10 @@ class ResetFormService extends \Nette\Object
 
 		$key = $user->resetPassword();
 		$url = Callback::invoke($resetLinkCallback, $key);
-		$this->securityManager->sendRecoveryUrl($user, $url);
+
+		$this->entityManager->persist($user);
 		$this->entityManager->flush($user);
+		$this->securityManager->sendRecoveryUrl($user, $url);
 	}
 
 }

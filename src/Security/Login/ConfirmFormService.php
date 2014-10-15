@@ -15,8 +15,6 @@ use Doctrine\ORM\EntityManager;
 use Kdyby\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Link;
-use Nette\Utils\Callback;
 use Venne\Forms\FormFactory;
 use Venne\Security\SecurityManager;
 use Venne\Security\User;
@@ -48,6 +46,7 @@ class ConfirmFormService extends \Nette\Object
 		SecurityManager $securityManager
 	) {
 		$this->formFactory = $formFactory;
+		$this->entityManager = $entityManager;
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->securityManager = $securityManager;
 	}

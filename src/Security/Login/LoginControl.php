@@ -55,6 +55,9 @@ class LoginControl extends \Venne\System\UI\Control
 	 */
 	public $key;
 
+	/** @var \Venne\Security\User|null */
+	private $resetUser;
+
 	/** @var \Venne\System\AdminModule\LoginFormFactory */
 	private $loginFormFactory;
 
@@ -149,7 +152,7 @@ class LoginControl extends \Venne\System\UI\Control
 		$form = $this
 			->resetFormService
 			->getFormFactory(function ($key) {
-				return $this->link('this', array('key' => $key, 'reset' => null));
+				return $this->link('//this', array('key' => $key, 'reset' => null));
 			})->create();
 
 		$cancel = $form->addSubmit('cancel', 'Cancel');
@@ -172,13 +175,8 @@ class LoginControl extends \Venne\System\UI\Control
 	 */
 	protected function createComponentConfirmForm()
 	{
-		if (($user = $this->userRepository->findOneBy(array('resetKey' => $this->key))) === null) {
-			throw new BadRequestException;
-		}
-
-		$form = $this->formFactoryFactory
-			->create($this->confirmFormService)
-			->setEntity($user)
+		$form = $this->confirmFormService
+			->getFormFactory($this->key)
 			->create();
 
 		$form->onSuccess[] = $this->confirmFormSuccess;
@@ -219,11 +217,7 @@ class LoginControl extends \Venne\System\UI\Control
 
 	public function confirmFormSuccess()
 	{
-		if (($user = $this->userRepository->findOneBy(array('resetKey' => $this->key))) === null) {
-			throw new BadRequestException;
-		}
-
-		$this->securityManager->sendNewPassword($user);
+		$this->securityManager->sendNewPassword($this->resetUser);
 
 		$this->flashMessage($this->translator->translate('New password has been saved.'), 'success');
 		$this->redirect('this', array(
@@ -279,6 +273,19 @@ class LoginControl extends \Venne\System\UI\Control
 		}
 
 		$this->redirect('this');
+	}
+
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+
+		if (isset($params['key'])) {
+			$this->resetUser = $this->userRepository->findOneBy(array('resetKey' => $params['key']));
+
+			if ($this->resetUser === null) {
+				$this->onError($this, new ResetKeyNotFoundException());
+			}
+		}
 	}
 
 }

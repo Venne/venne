@@ -13,9 +13,11 @@ namespace Venne\System\AdminModule;
 
 use Doctrine\ORM\EntityManager;
 use Nette\Application\UI\Multiplier;
+use Nette\Security\AuthenticationException;
 use Venne\Forms\Form;
 use Venne\Security\Login\ILoginControlFactory;
 use Venne\Security\Login\LoginControl;
+use Venne\Security\Login\ResetKeyNotFoundException;
 use Venne\Security\Registration\IRegistrationControlFactory;
 use Venne\Security\Registration\RegistrationControl;
 use Venne\Security\Role;
@@ -39,7 +41,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	public $backlink;
 
 	/** @var Callback */
-	private $form;
+	private $loginControlFactory;
 
 	/** @var string */
 	private $autologin;
@@ -70,7 +72,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 
 	public function __construct(
 		EntityManager $entityManager,
-		ILoginControlFactory $form,
+		ILoginControlFactory $loginControlFactory,
 		IRegistrationControlFactory $registrationControlFactory,
 		SecurityManager $securityManager
 	) {
@@ -79,7 +81,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 		$this->roleRepository = $entityManager->getRepository(Role::class);
 		$this->registrationRepository = $entityManager->getRepository(Registration::class);
 		$this->invitationRepository = $entityManager->getRepository(Invitation::class);
-		$this->form = $form;
+		$this->loginControlFactory = $loginControlFactory;
 		$this->registrationControlFactory = $registrationControlFactory;
 		$this->securityManager = $securityManager;
 	}
@@ -146,7 +148,8 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentSignInForm()
 	{
-		$form = $this->form->create();
+		$form = $this->loginControlFactory->create();
+
 		$form->onSuccess[] = $this->formSuccess;
 		$form->onError[] = $this->formError;
 
@@ -172,13 +175,19 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	 */
 	public function formError(LoginControl $control, $message)
 	{
-		if ($this->autoregistration) {
-			$registration = str_replace(' ', '_', $this->autoregistration);
-			$this->redirect('this', array('do' => 'registration-' . $registration . '-load', 'registration-' . $registration . '-name' => $this->autologin));
+		if ($message instanceof AuthenticationException) {
+			if ($this->autoregistration) {
+				$registration = str_replace(' ', '_', $this->autoregistration);
+				$this->redirect('this', array('do' => 'registration-' . $registration . '-load', 'registration-' . $registration . '-name' => $this->autologin));
+			}
+
+			$this->flashMessage($this->translator->translate($message), 'warning');
+			$this->redirect('this');
 		}
 
-		$this->flashMessage($this->translator->translate($message), 'warning');
-		$this->redirect('this');
+		if ($message instanceof ResetKeyNotFoundException) {
+			$this->error();
+		}
 	}
 
 	/**
