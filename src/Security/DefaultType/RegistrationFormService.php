@@ -46,8 +46,9 @@ class RegistrationFormService extends \Venne\System\DoctrineFormService
 		try {
 			$this->getEntityFormMapper()->save($entity, $form);
 
-			$this->getEntityManager()->persist($entity);
+			$this->getEntityManager()->persist($entity->getUser());
 			$this->getEntityManager()->flush($entity->getUser());
+			$this->getEntityManager()->persist($entity);
 			$this->getEntityManager()->flush($entity);
 
 			$this->getEntityManager()->commit();

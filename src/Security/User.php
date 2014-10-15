@@ -84,7 +84,7 @@ class User extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\Securit
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")}
 	 *      )
 	 */
-	protected $roleEntities;
+	private $roleEntities;
 
 	/**
 	 * @var \Venne\Security\Login[]|\Doctrine\Common\Collections\ArrayCollection
@@ -284,6 +284,24 @@ class User extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\Securit
 	public function __toString()
 	{
 		return $this->name !== null ? $this->name : (string) $this->email;
+	}
+
+	/**
+	 * @return ArrayCollection|Role[]
+	 */
+	public function getEntityRoles()
+	{
+		return $this->roleEntities->toArray();
+	}
+
+	public function addEntityRole(Role $role)
+	{
+		$this->roleEntities[] = $role;
+	}
+
+	public function removeRole(Role $role)
+	{
+		$this->roleEntities->removeElement($role);
 	}
 
 	/******************************** Getters and setters **************************************/

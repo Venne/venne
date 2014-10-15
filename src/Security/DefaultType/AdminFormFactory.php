@@ -45,22 +45,12 @@ class AdminFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactor
 		$user->addText('name', 'Name');
 		$user->addTextArea('notation', 'Notation', 40, 4)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
-		$user->addMultiSelect('roleEntities', 'Roles')
+		$user->addMultiSelect('entityRoles', 'Roles')
 			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
 		$user->addText('key', 'Lock key')
 			->setOption('description', 'If is set user cannot log in.');
 
-		$user->setCurrentGroup($form->addGroup('Password'));
-		$passwordNew = $user->addCheckbox('password_new', 'Change password');
-		$passwordNew->addCondition($form::EQUAL, true)->toggle('setPasswd');
-		$user->setCurrentGroup($form->addGroup()->setOption('container', 'fieldset id=setPasswd'));
-		$user->addPassword('password', 'Password')
-			->addConditionOn($passwordNew, Form::FILLED)
-			->addRule(Form::FILLED, 'Enter password')
-			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
-		$user->addPassword('password_confirm', 'Confirm password')
-			->addConditionOn($passwordNew, Form::FILLED)
-			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
+		$user['password'] = new PasswordContainer();
 
 		return $form;
 	}

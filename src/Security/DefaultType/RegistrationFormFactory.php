@@ -12,15 +12,12 @@
 namespace Venne\Security\DefaultType;
 
 use Nette\Forms\Form;
-use Nette\Utils\Random;
 use Venne\Forms\IFormFactory;
-use Venne\Security\ILoginProvider;
-use Venne\Security\IRegistrationForm;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class RegistrationFormFactory extends \Nette\Object implements IRegistrationForm, IFormFactory
+class RegistrationFormFactory extends \Nette\Object implements IFormFactory
 {
 
 	/** @var \Venne\Forms\IFormFactory */
@@ -43,25 +40,9 @@ class RegistrationFormFactory extends \Nette\Object implements IRegistrationForm
 		$user->addText('email', 'E-mail')
 			->addRule(Form::EMAIL, 'Enter email');
 
-		$user->addPassword('password', 'Password')
-			->addRule(Form::FILLED, 'Enter password')
-			->addRule(Form::MIN_LENGTH, 'Password is short', 5);
-		$user->addPassword('password_confirm', 'Confirm password')
-			->addRule(Form::EQUAL, 'Invalid re password', $user['password']);
+		$user['password'] = new PasswordContainer();
 
 		return $form;
-	}
-
-	/**
-	 * @param Form $form
-	 * @param ILoginProvider $loginProvider
-	 */
-	public function connectWithLoginProvider(Form $form, ILoginProvider $loginProvider)
-	{
-		$loginProviderEntity = $loginProvider->getLoginProviderEntity();
-
-		$form['user']['email']->setValue($loginProviderEntity->email);
-		$form['user']['password_confirm']->value = $form['user']['password']->value = Random::generate();
 	}
 
 }

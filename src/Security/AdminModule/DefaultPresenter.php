@@ -93,22 +93,20 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentTable()
 	{
-		$repository = $this->entityManager->getRepository($this->type);
-		$admin = $this->adminGridFactory->create($repository);
+		$admin = $this->adminGridFactory->create($this->userRepository);
 		$table = $admin->getTable();
 		$table->setTranslator($this->translator);
-		$table->setPrimaryKey('user.id');
 
-		$table->addColumnText('user.email', 'E-mail')
+		$table->addColumnText('email', 'E-mail')
 			->setSortable()
 			->getCellPrototype()->width = '100%';
-		$table->getColumn('user.email')
+		$table->getColumn('email')
 			->setFilterText()->setSuggestion();
 
-		$form = $admin->addForm('user', 'User', function (ExtendedUser $extendedUser = null) {
-			return $this->getUserType()->getFormService()->getFormFactory($extendedUser ? $extendedUser->getUser()->getId() : null);
+		$form = $admin->addForm('user', 'User', function (User $user = null) {
+			return $this->getUserType()->getFormService()->getFormFactory($user ? $user->getId() : null);
 		}, Form::TYPE_LARGE);
-		$form->onSuccess[] = function (\Nette\Application\UI\Form $form) {
+		$form->onSuccess[] = function () {
 			$this->flashMessage('User has been saved.', 'success');
 			$this->redrawControl('flashes');
 		};

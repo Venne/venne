@@ -15,6 +15,7 @@ use Kdyby\Console\DI\ConsoleExtension;
 use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
+use Venne\Security\DefaultType\Mapping\PasswordContainer;
 use Venne\Security\Events\LoginEvent;
 use Venne\Security\Events\NewPasswordEvent;
 use Venne\Security\Events\PasswordRecoveryEvent;
@@ -28,6 +29,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 	\Kdyby\Doctrine\DI\IEntityProvider,
 	\Venne\Notifications\DI\IEventProvider,
 	\Venne\System\DI\IPresenterProvider,
+	\Venne\System\DI\IFormMapperProvider,
 	\Venne\Security\DI\UserTypeProvider
 {
 
@@ -71,6 +73,9 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 		$container->addDefinition($this->prefix('installCommand'))
 			->setFactory('Venne\System\Commands\InstallCommand')
 			->addTag(ConsoleExtension::COMMAND_TAG);
+
+		$container->addDefinition($this->prefix('passwordContainerMapper'))
+			->setClass(PasswordContainer::class);
 
 		$this->setupSecurity($container);
 		$this->registerUsers();
@@ -173,6 +178,16 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 				new Statement('@' . \Venne\Security\DefaultType\FrontFormService::class),
 				new Statement('@' . \Venne\Security\DefaultType\RegistrationFormService::class)
 			),
+		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getFormMappers()
+	{
+		return array(
+			PasswordContainer::class,
 		);
 	}
 

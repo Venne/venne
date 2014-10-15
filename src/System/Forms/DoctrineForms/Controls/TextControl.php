@@ -1,11 +1,12 @@
 <?php
 
 /**
- * This file is part of the Kdyby (http://www.kdyby.org)
+ * This file is part of the Venne:CMS (https://github.com/Venne)
  *
- * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
+ * Copyright (c) 2011, 2012 Josef Kříž (http://www.josef-kriz.cz)
  *
- * For the full copyright and license information, please view the file license.md that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
  */
 
 namespace Venne\System\Forms\DoctrineForms\Controls;

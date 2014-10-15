@@ -42,20 +42,7 @@ class FrontFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactor
 		$user->addTextArea('notation', 'Notation', 40, 4)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
 
-		//$route = $user->addOne('route');
-		//$route->setCurrentGroup($group);
-		//$route->addFileEntityInput('photo', 'Avatar');
-
-		$user->setCurrentGroup($form->addGroup('Password'));
-		$user->addCheckbox('password_new', 'Change password')->addCondition($form::EQUAL, true)->toggle('setPasswd');
-		$user->setCurrentGroup($form->addGroup()->setOption('id', 'setPasswd'));
-		$user->addPassword('password', 'Password')
-			->addConditionOn($user['password_new'], $form::FILLED)
-			->addRule($form::FILLED, 'Enter password')
-			->addRule($form::MIN_LENGTH, 'Password is short', 5);
-		$user->addPassword('password_confirm', 'Confirm password')
-			->addConditionOn($user['password_new'], $form::FILLED)
-			->addRule($form::EQUAL, 'Invalid re password', $user['password']);
+		$user['password'] = new PasswordContainer();
 
 		return $form;
 	}
