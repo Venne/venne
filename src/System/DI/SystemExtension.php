@@ -558,7 +558,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 	public function getEventTypes()
 	{
 		return array(
-			'Venne\System\Events\InvitationEvent',
+			InvitationEvent::getName(),
 		);
 	}
 
