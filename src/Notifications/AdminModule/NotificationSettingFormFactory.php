@@ -52,9 +52,6 @@ class NotificationSettingFormFactory implements \Venne\Forms\IFormFactory
 			->setOption(IComponentMapper::ITEMS_TITLE, 'email')
 			->setPrompt('all');
 
-		$form->setCurrentGroup();
-		$form->addSubmit('_submit', 'Save');
-
 		return $form;
 	}
 

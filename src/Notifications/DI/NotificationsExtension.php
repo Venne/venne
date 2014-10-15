@@ -35,6 +35,10 @@ class NotificationsExtension extends \Nette\DI\CompilerExtension implements
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
+		$this->compiler->parseServices(
+			$container,
+			$this->loadFromFile(__DIR__ . '/services.neon')
+		);
 		$config = $this->getConfig($this->defaults);
 
 		$notificationManager = $container->addDefinition($this->prefix('notificationManager'))
@@ -73,9 +77,6 @@ class NotificationsExtension extends \Nette\DI\CompilerExtension implements
 
 		$container->addDefinition($this->prefix('emailJob'))
 			->setClass('Venne\Notifications\Jobs\EmailJob');
-
-		$container->addDefinition($this->prefix('notificationSettingFormFactory'))
-			->setClass('Venne\Notifications\AdminModule\NotificationSettingFormFactory', array(new Statement('@system.admin.ajaxFormFactory')));
 	}
 
 	public function beforeCompile()

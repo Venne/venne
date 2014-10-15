@@ -34,20 +34,19 @@ class SettingsPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
 	private $adminGridFactory;
 
-	/** @var \Venne\Notifications\AdminModule\NotificationSettingFormFactory */
-	private $notificationSettingFormFactory;
+	/** @var \Venne\Notifications\AdminModule\NotificationSettingFormService */
+	private $notificationSettingFormService;
 
 	public function __construct(
 		EntityManager $entityManager,
 		NotificationManager $notificationManager,
 		IAdminGridFactory $adminGridFactory,
-		NotificationSettingFormFactory $notificationSettingFormFactory
-	)
-	{
+		NotificationSettingFormService $notificationSettingFormService
+	) {
 		$this->notificationSettingRepository = $entityManager->getRepository(NotificationSetting::class);
 		$this->notificationManager = $notificationManager;
 		$this->adminGridFactory = $adminGridFactory;
-		$this->notificationSettingFormFactory = $notificationSettingFormFactory;
+		$this->notificationSettingFormService = $notificationSettingFormService;
 	}
 
 	/**
