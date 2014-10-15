@@ -90,7 +90,7 @@ abstract class DoctrineFormService extends \Nette\Object
 	protected function getEntity($primaryKey)
 	{
 		return $primaryKey !== null
-			? $entity = $this->getRepository()->find($primaryKey)
+			? $this->getRepository()->find($primaryKey)
 			: $this->createEntity();
 	}
 
