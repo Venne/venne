@@ -40,8 +40,7 @@ class AuthorizatorFactory extends \Nette\Object
 		EntityManager $entityManager,
 		Session $session,
 		AdministrationManager $administrationManager
-	)
-	{
+	) {
 		$this->roleRepository = $entityManager->getRepository(Role::class);
 		$this->permissionRepository = $entityManager->getRepository(Permission::class);
 		$this->session = $session->getSection(self::SESSION_SECTION);

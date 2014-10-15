@@ -27,8 +27,7 @@ class JobFormService extends \Venne\System\DoctrineFormService
 		JobFormFactory $formFactory,
 		EntityManager $entityManager,
 		EntityFormMapper $entityFormMapper
-	)
-	{
+	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 	}
 

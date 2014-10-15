@@ -50,8 +50,7 @@ class EmailManager extends \Nette\Object
 		$senderName,
 		IMailer $mailer,
 		IPresenterFactory $presenterFactory
-	)
-	{
+	) {
 		$this->senderEmail = $senderEmail;
 		$this->senderName = $senderName;
 		$this->mailer = $mailer;

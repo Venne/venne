@@ -18,8 +18,7 @@ use Venne\Widgets\DI\WidgetsExtension;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationsExtension extends \Nette\DI\CompilerExtension
-	implements
+class NotificationsExtension extends \Nette\DI\CompilerExtension implements
 	\Venne\Queue\DI\IJobProvider,
 	\Kdyby\Doctrine\DI\IEntityProvider,
 	\Venne\System\DI\IPresenterProvider

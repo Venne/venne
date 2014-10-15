@@ -73,8 +73,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 		ILoginControlFactory $form,
 		IRegistrationControlFactory $registrationControlFactory,
 		SecurityManager $securityManager
-	)
-	{
+	) {
 		parent::__construct();
 
 		$this->roleRepository = $entityManager->getRepository(Role::class);

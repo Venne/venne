@@ -54,8 +54,7 @@ class TemplateFactory extends \Nette\Object implements \Nette\Application\UI\ITe
 		User $user = null,
 		IStorage $cacheStorage = null,
 		PathResolver $pathResolver = null
-	)
-	{
+	) {
 		$this->latteFactory = $latteFactory;
 		$this->httpRequest = $httpRequest;
 		$this->httpResponse = $httpResponse;

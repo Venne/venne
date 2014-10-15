@@ -39,8 +39,7 @@ class RolesTableFactory
 		RoleFormService $roleFormService,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator
-	)
-	{
+	) {
 		$this->roleRepository = $entityManager->getRepository(Role::class);
 		$this->roleFormService = $roleFormService;
 		$this->adminGridFactory = $adminGridFactory;

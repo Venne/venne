@@ -26,8 +26,7 @@ class AdminFormService extends \Venne\System\DoctrineFormService
 		AdminFormFactory $formFactory,
 		EntityManager $entityManager,
 		EntityFormMapper $entityFormMapper
-	)
-	{
+	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 	}
 

@@ -47,8 +47,7 @@ class ResetFormService extends \Nette\Object
 		ResetFormFactory $formFactory,
 		EntityManager $entityManager,
 		SecurityManager $securityManager
-	)
-	{
+	) {
 		$this->formFactory = $formFactory;
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->securityManager = $securityManager;

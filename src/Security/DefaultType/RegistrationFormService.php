@@ -28,8 +28,7 @@ class RegistrationFormService extends \Venne\System\DoctrineFormService
 		RegistrationFormFactory $formFactory,
 		EntityManager $entityManager,
 		EntityFormMapper $entityFormMapper
-	)
-	{
+	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 	}
 

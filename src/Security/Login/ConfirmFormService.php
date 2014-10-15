@@ -28,7 +28,6 @@ class ConfirmFormService extends \Nette\Object
 {
 
 	const SUBMIT_NAME = '_submit';
-
 	const SUBMIT_CAPTION = 'Reset password';
 
 	/** @var \Venne\Forms\IFormFactory */
@@ -47,8 +46,7 @@ class ConfirmFormService extends \Nette\Object
 		ConfirmFormFactory $formFactory,
 		EntityManager $entityManager,
 		SecurityManager $securityManager
-	)
-	{
+	) {
 		$this->formFactory = $formFactory;
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->securityManager = $securityManager;

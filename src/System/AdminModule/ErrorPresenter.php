@@ -60,4 +60,5 @@ class ErrorPresenter extends \Nette\Application\UI\Presenter
 			}
 		}
 	}
+
 }

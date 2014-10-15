@@ -85,12 +85,11 @@ class AdminGrid extends \Venne\System\UI\Control
 	private $gridoFactory;
 
 	public function __construct(
-		EntityRepository $repository = null,
+		EntityRepository $repository,
 		INavbarControlFactory $navbarFactory,
 		FormFactoryFactory $formFactoryFactory,
 		IGridoFactory $gridoFactory
-	)
-	{
+	) {
 		parent::__construct();
 
 		$this->repository = $repository;

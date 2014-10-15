@@ -21,8 +21,7 @@ use Venne\Widgets\DI\WidgetsExtension;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SystemExtension extends \Nette\DI\CompilerExtension
-	implements
+class SystemExtension extends \Nette\DI\CompilerExtension implements
 	\Kdyby\Doctrine\DI\IEntityProvider,
 	\Venne\System\DI\IPresenterProvider,
 	\Kdyby\Translation\DI\ITranslationProvider,

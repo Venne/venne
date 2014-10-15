@@ -27,8 +27,7 @@ class RoleFormService extends \Venne\System\DoctrineFormService
 		RoleFormFactory $formFactory,
 		EntityManager $entityManager,
 		EntityFormMapper $entityFormMapper
-	)
-	{
+	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 	}
 

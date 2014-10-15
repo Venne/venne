@@ -40,8 +40,7 @@ class JobsControl extends \Venne\System\UI\Control
 		User $user,
 		IJobControlFactory $jobControlFactory,
 		DataTransferManager $dataTransferManager
-	)
-	{
+	) {
 		parent::__construct();
 
 		$this->jobRepository = $entityManager->getRepository(Job::class);

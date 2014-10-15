@@ -19,8 +19,7 @@ use Venne\Widgets\DI\WidgetsExtension;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class QueueExtension extends \Nette\DI\CompilerExtension
-	implements
+class QueueExtension extends \Nette\DI\CompilerExtension implements
 	\Kdyby\Doctrine\DI\IEntityProvider,
 	\Venne\System\DI\IPresenterProvider
 {

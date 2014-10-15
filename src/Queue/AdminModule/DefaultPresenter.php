@@ -33,8 +33,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	public function __construct(
 		WorkerManager $workerManager,
 		INavbarControlFactory $navbarControlFactory
-	)
-	{
+	) {
 		$this->workerManager = $workerManager;
 		$this->navbarControlFactory = $navbarControlFactory;
 	}

@@ -43,8 +43,7 @@ class NotificationJob extends \Venne\Queue\JobType
 	public function __construct(
 		EntityManager $entityManager,
 		JobManager $jobManager
-	)
-	{
+	) {
 		$this->entityManager = $entityManager;
 		$this->notificationRepository = $entityManager->getRepository(Notification::class);
 		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);

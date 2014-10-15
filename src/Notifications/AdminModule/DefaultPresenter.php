@@ -31,8 +31,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	public function __construct(
 		NotificationManager $notificationManager,
 		INotificationControlFactory $notificationControlFactory
-	)
-	{
+	) {
 		$this->notificationManager = $notificationManager;
 		$this->notificationControlFactory = $notificationControlFactory;
 	}

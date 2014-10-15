@@ -42,8 +42,7 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 		JobManager $jobManager,
 		IAdminGridFactory $adminGridFactory,
 		JobFormService $jobFormService
-	)
-	{
+	) {
 		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->jobManager = $jobManager;
 		$this->adminGridFactory = $adminGridFactory;

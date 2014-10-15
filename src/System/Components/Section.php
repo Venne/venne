@@ -124,7 +124,6 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 		return $this->id;
 	}
 
-
 	/********************* interface \ArrayAccess ****************d*g**/
 
 	/**

@@ -40,8 +40,7 @@ class InvitationStateListener
 		NotificationManager $notificationManager,
 		EmailManager $emailManager,
 		Application $application
-	)
-	{
+	) {
 		$this->notificationManager = $notificationManager;
 		$this->emailManager = $emailManager;
 		$this->application = $application;

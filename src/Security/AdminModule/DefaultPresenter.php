@@ -63,8 +63,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 		ProvidersFormFactory $providersForm,
 		SecurityManager $securityManager,
 		IAdminGridFactory $adminGridFactory
-	)
-	{
+	) {
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->form = $form;
 		$this->providersForm = $providersForm;

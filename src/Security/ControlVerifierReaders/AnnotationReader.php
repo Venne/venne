@@ -128,4 +128,5 @@ class AnnotationReader extends \Nette\Object implements \Venne\Security\IControl
 
 		return array();
 	}
+
 }

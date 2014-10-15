@@ -49,8 +49,7 @@ class InvitationsTableFactory
 		ITranslator $translator,
 		NetteUser $user,
 		InvitationFormService $invitationFormService
-	)
-	{
+	) {
 		$this->invitationRepository = $entityManager->getRepository(Invitation::class);
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->adminGridFactory = $adminGridFactory;

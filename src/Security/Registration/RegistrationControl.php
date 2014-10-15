@@ -112,8 +112,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 		AuthorizatorFactory $authorizatorFactory,
 		IMailer $mailer,
 		FormFactoryFactory $formFactoryFactory
-	)
-	{
+	) {
 		$this->entityManager = $entityManager;
 		$this->roleRepository = $entityManager->getRepository(Role::class);
 		$this->securityManager = $securityManager;

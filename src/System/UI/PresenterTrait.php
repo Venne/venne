@@ -36,8 +36,7 @@ trait PresenterTrait
 	public function injectVennePresenter(
 		IPresenterFactory $presenterFactory,
 		IControlVerifier $controlVerifier = null
-	)
-	{
+	) {
 		$this->presenterFactory = $presenterFactory;
 		$this->controlVerifier = $controlVerifier;
 	}

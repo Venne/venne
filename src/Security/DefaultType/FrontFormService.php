@@ -26,8 +26,7 @@ class FrontFormService extends \Venne\System\DoctrineFormService
 		FrontFormFactory $formFactory,
 		EntityManager $entityManager,
 		EntityFormMapper $entityFormMapper
-	)
-	{
+	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 	}
 

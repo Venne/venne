@@ -24,4 +24,5 @@ interface IRegistrationForm
 	 * @param \Venne\Security\ILoginProvider $loginProvider
 	 */
 	public function connectWithLoginProvider(Form $form, ILoginProvider $loginProvider);
+
 }

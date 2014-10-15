@@ -36,8 +36,7 @@ class DashboardPresenter extends \Nette\Application\UI\Presenter
 	public function __construct(
 		EntityManager $entityManager,
 		DataTransferManager $dataTransferManager
-	)
-	{
+	) {
 		$this->logRepository = $entityManager->getRepository(Login::class);
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->dataTransferManager = $dataTransferManager;

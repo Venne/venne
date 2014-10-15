@@ -43,8 +43,7 @@ class ApplicationPresenter extends \Nette\Application\UI\Presenter
 		MailerFormFactory $mailerForm,
 		AuthenticationFormFactory $authenticationForm,
 		RegistrationTableFactory $registrationTableFactory
-	)
-	{
+	) {
 		$this->authenticationForm = $authenticationForm;
 		$this->applicationForm = $applicationForm;
 		$this->systemForm = $systemForm;

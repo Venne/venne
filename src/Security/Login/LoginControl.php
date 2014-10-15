@@ -85,8 +85,7 @@ class LoginControl extends \Venne\System\UI\Control
 		SecurityManager $securityManager,
 		IMailer $mailer,
 		FormFactoryFactory $formFactoryFactory
-	)
-	{
+	) {
 		parent::__construct();
 
 		$this->userRepository = $entityManager->getRepository(User::class);

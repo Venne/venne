@@ -60,8 +60,7 @@ class AdministrationManager extends \Nette\Object
 		$defaultPresenter,
 		$theme,
 		IWidgetManagerFactory $widgetManagerFactory
-	)
-	{
+	) {
 		$this->routePrefix = $routePrefix;
 		$this->defaultPresenter = $defaultPresenter;
 		$this->theme = $theme;

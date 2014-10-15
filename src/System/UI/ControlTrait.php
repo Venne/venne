@@ -33,8 +33,7 @@ trait ControlTrait
 	public function injectControlTrait(
 		ITranslator $translator,
 		ITemplateLocator $templateLocator
-	)
-	{
+	) {
 		$this->translator = $translator;
 		$this->templateLocator = $templateLocator;
 	}
@@ -100,4 +99,5 @@ trait ControlTrait
 
 		throw new \Nette\InvalidStateException('No template files found');
 	}
+
 }

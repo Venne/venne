@@ -71,8 +71,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		IAdminGridFactory $adminGridFactory,
 		Session $session,
 		FormFactoryFactory $formFactoryFactory
-	)
-	{
+	) {
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->loginRepository = $entityManager->getRepository(Login::class);
 		$this->userFormFactory = $userFormFactory;

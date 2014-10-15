@@ -39,8 +39,7 @@ class RegistrationTableFactory
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator,
 		RegistrationFormService $registrationFormService
-	)
-	{
+	) {
 		$this->registrationRepository = $entityManager->getRepository(Registration::class);
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;

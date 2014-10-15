@@ -81,8 +81,7 @@ trait AdminPresenterTrait
 		JsControlFactory $jsControlFactory,
 		ITrayControlFactory $trayControlFactory,
 		SideComponentsControlFactory $sideComponentsControlFactory
-	)
-	{
+	) {
 		$this->administrationManager = $administrationManager;
 		$this->entityManager = $entityManager;
 		$this->packageManager = $packageManager;

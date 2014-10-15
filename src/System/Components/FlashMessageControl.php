@@ -59,4 +59,5 @@ class FlashMessageControl extends Control
 			return (array) $component->presenter->getFlashSession()->$id;
 		}
 	}
+
 }

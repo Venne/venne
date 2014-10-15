@@ -36,8 +36,7 @@ class EmailJob extends \Venne\Queue\JobType
 	public function __construct(
 		EntityManager $entityManager,
 		EmailManager $emailManager
-	)
-	{
+	) {
 		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->emailManager = $emailManager;

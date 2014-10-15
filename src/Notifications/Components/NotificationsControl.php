@@ -40,8 +40,7 @@ class NotificationsControl extends \Venne\System\UI\Control
 		NotificationManager $notificationManager,
 		INotificationControlFactory $notificationControlFactory,
 		DataTransferManager $dataTransferManager
-	)
-	{
+	) {
 		parent::__construct();
 
 		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);

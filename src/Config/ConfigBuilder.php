@@ -51,7 +51,6 @@ class ConfigBuilder extends \Nette\Object implements \ArrayAccess, \Countable, \
 		$this->load();
 	}
 
-
 	/* ------------------------------ Interfaces -------------------------------- */
 
 	/**

@@ -50,8 +50,7 @@ class JobManager extends \Nette\Object
 		ConfigManager $configManager,
 		NetteUser $netteUser,
 		Container $container
-	)
-	{
+	) {
 		$this->entityManager = $entityManager;
 		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->configManager = $configManager;

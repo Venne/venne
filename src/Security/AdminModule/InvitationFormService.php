@@ -34,8 +34,7 @@ class InvitationFormService extends \Venne\System\DoctrineFormService
 		EntityManager $entityManager,
 		EntityFormMapper $entityFormMapper,
 		User $netteUser
-	)
-	{
+	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 		$this->netteUser = $netteUser;
 		$this->userRepository = $entityManager->getRepository(\Venne\Security\User::class);

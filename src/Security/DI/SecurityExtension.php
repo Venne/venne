@@ -24,8 +24,7 @@ use Venne\System\DI\SystemExtension;
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class SecurityExtension extends \Nette\DI\CompilerExtension
-	implements
+class SecurityExtension extends \Nette\DI\CompilerExtension implements
 	\Kdyby\Doctrine\DI\IEntityProvider,
 	\Venne\Notifications\DI\IEventProvider,
 	\Venne\System\DI\IPresenterProvider,

@@ -59,8 +59,7 @@ class NotificationManager extends \Nette\Object
 		NetteUser $netteUser,
 		EntityManager $entityManager,
 		JobManager $jobManager
-	)
-	{
+	) {
 		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
 		$this->settingRepository = $entityManager->getRepository(NotificationSetting::class);
 		$this->typeRepository = $entityManager->getRepository(NotificationType::class);

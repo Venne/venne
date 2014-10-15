@@ -45,8 +45,7 @@ class NotificationControl extends \Venne\System\UI\Control
 		NotificationManager $notificationManager,
 		User $user,
 		DataTransferManager $dataTransferManager
-	)
-	{
+	) {
 		parent::__construct();
 
 		$this->entityManager = $entityManager;

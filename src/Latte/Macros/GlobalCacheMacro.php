@@ -62,9 +62,7 @@ class GlobalCacheMacro extends \Nette\Object implements \Latte\IMacro
 		$this->used = true;
 		$node->isEmpty = false;
 		$node->openingCode = PhpWriter::using($node)
-			->write('<?php if (Venne\Latte\Macros\GlobalCacheMacro::createCache($netteCacheStorage, %var, $presenter->template->_g->caches, ' . var_export(self::$template, true) . ', %node.array?)) { ?>',
-				Random::generate()
-			);
+			->write('<?php if (Venne\Latte\Macros\GlobalCacheMacro::createCache($netteCacheStorage, %var, $presenter->template->_g->caches, ' . var_export(self::$template, true) . ', %node.array?)) { ?>', Random::generate());
 	}
 
 	public function nodeClosed(MacroNode $node)
