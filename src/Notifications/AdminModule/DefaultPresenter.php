@@ -11,6 +11,7 @@
 
 namespace Venne\Notifications\AdminModule;
 
+use Nette\Application\UI\Multiplier;
 use Venne\Notifications\Components\INotificationControlFactory;
 use Venne\Notifications\NotificationManager;
 
@@ -45,11 +46,13 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @return \Venne\Notifications\Components\NotificationControl
+	 * @return \Nette\Application\UI\Multiplier
 	 */
 	protected function createComponentNotification()
 	{
-		return $this->notificationControlFactory->create();
+		return new Multiplier(function ($id) {
+			return $this->notificationControlFactory->create($id);
+		});
 	}
 
 }

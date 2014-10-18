@@ -25,6 +25,11 @@ use Venne\Notifications\NotificationUser;
 class NotificationControl extends \Venne\System\UI\Control
 {
 
+	use \Venne\System\AjaxControlTrait;
+
+	/** @var integer */
+	private $id;
+
 	/** @var \Nette\Security\User */
 	private $user;
 
@@ -40,7 +45,15 @@ class NotificationControl extends \Venne\System\UI\Control
 	/** @var \Venne\DataTransfer\DataTransferManager */
 	private $dataTransferManager;
 
+	/**
+	 * @param integer $id
+	 * @param \Doctrine\ORM\EntityManager $entityManager
+	 * @param \Venne\Notifications\NotificationManager $notificationManager
+	 * @param \Nette\Security\User $user
+	 * @param \Venne\DataTransfer\DataTransferManager $dataTransferManager
+	 */
 	public function __construct(
+		$id,
 		EntityManager $entityManager,
 		NotificationManager $notificationManager,
 		User $user,
@@ -48,6 +61,7 @@ class NotificationControl extends \Venne\System\UI\Control
 	) {
 		parent::__construct();
 
+		$this->id = $id;
 		$this->entityManager = $entityManager;
 		$this->notificationUserRepository = $entityManager->getRepository(NotificationUser::class);
 		$this->user = $user;
@@ -63,12 +77,9 @@ class NotificationControl extends \Venne\System\UI\Control
 		return $this->notificationManager;
 	}
 
-	/**
-	 * @param int $id
-	 */
-	public function handleRead($id)
+	public function handleRead()
 	{
-		if (($entity = $this->notificationUserRepository->find($id)) === null) {
+		if (($entity = $this->notificationUserRepository->find($this->id)) === null) {
 			throw new BadRequestException;
 		}
 
@@ -78,28 +89,30 @@ class NotificationControl extends \Venne\System\UI\Control
 		$this->redirect('this');
 	}
 
-	/**
-	 * @param int $id
-	 */
-	public function handleRemove($id)
+	public function handleRemove()
 	{
-		if (($entity = $this->notificationUserRepository->find($id)) === null) {
+		if (($entity = $this->notificationUserRepository->find($this->id)) === null) {
 			throw new BadRequestException;
 		}
 
 		$this->notificationUserRepository->delete($entity);
 
 		$this->redirect('this');
+		$this->redrawControl('content');
+		$this->id = null;
 	}
 
-	public function render($id)
+	public function render()
 	{
-		$this->template->notification = $this->dataTransferManager
-			->createQuery(NotificationDto::class, function () use ($id) {
-				return $this->notificationUserRepository->find($id);
-			})
-			->enableCache()
-			->fetch();
+		if ($this->id !== null) {
+			$this->template->notification = $this->dataTransferManager
+				->createQuery(NotificationDto::class, function () {
+					return $this->notificationUserRepository->find($this->id);
+				})
+				->enableCache()
+				->fetch();
+		}
+
 		$this->template->render();
 	}
 

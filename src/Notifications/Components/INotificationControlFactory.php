@@ -18,8 +18,9 @@ interface INotificationControlFactory
 {
 
 	/**
+	 * @param integer $id
 	 * @return \Venne\Notifications\Components\NotificationControl
 	 */
-	public function create();
+	public function create($id);
 
 }

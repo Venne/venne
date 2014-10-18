@@ -42,16 +42,21 @@ class NotificationUser extends \Kdyby\Doctrine\Entities\BaseEntity
 	protected $notification;
 
 	/**
-	 * @var bool
+	 * @var \DateTime|null
 	 *
-	 * @ORM\Column(type="boolean")
+	 * @ORM\Column(type="datetime", nullable=true)
 	 */
-	protected $markRead = false;
+	private $read;
 
 	public function __construct(Notification $notification, User $user)
 	{
 		$this->notification = $notification;
 		$this->user = $user;
+	}
+
+	public function markAsRead()
+	{
+		$this->read = new \DateTime();
 	}
 
 	public function setNotification(Notification $log)
@@ -62,6 +67,14 @@ class NotificationUser extends \Kdyby\Doctrine\Entities\BaseEntity
 	public function setUser(User $user)
 	{
 		$this->user = $user;
+	}
+
+	/**
+	 * @return \DateTime|null
+	 */
+	public function getRead()
+	{
+		return $this->read;
 	}
 
 }

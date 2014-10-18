@@ -142,17 +142,20 @@ class NotificationManager extends \Nette\Object
 	}
 
 	/**
-	 * @param int|null $limit
+	 * @param integer|null $limit
+	 * @param integer|null $offset
 	 * @return NotificationUser[]
 	 */
-	public function getNotifications($limit = null)
+	public function getNotifications($limit = null, $offset = null)
 	{
-		return $this->notificationUserRepository->createQueryBuilder('a')
+		$qb = $this->notificationUserRepository->createQueryBuilder('a')
 			->leftJoin('a.notification', 'l')
 			->andWhere('a.user = :user')->setParameter('user', $this->getUser()->getId())
 			->orderBy('l.created', 'DESC')
 			->setMaxResults($limit)
-			->getQuery()->getResult();
+			->setFirstResult($offset);
+
+		return $qb->getQuery()->getResult();
 	}
 
 	/**

@@ -2,3 +2,9 @@ services:
 
 	- Venne\Notifications\AdminModule\NotificationSettingFormFactory (@system.admin.ajaxFormFactory)
 	- Venne\Notifications\AdminModule\NotificationSettingFormService
+
+	Venne\Notifications\Components\NotificationControl:
+		arguments: [%id%]
+		implement: Venne\Notifications\Components\INotificationControlFactory
+		parameters: [id]
+		inject: true

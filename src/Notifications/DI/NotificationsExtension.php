@@ -58,10 +58,6 @@ class NotificationsExtension extends \Nette\DI\CompilerExtension implements
 			}
 		}
 
-		$container->addDefinition($this->prefix('notificationControl'))
-			->setImplement('Venne\Notifications\Components\INotificationControlFactory')
-			->setInject(true);
-
 		$container->addDefinition($this->prefix('notificationsControl'))
 			->setImplement('Venne\Notifications\Components\INotificationsControlFactory')
 			->addTag(SystemExtension::TAG_TRAY_COMPONENT)

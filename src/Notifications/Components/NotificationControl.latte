@@ -1,8 +1,10 @@
+{snippet content}
+{if isset($notification)}
 {default $link = ''}
 {*var $link = $event::getLink($notification->notification)*}
 
-<div class="media{if $notification->markRead} text-muted{/if}">
-	<a n:href="remove $notification->id" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
+<div class="media{if $notification->read !== null} text-muted{/if}">
+	<a n:href="remove" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
 
 	<a class="pull-left" href="#">
 		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($notification->userEmail)))}" alt="$notification->userName">
@@ -21,12 +23,13 @@
 		{if $link}</a>{else}</p>{/if}
 
 		<div class="btn-group pull-left">
-			<a n:href="remove $notification->id" class="btn btn-xs btn-default notification-close ajax">
-				<i class="glyphicon glyphicon-remove"></i> remove
-			</a>
-			<a class="btn btn-xs btn-default">
-				<i class="glyphicon glyphicon-ban-circle"></i> block
+			<a n:href="remove" class="btn btn-xs btn-default notification-close ajax">
+				<i class="glyphicon glyphicon-remove"></i> {_Remove}
 			</a>
 		</div>
 	</div>
 </div>
+{else}
+	{_'Notification has been removed.'}
+{/if}
+{/snippet}

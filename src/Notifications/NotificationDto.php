@@ -18,7 +18,7 @@ namespace Venne\Notifications;
  * @property-read \DateTime $created
  * @property-read string $target
  * @property-read integer $targetKey
- * @property-read boolean $markRead
+ * @property-read \DateTime|null $read
  *
  * @property-read string $userEmail
  * @property-read string $userName

@@ -1,18 +1,16 @@
-{var $count = count($notifications)}
-
 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	<i class="fa fa-bell"></i> <span class="badge">{$count}</span>
+	<i class="fa fa-bell"></i> <span class="badge">{$notificationCount}</span>
 </a>
 
 <div id="notification-{!$control->name}" class="dropdown-menu list-group notification-container">
 	<div role="presentation" class="dropdown-header">
 		<i class="fa fa-bell"></i>
-		{_'%count% notifications', $count}
+		{_'%count% notifications', $notificationCount}
 	</div>
 
-	<div class="list-group notification-list-group">
+	<div class="list-group notification-list-group" n:snippet="content" data-ajax-append>
 		<div n:foreach="$notifications as $notification" class="list-group-item">
-			{control notification $notification->id}
+			{control notification-$notification->id}
 		</div>
 	</div>
 
@@ -21,6 +19,7 @@
 	</a>
 </div>
 
+{snippet js}
 <script type="text/javascript">
 	$(function(){
 		$('#notification-{!$control->name}').on('click', function(e) {
@@ -31,5 +30,19 @@
 				$(this).remove();
 			});
 		});
+
+		var $list = $('#notification-{!$control->name} .notification-list-group');
+		$list.on('scroll.notifications', function () {
+			var $this = $(this);
+
+			if ($this.scrollTop() + $this.height() >= $this[0].scrollHeight - 20) {
+				$list.off('scroll.notifications');
+				$.nette.ajax({
+					url: {link load! offset => $offset},
+					off: ['spinner', 'unique']
+				});
+			}
+		});
 	});
 </script>
+{/snippet}
