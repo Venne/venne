@@ -2,3 +2,9 @@ services:
 
 	- Venne\Queue\AdminModule\JobFormFactory (@system.admin.ajaxFormFactory)
 	- Venne\Queue\AdminModule\JobFormService
+
+	Venne\Queue\Components\NotificationControl:
+		arguments: [%id%]
+		implement: Venne\Queue\Components\IJobControlFactory
+		parameters: [id]
+		inject: true

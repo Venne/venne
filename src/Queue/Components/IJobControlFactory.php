@@ -18,8 +18,9 @@ interface IJobControlFactory
 {
 
 	/**
+	 * @param integer $id
 	 * @return \Venne\Queue\Components\JobControl
 	 */
-	public function create();
+	public function create($id);
 
 }

@@ -1,18 +1,18 @@
 {var $count = count($jobs)}
 
 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	<i class="fa fa-tasks"></i> <span class="badge">{$count}</span>
+	<i class="fa fa-tasks"></i> <span class="badge">{$jobCount}</span>
 </a>
 
 <div id="jobs-{!$control->name}" class="dropdown-menu list-group notification-container">
 	<div role="presentation" class="dropdown-header">
 		<i class="fa fa-tasks"></i>
-		{_'%count% jobs', $count}
+		{_'%count% jobs', $jobCount}
 	</div>
 
-	<div class="list-group notification-list-group">
+	<div class="list-group notification-list-group" n:snippet="content" data-ajax-append>
 		<div n:foreach="$jobs->toArray() as $job" class="list-group-item">
-			{control job $job->id}
+			{control job-$job->id}
 		</div>
 	</div>
 
@@ -21,6 +21,7 @@
 	</a>
 </div>
 
+{snippet js}
 <script type="text/javascript">
 	$(function(){
 		$('#jobs-{!$control->name}').on('click', function(e) {
@@ -31,5 +32,19 @@
 				$(this).remove();
 			});
 		});
+
+		var $list = $('#jobs-{!$control->name} .notification-list-group');
+		$list.on('scroll.notifications', function () {
+			var $this = $(this);
+
+			if ($this.scrollTop() + $this.height() >= $this[0].scrollHeight - 20) {
+				$list.off('scroll.notifications');
+				$.nette.ajax({
+					url: {link load! offset => $offset},
+					off: ['spinner', 'unique']
+				});
+			}
+		});
 	});
 </script>
+{/snippet}

@@ -24,6 +24,9 @@ use Venne\Queue\Job;
 class JobControl extends \Venne\System\UI\Control
 {
 
+	/** @var integer */
+	private $id;
+
 	/** @var \Nette\Security\User */
 	private $user;
 
@@ -33,24 +36,29 @@ class JobControl extends \Venne\System\UI\Control
 	/** @var \Venne\DataTransfer\DataTransferManager */
 	private $dataTransferManager;
 
+	/**
+	 * @param integer $id
+	 * @param \Doctrine\ORM\EntityManager $entityManager
+	 * @param \Nette\Security\User $user
+	 * @param \Venne\DataTransfer\DataTransferManager $dataTransferManager
+	 */
 	public function __construct(
+		$id,
 		EntityManager $entityManager,
 		User $user,
 		DataTransferManager $dataTransferManager
 	) {
 		parent::__construct();
 
+		$this->id = $id;
 		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->user = $user;
 		$this->dataTransferManager = $dataTransferManager;
 	}
 
-	/**
-	 * @param int $id
-	 */
-	public function handleRemove($id)
+	public function handleRemove()
 	{
-		if (($entity = $this->jobRepository->find($id)) === null) {
+		if (($entity = $this->jobRepository->find($this->id)) === null) {
 			throw new BadRequestException;
 		}
 
@@ -65,11 +73,11 @@ class JobControl extends \Venne\System\UI\Control
 		}
 	}
 
-	public function render($id)
+	public function render()
 	{
 		$this->template->job = $this->dataTransferManager
-			->createQuery(JobDto::class, function () use ($id) {
-				return $this->jobRepository->find($id);
+			->createQuery(JobDto::class, function () {
+				return $this->jobRepository->find($this->id);
 			})
 			->enableCache()
 			->fetch();

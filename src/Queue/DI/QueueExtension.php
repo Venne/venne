@@ -79,10 +79,6 @@ class QueueExtension extends \Nette\DI\CompilerExtension implements
 			->setInject(true)
 			->addTag(SystemExtension::TAG_TRAY_COMPONENT)
 			->addTag(WidgetsExtension::TAG_WIDGET, 'jobs');
-
-		$container->addDefinition($this->prefix('jobControlFactory'))
-			->setImplement('Venne\Queue\Components\IJobControlFactory')
-			->setInject(true);
 	}
 
 	/**

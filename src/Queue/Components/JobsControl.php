@@ -12,6 +12,7 @@
 namespace Venne\Queue\Components;
 
 use Doctrine\ORM\EntityManager;
+use Nette\Application\UI\Multiplier;
 use Nette\Security\User;
 use Venne\DataTransfer\DataTransferManager;
 use Venne\Queue\JobDto;
@@ -22,6 +23,9 @@ use Venne\Queue\Job;
  */
 class JobsControl extends \Venne\System\UI\Control
 {
+
+	/** @var integer */
+	private $offset = 0;
 
 	/** @var \Nette\Security\User */
 	private $user;
@@ -50,11 +54,23 @@ class JobsControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @return \Venne\Queue\Components\JobControl
+	 * @param integer $offset
+	 */
+	public function handleLoad($offset)
+	{
+		$this->offset = (integer) $offset;
+		$this->redrawControl('content');
+		$this->redrawControl('js');
+	}
+
+	/**
+	 * @return \Nette\Application\UI\Multiplier
 	 */
 	protected function createComponentJob()
 	{
-		return $this->jobControlFactory->create();
+		return new Multiplier(function ($id) {
+			return $this->jobControlFactory->create($id);
+		});
 	}
 
 	public function render()
@@ -64,10 +80,18 @@ class JobsControl extends \Venne\System\UI\Control
 				return $this->jobRepository->createQueryBuilder('a')
 					->andWhere('a.user = :user')->setParameter('user', $this->user->getIdentity()->getId())
 					->orderBy('a.date', 'ASC')
+					->setMaxResults(5)
+					->setFirstResult($this->offset)
 					->getQuery()->getResult();
 			})
-			->enableCache()
+			->enableCache($this->offset)
 			->fetchAll();
+		$this->template->jobCount = $this->jobRepository->createQueryBuilder('a')
+			->select('COUNT(a.id)')
+			->andWhere('a.user = :user')->setParameter('user', $this->user->getIdentity()->getId())
+			->getQuery()->getSingleScalarResult();
+		$this->template->offset = $this->offset + 5;
+
 		$this->template->render();
 	}
 
