@@ -45,7 +45,7 @@ class AdminFormFactory extends \Nette\Object implements \Venne\Forms\IFormFactor
 		$user->addText('name', 'Name');
 		$user->addTextArea('notation', 'Notation', 40, 4)
 			->getControlPrototype()->attrs['class'] = 'input-block-level';
-		$user->addMultiSelect('entityRoles', 'Roles')
+		$user->addMultiSelect('roleEntities', 'Roles')
 			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
 		$user->addText('key', 'Lock key')
 			->setOption('description', 'If is set user cannot log in.');

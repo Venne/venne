@@ -60,7 +60,7 @@ class AdminFormService extends \Venne\System\DoctrineFormService
 	protected function error(Form $form, \Exception $e)
 	{
 		if ($e instanceof \Kdyby\Doctrine\DuplicateEntryException) {
-			$form['name']->addError($form->getTranslator()->translate('Name must be unique.'));
+			$form['user']['name']->addError($form->getTranslator()->translate('Name must be unique.'));
 
 			return;
 		}

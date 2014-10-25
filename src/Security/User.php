@@ -289,17 +289,26 @@ class User extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\Securit
 	/**
 	 * @return ArrayCollection|Role[]
 	 */
-	public function getEntityRoles()
+	public function getRoleEntities()
 	{
 		return $this->roleEntities->toArray();
 	}
 
-	public function addEntityRole(Role $role)
+	public function addRoleEntity(Role $role)
 	{
 		$this->roleEntities[] = $role;
 	}
 
-	public function removeRole(Role $role)
+	/**
+	 * @param \Venne\Security\Role $role
+	 * @return boolean
+	 */
+	public function hasRoleEntity(Role $role)
+	{
+		return $this->roleEntities->contains($role);
+	}
+
+	public function removeRoleEntity(Role $role)
 	{
 		$this->roleEntities->removeElement($role);
 	}
@@ -336,17 +345,6 @@ class User extends \Kdyby\Doctrine\Entities\BaseEntity implements \Nette\Securit
 	public function getNotation()
 	{
 		return $this->notation;
-	}
-
-	/**
-	 * @param \Venne\Security\Role $roleEntity
-	 * @return $this
-	 */
-	public function addRoleEntity(Role $roleEntity)
-	{
-		$this->roleEntities->add($roleEntity);
-
-		return $this;
 	}
 
 	/**
