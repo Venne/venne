@@ -63,6 +63,9 @@ class AdminGrid extends \Venne\System\UI\Control
 	/** @var callable[] */
 	public $onClose;
 
+	/** @var callable[] */
+	public $onError;
+
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $repository;
 
@@ -385,8 +388,12 @@ class AdminGrid extends \Venne\System\UI\Control
 				$this->tableDelete($item, null);
 			}
 		} else {
-			$this->repository->getEntityManager()->remove($this->repository->find($id));
-			$this->repository->getEntityManager()->flush();
+			try {
+				$this->repository->getEntityManager()->remove($this->repository->find($id));
+				$this->repository->getEntityManager()->flush();
+			} catch (\Exception $e) {
+				$this->onError($this, $e);
+			}
 		}
 
 		$this->redirect('this');
