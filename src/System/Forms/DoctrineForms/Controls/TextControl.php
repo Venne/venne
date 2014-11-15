@@ -53,7 +53,8 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 			return false;
 		}
 
-		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
+		$name = $component->getOption(self::FIELD_NAME, $component->getName());
+		if ($meta->hasField($name)) {
 			$component->setValue($this->accessor->getValue($entity, $name));
 
 			return true;
@@ -102,7 +103,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 	/**
 	 * @param string|object $entity
 	 * @param string $relationName
-	 * @return ClassMetadata|Kdyby\Doctrine\Mapping\ClassMetadata
+	 * @return ClassMetadata|\Kdyby\Doctrine\Mapping\ClassMetadata
 	 */
 	private function relatedMetadata($entity, $relationName)
 	{
@@ -123,7 +124,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 	{
 		$repository = $this->entityManager->getRepository($meta->getName());
 
-		if ($repository instanceof Kdyby\Doctrine\EntityDao && !is_callable($nameKey)) {
+		if ($repository instanceof \Kdyby\Doctrine\EntityDao && !is_callable($nameKey)) {
 			return $repository->findPairs($criteria, $nameKey, $orderBy);
 		}
 
@@ -150,28 +151,30 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 			return false;
 		}
 
-		if ($meta->hasField($name = $component->getOption(self::FIELD_NAME, $component->getName()))) {
-			$this->accessor->setValue($entity, $name, $component->getValue());
+		$name = $component->getOption(self::FIELD_NAME, $component->getName());
+		$value = $component->getValue();
 
-			return true;
+		if ($this->accessor->isWritable($entity, $name) && !$meta->hasAssociation($name)) {
+			try {
+				$this->accessor->setValue($entity, $name, $value);
+
+				return true;
+			} catch (\Kdyby\Doctrine\MemberAccessException $e) {
+			}
 		}
 
 		if (!$meta->hasAssociation($name)) {
 			return false;
 		}
 
-		$identifier = $component->getValue();
-		if (!$identifier && !is_array($identifier)) {
-			return false;
-		}
-
+		$value = $component->getValue();
 		$entityClass = $this->relatedMetadata($entity, $name)->getName();
 		$repository = $this->entityManager->getRepository($entityClass);
 
 		if ($meta->isCollectionValuedAssociation($name)) {
 			$property = \Doctrine\Common\Util\Inflector::singularize($name);
 			foreach ($repository->findAll() as $associatedEntity) {
-				if (in_array($associatedEntity->id, $identifier)) {
+				if (in_array($associatedEntity->id, $value)) {
 					$hasMethod = 'has' . ucfirst($property);
 					if (!$entity->$hasMethod($associatedEntity)) {
 						$addMethod = 'add' . ucfirst($property);
@@ -184,8 +187,14 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 				}
 			}
 
-		} elseif ($relation = $repository->find($identifier)) {
-			$meta->setFieldValue($entity, $name, $relation);
+		} elseif ($value === null || $value = $repository->find($value)) {
+			if ($this->accessor->isWritable($entity, $name)) {
+				try {
+					$this->accessor->setValue($entity, $name, $value);
+				} catch (\Kdyby\Doctrine\MemberAccessException $e) {
+					return false;
+				}
+			}
 		}
 
 		return true;
