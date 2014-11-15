@@ -290,6 +290,14 @@ $(function () {
 			});
 		}
 	});
+	$.nette.ext('forward', {
+		success: function (payload) {
+			if (payload.forward) {
+				window.location.href = payload.forward;
+				return false;
+			}
+		}
+	});
 	$.nette.init();
 
 });
