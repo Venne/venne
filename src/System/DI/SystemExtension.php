@@ -508,7 +508,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 	{
 		return array(
 			'@venne.venne/vendor/bootstrap/css/bootstrap.min.css',
-			'@venne.venne/vendor/bootstrap/css/bootstrap-theme.min.css',
 			'@venne.venne/vendor/jasny-bootstrap/css/jasny-bootstrap.min.css',
 			'@venne.venne/vendor/font-awesome/css/font-awesome.min.css',
 			'@venne.venne/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css',
@@ -526,18 +525,16 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 	{
 		return array(
 			'@venne.venne/vendor/jquery/jquery.min.js',
-			'@venne.venne/vendor/jquery/jquery-migrate.min.js',
+			'@venne.venne/vendor/jquery/jquery-migrate.js',
 			'@venne.venne/vendor/jquery-ui/jquery-ui.min.js',
 			'@venne.venne/vendor/bootstrap/js/bootstrap.min.js',
 			'@venne.venne/vendor/jasny-bootstrap/js/jasny-bootstrap.min.js',
 			'@venne.venne/vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
-//			'@venne.venne/vendor/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.$presenter->lang.js',
 
 			'@venne.venne/vendor/jquery-hashchange/jquery.ba-hashchange.min.js',
 			'@o5.grido/grido.js',
 
 			'@venne.venne/vendor/select2/select2.min.js',
-//			'@venne.venne/vendor/select2/select2_locale_$presenter->lang.js',
 
 			'@venne.venne/vendor/typeahead.js/typeahead.bundle.min.js',
 
@@ -545,20 +542,11 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 			'@venne.venne/vendor/history.ajax.js/history.ajax.js',
 			'@venne.venne/js/spinner.ajax.js',
 
-//			'@stringtoslugModule/jquery.stringToSlug.js',
-//			'@ajaxModule/nette.ajax.js',
-//			'@ajaxModule/extensions/spinner.ajax.js',
-//			'@jqueryfileuploadModule/js/jquery.fileupload.js',
-//			'@jqueryfileuploadModule/js/vendor/jquery.ui.widget.js',
-//			'@jqueryfileuploadModule/js/jquery.iframe-transport.js',
-
 			'@venne.venne/typing/jquery.typing-0.2.0.min.js',
 			'@venne.venne/vendor/nette-forms/netteForms.js',
 			'@venne.venne/textWithSelect/textWithSelect.js',
-			'@venne.venne/js/grido.ext.js',
 
 			'@venne.venne/js/application.js',
-
 		);
 	}
 
