@@ -21,12 +21,8 @@ class EmailPresenter extends \Nette\Application\UI\Presenter
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $type;
+	/** @var string */
+	private $type;
 
 	public function __construct()
 	{
@@ -42,7 +38,7 @@ class EmailPresenter extends \Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isAjax()
 	{
@@ -69,4 +65,17 @@ class EmailPresenter extends \Nette\Application\UI\Presenter
 		return $ret;
 	}
 
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+
+		$this->type = isset($params['type']) ? $params['type'] : null;
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		parent::saveState($params, $reflection);
+
+		$params['type'] = $this->type;
+	}
 }

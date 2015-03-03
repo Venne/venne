@@ -47,8 +47,6 @@ class GlobalCacheMacro extends \Nette\Object implements \Latte\IMacro
 
 	/**
 	 * Finishes template parsing.
-	 *
-	 * @return string[]
 	 */
 	public function finalize()
 	{

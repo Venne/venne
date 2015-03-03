@@ -10,6 +10,7 @@
  */
 
 namespace Venne\Security;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -28,7 +29,7 @@ interface ILoginProvider extends \Nette\Security\IAuthenticator
 	public function getLoginProviderEntity();
 
 	/**
-	 * @param \Venne\Security\User $user
+	 * @param \Venne\Security\User\User $user
 	 */
 	public function connectWithUser(User $user);
 

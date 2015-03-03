@@ -13,8 +13,10 @@ namespace Venne\System\AdminModule;
 
 use Kdyby\Doctrine\EntityManager;
 use Nette\Localization\ITranslator;
+use Venne\System\AdminModule\Registration\RegistrationControlFactory;
+use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
-use Venne\System\Registration;
+use Venne\System\Registration\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -31,19 +33,19 @@ class RegistrationTableFactory
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
-	/** @var \Venne\System\AdminModule\RegistrationFormService */
-	private $registrationFormService;
+	/** @var \Venne\System\AdminModule\Registration\RegistrationControlFactory */
+	private $registrationControlFactory;
 
 	public function __construct(
 		EntityManager $entityManager,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator,
-		RegistrationFormService $registrationFormService
+		RegistrationControlFactory $registrationControlFactory
 	) {
 		$this->registrationRepository = $entityManager->getRepository(Registration::class);
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
-		$this->registrationFormService = $registrationFormService;
+		$this->registrationControlFactory = $registrationControlFactory;
 	}
 
 	/**
@@ -61,8 +63,14 @@ class RegistrationTableFactory
 		$table->getColumn('name')
 			->setFilterText()->setSuggestion();
 
-		$form = $admin->addForm('registration', 'Registration', function (Registration $registration = null) {
-			return $this->registrationFormService->getFormFactory($registration !== null ? $registration->getId() : null);
+		$form = $admin->addForm('registration', 'Registration', function (Registration $registration = null, Form $form) use ($admin) {
+			$control = $this->registrationControlFactory->create($registration !== null ? $registration->getId() : null);
+			$control->onSave[] = function () use ($form, $admin) {
+				$form->onSuccess();
+				$admin->formSuccess();
+			};
+
+			return $control;
 		});
 
 		$toolbar = $admin->getNavbar();

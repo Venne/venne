@@ -16,7 +16,7 @@ use Venne\Notifications\EmailManager;
 use Venne\Notifications\Events\NotificationEvent;
 use Venne\Notifications\NotificationUser;
 use Venne\Queue\Job;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,7 +44,7 @@ class EmailJob extends \Venne\Queue\JobType
 
 	/**
 	 * @param \Venne\Queue\Job $job
-	 * @param integer $priority
+	 * @param int $priority
 	 */
 	public function run(Job $job, $priority)
 	{

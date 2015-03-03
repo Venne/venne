@@ -12,8 +12,9 @@
 namespace Venne\Security;
 
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Nette\InvalidArgumentException;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -44,7 +45,7 @@ use Nette\InvalidArgumentException;
  *     uniqueConstraints={@ORM\UniqueConstraint(name="uniqueId", columns={"uid", "type"})}
  * )
  */
-class LoginProvider extends \Kdyby\Doctrine\Entities\BaseEntity
+class LoginProvider extends \Venne\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -56,9 +57,9 @@ class LoginProvider extends \Kdyby\Doctrine\Entities\BaseEntity
 	const GENDER_FEMALE = 'female';
 
 	/**
-	 * @var \Venne\Security\User
+	 * @var \Venne\Security\User\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User", inversedBy="loginProviders")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User\User", inversedBy="loginProviders")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
@@ -228,7 +229,7 @@ class LoginProvider extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
-	 * @param \Venne\Security\User $user
+	 * @param \Venne\Security\User\User $user
 	 */
 	public function setUser(User $user)
 	{

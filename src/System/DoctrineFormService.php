@@ -12,7 +12,7 @@
 namespace Venne\System;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Application\UI\Form;
 use Tracy\Debugger;
@@ -57,7 +57,7 @@ abstract class DoctrineFormService extends \Nette\Object
 
 	/**
 	 * @param \Venne\Forms\IFormFactory $formFactory
-	 * @param \Kdyby\Doctrine\Entities\BaseEntity $entity
+	 * @param \Venne\Doctrine\Entities\BaseEntity $entity
 	 * @return \Venne\Forms\FormFactory
 	 */
 	protected function createFormFactory(IFormFactory $formFactory, BaseEntity $entity)
@@ -85,7 +85,7 @@ abstract class DoctrineFormService extends \Nette\Object
 
 	/**
 	 * @param mixed|null $primaryKey
-	 * @return \Kdyby\Doctrine\Entities\BaseEntity
+	 * @return \Venne\Doctrine\Entities\BaseEntity
 	 */
 	protected function getEntity($primaryKey)
 	{
@@ -95,7 +95,7 @@ abstract class DoctrineFormService extends \Nette\Object
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\Entities\BaseEntity
+	 * @return \Venne\Doctrine\Entities\BaseEntity
 	 */
 	protected function createEntity()
 	{
@@ -124,13 +124,13 @@ abstract class DoctrineFormService extends \Nette\Object
 
 	protected function save(Form $form, $entity)
 	{
-		try {
+//		try {
 			$this->entityFormMapper->save($entity, $form);
 			$this->entityManager->persist($entity);
 			$this->entityManager->flush($entity);
-		} catch (\Exception $e) {
-			$this->error($form, $e);
-		}
+//		} catch (\Exception $e) {
+//			$this->error($form, $e);
+//		}
 	}
 
 	protected function error(Form $form, \Exception $e)
@@ -153,6 +153,14 @@ abstract class DoctrineFormService extends \Nette\Object
 	protected function getEntityManager()
 	{
 		return $this->entityManager;
+	}
+
+	/**
+	 * @return \Venne\Forms\IFormFactory
+	 */
+	protected function getRawFormFactory()
+	{
+		return $this->formFactory;
 	}
 
 }

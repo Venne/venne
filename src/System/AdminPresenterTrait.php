@@ -11,9 +11,7 @@
 
 namespace Venne\System;
 
-use Kdyby\Doctrine\EntityManager;
 use Nette\Application\Application;
-use Venne\Packages\PackageManager;
 use Venne\System\AdminModule\Components\ITrayControlFactory;
 use Venne\System\AdminModule\Components\SideComponentsControlFactory;
 use Venne\System\Components\CssControlFactory;
@@ -31,12 +29,6 @@ trait AdminPresenterTrait
 
 	/** @var \Venne\System\AdministrationManager */
 	private $administrationManager;
-
-	/** @var \Kdyby\Doctrine\EntityManager */
-	private $entityManager;
-
-	/** @var \Venne\Packages\PackageManager */
-	private $packageManager;
 
 	/** @var \Nette\Application\Application */
 	private $application;
@@ -74,8 +66,6 @@ trait AdminPresenterTrait
 
 	public function injectAdminPresenter(
 		AdministrationManager $administrationManager,
-		EntityManager $entityManager,
-		PackageManager $packageManager,
 		Application $application,
 		CssControlFactory $cssControlFactory,
 		JsControlFactory $jsControlFactory,
@@ -83,8 +73,6 @@ trait AdminPresenterTrait
 		SideComponentsControlFactory $sideComponentsControlFactory
 	) {
 		$this->administrationManager = $administrationManager;
-		$this->entityManager = $entityManager;
-		$this->packageManager = $packageManager;
 		$this->application = $application;
 		$this->cssControlFactory = $cssControlFactory;
 		$this->jsControlFactory = $jsControlFactory;
@@ -101,27 +89,11 @@ trait AdminPresenterTrait
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\EntityManager
-	 */
-	public function getEntityManager()
-	{
-		return $this->entityManager;
-	}
-
-	/**
 	 * @return \Nette\Localization\ITranslator
 	 */
 	public function getTranslator()
 	{
 		return $this->translator;
-	}
-
-	/**
-	 * @return \Venne\Packages\PackageManager
-	 */
-	public function getPackageManager()
-	{
-		return $this->packageManager;
 	}
 
 	/**

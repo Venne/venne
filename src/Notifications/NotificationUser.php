@@ -12,7 +12,7 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,21 +20,21 @@ use Venne\Security\User;
  * @ORM\Entity
  * @ORM\Table(name="notification_user")
  */
-class NotificationUser extends \Kdyby\Doctrine\Entities\BaseEntity
+class NotificationUser extends \Venne\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
 
 	/**
-	 * @var \Venne\Security\User
+	 * @var \Venne\Security\User\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	protected $user;
 
 	/**
-	 * @var \Venne\Security\User
+	 * @var \Venne\Security\User\User
 	 *
 	 * @ORM\ManyToOne(targetEntity="\Venne\Notifications\Notification")
 	 * @ORM\JoinColumn(onDelete="CASCADE")

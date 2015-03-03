@@ -3,12 +3,12 @@
 {/snippet}
 
 {snippet table}
-		{if $control->mode === $control::MODE_MODAL}
+		{if $mode === $control::MODE_MODAL}
 			{control table}
 		{else}
-			{if $control->formName}
+			{if $formName}
 				<ul class="breadcrumb">
-					<li><a class="ajax" n:href="this mode => NULL, formName=>NULL, id=>NULL">{_Root}</a></li>
+					<li><a class="ajax" n:href="return!">{_Root}</a></li>
 					<li class="active">{$control->findCurrentEntity()}</li>
 				</ul>
 			{else}
@@ -19,8 +19,8 @@
 
 
 {snippet formContainer}
-	{if $control->formName}
-		{if $control->mode === $control::MODE_MODAL}
+	{if $formName}
+		{if $mode === $control::MODE_MODAL}
 			<div id="modal-{!$control->getName()}" class="modal fade{if $form->type} {$form->type}{/if}" tabindex="-1" role="dialog" data-focus-on="input:first" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -58,7 +58,7 @@
 											$.nette.ajax({ url: {link close!}});
 								});
 
-								{if !$control->formName}
+								{if !$formName}
 									$('#modal-{!$control->getName()}').modal('hide');
 								{/if}
 							});

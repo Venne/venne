@@ -4,15 +4,15 @@
 	<i class="fa fa-tasks"></i> <span class="badge">{$jobCount}</span>
 </a>
 
-<div id="jobs-{!$control->name}" class="dropdown-menu list-group notification-container">
+<div id="jobs-{!$control->getName()}" class="dropdown-menu list-group notification-container">
 	<div role="presentation" class="dropdown-header">
 		<i class="fa fa-tasks"></i>
 		{_'%count% jobs', $jobCount}
 	</div>
 
 	<div class="list-group notification-list-group" n:snippet="content" data-ajax-append>
-		<div n:foreach="$jobs->toArray() as $job" class="list-group-item">
-			{control job-$job->id}
+		<div n:foreach="$jobs as $job" class="list-group-item">
+			{control job-{$job->getId()}}
 		</div>
 	</div>
 
@@ -24,16 +24,16 @@
 {snippet js}
 <script type="text/javascript">
 	$(function(){
-		$('#jobs-{!$control->name}').on('click', function(e) {
+		$('#jobs-{!$control->getName()}').on('click', function(e) {
 			e.stopPropagation();
 		});
-		$('#jobs-{!$control->name} a.notification-close').on('click', function(e) {
+		$('#jobs-{!$control->getName()} a.notification-close').on('click', function(e) {
 			$(this).closest('.list-group-item').slideUp(400, function() {
 				$(this).remove();
 			});
 		});
 
-		var $list = $('#jobs-{!$control->name} .notification-list-group');
+		var $list = $('#jobs-{!$control->getName()} .notification-list-group');
 		$list.on('scroll.notifications', function () {
 			var $this = $(this);
 

@@ -18,6 +18,7 @@ use Nette\Localization\ITranslator;
  *
  * @property-read ITranslator $translator
  * @property-read string $templateName
+ * @method render()
  */
 abstract class Control extends \Nette\Application\UI\Control
 {

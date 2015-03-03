@@ -13,7 +13,7 @@ namespace Venne\Queue;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -25,12 +25,12 @@ use Kdyby\Doctrine\Entities\BaseEntity;
  * @property \DateTime $date
  * @property \DateTime|null $dateInterval
  * @property int|null $round
- * @property \Venne\Security\User $user
+ * @property \Venne\Security\User\User $user
  *
  * @ORM\Entity
  * @ORM\Table(name="jobs")
  */
-class Job extends \Kdyby\Doctrine\Entities\BaseEntity
+class Job extends \Venne\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -52,57 +52,57 @@ class Job extends \Kdyby\Doctrine\Entities\BaseEntity
 	 *
 	 * @ORM\Column(type="string")
 	 */
-	protected $type;
+	private $type;
 
 	/**
 	 * @var string
 	 *
 	 * @ORM\Column(type="text")
 	 */
-	protected $arguments;
+	private $arguments;
 
 	/**
 	 * @var string
 	 *
 	 * @ORM\Column(type="string")
 	 */
-	protected $state;
+	private $state;
 
 	/**
 	 * @var string
 	 *
 	 * @ORM\Column(type="integer")
 	 */
-	protected $priority;
+	private $priority;
 
 	/**
 	 * @var \DateTime
 	 *
 	 * @ORM\Column(type="datetime")
 	 */
-	protected $date;
+	private $date;
 
 	/**
 	 * @var \DateTime|null
 	 *
 	 * @ORM\Column(type="datetime", nullable=true)
 	 */
-	protected $dateInterval;
+	private $dateInterval;
 
 	/**
 	 * @var int|null
 	 *
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
-	protected $round;
+	private $round;
 
 	/**
 	 * @var \Nette\Security\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
-	protected $user;
+	private $user;
 
 	/**
 	 * @param string $type
@@ -119,6 +119,14 @@ class Job extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
+	 * @param \Venne\Security\User\User|null $user
+	 */
+	public function setUser(User $user = null)
+	{
+		$this->user = $user;
+	}
+
+	/**
 	 * @param mixed[] $arguments
 	 */
 	public function setArguments(array $arguments = array())
@@ -132,6 +140,70 @@ class Job extends \Kdyby\Doctrine\Entities\BaseEntity
 	public function getArguments()
 	{
 		return $this->arguments ? unserialize($this->arguments) : null;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getState()
+	{
+		return $this->state;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getDate()
+	{
+		return $this->date;
+	}
+
+	/**
+	 * @return \DateTime|null
+	 */
+	public function getDateInterval()
+	{
+		return $this->dateInterval;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getRound()
+	{
+		return $this->round;
+	}
+
+	/**
+	 * @return \Venne\Security\User\User
+	 */
+	public function getUser()
+	{
+		return $this->user;
+	}
+
+	/**
+	 * @param string $state
+	 */
+	public function updateState($state)
+	{
+		$this->state = (string) $state;
 	}
 
 }

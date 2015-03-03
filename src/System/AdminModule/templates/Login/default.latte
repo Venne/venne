@@ -17,13 +17,13 @@
 						<li n:class="!$registration ? active"><a class="ajax" n:href="this registration => NULL" data-toggle="tab"><i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;{_Login}</a></li>
 
 						{foreach $registrations as $r}
-							<li class="pull-right{if $registration && $registration === $r} active{/if}"><a class="ajax" n:href="change! registration => $r->id">{_$r->name}</a></li>
+							<li class="pull-right{if $registration && $registration === $r} active{/if}"><a class="ajax" n:href="change! registration => $r->getId()">{_$r->getName()}</a></li>
 						{/foreach}
 					</ul>
 				</div>
 				<div class="panel-body">
 					{if $registration}
-						{control registration-$registration->id}
+						{control registration-{$registration->getId()}}
 					{else}
 						{control signInForm}
 					{/if}

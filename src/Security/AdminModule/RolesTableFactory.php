@@ -11,9 +11,13 @@
 
 namespace Venne\Security\AdminModule;
 
+use Nette;
 use Doctrine\ORM\EntityManager;
 use Nette\Localization\ITranslator;
-use Venne\Security\Role;
+use Venne\Security\AdminModule\Role\RoleControl;
+use Venne\Security\AdminModule\Role\RoleControlFactory;
+use Venne\Security\Role\Role;
+use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -34,16 +38,21 @@ class RolesTableFactory
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
+	/** @var \Venne\Security\AdminModule\Role\RoleControlFactory */
+	private $roleControlFactory;
+
 	public function __construct(
 		EntityManager $entityManager,
 		RoleFormService $roleFormService,
 		IAdminGridFactory $adminGridFactory,
-		ITranslator $translator
+		ITranslator $translator,
+		RoleControlFactory $roleControlFactory
 	) {
 		$this->roleRepository = $entityManager->getRepository(Role::class);
 		$this->roleFormService = $roleFormService;
 		$this->adminGridFactory = $adminGridFactory;
 		$this->translator = $translator;
+		$this->roleControlFactory = $roleControlFactory;
 	}
 
 	/**
@@ -75,8 +84,14 @@ class RolesTableFactory
 			})
 			->getCellPrototype()->width = '60%';
 
-		$form = $admin->addForm('role', 'Role', function (Role $role = null) {
-			return $this->roleFormService->getFormFactory($role ? $role->getId() : null);
+		$form = $admin->addForm('role', 'Role', function (Role $role = null, Form $form) use ($admin) {
+			$control = $this->roleControlFactory->create($role !== null ? $role->getId() : null);
+			$control->onSave[] = function (RoleControl $roleControl, Nette\Application\UI\Form $controlForm) use ($form, $admin) {
+				$form->onSuccess($controlForm);
+				$admin->formSuccess();
+			};
+
+			return $control;
 		});
 
 		$toolbar = $admin->getNavbar();

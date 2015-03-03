@@ -21,19 +21,11 @@ use Venne\Queue\WorkerManager;
 class WorkerPresenter extends \Nette\Application\UI\Presenter
 {
 
-	/**
-	 * @var int
-	 *
-	 * @persistent
-	 */
-	public $id;
+	/** @var int */
+	private $id;
 
-	/**
-	 * @var bool
-	 *
-	 * @persistent
-	 */
-	public $debugMode;
+	/** @var bool */
+	private $debugMode;
 
 	/** @var \Venne\Queue\WorkerManager */
 	private $workerManager;
@@ -115,10 +107,26 @@ class WorkerPresenter extends \Nette\Application\UI\Presenter
 	private function getWorker()
 	{
 		try {
-			return $this->workerManager->getWokrer($this->id);
+			return $this->workerManager->getWorker($this->id);
 		} catch (InvalidArgumentException $e) {
 			throw new BadRequestException;
 		}
+	}
+
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+
+		$this->id = isset($params['id']) ? $params['id'] : null;
+		$this->debugMode = isset($params['debugMode']) ? $params['debugMode'] : null;
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		parent::saveState($params, $reflection);
+
+		$params['id'] = $this->id;
+		$params['debugMode'] = $this->debugMode;
 	}
 
 }

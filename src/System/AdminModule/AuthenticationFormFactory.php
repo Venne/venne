@@ -14,7 +14,7 @@ namespace Venne\System\AdminModule;
 use Doctrine\ORM\EntityManager;
 use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\System\Registration;
+use Venne\System\Registration\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -47,7 +47,7 @@ class AuthenticationFormFactory implements \Venne\Forms\IFormFactory
 
 		$reg = array();
 		foreach ($this->registrationRepository->findAll() as $registration) {
-			$reg[$registration->id] = $registration->name;
+			$reg[$registration->getId()] = $registration->getName();
 		}
 
 		$form->addGroup('Authentication');

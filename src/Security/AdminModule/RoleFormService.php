@@ -12,10 +12,10 @@
 namespace Venne\Security\AdminModule;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Application\UI\Form;
-use Venne\Security\Role;
+use Venne\Security\Role\Role;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

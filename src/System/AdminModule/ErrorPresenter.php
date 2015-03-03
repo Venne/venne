@@ -12,7 +12,6 @@
 namespace Venne\System\AdminModule;
 
 use Tracy\Debugger;
-use Venne\System\Content\Repositories\PageRepository;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

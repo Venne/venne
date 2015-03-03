@@ -12,13 +12,13 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Nette\InvalidArgumentException;
 use Nette\Security\User as NetteUser;
 use Venne\Notifications\Jobs\NotificationJob;
 use Venne\Queue\Job;
 use Venne\Queue\JobManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -48,7 +48,7 @@ class NotificationManager extends \Nette\Object
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $userRepository;
 
-	/** @var \Nette\Security\NetteUser */
+	/** @var \Nette\Security\User */
 	private $netteUser;
 
 	/** @var \Venne\Notifications\IEvent[] */
@@ -103,13 +103,13 @@ class NotificationManager extends \Nette\Object
 
 	/**
 	 * @param string $type
-	 * @param string|null $target
+	 * @param \Venne\Doctrine\Entities\BaseEntity|null $target
 	 * @param string|null $action
 	 * @param string|null $message
-	 * @param \Venne\Security\User|null $user
-	 * @param integer $priority
+	 * @param \Venne\Security\User\User|null $user
+	 * @param int $priority
 	 */
-	public function notify($type, $target = null, $action = null, $message = null, User $user = null, $priority = NotificationManager::PRIORITY_DEFAULT)
+	public function notify($type, BaseEntity $target = null, $action = null, $message = null, User $user = null, $priority = NotificationManager::PRIORITY_DEFAULT)
 	{
 		if (!isset($this->types[$type])) {
 			throw new InvalidArgumentException(sprintf('Type \'%s\' does not exist.', $type));
@@ -122,7 +122,7 @@ class NotificationManager extends \Nette\Object
 		$targetKey = $this->detectPrimaryKey($target);
 
 		if ($target instanceof BaseEntity) {
-			$metadata = $this->entityManager->getClassMetadata(get_class($target));
+			$metadata = $this->entityManager->getMetadataFactory()->getMetadataFor(get_class($target));
 			$target = $metadata->getName();
 		} else {
 			$target = get_class($target);
@@ -135,15 +135,15 @@ class NotificationManager extends \Nette\Object
 		$this->entityManager->persist($notification);
 		$this->entityManager->flush();
 
-		$job = new Job(NotificationJob::getName(), null, array($notification->id));
-		$job->user = $user;
+		$job = new Job(NotificationJob::getName(), null, array($notification->getId()));
+		$job->setUser($user);
 
 		$this->jobManager->scheduleJob($job, $priority);
 	}
 
 	/**
-	 * @param integer|null $limit
-	 * @param integer|null $offset
+	 * @param int|null $limit
+	 * @param int|null $offset
 	 * @return NotificationUser[]
 	 */
 	public function getNotifications($limit = null, $offset = null)
@@ -171,7 +171,7 @@ class NotificationManager extends \Nette\Object
 	}
 
 	/**
-	 * @return \Venne\Security\User|null
+	 * @return \Venne\Security\User\User|null
 	 */
 	private function getUser()
 	{
@@ -187,10 +187,7 @@ class NotificationManager extends \Nette\Object
 	private function getTypeEntity($type, $action = null, $message = null)
 	{
 		if (($typeEntity = $this->typeRepository->findOneBy(array('type' => $type, 'action' => $action, 'message' => $message))) === null) {
-			$typeEntity = new NotificationType;
-			$typeEntity->type = $type;
-			$typeEntity->action = $action;
-			$typeEntity->message = $message;
+			$typeEntity = new NotificationType($type, $action, $message);
 
 			$this->entityManager->persist($typeEntity);
 			$this->entityManager->flush($typeEntity);
@@ -200,17 +197,15 @@ class NotificationManager extends \Nette\Object
 	}
 
 	/**
-	 * @param \Kdyby\Doctrine\Entities\BaseEntity $object
+	 * @param \Venne\Doctrine\Entities\BaseEntity $object
 	 * @return string
 	 */
 	private function detectPrimaryKey(BaseEntity $object)
 	{
-		if ($object instanceof BaseEntity) {
-			$meta = $this->entityManager->getClassMetadata(get_class($object));
-			$name = $meta->getSingleIdentifierFieldName();
+		$classMetadata = $this->entityManager->getMetadataFactory()->getMetadataFor(get_class($object));
+		$name = $classMetadata->getSingleIdentifierFieldName();
 
-			return $meta->getFieldValue($object, $name);
-		}
+		return $classMetadata->getFieldValue($object, $name);
 	}
 
 }

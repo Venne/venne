@@ -13,11 +13,14 @@ namespace Venne\Security;
 
 use Doctrine\ORM\EntityManager;
 use Nette\Security\AuthenticationException;
+use Nette\Security\IAuthenticator;
+use Venne\Security\User\User;
+use Venne\Utils\Object;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Authenticator extends \Nette\Object implements \Nette\Security\IAuthenticator
+class Authenticator extends Object implements IAuthenticator
 {
 
 	/** @var \Doctrine\ORM\EntityManager */
@@ -56,9 +59,11 @@ class Authenticator extends \Nette\Object implements \Nette\Security\IAuthentica
 			$this->entityManager->flush($user);
 		}
 
-		return new Identity($user->getId(), $user->getRoles(), array(
-			'email' => $user->getEmail(),
-		));
+		return $user;
+
+//		return new Identity($user->getId(), $user->getRoles(), array(
+//			'email' => $user->getEmail(),
+//		));
 	}
 
 }

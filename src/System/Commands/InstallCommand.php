@@ -15,10 +15,9 @@ use Kdyby\Doctrine\EntityManager;
 use Nette\Utils\Validators;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tracy\Debugger;
-use Venne\Security\DefaultType\User;
-use Venne\Security\Permission;
-use Venne\Security\Role;
+use Venne\Security\User\DefaultType\User;
+use Venne\Security\Permission\Permission;
+use Venne\Security\Role\Role;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

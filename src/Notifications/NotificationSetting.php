@@ -12,6 +12,7 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="notification_setting")
  */
-class NotificationSetting extends \Kdyby\Doctrine\Entities\BaseEntity
+class NotificationSetting extends \Venne\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -30,50 +31,114 @@ class NotificationSetting extends \Kdyby\Doctrine\Entities\BaseEntity
 	 * @ORM\ManyToOne(targetEntity="NotificationType")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
-	protected $type;
+	private $type;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $target;
+	private $target;
 
 	/**
-	 * @var \Venne\Security\User
+	 * @var \Venne\Security\User\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User\User")
 	 * @ORM\JoinColumn(onDelete="SET NULL")
 	 */
-	protected $targetUser;
+	private $targetUser;
 
 	/**
 	 * @var int|null
 	 *
 	 * @ORM\Column(type="integer", nullable=true)
 	 */
-	protected $targetKey;
+	private $targetKey;
 
 	/**
-	 * @var \Venne\Security\User
+	 * @var \Venne\Security\User\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
-	protected $user;
+	private $user;
 
 	/**
 	 * @var bool
 	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $email = false;
+	private $email = false;
 
 	/**
 	 * @var bool
 	 *
 	 * @ORM\Column(type="boolean")
 	 */
-	protected $selfNotification = false;
+	private $selfNotification = false;
+
+	/**
+	 * @return \Venne\Notifications\NotificationType
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getTarget()
+	{
+		return $this->target;
+	}
+
+	/**
+	 * @return \Venne\Security\User\User
+	 */
+	public function getTargetUser()
+	{
+		return $this->targetUser;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getTargetKey()
+	{
+		return $this->targetKey;
+	}
+
+	/**
+	 * @param \Venne\Security\User\User $user
+	 */
+	public function setUser(User $user)
+	{
+		$this->user = $user;
+	}
+
+	/**
+	 * @return \Venne\Security\User\User
+	 */
+	public function getUser()
+	{
+		return $this->user;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isEmail()
+	{
+		return $this->email;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isSelfNotification()
+	{
+		return $this->selfNotification;
+	}
 
 }

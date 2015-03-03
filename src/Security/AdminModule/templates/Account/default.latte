@@ -18,35 +18,32 @@
 
 <div class="media">
 	<a class="pull-left" href="#">
-		{var $user = $presenter->user->identity}
-		{if $user instanceof \Venne\Security\User}
-			<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->user->identity->email)))}" style="width: 96px; height: 96px;" />
-		{/if}
+		<img class="img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($presenter->getUser()->getIdentity()->getEmail())))}" style="width: 96px; height: 96px;" />
 	</a>
 
 	<div class="media-body">
 		<h4 class="media-heading">
-			{if $user instanceof \CmsModule\Pages\Users\User}{$user}{else}Administrator{/if}
+			{$presenter->getUser()->getIdentity()}
 		</h4>
 
 		<dl class="dl-horizontal">
 			<dt>{_Registered}</dt>
-			<dd>{$user->created|date: "%d.%m.%Y"}</dd>
+			<dd>{$presenter->getUser()->getIdentity()->getCreated()|date: "%d.%m.%Y"}</dd>
 
 			<dt>{_E-mail}</dt>
-			<dd><a href="mailto:{$user->email}">{$user->email}</a></dd>
+			<dd><a href="mailto:{$presenter->getUser()->getIdentity()->getEmail()}">{$presenter->getUser()->getIdentity()->getEmail()}</a></dd>
 		</dl>
 
 	</div>
 </div>
 
-{if $user instanceof \CmsModule\Pages\Users\User}
+{*if $user instanceof \CmsModule\Pages\Users\User}
 	<hr />
 
 	<h2>{_Authentication}</h2>
 
 	{control loginTable}
-{/if}
+{/if*}
 
 <hr />
 

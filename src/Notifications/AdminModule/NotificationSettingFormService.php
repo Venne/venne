@@ -12,14 +12,14 @@
 namespace Venne\Notifications\AdminModule;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Venne\Notifications\NotificationSetting;
+use Venne\System\DoctrineFormService;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class NotificationSettingFormService extends \Venne\System\DoctrineFormService
+class NotificationSettingFormService extends DoctrineFormService
 {
 
 	public function __construct(

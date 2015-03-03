@@ -101,6 +101,12 @@ class JobsPresenter extends \Nette\Application\UI\Presenter
 			->getElementPrototype()->class[] = 'ajax';
 		$admin->connectActionAsDelete($table->getAction('delete'));
 
+		$admin->onDelete[] = function () {
+			$this->flashMessage('Job has been deleted.', 'success');
+			$this->redrawControl('flashes');
+		};
+
+
 		return $admin;
 	}
 

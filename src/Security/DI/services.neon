@@ -17,9 +17,32 @@ services:
 	- Venne\Security\AdminModule\RoleFormService
 	- Venne\Security\AdminModule\RolesTableFactory
 
-	- Venne\Security\DefaultType\AdminFormFactory (@system.admin.ajaxFormFactory)
-	- Venne\Security\DefaultType\AdminFormService
-	- Venne\Security\DefaultType\FrontFormFactory (@system.admin.ajaxFormFactory)
-	- Venne\Security\DefaultType\FrontFormService
-	- Venne\Security\DefaultType\RegistrationFormFactory (@system.admin.ajaxFormFactory)
-	- Venne\Security\DefaultType\RegistrationFormService
+	- Venne\Security\User\DefaultType\AdminFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\User\DefaultType\AdminFormService
+	- Venne\Security\User\DefaultType\FrontFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\User\DefaultType\FrontFormService
+	- Venne\Security\User\DefaultType\RegistrationFormFactory (@system.admin.ajaxFormFactory)
+	- Venne\Security\User\DefaultType\RegistrationFormService
+
+	- Venne\Security\User\UserFacade
+
+	-
+		class: Venne\Security\Registration\RegistrationControl
+		arguments: [%userType%, %mode%, %loginProviderMode%, %roles%]
+		implement: Venne\Security\Registration\IRegistrationControlFactory
+		parameters:
+			- userType
+			- Venne\System\Registration\RegistrationMode mode
+			- Venne\System\Registration\LoginProviderMode loginProviderMode
+			- roles
+		inject: true
+
+	Venne\Security\AdminModule\Role\RoleControl:
+		arguments: [%roleId%, @system.admin.ajaxFormFactory]
+		implement: Venne\Security\AdminModule\Role\RoleControlFactory
+		parameters:
+			- roleId
+	Venne\Security\Role\Form\InvitationContainer:
+		implement: Venne\Security\Role\Form\RoleContainerFactory
+	- Venne\Security\Role\RoleFacade
+	- Venne\Security\Role\RoleMapper

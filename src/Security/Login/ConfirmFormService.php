@@ -12,12 +12,12 @@
 namespace Venne\Security\Login;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Application\UI\Form;
 use Venne\Forms\FormFactory;
 use Venne\Security\SecurityManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

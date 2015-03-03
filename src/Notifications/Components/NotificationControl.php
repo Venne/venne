@@ -15,7 +15,6 @@ use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
 use Venne\DataTransfer\DataTransferManager;
-use Venne\Notifications\NotificationDto;
 use Venne\Notifications\NotificationManager;
 use Venne\Notifications\NotificationUser;
 
@@ -46,7 +45,7 @@ class NotificationControl extends \Venne\System\UI\Control
 	private $dataTransferManager;
 
 	/**
-	 * @param integer $id
+	 * @param int $id
 	 * @param \Doctrine\ORM\EntityManager $entityManager
 	 * @param \Venne\Notifications\NotificationManager $notificationManager
 	 * @param \Nette\Security\User $user
@@ -95,7 +94,8 @@ class NotificationControl extends \Venne\System\UI\Control
 			throw new BadRequestException;
 		}
 
-		$this->notificationUserRepository->delete($entity);
+		$this->entityManager->remove($entity);
+		$this->entityManager->flush($entity);
 
 		$this->redirect('this');
 		$this->redrawControl('content');
@@ -105,12 +105,7 @@ class NotificationControl extends \Venne\System\UI\Control
 	public function render()
 	{
 		if ($this->id !== null) {
-			$this->template->notification = $this->dataTransferManager
-				->createQuery(NotificationDto::class, function () {
-					return $this->notificationUserRepository->find($this->id);
-				})
-				->enableCache()
-				->fetch();
+			$this->template->notification = $this->notificationUserRepository->find($this->id);
 		}
 
 		$this->template->render();

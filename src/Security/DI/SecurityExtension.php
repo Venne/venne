@@ -15,11 +15,22 @@ use Kdyby\Console\DI\ConsoleExtension;
 use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
-use Venne\Security\DefaultType\Mapping\PasswordContainer;
+use Nette\Security\Permission;
+use Venne\Security\AdminModule\AccountPresenter;
+use Venne\Security\AdminModule\DefaultPresenter;
+use Venne\Security\Authenticator;
+use Venne\Security\AuthorizatorFactory;
+use Venne\Security\User\DefaultType\Mapping\PasswordContainer;
 use Venne\Security\Events\LoginEvent;
 use Venne\Security\Events\NewPasswordEvent;
 use Venne\Security\Events\PasswordRecoveryEvent;
 use Venne\Security\Events\RegistrationEvent;
+use Venne\Security\User\ExtendedUserListener;
+use Venne\Security\User\UserLogListener;
+use Venne\Security\User\UserStateListener;
+use Venne\Security\SecurityManager;
+use Venne\Security\User\UserStorage;
+use Venne\System\Commands\InstallCommand;
 use Venne\System\DI\SystemExtension;
 
 /**
@@ -44,34 +55,37 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 		);
 
 		$container->addDefinition($this->prefix('listeners.userStateListener'))
-			->setClass('Venne\Security\Listeners\UserStateListener');
+			->setClass(UserStateListener::class);
 
 		$container->addDefinition($this->prefix('extendedUserListener'))
-			->setClass('Venne\Security\Listeners\ExtendedUserListener');
+			->setClass(ExtendedUserListener::class);
 
 		$container->addDefinition($this->prefix('userLogListener'))
-			->setClass('Venne\Security\Listeners\UserLogListener')
+			->setClass(UserLogListener::class)
 			->addTag(EventsExtension::TAG_SUBSCRIBER);
 
 		$container->addDefinition($this->prefix('securityManager'))
-			->setClass('Venne\Security\SecurityManager');
+			->setClass(SecurityManager::class);
 
 		$container->addDefinition($this->prefix('authorizatorFactory'))
-			->setFactory('Venne\Security\AuthorizatorFactory');
+			->setFactory(AuthorizatorFactory::class);
 
 		$container->getDefinition('packageManager.packageManager')
 			->addSetup('$service->onInstall[] = ?->clearPermissionSession', array($this->prefix('@authorizatorFactory')))
 			->addSetup('$service->onUninstall[] = ?->clearPermissionSession', array($this->prefix('@authorizatorFactory')));
 
+		$container->getDefinition('nette.userStorage')
+			->setClass(UserStorage::class);
+
 		$container->addDefinition('authorizator')
-			->setClass('Nette\Security\Permission')
+			->setClass(Permission::class)
 			->setFactory($this->prefix('@authorizatorFactory') . '::getPermissionsByUser', array('@user', true));
 
 		$container->addDefinition('authenticator')
-			->setClass('Venne\Security\Authenticator');
+			->setClass(Authenticator::class);
 
 		$container->addDefinition($this->prefix('installCommand'))
-			->setFactory('Venne\System\Commands\InstallCommand')
+			->setFactory(InstallCommand::class)
 			->addTag(ConsoleExtension::COMMAND_TAG);
 
 		$container->addDefinition($this->prefix('passwordContainerMapper'))
@@ -89,7 +103,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 	public function setupSecurity(ContainerBuilder $container)
 	{
 		$container->addDefinition($this->prefix('defaultPresenter'))
-			->setClass('Venne\Security\AdminModule\DefaultPresenter')
+			->setClass(DefaultPresenter::class)
 			->addTag(SystemExtension::TAG_ADMINISTRATION, array(
 				'link' => 'Admin:Security:Default:',
 				'category' => 'System',
@@ -99,7 +113,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 			));
 
 		$container->addDefinition($this->prefix('accountPresenter'))
-			->setClass('Venne\Security\AdminModule\AccountPresenter');
+			->setClass(AccountPresenter::class);
 	}
 
 	private function registerUsers()
@@ -125,7 +139,7 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 		$config = $container->getDefinition($this->prefix('securityManager'));
 
 		foreach ($container->findByTag(static::TAG_LOGIN_PROVIDER) as $item => $tags) {
-			$class = '\\' . $container->getDefinition($item)->class;
+			$class = '\\' . $container->getDefinition($item)->getClass();
 			$type = $class::getType();
 
 			$config->addSetup('addLoginProvider', array($type, (string) $item));
@@ -173,10 +187,10 @@ class SecurityExtension extends \Nette\DI\CompilerExtension implements
 		return array(
 			new UserType(
 				'Default user',
-				\Venne\Security\DefaultType\User::class,
-				new Statement('@' . \Venne\Security\DefaultType\AdminFormService::class),
-				new Statement('@' . \Venne\Security\DefaultType\FrontFormService::class),
-				new Statement('@' . \Venne\Security\DefaultType\RegistrationFormService::class)
+				\Venne\Security\User\DefaultType\User::class,
+				new Statement('@' . \Venne\Security\User\DefaultType\AdminFormService::class),
+				new Statement('@' . \Venne\Security\User\DefaultType\FrontFormService::class),
+				new Statement('@' . \Venne\Security\User\DefaultType\RegistrationFormService::class)
 			),
 		);
 	}

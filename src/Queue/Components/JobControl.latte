@@ -1,24 +1,24 @@
 <div class="media">
-	<a n:href="remove $job->id" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
+	<a n:href="remove $job->getId()" class="ajax close notification-close" data-dismiss="alert" aria-hidden="true">&times;</a>
 
 	<a class="pull-left" href="#">
-		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($job->user)))}" alt="$job->user">
+		<img style="width: 42px; height: 42px;" class="media-object img-circle" src="http://www.gravatar.com/avatar/{md5(strtolower(trim($job->getUser())))}" alt="$job->user">
 	</a>
 	<div class="media-body">
 		<h4 class="media-heading">
-			{$job->user} <span class="label label-success">{$job->type}</span>
+			{$job->getUser()} <span class="label label-success">{$job->getType()}</span>
 		</h4>
 
 		<small class="text-muted">
-			<i class="fa fa-clock-o"></i> {$job->date|date:'d.m H:i'}
+			<i class="fa fa-clock-o"></i> {$job->getDate()|date:'d.m H:i'}
 		</small>
 
 		<p>
-			<span>{print_r($job->arguments, TRUE)}</span><br />
+			<span>{print_r($job->getArguments(), TRUE)}</span><br />
 		</p>
 
 		<div class="btn-group pull-left">
-			<a n:href="remove! $job->id" class="btn btn-xs btn-default notification-close ajax">
+			<a n:href="remove! $job->getId()" class="btn btn-xs btn-default notification-close ajax">
 				<i class="glyphicon glyphicon-remove"></i> remove
 			</a>
 			<a class="btn btn-xs btn-default">

@@ -16,10 +16,11 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
 use Nette\Security\AuthenticationException;
+use Nette\Utils\ArrayHash;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\AdminModule\ProviderFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 use Venne\System\AdminModule\LoginFormFactory;
 
 /**
@@ -34,28 +35,16 @@ class LoginControl extends \Venne\System\UI\Control
 	/** @var callable[] */
 	public $onError;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $provider;
+	/** @var string */
+	private $provider;
 
-	/**
-	 * @var bool
-	 *
-	 * @persistent
-	 */
-	public $reset;
+	/** @var bool */
+	private $reset;
 
-	/**
-	 * @var int
-	 *
-	 * @persistent
-	 */
-	public $key;
+	/** @var int */
+	private $key;
 
-	/** @var \Venne\Security\User|null */
+	/** @var \Venne\Security\User\User|null */
 	private $resetUser;
 
 	/** @var \Venne\System\AdminModule\LoginFormFactory */
@@ -110,6 +99,15 @@ class LoginControl extends \Venne\System\UI\Control
 		return $this->securityManager;
 	}
 
+	public function render()
+	{
+		$this->template->provider = $this->provider;
+		$this->template->reset = $this->reset;
+		$this->template->key = $this->key;
+
+		parent::render();
+	}
+
 	/**
 	 * @return \Nette\Forms\Form
 	 */
@@ -123,7 +121,25 @@ class LoginControl extends \Venne\System\UI\Control
 			};
 		}
 
-		$form->onSuccess[] = $this->formSuccess;
+		$form->onSuccess[] = function (Form $form, ArrayHash $values) {
+			$button = $form->isSubmitted();
+
+			$form->presenter->user->setExpiration('+ 14 days', false);
+
+			if ($button === $form['_submit']) {
+				try {
+					$form->presenter->user->login($values->username, $values->password);
+				} catch (AuthenticationException $e) {
+					$this->onError($this, $e);
+				}
+
+			} else {
+				$this->redirect('login!', str_replace('_', ' ', $button->name));
+			}
+
+			$this->onSuccess($this);
+			$this->redirect('this');
+		};
 
 		return $form;
 	}
@@ -137,9 +153,12 @@ class LoginControl extends \Venne\System\UI\Control
 
 		$form = $this->providerFormFactory->invoke();
 		$form['cancel']->onClick[] = function () {
-			$this->redirect('this', array('provider' => null));
+			$this->provider = null;
+			$this->redirect('this');
 		};
-		$form->onSuccess[] = $this->providerFormSuccess;
+		$form->onSuccess[] = function  (Form $form, ArrayHash $values) {
+			$this->redirect('login', array($form['provider']->value, json_encode((array) $values->parameters)));
+		};
 
 		return $form;
 	}
@@ -162,9 +181,8 @@ class LoginControl extends \Venne\System\UI\Control
 				$this->flashMessage($this->translator->translate('New password has been sent.'), 'success');
 			}
 
-			$this->redirect('this', array(
-				'reset' => null
-			));
+			$this->reset = null;
+			$this->redirect('this');
 		};
 
 		return $form;
@@ -179,50 +197,15 @@ class LoginControl extends \Venne\System\UI\Control
 			->getFormFactory($this->key)
 			->create();
 
-		$form->onSuccess[] = $this->confirmFormSuccess;
+		$form->onSuccess[] = function () {
+			$this->securityManager->sendNewPassword($this->resetUser);
+
+			$this->flashMessage($this->translator->translate('New password has been saved.'), 'success');
+			$this->key = null;
+			$this->redirect('this');
+		};
 
 		return $form;
-	}
-
-	public function formSuccess(Form $form)
-	{
-		$values = $form->getValues();
-		$button = $form->isSubmitted();
-
-		if ($values->remember) {
-			$form->presenter->user->setExpiration('+ 14 days', false);
-		} else {
-			$form->presenter->user->setExpiration('+ 20 minutes', true);
-		}
-
-		if ($button === $form['_submit']) {
-			try {
-				$form->presenter->user->login($values->username, $values->password);
-			} catch (AuthenticationException $e) {
-				$this->onError($this, $e->getMessage());
-			}
-
-		} else {
-			$this->redirect('login!', str_replace('_', ' ', $button->name));
-		}
-
-		$this->onSuccess($this);
-		$this->redirect('this');
-	}
-
-	public function providerFormSuccess(Form $form)
-	{
-		$this->redirect('login', array($form['provider']->value, json_encode((array) $form['parameters']->values)));
-	}
-
-	public function confirmFormSuccess()
-	{
-		$this->securityManager->sendNewPassword($this->resetUser);
-
-		$this->flashMessage($this->translator->translate('New password has been saved.'), 'success');
-		$this->redirect('this', array(
-			'key' => null
-		));
 	}
 
 	/**
@@ -234,7 +217,8 @@ class LoginControl extends \Venne\System\UI\Control
 		$login = $this->securityManager->getLoginProviderByName($name);
 
 		if (($container = $login->getFormContainer()) !== null && $parameters == null) {
-			$this->redirect('this', array('provider' => $name));
+			$this->provider = $name;
+			$this->redirect('this');
 
 		} else {
 			if ($parameters) {
@@ -269,7 +253,7 @@ class LoginControl extends \Venne\System\UI\Control
 			$identity = $login->authenticate(array());
 			$this->presenter->user->login($identity);
 		} catch (AuthenticationException $e) {
-			$this->onError($this, $e->getMessage());
+			$this->onError($this, $e);
 		}
 
 		$this->redirect('this');
@@ -286,6 +270,17 @@ class LoginControl extends \Venne\System\UI\Control
 				$this->onError($this, new ResetKeyNotFoundException());
 			}
 		}
+
+		$this->provider = isset($params['provider']) ? $params['provider'] : null;
+		$this->reset = isset($params['reset']) ? $params['reset'] : null;
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		parent::saveState($params, $reflection);
+
+		$params['provider'] = $this->provider;
+		$params['reset'] = $this->reset;
 	}
 
 }

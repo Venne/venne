@@ -41,7 +41,6 @@ class LoginFormFactory implements \Venne\Forms\IFormFactory
 
 		$form->addText('username', 'E-mail')->setRequired('Please provide a e-mail.');
 		$form->addPassword('password', 'Password')->setRequired('Please provide a password.');
-		$form->addCheckbox('remember', 'Remember me on this computer');
 		$form->addSubmit('_submit', 'Sign in')->getControlPrototype()->class[] = 'btn-primary';
 
 		$socialButtons = $form->addContainer('socialButtons');

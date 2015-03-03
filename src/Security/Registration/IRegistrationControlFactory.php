@@ -11,6 +11,9 @@
 
 namespace Venne\Security\Registration;
 
+use Venne\System\Registration\RegistrationMode;
+use Venne\System\Registration\LoginProviderMode;
+
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -18,13 +21,12 @@ interface IRegistrationControlFactory
 {
 
 	/**
-	 * @param bool $invitations
 	 * @param string $userType
-	 * @param string $mode
-	 * @param string $loginProviderMode
-	 * @param string[] $roles
+	 * @param \Venne\System\Registration\RegistrationMode $mode
+	 * @param \Venne\System\Registration\LoginProviderMode $loginProviderMode
+	 * @param \Venne\Security\Role\Role[] $roles
 	 * @return \Venne\Security\Registration\RegistrationControl
 	 */
-	public function create($invitations, $userType, $mode, $loginProviderMode, $roles);
+	public function create($userType, RegistrationMode $mode, LoginProviderMode $loginProviderMode, $roles);
 
 }

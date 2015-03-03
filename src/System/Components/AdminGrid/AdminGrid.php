@@ -12,8 +12,9 @@
 namespace Venne\System\Components\AdminGrid;
 
 use Grido\Components\Actions\Event;
+use Grido\Components\Operation;
 use Grido\DataSources\Doctrine;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\Doctrine\EntityRepository;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\System\Components\IGridoFactory;
@@ -33,26 +34,14 @@ class AdminGrid extends \Venne\System\UI\Control
 
 	const MODE_PLACE = 'place';
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $id;
+	/** @var string */
+	private $id;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $formName;
+	/** @var string */
+	private $formName;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $mode = self::MODE_MODAL;
+	/** @var string */
+	private $mode = self::MODE_MODAL;
 
 	/** @var callable[] */
 	public $onAttached;
@@ -65,6 +54,9 @@ class AdminGrid extends \Venne\System\UI\Control
 
 	/** @var callable[] */
 	public $onError;
+
+	/** @var callable[] */
+	public $onDelete;
 
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $repository;
@@ -129,13 +121,23 @@ class AdminGrid extends \Venne\System\UI\Control
 		return $this->repository;
 	}
 
+	public function handleReturn()
+	{
+		$this->id = null;
+		$this->formName = null;
+		$this->mode = null;
+		$this->redirect('this');
+
+		$this->redrawControl('formContainer');
+		$this->redrawControl('table');
+	}
+
 	public function handleClose()
 	{
-		$this->redirect('this', array(
-			'formName' => null,
-			'id' => null,
-			'mode' => null,
-		));
+		$this->id = null;
+		$this->formName = null;
+		$this->mode = null;
+		$this->redirect('this');
 
 		$this->redrawControl('formContainer');
 		$this->redrawControl('table');
@@ -152,12 +154,11 @@ class AdminGrid extends \Venne\System\UI\Control
 	{
 		$this->navbarForms[$section->getName()] = $form;
 
-		$section->onClick[] = function ($section) use ($mode) {
-			$this->redirect('this', array(
-				'formName' => $section->getName(),
-				'id' => null,
-				'mode' => $mode,
-			));
+		$section->onClick[] = function (Section $section) use ($mode) {
+			$this->id = null;
+			$this->formName = $section->getName();
+			$this->mode = $mode;
+			$this->redirect('this');
 
 			$this->redrawControl('table');
 			$this->redrawControl('formContainer');
@@ -176,12 +177,11 @@ class AdminGrid extends \Venne\System\UI\Control
 	{
 		$this->actionForms[$action->getName()] = $form;
 
-		$action->onClick[] = function ($id, $action) use ($mode) {
-			$this->redirect('this', array(
-				'formName' => $action->getName(),
-				'id' => $id,
-				'mode' => $mode,
-			));
+		$action->onClick[] = function ($id, Event $action) use ($mode) {
+			$this->id = $id;
+			$this->formName = $action->getName();
+			$this->mode = $mode;
+			$this->redirect('this');
 
 			$this->redrawControl('table');
 			$this->redrawControl('formContainer');
@@ -196,7 +196,13 @@ class AdminGrid extends \Venne\System\UI\Control
 	 */
 	public function connectActionAsDelete(Event $action)
 	{
-		$action->onClick[] = $this->tableDelete;
+		$action->onClick[] = function ($id) {
+			$this->deleteItems($id);
+			$this->onDelete($this, $id);
+
+			$this->redirect('this');
+			$this->redrawControl('table');
+		};
 		$action->setConfirm(function ($entity) {
 			if (method_exists($entity, '__toString')) {
 				return array('Really delete \'%s\'?', (string) $entity);
@@ -205,7 +211,12 @@ class AdminGrid extends \Venne\System\UI\Control
 			return 'Really delete?';
 		});
 
-		$this->getTable()->setOperation(array('delete' => 'Delete'), $this->tableDelete);
+		$this->getTable()->setOperation(array('delete' => 'Delete'), function (Operation $operation, $ids) {
+			$this->deleteItems($ids);
+
+			$this->redirect('this');
+			$this->redrawControl('table');
+		});
 
 		return $this;
 	}
@@ -296,44 +307,14 @@ class AdminGrid extends \Venne\System\UI\Control
 		$formFactory = $formDefinition->getFactory();
 
 		if ($formFactory instanceof \Closure) {
-			$formFactory = $formFactory($this->findCurrentEntity());
+			$formFactory = $formFactory($this->findCurrentEntity(), $formDefinition);
 		}
 
-		/** @var \Nette\Application\UI\Form $form */
-		$form = $formFactory->create();
-
-		$form->onSubmit[] = function () {
-			$this->redrawControl('form');
-		};
-		$form->onSuccess[] = function ($form, $values) use ($formDefinition) {
-			$formDefinition->onSuccess($form, $values);
-		};
-		$form->onSuccess[] = $this->formSuccess;
-		$form->onError[] = function ($form) use ($formDefinition) {
-			$formDefinition->onError($form);
-		};
-		$form->onError[] = $this->formError;
-
-		if ($this->mode == self::MODE_PLACE) {
-			$submit = $form->addSubmit('_cancel', 'Cancel');
-			$submit->setValidationScope(false);
-			$submit->onClick[] = function () use ($form) {
-				$form->onSuccess = array();
-				$this->redirect('this', array(
-					'formName' => null,
-					'id' => null,
-					'mode' => null,
-				));
-				$this->redrawControl('formContainer');
-				$this->redrawControl('table');
-			};
-		}
-
-		return $form;
+		return $formFactory;
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\Entities\BaseEntity|null
+	 * @return \Venne\Doctrine\Entities\BaseEntity|null
 	 */
 	public function findCurrentEntity()
 	{
@@ -342,21 +323,19 @@ class AdminGrid extends \Venne\System\UI\Control
 			: null;
 	}
 
-	public function formSuccess(\Nette\Application\UI\Form $form)
+	public function formSuccess()
 	{
-		if (isset($form['_submit']) && $form->isSubmitted() === $form['_submit']) {
-			if ($this->mode === self::MODE_PLACE) {
-				$this->redrawControl('formContainer');
-			}
-
-			$this->redirect('this', array(
-				'formName' => null,
-				'id' => null,
-				'mode' => null,
-			));
-
-			$this->redrawControl('table');
+		if ($this->mode === self::MODE_PLACE) {
+			$this->redrawControl('formContainer');
 		}
+
+		$this->id = null;
+		$this->formName = null;
+		$this->mode = null;
+		$this->redirect('this');
+
+		$this->redrawControl('form');
+		$this->redrawControl('table');
 	}
 
 	public function formError()
@@ -374,30 +353,48 @@ class AdminGrid extends \Venne\System\UI\Control
 				: $this->navbarForms[$this->formName];
 		}
 		$this->template->showNavbar = $this->navbar;
-		$this->template->render();
+
+		$this->template->mode = $this->mode;
+		$this->template->formName = $this->formName;
+
+		parent::render();
 	}
 
 	/**
-	 * @param integer $id
-	 * @param integer[] $action
+	 * @param int|int[] $ids
 	 */
-	public function tableDelete($id, $action)
+	private function deleteItems($ids)
 	{
-		if (is_array($action)) {
-			foreach ($action as $item) {
-				$this->tableDelete($item, null);
+		if (is_array($ids)) {
+			foreach ($ids as $id) {
+				$this->deleteItems($id);
 			}
 		} else {
 			try {
-				$this->repository->getEntityManager()->remove($this->repository->find($id));
+				$this->repository->getEntityManager()->remove($this->repository->find($ids));
 				$this->repository->getEntityManager()->flush();
 			} catch (\Exception $e) {
 				$this->onError($this, $e);
 			}
 		}
+	}
 
-		$this->redirect('this');
-		$this->redrawControl('table');
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+
+		$this->id = isset($params['id']) ? $params['id'] : null;
+		$this->formName = isset($params['formName']) ? $params['formName'] : null;
+		$this->mode = isset($params['mode']) ? $params['mode'] : self::MODE_MODAL;
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		parent::saveState($params, $reflection);
+
+		$params['id'] = $this->id;
+		$params['formName'] = $this->formName;
+		$params['mode'] = $this->mode;
 	}
 
 }

@@ -13,8 +13,10 @@ namespace Venne\System\AdminModule;
 
 use Doctrine\ORM\EntityManager;
 use Venne\DataTransfer\DataTransferManager;
-use Venne\Security\Login;
-use Venne\Security\User;
+use Venne\Security\Login\Login;
+use Venne\Security\Role\Role;
+use Venne\Security\User\User;
+use Venne\System\AdminModule\Registration\RegistrationControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -33,23 +35,37 @@ class DashboardPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\DataTransfer\DataTransferManager */
 	private $dataTransferManager;
 
+	/** @var \Venne\System\AdminModule\Registration\RegistrationControlFactory */
+	private $registrationControlFactory;
+
 	public function __construct(
 		EntityManager $entityManager,
-		DataTransferManager $dataTransferManager
-	) {
+		DataTransferManager $dataTransferManager,
+		RegistrationControlFactory $registrationControlFactory
+	)
+	{
 		$this->logRepository = $entityManager->getRepository(Login::class);
 		$this->userRepository = $entityManager->getRepository(User::class);
 		$this->dataTransferManager = $dataTransferManager;
+		$this->registrationControlFactory = $registrationControlFactory;
 	}
 
 	public function renderDefault()
 	{
-		$this->template->userDto = $this->dataTransferManager
-			->createQuery(UserDto::class, function () {
-				return $this->userRepository->find($this->getUser()->getIdentity()->getId());
-			})
-			->enableCache(sprintf('#%s', $this->getUser()->getIdentity()->getId()))
-			->fetch();
+		$this->template->user = $this->userRepository->find($this->getUser()->getIdentity()->getId());
+	}
+
+	/**
+	 * @return \Venne\System\AdminModule\Registration\RegistrationControl
+	 */
+	protected function createComponentRegistration()
+	{
+		$control = $this->registrationControlFactory->create(1);
+		$control->onSave[] = function () {
+			$this->flashMessage($this->getTranslator()->translate('Registration has been saved'));
+		};
+
+		return $control;
 	}
 
 }

@@ -11,7 +11,7 @@
 
 namespace Venne\System;
 
-use Venne\Widgets\IWidgetManagerFactory;
+use Venne\Widgets\WidgetManagerFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,10 +37,7 @@ class AdministrationManager extends \Nette\Object
 	/** @var string */
 	private $theme;
 
-	/** @var \Venne\Widgets\WidgetManager */
-	private $trayWidgetManager;
-
-	/** @var \Venne\Widgets\IWidgetManagerFactory */
+	/** @var \Venne\Widgets\WidgetManagerFactory */
 	private $widgetManagerFactory;
 
 	/** @var string[] */
@@ -53,13 +50,13 @@ class AdministrationManager extends \Nette\Object
 	 * @param string $routePrefix
 	 * @param string $defaultPresenter
 	 * @param string $theme
-	 * @param \Venne\Widgets\IWidgetManagerFactory $widgetManagerFactory
+	 * @param \Venne\Widgets\WidgetManagerFactory $widgetManagerFactory
 	 */
 	public function __construct(
 		$routePrefix,
 		$defaultPresenter,
 		$theme,
-		IWidgetManagerFactory $widgetManagerFactory
+		WidgetManagerFactory $widgetManagerFactory
 	) {
 		$this->routePrefix = $routePrefix;
 		$this->defaultPresenter = $defaultPresenter;
@@ -197,11 +194,13 @@ class AdministrationManager extends \Nette\Object
 	 */
 	public function getTrayWidgetManager()
 	{
-		if (!$this->trayWidgetManager) {
-			$this->trayWidgetManager = $this->widgetManagerFactory->create();
+		static $trayWidgetManager;
+
+		if ($trayWidgetManager === null) {
+			$trayWidgetManager = $this->widgetManagerFactory->create();
 		}
 
-		return $this->trayWidgetManager;
+		return $trayWidgetManager;
 	}
 
 }

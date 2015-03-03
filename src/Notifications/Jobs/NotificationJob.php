@@ -17,7 +17,7 @@ use Venne\Notifications\NotificationSetting;
 use Venne\Notifications\NotificationUser;
 use Venne\Queue\Job;
 use Venne\Queue\JobManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -53,7 +53,7 @@ class NotificationJob extends \Venne\Queue\JobType
 
 	/**
 	 * @param \Venne\Queue\Job $job
-	 * @param integer $priority
+	 * @param int $priority
 	 */
 	public function run(Job $job, $priority)
 	{

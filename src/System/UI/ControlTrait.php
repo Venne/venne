@@ -81,6 +81,8 @@ trait ControlTrait
 		if ($this instanceof Presenter) {
 			return parent::formatLayoutTemplateFiles();
 		}
+
+		return array();
 	}
 
 	/**

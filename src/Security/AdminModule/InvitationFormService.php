@@ -12,10 +12,10 @@
 namespace Venne\Security\AdminModule;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Security\User;
-use Venne\System\Invitation;
+use Venne\System\Invitation\Invitation;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,7 +37,7 @@ class InvitationFormService extends \Venne\System\DoctrineFormService
 	) {
 		parent::__construct($formFactory, $entityManager, $entityFormMapper);
 		$this->netteUser = $netteUser;
-		$this->userRepository = $entityManager->getRepository(\Venne\Security\User::class);
+		$this->userRepository = $entityManager->getRepository(\Venne\Security\User\User::class);
 	}
 
 	/**
@@ -49,7 +49,7 @@ class InvitationFormService extends \Venne\System\DoctrineFormService
 	}
 
 	/**
-	 * @return \Kdyby\Doctrine\Entities\BaseEntity
+	 * @return \Venne\Doctrine\Entities\BaseEntity
 	 */
 	protected function createEntity()
 	{

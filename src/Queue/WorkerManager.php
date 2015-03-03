@@ -71,7 +71,7 @@ class WorkerManager extends \Nette\Object
 		$this->configManager->saveConfigFile($data);
 		$this->configManager->unlock();
 
-		return $this->getWokrer($id);
+		return $this->getWorker($id);
 	}
 
 	/**
@@ -117,7 +117,7 @@ class WorkerManager extends \Nette\Object
 	 * @param int $id
 	 * @return \Venne\Queue\Worker
 	 */
-	public function getWokrer($id)
+	public function getWorker($id)
 	{
 		$data = $this->configManager->loadConfigFile();
 

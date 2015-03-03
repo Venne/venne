@@ -258,21 +258,21 @@ $(function () {
 		},
 		selector: "form .input-group-btn"
 	});
-	$.nette.ext('gridoBind', {
-		load: function () {
-			this.init($('body'));
-		}
-	}, {
-		init: function (target) {
-			target.find(this.selector).each(function () {
-				if (!$(this).data('gridoCreated')) {
-					$(this).data('gridoCreated', true);
-					$(this).grido();
-				}
-			});
-		},
-		selector: ".grido"
-	});
+	//$.nette.ext('gridoBind', {
+	//	load: function () {
+	//		this.init($('body'));
+	//	}
+	//}, {
+	//	init: function (target) {
+	//		target.find(this.selector).each(function () {
+	//			if (!$(this).data('gridoCreated')) {
+	//				$(this).data('gridoCreated', true);
+	//				$(this).grido();
+	//			}
+	//		});
+	//	},
+	//	selector: ".grido"
+	//});
 	$.nette.ext('alerts', {
 		success: function () {
 			$('#snippet--flashes .alert').each(function () {

@@ -12,7 +12,6 @@
 namespace Venne\Security\AdminModule;
 
 use Nette\Application\UI\Form;
-use Nette\Utils\ArrayHash;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -33,9 +32,15 @@ class RolesPresenter extends \Nette\Application\UI\Presenter
 	protected function createComponentTable()
 	{
 		$admin = $this->rolesTableFactory->create();
+
 		$form = $admin->getForm('role');
-		$form->onSuccess[] = function (Form $form, ArrayHash $values) {
-			$this->flashMessage($this->getTranslator()->translate('Role \'%name%\' has been saved.', null, (array) $values), 'success');
+		$form->onSuccess[] = function (Form $form) {
+			$this->flashMessage($this->getTranslator()->translate('Role \'%name%\' has been saved.', null, array('name' => $form->getValues()->role->name)), 'success');
+			$this->redrawControl('flashes');
+		};
+
+		$admin->onDelete[] = function () {
+			$this->flashMessage('Role has been deleted.', 'success');
 			$this->redrawControl('flashes');
 		};
 

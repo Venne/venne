@@ -41,6 +41,7 @@ class NetteUser extends \Nette\Security\User
 	}
 
 	/**
+	 * @param bool $need
 	 * @return \Nette\Security\IAuthenticator
 	 */
 	public function getAuthenticator($need = true)
@@ -49,6 +50,7 @@ class NetteUser extends \Nette\Security\User
 	}
 
 	/**
+	 * @param bool $need
 	 * @return \Nette\Security\IAuthorizator
 	 */
 	public function getAuthorizator($need = true)
@@ -57,12 +59,17 @@ class NetteUser extends \Nette\Security\User
 	}
 
 	/**
-	 * Has a user effective access to the Resource?
-	 * If $resource is NULL, then the query applies to all resources.
-	 *
+	 * @return \Venne\Security\User\User
+	 */
+	public function getIdentity()
+	{
+		return parent::getIdentity();
+	}
+
+	/**
 	 * @param string $resource
 	 * @param string $privilege
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isAllowed($resource = IAuthorizator::ALL, $privilege = IAuthorizator::ALL)
 	{
@@ -83,7 +90,7 @@ class NetteUser extends \Nette\Security\User
 
 	/**
 	 * @param \Nette\Application\UI\PresenterComponentReflection $element
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isPresenterAllowedCached(\Nette\Application\UI\PresenterComponentReflection $element)
 	{
@@ -96,7 +103,7 @@ class NetteUser extends \Nette\Security\User
 
 	/**
 	 * @param \Nette\Reflection\Method $element
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isMethodAllowedCached(\Nette\Reflection\Method $element)
 	{
@@ -109,7 +116,7 @@ class NetteUser extends \Nette\Security\User
 
 	/**
 	 * @param \Nette\Application\UI\PresenterComponentReflection $element
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isPresenterAllowed(\Nette\Application\UI\PresenterComponentReflection $element)
 	{
@@ -159,7 +166,7 @@ class NetteUser extends \Nette\Security\User
 
 	/**
 	 * @param \Nette\Reflection\Method $element
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isMethodAllowed(\Nette\Reflection\Method $element)
 	{
@@ -220,7 +227,7 @@ class NetteUser extends \Nette\Security\User
 
 	/**
 	 * @param \Nette\Application\UI\Control $control
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isControlAllowed(Control $control)
 	{

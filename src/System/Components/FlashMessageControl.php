@@ -49,7 +49,7 @@ class FlashMessageControl extends Control
 
 	/**
 	 * @param \Nette\ComponentModel\Component $component
-	 * @return string[]
+	 * @return string[]|null
 	 */
 	protected function getFlashesByControl(Component $component)
 	{

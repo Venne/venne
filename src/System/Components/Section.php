@@ -80,6 +80,7 @@ class Section extends \Nette\ComponentModel\Container implements \ArrayAccess
 
 	/**
 	 * @param string $name
+	 * @param string $label
 	 * @param string|null $icon
 	 * @return \Venne\System\Components\Section
 	 */

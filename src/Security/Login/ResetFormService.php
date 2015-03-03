@@ -12,14 +12,14 @@
 namespace Venne\Security\Login;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Link;
 use Nette\Utils\Callback;
 use Venne\Forms\FormFactory;
 use Venne\Security\SecurityManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -81,7 +81,7 @@ class ResetFormService extends \Nette\Object
 	 */
 	protected function save(Form $form, $resetLinkCallback)
 	{
-		/** @var \Venne\Security\User $user */
+		/** @var \Venne\Security\User\User $user */
 		$user = $this->userRepository->findOneBy(array('email' => $form['email']->value));
 
 		if (!$user) {

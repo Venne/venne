@@ -15,9 +15,11 @@ use Doctrine\ORM\EntityManager;
 use Grido\DataSources\Doctrine;
 use Nette\Localization\ITranslator;
 use Venne\Security\NetteUser;
-use Venne\Security\User;
+use Venne\Security\User\User;
+use Venne\System\AdminModule\Invitation\InvitationControlFactory;
+use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
-use Venne\System\Invitation;
+use Venne\System\Invitation\Invitation;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -37,18 +39,22 @@ class InvitationsTableFactory
 	/** @var \Nette\Localization\ITranslator */
 	private $translator;
 
-	/** @var \Nette\Security\NetteUser */
+	/** @var \Nette\Security\User */
 	private $netteUser;
 
 	/** @var \Venne\Security\AdminModule\InvitationFormService */
 	private $invitationFormService;
+
+	/** @var \Venne\System\AdminModule\Invitation\InvitationControlFactory */
+	private $invitationControlFactory;
 
 	public function __construct(
 		EntityManager $entityManager,
 		IAdminGridFactory $adminGridFactory,
 		ITranslator $translator,
 		NetteUser $user,
-		InvitationFormService $invitationFormService
+		InvitationFormService $invitationFormService,
+		InvitationControlFactory $invitationControlFactory
 	) {
 		$this->invitationRepository = $entityManager->getRepository(Invitation::class);
 		$this->userRepository = $entityManager->getRepository(User::class);
@@ -56,6 +62,7 @@ class InvitationsTableFactory
 		$this->translator = $translator;
 		$this->netteUser = $user;
 		$this->invitationFormService = $invitationFormService;
+		$this->invitationControlFactory = $invitationControlFactory;
 	}
 
 	/**
@@ -67,7 +74,7 @@ class InvitationsTableFactory
 		$qb = $this
 			->invitationRepository
 			->createQueryBuilder('a')
-			->andWhere('a.author = :author')->setParameter('author', $this->netteUser->identity->getId());
+			->andWhere('a.author = :author')->setParameter('author', $this->netteUser->getIdentity()->getId());
 
 		$table = $admin->getTable();
 		$table->setModel(new Doctrine($qb));
@@ -79,26 +86,28 @@ class InvitationsTableFactory
 			->setFilterText()->setSuggestion();
 
 		$table->addColumnText('type', 'Type')
-			->setCustomRender(function (Invitation $invitationEntity) {
-				return $invitationEntity->registration->getName();
+			->setCustomRender(function (Invitation $invitation) {
+				return $invitation->getRegistration()->getName();
 			})
 			->getCellPrototype()->width = '40%';
 
-		$form = $admin->addForm('invitation', 'Invitation', function (Invitation $invitation = null) {
-			return $this->invitationFormService->getFormFactory($invitation !== null ? $invitation->getId() : null);
+		$form = $admin->addForm('invitation', 'Invitation', function (Invitation $invitation = null, Form $form) use ($admin) {
+			$control = $this->invitationControlFactory->create();
+			$control->onSave[] = function () use ($form, $admin) {
+				$form->onSuccess();
+				$admin->formSuccess();
+			};
+
+			return $control;
 		});
 
 		$toolbar = $admin->getNavbar();
 		$newSection = $toolbar->addSection('new', 'Create', 'file');
 
-		$editAction = $table->addActionEvent('edit', 'Edit');
-		$editAction->getElementPrototype()->class[] = 'ajax';
-
 		$deleteAction = $table->addActionEvent('delete', 'Delete');
 		$deleteAction->getElementPrototype()->class[] = 'ajax';
 
 		$admin->connectFormWithNavbar($form, $newSection);
-		$admin->connectFormWithAction($form, $editAction);
 		$admin->connectActionAsDelete($deleteAction);
 
 		return $admin;

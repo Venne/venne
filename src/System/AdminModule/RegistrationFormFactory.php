@@ -14,7 +14,9 @@ namespace Venne\System\AdminModule;
 use Kdyby\DoctrineForms\IComponentMapper;
 use Venne\Forms\IFormFactory;
 use Venne\Security\SecurityManager;
-use Venne\System\Registration;
+use Venne\System\Registration\LoginProviderMode;
+use Venne\System\Registration\Registration;
+use Venne\System\Registration\RegistrationMode;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -42,6 +44,9 @@ class RegistrationFormFactory implements \Venne\Forms\IFormFactory
 		\Kdyby\Replicator\Container::register();
 		$form = $this->formFactory->create();
 
+		$form['registration'] = $registration = new RegistrationContainer(new Registration());
+		$registration->addName();
+
 		$userTypes = array();
 		foreach ($this->securityManager->getUserTypes() as $name => $val) {
 			$userTypes[$name] = $val->getName();
@@ -51,9 +56,9 @@ class RegistrationFormFactory implements \Venne\Forms\IFormFactory
 		$form->addCheckbox('invitation', 'Only as invitation');
 		$form->addText('name', 'Name');
 		$form->addHidden('key');
-		$form->addSelect('userType', 'Type', $userTypes);
-		$form->addSelect('mode', 'Mode', Registration::getModes());
-		$form->addSelect('loginProviderMode', 'Login provider mode', Registration::getLoginProviderModes());
+		//$form->addSelect('userType', 'Type', $userTypes);
+		$form->addSelect('mode', 'Mode', RegistrationMode::getLabels());
+		$form->addSelect('loginProviderMode', 'Login provider mode', LoginProviderMode::getLabels());
 		$form->addMultiSelect('roles', 'Roles')
 			->setOption(IComponentMapper::ITEMS_TITLE, 'name');
 

@@ -13,7 +13,7 @@ namespace Venne\Security\AdminModule;
 
 use Venne\Forms\Form;
 use Venne\Security\AdminUserFormFactory;
-use Venne\Security\DefaultType\IAdminFormFactory;
+use Venne\Security\User\DefaultType\IAdminFormFactory;
 use Venne\Security\IFormFactory;
 
 /**

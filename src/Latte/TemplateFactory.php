@@ -11,6 +11,7 @@
 
 namespace Venne\Latte;
 
+use Latte\Engine;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
 use Nette\Bridges\ApplicationLatte\Loader;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -81,7 +82,7 @@ class TemplateFactory extends \Nette\Object implements \Nette\Application\UI\ITe
 			$latte->onCompile = iterator_to_array($latte->onCompile);
 		}
 
-		array_unshift($latte->onCompile, function ($latte) use ($control, $template) {
+		array_unshift($latte->onCompile, function (Engine $latte) use ($control, $template) {
 			$latte->getParser()->shortNoEscape = true;
 			$latte->getCompiler()->addMacro('cache', new CacheMacro($latte->getCompiler()));
 			UIMacros::install($latte->getCompiler());

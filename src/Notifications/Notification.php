@@ -13,13 +13,13 @@ namespace Venne\Notifications;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  *
  * @property \Venne\Notifications\NotificationType $type
- * @property \Venne\Security\User $user
+ * @property \Venne\Security\User\User $user
  * @property \DateTime $created
  * @property string $target
  * @property int $targetKey
@@ -27,7 +27,7 @@ use Venne\Security\User;
  * @ORM\Entity
  * @ORM\Table(name="notification", indexes={@ORM\Index(name="created_idx", columns={"created"})})
  */
-class Notification extends \Kdyby\Doctrine\Entities\BaseEntity
+class Notification extends \Venne\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -41,9 +41,9 @@ class Notification extends \Kdyby\Doctrine\Entities\BaseEntity
 	private $type;
 
 	/**
-	 * @var \Venne\Security\User
+	 * @var \Venne\Security\User\User
 	 *
-	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User")
+	 * @ORM\ManyToOne(targetEntity="\Venne\Security\User\User")
 	 * @ORM\JoinColumn(onDelete="CASCADE")
 	 */
 	private $user;
@@ -71,9 +71,9 @@ class Notification extends \Kdyby\Doctrine\Entities\BaseEntity
 
 	/**
 	 * @param \Venne\Notifications\NotificationType $type
-	 * @param \Venne\Security\User $user
+	 * @param \Venne\Security\User\User $user
 	 * @param string|null $target
-	 * @param integer|null $targetKey
+	 * @param int|null $targetKey
 	 */
 	public function __construct(NotificationType $type, User $user, $target = null, $targetKey = null)
 	{
@@ -101,7 +101,7 @@ class Notification extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
-	 * @return integer
+	 * @return int
 	 */
 	public function getTargetKey()
 	{
@@ -117,7 +117,7 @@ class Notification extends \Kdyby\Doctrine\Entities\BaseEntity
 	}
 
 	/**
-	 * @return \Venne\Security\User
+	 * @return \Venne\Security\User\User
 	 */
 	public function getUser()
 	{

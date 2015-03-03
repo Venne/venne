@@ -12,12 +12,12 @@
 namespace Venne\System\UI;
 
 use Closure;
-use Nette\Application\presenter;
+use Nette;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class PresenterFactory extends \Nette\Object implements \Nette\Application\IPresenterFactory
+class PresenterFactory extends Nette\Object implements Nette\Application\IPresenterFactory
 {
 
 	/** @var \Nette\Application\PresenterFactory */
@@ -34,9 +34,9 @@ class PresenterFactory extends \Nette\Object implements \Nette\Application\IPres
 	/**
 	 * @param  string
 	 */
-	public function __construct($baseDir, \Nette\DI\Container $container)
+	public function __construct($baseDir, Nette\DI\Container $container)
 	{
-		$this->presenterFactory = new \Nette\Application\PresenterFactory($baseDir, $container);
+		$this->presenterFactory = new Nette\Application\PresenterFactory($baseDir, $container);
 	}
 
 	/**
@@ -87,7 +87,7 @@ class PresenterFactory extends \Nette\Object implements \Nette\Application\IPres
 	private function resetMappingToPresenterFactory()
 	{
 		$mapping = $this->defaultMapping;
-		$closure = \Closure::bind(function (\Nette\Application\PresenterFactory $presenterFactory) use ($mapping) {
+		$closure = Closure::bind(function (Nette\Application\PresenterFactory $presenterFactory) use ($mapping) {
 			$presenterFactory->mapping = $mapping;
 		}, $this->presenterFactory, $this->presenterFactory);
 		$closure($this->presenterFactory);

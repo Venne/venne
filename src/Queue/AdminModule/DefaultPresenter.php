@@ -103,7 +103,7 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	 */
 	public function tableStopClick($id)
 	{
-		$worker = $this->workerManager->getWokrer($id);
+		$worker = $this->workerManager->getWorker($id);
 		$this->workerManager->stopWorker($worker);
 		$this->redirect('this');
 	}

@@ -20,10 +20,10 @@ use Venne\Security\Login\LoginControl;
 use Venne\Security\Login\ResetKeyNotFoundException;
 use Venne\Security\Registration\IRegistrationControlFactory;
 use Venne\Security\Registration\RegistrationControl;
-use Venne\Security\Role;
+use Venne\Security\Role\Role;
 use Venne\Security\SecurityManager;
-use Venne\System\Invitation;
-use Venne\System\Registration;
+use Venne\System\Invitation\Invitation;
+use Venne\System\Registration\Registration;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -33,12 +33,8 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/**
-	 * @var string|null
-	 *
-	 * @persistent
-	 */
-	public $backlink;
+	/** @var string|null */
+	private $backlink;
 
 	/** @var Callback */
 	private $loginControlFactory;
@@ -64,10 +60,10 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Venne\Security\Registration\IRegistrationControlFactory */
 	private $registrationControlFactory;
 
-	/** @var \Venne\System\Registration|null */
+	/** @var \Venne\System\Registration\Registration|null */
 	private $registration;
 
-	/** @var \Venne\System\Invitation|null */
+	/** @var \Venne\System\Invitation\Invitation|null */
 	private $invitation;
 
 	public function __construct(
@@ -149,45 +145,30 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	protected function createComponentSignInForm()
 	{
 		$form = $this->loginControlFactory->create();
-
-		$form->onSuccess[] = $this->formSuccess;
-		$form->onError[] = $this->formError;
-
-		return $form;
-	}
-
-	/**
-	 * @internal
-	 */
-	public function formSuccess()
-	{
-		if ($this->backlink) {
-			$this->restoreRequest($this->backlink);
-		}
-
-		$this->redirect(':Admin:' . $this->administrationManager->defaultPresenter . ':');
-	}
-
-	/**
-	 * @param \Venne\Security\Login\LoginControl $control
-	 * @param string $message
-	 * @internal
-	 */
-	public function formError(LoginControl $control, $message)
-	{
-		if ($message instanceof AuthenticationException) {
-			if ($this->autoregistration) {
-				$registration = str_replace(' ', '_', $this->autoregistration);
-				$this->redirect('this', array('do' => 'registration-' . $registration . '-load', 'registration-' . $registration . '-name' => $this->autologin));
+		$form->onSuccess[] = function () {
+			if ($this->backlink) {
+				$this->restoreRequest($this->backlink);
 			}
 
-			$this->flashMessage($this->translator->translate($message), 'warning');
-			$this->redirect('this');
-		}
+			$this->redirect(':Admin:' . $this->administrationManager->defaultPresenter . ':');
+		};
+		$form->onError[] = function (LoginControl $control, $exception) {
+			if ($exception instanceof AuthenticationException) {
+				if ($this->autoregistration) {
+					$registration = str_replace(' ', '_', $this->autoregistration);
+					$this->redirect('this', array('do' => 'registration-' . $registration . '-load', 'registration-' . $registration . '-name' => $this->autologin));
+				}
 
-		if ($message instanceof ResetKeyNotFoundException) {
-			$this->error();
-		}
+				$this->flashMessage($this->translator->translate($exception->getMessage()), 'warning');
+				$this->redirect('this');
+			}
+
+			if ($exception instanceof ResetKeyNotFoundException) {
+				$this->error();
+			}
+		};
+
+		return $form;
 	}
 
 	/**
@@ -195,65 +176,47 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentRegistration()
 	{
-		return new Multiplier($this->createRegistration);
-	}
+		return new Multiplier(function () {
+			$control = $this->registrationControlFactory->create(
+				$this->registration->getUserTypeName(),
+				$this->registration->getMode(),
+				$this->registration->getLoginProviderMode(),
+				$this->registration->getRoles()
+			);
 
-	/**
-	 * @return \Venne\Security\Registration\RegistrationControl
-	 */
-	public function createRegistration()
-	{
-		/** @var RegistrationControl $control */
-		$control = $this->registrationControlFactory->create(
-			$this->registration->getInvitation(),
-			$this->registration->userType,
-			$this->registration->mode,
-			$this->registration->loginProviderMode,
-			$this->registration->roles
-		);
+			if ($this->invitation !== null) {
+				$control->setInvitation($this->invitation);
+			}
 
-		if ($this->invitation) {
-			$control->setDefaultEmail($this->invitation->getEmail());
-		}
+			$control->onLoad[] = function (RegistrationControl $control) {
+				$this->template->regLoad = $control->getName();
+			};
+			$control->onSuccess[] = function () {
+				$this->invitationRepository->delete($this->invitation);
 
-		$control->onLoad[] = $this->registrationLoad;
-		$control->onSuccess[] = $this->registrationSuccess;
-		$control->onEnable[] = $this->registrationEnable;
-		$control->onError[] = $this->registrationError;
+				$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
+				$this->redirect('this', array(
+					'hash' => null,
+					'registration' => null,
+				));
+			};
+			$control->onEnable[] = function () {
+				$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
+				$this->redirect('this');
+			};
+			$control->onError[] = function () {
+				$this->flashMessage($this->translator->translate($message), 'warning');
+				$this->redirect('this');
+			};
 
-		return $control;
-	}
-
-	public function registrationLoad(RegistrationControl $control)
-	{
-		$this->template->regLoad = $control->name;
-	}
-
-	public function registrationSuccess()
-	{
-		$this->invitationRepository->delete($this->invitation);
-
-		$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
-		$this->redirect('this', array(
-			'hash' => null,
-			'registration' => null,
-		));
-	}
-
-	public function registrationEnable()
-	{
-		$this->flashMessage($this->translator->translate('Your registration is complete.'), 'success');
-		$this->redirect('this');
-	}
-
-	public function registrationError(RegistrationControl $control, $message)
-	{
-		$this->flashMessage($this->translator->translate($message), 'warning');
-		$this->redirect('this');
+			return $control;
+		});
 	}
 
 	public function loadState(array $params)
 	{
+		parent::loadState($params);
+
 		if (isset($params['registration'])) {
 			$this->registration = $this->registrationRepository->findOneBy(array(
 				'id' => $params['registration'],
@@ -276,11 +239,13 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 			}
 		}
 
-		parent::loadState($params);
+		$this->backlink = isset($params['backlink']) ? $params['backlink'] : null;
 	}
 
 	public function saveState(array & $params, $reflection = null)
 	{
+		parent::saveState($params, $reflection);
+
 		if ($this->registration !== null) {
 			$params['registration'] = $this->registration->getId();
 		}
@@ -289,7 +254,7 @@ class LoginPresenter extends \Nette\Application\UI\Presenter
 			$params['hash'] = $this->invitation->getHash();
 		}
 
-		parent::saveState($params, $reflection);
+		$params['backlink'] = $this->backlink;
 	}
 
 }

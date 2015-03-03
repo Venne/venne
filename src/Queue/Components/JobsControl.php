@@ -14,14 +14,14 @@ namespace Venne\Queue\Components;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\UI\Multiplier;
 use Nette\Security\User;
+use Venne;
 use Venne\DataTransfer\DataTransferManager;
-use Venne\Queue\JobDto;
 use Venne\Queue\Job;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class JobsControl extends \Venne\System\UI\Control
+class JobsControl extends Venne\System\UI\Control
 {
 
 	/** @var integer */
@@ -54,7 +54,7 @@ class JobsControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @param integer $offset
+	 * @param int $offset
 	 */
 	public function handleLoad($offset)
 	{
@@ -75,17 +75,12 @@ class JobsControl extends \Venne\System\UI\Control
 
 	public function render()
 	{
-		$this->template->jobs = $this->dataTransferManager
-			->createQuery(JobDto::class, function () {
-				return $this->jobRepository->createQueryBuilder('a')
+		$this->template->jobs = $this->jobRepository->createQueryBuilder('a')
 					->andWhere('a.user = :user')->setParameter('user', $this->user->getIdentity()->getId())
 					->orderBy('a.date', 'ASC')
 					->setMaxResults(5)
 					->setFirstResult($this->offset)
 					->getQuery()->getResult();
-			})
-			->enableCache($this->offset)
-			->fetchAll();
 		$this->template->jobCount = $this->jobRepository->createQueryBuilder('a')
 			->select('COUNT(a.id)')
 			->andWhere('a.user = :user')->setParameter('user', $this->user->getIdentity()->getId())

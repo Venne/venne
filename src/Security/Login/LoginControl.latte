@@ -1,17 +1,17 @@
 {snippet content}
 {control flashMessage}
 
-{if $control->provider}
+{if $provider !== null}
 	{control providerForm}
-{elseif $control->reset}
+{elseif $reset !== null}
 	{control resetForm}
-{elseif $control->key}
+{elseif $key !== null}
 	{control confirmForm}
 {else}
 	{control form}
 {/if}
 
-{if !$control->key && !$control->reset}
+{if $key === null && $reset === null}
 <hr />
 
 <div class="row">

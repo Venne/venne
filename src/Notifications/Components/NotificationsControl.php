@@ -14,7 +14,6 @@ namespace Venne\Notifications\Components;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\UI\Multiplier;
 use Venne\DataTransfer\DataTransferManager;
-use Venne\Notifications\NotificationDto;
 use Venne\Notifications\NotificationManager;
 use Venne\Notifications\NotificationUser;
 
@@ -56,7 +55,7 @@ class NotificationsControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @param integer $offset
+	 * @param int $offset
 	 */
 	public function handleLoad($offset)
 	{
@@ -77,12 +76,7 @@ class NotificationsControl extends \Venne\System\UI\Control
 
 	public function render()
 	{
-		$this->template->notifications = $this->dataTransferManager
-			->createQuery(NotificationDto::class, function () {
-				return $this->notificationManager->getNotifications(5, $this->offset);
-			})
-			->enableCache($this->offset)
-			->fetchAll();
+		$this->template->notifications = $this->notificationManager->getNotifications(5, $this->offset);
 		$this->template->notificationCount = $this->notificationManager->countNotifications();
 		$this->template->offset = $this->offset + 5;
 

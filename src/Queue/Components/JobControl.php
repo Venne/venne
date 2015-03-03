@@ -14,18 +14,21 @@ namespace Venne\Queue\Components;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Security\User;
+use Venne;
 use Venne\DataTransfer\DataTransferManager;
-use Venne\Queue\JobDto;
 use Venne\Queue\Job;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class JobControl extends \Venne\System\UI\Control
+class JobControl extends Venne\System\UI\Control
 {
 
 	/** @var integer */
 	private $id;
+
+	/** @var \Doctrine\ORM\EntityManager */
+	private $entityManager;
 
 	/** @var \Nette\Security\User */
 	private $user;
@@ -37,7 +40,7 @@ class JobControl extends \Venne\System\UI\Control
 	private $dataTransferManager;
 
 	/**
-	 * @param integer $id
+	 * @param int $id
 	 * @param \Doctrine\ORM\EntityManager $entityManager
 	 * @param \Nette\Security\User $user
 	 * @param \Venne\DataTransfer\DataTransferManager $dataTransferManager
@@ -51,6 +54,7 @@ class JobControl extends \Venne\System\UI\Control
 		parent::__construct();
 
 		$this->id = $id;
+		$this->entityManager = $entityManager;
 		$this->jobRepository = $entityManager->getRepository(Job::class);
 		$this->user = $user;
 		$this->dataTransferManager = $dataTransferManager;
@@ -66,7 +70,8 @@ class JobControl extends \Venne\System\UI\Control
 			throw new BadRequestException;
 		}
 
-		$this->jobRepository->delete($entity);
+		$this->entityManager->remove($entity);
+		$this->entityManager->flush($entity);
 
 		if (!$this->presenter->isAjax()) {
 			$this->redirect('this');
@@ -75,12 +80,7 @@ class JobControl extends \Venne\System\UI\Control
 
 	public function render()
 	{
-		$this->template->job = $this->dataTransferManager
-			->createQuery(JobDto::class, function () {
-				return $this->jobRepository->find($this->id);
-			})
-			->enableCache()
-			->fetch();
+		$this->template->job = $this->jobRepository->find($this->id);
 		$this->template->render();
 	}
 

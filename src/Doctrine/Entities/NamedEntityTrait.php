@@ -51,7 +51,7 @@ trait NamedEntityTrait
 	 */
 	public function setName($name)
 	{
-		$this->name = $name;
+		$this->name = (string) $name;
 	}
 
 	/**
@@ -67,7 +67,7 @@ trait NamedEntityTrait
 	 */
 	public function __toString()
 	{
-		return (string) $this->name;
+		return $this->getName();
 	}
 
 }

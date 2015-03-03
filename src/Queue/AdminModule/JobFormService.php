@@ -12,7 +12,7 @@
 namespace Venne\Queue\AdminModule;
 
 use Doctrine\ORM\EntityManager;
-use Kdyby\Doctrine\Entities\BaseEntity;
+use Venne\Doctrine\Entities\BaseEntity;
 use Kdyby\DoctrineForms\EntityFormMapper;
 use Nette\Application\UI\Form;
 use Venne\Queue\Job;

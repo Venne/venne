@@ -17,6 +17,7 @@ use Venne\Notifications\EmailManager;
 use Venne\Notifications\NotificationManager;
 use Venne\Security\Events\NewPasswordEvent;
 use Venne\Security\Events\PasswordRecoveryEvent;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -126,9 +127,9 @@ class SecurityManager extends \Nette\Object
 	}
 
 	/**
-	 * @param \Venne\Security\User $user
+	 * @param \Venne\Security\User\User $user
 	 * @param string $link
-	 * @param \Venne\Security\User|null $sendBy
+	 * @param \Venne\Security\User\User|null $sendBy
 	 */
 	public function sendRecoveryUrl(User $user, $link, User $sendBy = null)
 	{

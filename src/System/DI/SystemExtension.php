@@ -11,26 +11,35 @@
 
 namespace Venne\System\DI;
 
+use Kdyby\Doctrine\DI\IDatabaseTypeProvider;
+use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Events\DI\EventsExtension;
+use Kdyby\Translation\DI\ITranslationProvider;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Statement;
 use Nette\PhpGenerator\PhpLiteral;
 use Venne\DataTransfer\DI\DataTransferExtension;
-use Venne\System\Events\InvitationEvent;
+use Venne\Notifications\DI\IEventProvider;
+use Venne\Security\Registration\IRegistrationControlFactory;
+use Venne\System\Invitation\InvitationEvent;
 use Venne\System\Forms\DoctrineForms\Controls\TextControl;
+use Venne\System\Registration\LoginProviderModeType;
+use Venne\System\Registration\RegistrationModeType;
+use Venne\System\Registration\RegistrationProviderModeType;
 use Venne\Widgets\DI\WidgetsExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
 class SystemExtension extends \Nette\DI\CompilerExtension implements
-	\Kdyby\Doctrine\DI\IEntityProvider,
-	\Venne\System\DI\IPresenterProvider,
-	\Kdyby\Translation\DI\ITranslationProvider,
-	\Venne\System\DI\ICssProvider,
-	\Venne\System\DI\IJsProvider,
-	\Venne\System\DI\IFormMapperProvider,
-	\Venne\Notifications\DI\IEventProvider
+	IEntityProvider,
+	IPresenterProvider,
+	ITranslationProvider,
+	ICssProvider,
+	IJsProvider,
+	IFormMapperProvider,
+	IEventProvider,
+	IDatabaseTypeProvider
 {
 
 	const TAG_TRAY_COMPONENT = 'venne.trayComponent';
@@ -150,7 +159,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 			->addSetup('$service->setAutoregistration(?)', array($config['administration']['authentication']['autoregistration']));
 
 		$container->addDefinition($this->prefix('invitationStateListener'))
-			->setClass('Venne\System\Listeners\InvitationStateListener');
+			->setClass('Venne\System\Invitation\InvitationStateListener');
 
 		foreach ($this->compiler->getExtensions('Venne\Assets\DI\AssetsExtension') as $extension) {
 			$container->getDefinition($extension->prefix('cssLoaderFactory'))
@@ -182,11 +191,11 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 		$container->addDefinition($this->prefix('doctrineForms.textControl'))
 			->setClass('Venne\System\Forms\DoctrineForms\Controls\TextControl');
 
-		foreach ($this->compiler->extensions as $extension) {
-			if ($extension instanceof \Kdyby\DoctrineForms\DI\FormsExtension) {
-				$entityFormMapper = $container->getDefinition($extension->prefix('entityFormMapper'));
+		foreach ($this->compiler->getExtensions() as $formExtension) {
+			if ($formExtension instanceof \Kdyby\DoctrineForms\DI\FormsExtension) {
+				$entityFormMapper = $container->getDefinition($formExtension->prefix('entityFormMapper'));
 
-				foreach ($this->compiler->extensions as $extension) {
+				foreach ($this->compiler->getExtensions() as $extension) {
 					if ($extension instanceof IFormMapperProvider) {
 						foreach ($extension->getFormMappers() as $definition) {
 							$entityFormMapper->addSetup('?->setEntityFormMapper($service);$service->registerMapper(?)', array('@' . $definition, '@' . $definition));
@@ -301,7 +310,7 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 			->setImplement('Venne\Forms\IFormFactory')
 			->addSetup('setRenderer', array(new Statement($this->prefix('@formRenderer'))))
 			->addSetup('setTranslator', array(new Statement('@Nette\Localization\ITranslator')))
-			->addSetup('$service->getElementPrototype()->class[] = ?', array('ajax'))
+			//->addSetup('$service->getElementPrototype()->class[] = ?', array('ajax'))
 			->setAutowired(false);
 
 		$container->addDefinition($this->prefix('admin.configFormFactory'))
@@ -309,17 +318,6 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 			->addSetup('setFormFactory', array(new Statement('@system.admin.basicFormFactory')))
 			->setAutowired(false)
 			->setParameters(array('configFile', 'section'));
-
-		$container->addDefinition($this->prefix('registrationControlFactory'))
-			->setClass('Venne\Security\Registration\RegistrationControl', array(
-				new PhpLiteral('$invitations'),
-				new PhpLiteral('$userType'),
-				new PhpLiteral('$mode'),
-				new PhpLiteral('$loginProviderMode'),
-				new PhpLiteral('$roles'),
-			))
-			->setImplement('Venne\Security\Registration\IRegistrationControlFactory')
-			->setInject(true);
 
 		$container->addDefinition($this->prefix('system.loginFormFactory'))
 			->setClass('Venne\System\AdminModule\LoginFormFactory', array(new Statement('@system.admin.basicFormFactory')));
@@ -567,6 +565,17 @@ class SystemExtension extends \Nette\DI\CompilerExtension implements
 	{
 		return array(
 			TextControl::class,
+		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getDatabaseTypes()
+	{
+		return array(
+			RegistrationModeType::class => RegistrationModeType::class,
+			LoginProviderModeType::class => LoginProviderModeType::class,
 		);
 	}
 

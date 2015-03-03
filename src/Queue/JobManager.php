@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityManager;
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
 use Nette\Security\User as NetteUser;
-use Venne\Security\User;
+use Venne\Security\User\User;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -42,7 +42,7 @@ class JobManager extends \Nette\Object
 	/** @var \Nette\DI\Container */
 	private $container;
 
-	/** @var \Nette\Security\NetteUser */
+	/** @var \Nette\Security\User */
 	private $netteUser;
 
 	public function __construct(
@@ -80,11 +80,12 @@ class JobManager extends \Nette\Object
 
 	/**
 	 * @param \Venne\Queue\Job $jobEntity
+	 * @param int $priority
 	 */
 	public function scheduleJob(Job $jobEntity, $priority = self::PRIORITY_DEFAULT)
 	{
-		if (!$jobEntity->user && $this->netteUser->identity instanceof User) {
-			$jobEntity->user = $this->netteUser->identity;
+		if (!$jobEntity->getUser() && $this->netteUser->getIdentity() instanceof User) {
+			$jobEntity->setUser($this->netteUser->getIdentity());
 		}
 
 		if ($priority === self::PRIORITY_REALTIME) {
@@ -100,7 +101,7 @@ class JobManager extends \Nette\Object
 		$jobEntity->state = $jobEntity::STATE_IN_PROGRESS;
 		$this->entityManager->flush($jobEntity);
 
-		$job = $this->getJob($jobEntity->type);
+		$job = $this->getJob($jobEntity->getType());
 
 		try {
 			$job->run($jobEntity, $priority);
@@ -122,6 +123,7 @@ class JobManager extends \Nette\Object
 	public function doNextWork(Worker $worker)
 	{
 		$this->configManager->lock();
+		/** @var \Venne\Queue\Job $jobEntity */
 		$jobEntity = $this->jobRepository->createQueryBuilder('a')
 			->addOrderBy('a.priority', 'DESC')
 			->addOrderBy('a.date', 'ASC')
@@ -135,7 +137,7 @@ class JobManager extends \Nette\Object
 		$this->configManager->saveConfigFile($data);
 
 		if ($jobEntity) {
-			$jobEntity->state = $jobEntity::STATE_IN_PROGRESS;
+			$jobEntity->updateState($jobEntity::STATE_IN_PROGRESS);
 			$this->entityManager->flush($jobEntity);
 			$this->configManager->unlock();
 
@@ -143,19 +145,19 @@ class JobManager extends \Nette\Object
 				$this->doJob($jobEntity, self::PRIORITY_DEFAULT);
 			} catch (JobFailedException $e) {
 				$failed = true;
-				$jobEntity->state = $jobEntity::STATE_FAILED;
+				$jobEntity->updateState($jobEntity::STATE_FAILED);
 				$this->entityManager->flush($jobEntity);
 
 				$worker->log('Error: ' . $e->getPrevious()->getMessage());
 			}
 
 			if (!isset($failed)) {
-				if ($jobEntity->dateInterval && $jobEntity->round !== 0) {
+				if ($jobEntity->getDateInterval() && $jobEntity->getRound() !== 0) {
 					$zero = new \DateTime('00:00');
-					$diff = $zero->diff($jobEntity->dateInterval);
+					$diff = $zero->diff($jobEntity->getDateInterval());
 
 					$jobEntity->round--;
-					$jobEntity->date = $jobEntity->date->add($diff);
+					$jobEntity->date = $jobEntity->getDate()->add($diff);
 					$jobEntity->state = $jobEntity::STATE_SCHEDULED;
 					$this->entityManager->persist($jobEntity);
 				}

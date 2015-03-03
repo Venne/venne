@@ -15,15 +15,15 @@ use Grido\DataSources\ArraySource;
 use Grido\Grid;
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\TextResponse;
+use Nette\Application\UI\Presenter;
 use Nette\Utils\DateTime;
 use Nette\Utils\Finder;
-use Venne\System\Components\AdminGrid\IAdminGridFactory;
 use Venne\System\Components\INavbarControlFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class LogsPresenter extends \Nette\Application\UI\Presenter
+class LogsPresenter extends Presenter
 {
 
 	use \Venne\System\AdminPresenterTrait;
@@ -31,42 +31,33 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 	/** @var string */
 	private $logDir;
 
-	/** @var \Venne\System\Components\AdminGrid\IAdminGridFactory */
-	private $adminGridFactory;
-
 	/** @var \Venne\System\Components\INavbarControlFactory */
 	private $navbarControlFactory;
 
 	/**
 	 * @param string $logDir
-	 * @param \Venne\System\Components\AdminGrid\IAdminGridFactory $adminGridFactory
+	 * @param \Venne\System\Components\INavbarControlFactory $navbarControlFactory
 	 */
-	public function __construct($logDir, IAdminGridFactory $adminGridFactory, INavbarControlFactory $navbarControlFactory)
+	public function __construct($logDir, INavbarControlFactory $navbarControlFactory)
 	{
 		$this->logDir = $logDir;
-		$this->adminGridFactory = $adminGridFactory;
 		$this->navbarControlFactory = $navbarControlFactory;
 	}
 
 	/**
 	 * @secured(privilege="show")
 	 */
-	public function actionDefault()
+	public function renderDefault()
 	{
 		$this->template->files = $this->getFiles();
-	}
-
-	/**
-	 * @secured
-	 */
-	public function actionRemove()
-	{
 	}
 
 	protected function createComponentNavbar()
 	{
 		$control = $this->navbarControlFactory->create();
-		$control->addSection('delete', 'Delete all', 'remove')->onClick[] = $this->handleDeleteAll;
+		$control->addSection('delete', 'Delete all', 'remove')->onClick[] = function () {
+			$this->deleteAll();
+		};
 
 		return $control;
 	}
@@ -87,12 +78,16 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 			->setSortable()
 			->getCellPrototype()->width = '30%';
 
-		$event = $table->addActionEvent('show', 'Show');
-		$event->onClick[] = $this->handleShow;
+		$event = $table->addActionHref('show', 'Show');
+		$event->setCustomHref(function($id) {
+			return $this->link('show');
+		});
 
-		$event = $table->addActionEvent('delete', 'Delete');
+		$event = $table->addActionHref('delete', 'Delete');
 		$event->getElementPrototype()->class[] = 'ajax';
-		$event->onClick[] = $this->handleDelete;
+		$event->setCustomHref(function($id) {
+			return $this->link('delete', $id);
+		});
 		$event->setConfirm(function () {
 			return 'Really delete?';
 		});
@@ -102,6 +97,8 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 
 	/**
 	 * @secured(privilege="show")
+	 *
+	 * @param string $name
 	 */
 	public function handleShow($name)
 	{
@@ -116,9 +113,6 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 		}
 	}
 
-	/**
-	 * @secured(privilege="remove")
-	 */
 	public function handleDelete($id)
 	{
 		unlink($this->logDir . '/' . $id);
@@ -129,10 +123,7 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 		$this->redrawControl('content');
 	}
 
-	/**
-	 * @secured(privilege="remove")
-	 */
-	public function handleDeleteAll()
+	public function deleteAll()
 	{
 		foreach ($this->getFiles() as $item) {
 			unlink($this->logDir . '/' . $item['id']);
@@ -146,12 +137,13 @@ class LogsPresenter extends \Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return string[]
 	 */
-	protected function getFiles()
+	private function getFiles()
 	{
 		$ret = array();
 
+		/** @var \SplFileInfo $file */
 		foreach (Finder::findFiles('exception-*')->in($this->logDir) as $file) {
 			$data = explode('-', $file->getFileName());
 			array_shift($data);

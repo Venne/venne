@@ -14,28 +14,29 @@ namespace Venne\Security\Registration;
 use Doctrine\ORM\EntityManager;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use Nette\InvalidArgumentException;
 use Nette\Mail\IMailer;
-use Nette\Security\AuthenticationException;
+use Nette\Mail\Message;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
 use Venne\Security\AuthorizatorFactory;
-use Venne\Security\ExtendedUser;
-use Venne\Security\Role;
+use Venne\Security\User\ExtendedUser;
+use Venne\Security\Role\Role;
 use Venne\Security\SecurityManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
+use Venne\System\Invitation\Invitation;
+use Venne\System\Registration\LoginProviderMode;
+use Venne\System\Registration\RegistrationMode;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @method onSuccess(\Venne\Security\Registration\RegistrationControl $control)
+ * @method onEnable(\Venne\Security\Registration\RegistrationControl $control)
  */
 class RegistrationControl extends \Venne\System\UI\Control
 {
 
-	/**
-	 * @var int
-	 *
-	 * @persistent
-	 */
-	public $key;
+	/** @var int */
+	private $key;
 
 	/** @var callable[] */
 	public $onSuccess;
@@ -49,16 +50,16 @@ class RegistrationControl extends \Venne\System\UI\Control
 	/** @var callable[] */
 	public $onLoad;
 
-	/** @var boolean */
-	private $invitaions;
+	/** @var \Venne\System\Invitation\Invitation */
+	private $invitation;
 
 	/** @var string */
 	private $userType;
 
-	/** @var string */
+	/** @var \Venne\System\Registration\RegistrationMode */
 	private $mode;
 
-	/** @var string */
+	/** @var \Venne\System\Registration\LoginProviderMode */
 	private $loginProviderMode;
 
 	/** @var string|array */
@@ -82,28 +83,34 @@ class RegistrationControl extends \Venne\System\UI\Control
 	/** @var \Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory */
 	private $formFactoryFactory;
 
-	/** @var \Venne\Security\ExtendedUser */
+	/** @var \Venne\Security\User\ExtendedUser */
 	private $currentUser;
 
 	/** @var string */
 	private $defaultEmail;
 
 	/**
-	 * @param boolean $invitaions
 	 * @param string $userType
-	 * @param string $mode
-	 * @param string $loginProviderMode
+	 * @param \Venne\System\Registration\RegistrationMode $mode
+	 * @param \Venne\System\Registration\LoginProviderMode $loginProviderMode
 	 * @param string[] $roles
 	 */
-	public function __construct($invitaions, $userType, $mode, $loginProviderMode, $roles)
+	public function __construct($userType, RegistrationMode $mode, LoginProviderMode $loginProviderMode, $roles)
 	{
 		parent::__construct();
 
-		$this->invitaions = $invitaions;
 		$this->loginProviderMode = $loginProviderMode;
 		$this->mode = $mode;
 		$this->roles = $roles;
 		$this->userType = $userType;
+	}
+
+	/**
+	 * @param \Venne\System\Invitation\Invitation $invitation
+	 */
+	public function setInvitation(Invitation $invitation)
+	{
+		$this->invitation = $invitation;
 	}
 
 	public function inject(
@@ -123,72 +130,62 @@ class RegistrationControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @param string $defaultEmail
-	 */
-	public function setDefaultEmail($defaultEmail)
-	{
-		$this->defaultEmail = $defaultEmail;
-	}
-
-	/**
 	 * @param string $name
 	 */
 	public function handleLoad($name)
 	{
-		/** @var $loginProvider \Venne\Security\ILoginProvider */
-		$loginProvider = $this->securityManager->getLoginProviderByName($name);
-
-		$identity = null;
-
-		try {
-			$identity = $loginProvider->authenticate(array());
-		} catch (AuthenticationException $e) {
-		}
-
-		if ($identity) {
-			$this->onError($this, 'The user is already registered');
-		}
-
-		$this->authorizatorFactory->clearPermissionSession();
-
-		$formFactory = $this->securityManager->getUserTypeByClass($this->userType)->getRegistrationFormFactory();
-
-		if (!$formFactory instanceof IRegistrationFormFactory) {
-			throw new InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \Venne\System\Content\IRegistrationFormFactory");
-		}
-
-		$formFactory->connectWithLoginProvider($this['form'], $loginProvider);
-
-		/** @var $form \Venne\Forms\Form */
-		$form = $this['form'];
-		$form->onSuccess = null;
-
-		if ($this->loginProviderMode === 'load&save') {
-			$form->setSubmittedBy($form->getSaveButton());
-			$form->fireEvents();
-
-			if ($form->isValid()) {
-				$loginProvider->connectWithUser($form->getData()->user);
-
-				$identity = $loginProvider->authenticate(array());
-				if ($identity) {
-					$this->presenter->user->login($identity);
-					$this->redirect('this');
-				}
-			}
-		} elseif ($this->loginProviderMode === 'load') {
-			$this->onLoad($this);
-		}
+//		/** @var $loginProvider \Venne\Security\ILoginProvider */
+//		$loginProvider = $this->securityManager->getLoginProviderByName($name);
+//
+//		$identity = null;
+//
+//		try {
+//			$identity = $loginProvider->authenticate(array());
+//		} catch (AuthenticationException $e) {
+//		}
+//
+//		if ($identity) {
+//			$this->onError($this, 'The user is already registered');
+//		}
+//
+//		$this->authorizatorFactory->clearPermissionSession();
+//
+//		$formFactory = $this->securityManager->getUserTypeByClass($this->userType)->getRegistrationFormFactory();
+//
+//		if (!$formFactory instanceof IRegistrationFormFactory) {
+//			throw new InvalidArgumentException("Form factory '" . get_class($formFactory) . "' is not istance of \Venne\System\Content\IRegistrationFormFactory");
+//		}
+//
+//		$formFactory->connectWithLoginProvider($this['form'], $loginProvider);
+//
+//		/** @var $form \Venne\Forms\Form */
+//		$form = $this['form'];
+//		$form->onSuccess = null;
+//
+//		if ($this->loginProviderMode->equalsValue(LoginProviderMode::LOAD_AND_SAVE)) {
+//			$form->setSubmittedBy($form->getSaveButton());
+//			$form->fireEvents();
+//
+//			if ($form->isValid()) {
+//				$loginProvider->connectWithUser($form->getData()->user);
+//
+//				$identity = $loginProvider->authenticate(array());
+//				if ($identity) {
+//					$this->presenter->getUser()->login($identity);
+//					$this->redirect('this');
+//				}
+//			}
+//		} elseif ($this->loginProviderMode->equalsValue(LoginProviderMode::LOAD)) {
+//			$this->onLoad($this);
+//		}
 	}
 
-	public function render()
+	public function renderDefault()
 	{
 		if ($this->key) {
 			$this->enable();
 			$this->onEnable($this);
 		}
-
-		call_user_func_array(array($this, 'parent::render'), func_get_args());
 	}
 
 	/**
@@ -197,7 +194,6 @@ class RegistrationControl extends \Venne\System\UI\Control
 	public function createComponentForm()
 	{
 		$userType = $this->securityManager->getUserTypeByClass($this->userType);
-		$this->currentUser = $this->createNewUser();
 
 		$userType->getRegistrationFormService()->getFormFactory();
 
@@ -205,6 +201,10 @@ class RegistrationControl extends \Venne\System\UI\Control
 			->getRegistrationFormService()
 			->getFormFactory()
 			->create();
+
+		if ($this->invitation !== null) {
+			$form['user']['email']->setDefaultValue($this->invitation->getEmail());
+		}
 
 		foreach ($this->securityManager->getLoginProviders() as $loginProvider) {
 			$submit = $form->addSubmit('_submit_' . str_replace(' ', '_', $loginProvider), $loginProvider);
@@ -214,30 +214,24 @@ class RegistrationControl extends \Venne\System\UI\Control
 			};
 		}
 
-		$form->onSuccess[] = $this->formSuccess;
+		$form->onSuccess[] = function (Form $form) {
+			if ($this->mode->equalsValue(RegistrationMode::BASIC)) {
+				$this->currentUser = $this->createNewUser();
+				$this->presenter->getUser()->login($this->currentUser->getUser()->getEmail(), $form['user']['password']->getValue());
+			}
+
+			if ($this->mode->equalsValue(RegistrationMode::MAIL) || $this->mode->equalsValue(RegistrationMode::MAIL_CHECKUP)) {
+				$this->sendEmail($form['user']->getValue());
+			}
+
+			$this->onSuccess($this);
+		};
 
 		return $form;
 	}
 
-	public function formSuccess(Form $form)
+	private function sendEmail($user)
 	{
-		if ($this->mode === 'basic') {
-			$this->presenter->user->login($this->currentUser->user->email, $form['user']['password']->value);
-		}
-
-		if ($this->mode === 'mail' || $this->mode === 'mail&checkup') {
-			$this->sendEmail($form);
-		}
-
-		$this->onSuccess($this);
-	}
-
-	/**
-	 * @param $form
-	 */
-	private function sendEmail($form)
-	{
-		$user = $form->data;
 		$absoluteUrls = $this->presenter->absoluteUrls;
 		$this->presenter->absoluteUrls = true;
 		$link = $this->link('this', array('key' => $user->user->key));
@@ -246,11 +240,10 @@ class RegistrationControl extends \Venne\System\UI\Control
 		$text = $this->emailText;
 		$text = strtr($text, array(
 			'{$email}' => $user->user->email,
-			'{$password}' => $form['user']['password']->value,
-			'{$link}' => '<a href="' . $link . '">' . $link . '</a>'
+			'{$link}' => sprintf('<a href="%s">%s</a>', $link, $link),
 		));
 
-		$mail = $this->presenter->context->nette->createMail();
+		$mail = new Message();
 		$mail->setFrom(sprintf('%s <%s>', $this->emailSender, $this->emailFrom))
 			->addTo($user->user->email)
 			->setSubject($this->emailSubject)
@@ -259,7 +252,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 	}
 
 	/**
-	 * @return \Venne\Security\ExtendedUser
+	 * @return \Venne\Security\User\ExtendedUser
 	 */
 	protected function createNewUser()
 	{
@@ -269,20 +262,23 @@ class RegistrationControl extends \Venne\System\UI\Control
 
 		/** @var $entity ExtendedUser */
 		$entity = new $class;
-		if ($this->mode === 'checkup') {
+		if ($this->mode->equalsValue(RegistrationMode::CHECKUP)) {
 			$entity->getUser()->setPublished(false);
-		} elseif ($this->mode === 'mail') {
+
+		} elseif ($this->mode->equalsValue(RegistrationMode::MAIL)) {
 			$entity->getUser()->disableByKey();
-		} elseif ($this->mode === 'mail&checkup') {
+
+		} elseif ($this->mode->equalsValue(RegistrationMode::MAIL_CHECKUP)) {
 			$entity->getUser()->disableByKey();
 			$entity->getUser()->setPublished(false);
 		}
+
 		foreach ((array) $this->roles as $role) {
-			$entity->getUser()->addRoleEntitie($role);
+			$entity->getUser()->addRoleEntity($role);
 		}
 
 		if ($this->defaultEmail) {
-			$entity->user->email = $this->defaultEmail;
+			$entity->getUser()->setEmail($this->defaultEmail);
 		}
 
 		return $entity;
@@ -290,7 +286,7 @@ class RegistrationControl extends \Venne\System\UI\Control
 
 	protected function enable()
 	{
-		if ($this->mode === 'mail' || $this->mode === 'mail&checkup') {
+		if ($this->mode->equalsValue(RegistrationMode::MAIL) || $this->mode->equalsValue(RegistrationMode::MAIL_CHECKUP)) {
 			$repository = $this->entityManager->getRepository(User::class);
 			$user = $repository->findOneByKey($this->key);
 			if (!$user) {
@@ -300,6 +296,20 @@ class RegistrationControl extends \Venne\System\UI\Control
 				$this->entityManager->flush($user);
 			}
 		}
+	}
+
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+
+		$this->key = isset($params['key']) ? $params['key'] : null;
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		parent::saveState($params, $reflection);
+
+		$params['key'] = $this->key;
 	}
 
 }

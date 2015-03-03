@@ -13,7 +13,7 @@ namespace Venne\Security\AdminModule;
 
 use Kdyby\DoctrineForms\IComponentMapper;
 use Venne\Forms\IFormFactory;
-use Venne\Security\Role;
+use Venne\Security\Role\Role;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>

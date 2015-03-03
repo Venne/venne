@@ -12,7 +12,6 @@
 namespace Venne\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use Kdyby\Doctrine\Entities\BaseEntity;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -20,7 +19,7 @@ use Kdyby\Doctrine\Entities\BaseEntity;
  * @ORM\Entity
  * @ORM\Table(name="notification_type")
  */
-class NotificationType extends \Kdyby\Doctrine\Entities\BaseEntity
+class NotificationType extends \Venne\Doctrine\Entities\BaseEntity
 {
 
 	use \Venne\Doctrine\Entities\IdentifiedEntityTrait;
@@ -30,21 +29,28 @@ class NotificationType extends \Kdyby\Doctrine\Entities\BaseEntity
 	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $type;
+	private $type;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="string", nullable=true)
 	 */
-	protected $action;
+	private $action;
 
 	/**
 	 * @var string|null
 	 *
 	 * @ORM\Column(type="text", nullable=true)
 	 */
-	protected $message;
+	private $message;
+
+	public function __construct($type, $action, $message)
+	{
+		$this->type = $type;
+		$this->action = $action;
+		$this->message = $message;
+	}
 
 	/**
 	 * @return string
@@ -53,5 +59,31 @@ class NotificationType extends \Kdyby\Doctrine\Entities\BaseEntity
 	{
 		return $this->type . ' - ' . $this->action . ' - ' . $this->message;
 	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getAction()
+	{
+		return $this->action;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getMessage()
+	{
+		return $this->message;
+	}
+
+
 
 }

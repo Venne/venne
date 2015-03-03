@@ -18,10 +18,10 @@ use Nette\Forms\Form;
 use Nette\Http\Session;
 use Nette\Utils\Html;
 use Venne\Bridges\Kdyby\DoctrineForms\FormFactoryFactory;
-use Venne\Security\DefaultType\RegistrationFormFactory;
-use Venne\Security\Login;
+use Venne\Security\User\DefaultType\RegistrationFormFactory;
+use Venne\Security\Login\Login;
 use Venne\Security\SecurityManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
 /**
@@ -32,12 +32,8 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $provider;
+	/** @var string */
+	private $provider;
 
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $userRepository;
@@ -45,7 +41,7 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $loginRepository;
 
-	/** @var \Venne\Security\DefaultType\RegistrationFormFactory */
+	/** @var \Venne\Security\User\DefaultType\RegistrationFormFactory */
 	private $userFormFactory;
 
 	/** @var \Venne\Security\AdminModule\ProviderFormFactory */
@@ -139,7 +135,6 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentLoginTable()
 	{
-		$_this = $this;
 		$data = array();
 
 		foreach ($this->securityManager->getLoginProviders() as $name) {
@@ -158,8 +153,8 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		$table->addColumnText('name', 'Name')
 			->getCellPrototype()->width = '100%';
 
-		/** @var \Venne\Security\User $user */
-		$user = $this->user->identity;
+		/** @var \Venne\Security\User\User $user */
+		$user = $this->getUser()->getIdentity();
 		$securityManager = $this->securityManager;
 		$providerFormFactory = $this->providerFormFactory;
 
@@ -173,12 +168,12 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 
 				return $element;
 			});
-		$connectAction->onClick[] = function ($button, $name) use ($_this, $securityManager, $providerFormFactory, $user) {
+		$connectAction->onClick[] = function ($button, $name) use ($securityManager, $providerFormFactory, $user) {
 			if (!$securityManager->getLoginProviderByName(str_replace('_', ' ', $name))->getFormContainer()) {
-				$_this->redirect('connect!', str_replace('_', ' ', $name));
+				$this->redirect('connect!', str_replace('_', ' ', $name));
 			} else {
-				$_this->provider = str_replace('_', ' ', $name);
-				$providerFormFactory->setProvider($_this->provider);
+				$this->provider = str_replace('_', ' ', $name);
+				$providerFormFactory->setProvider($this->provider);
 			}
 		};
 
@@ -186,11 +181,11 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 		if ($this->provider) {
 			$this->providerFormFactory->setProvider($this->provider);
 		}
-		$this->providerFormFactory->onSave[] = function (Form $form) use ($_this) {
-			$_this->redirect('connect!', array($form['provider']->value, json_encode($form['parameters']->values)));
+		$this->providerFormFactory->onSave[] = function (Form $form) {
+			$this->redirect('connect!', array($form['provider']->value, json_encode($form['parameters']->values)));
 		};
-		$this->providerFormFactory->onSuccess[] = function ($parameters) use ($_this) {
-			$_this->redirect('this');
+		$this->providerFormFactory->onSuccess[] = function ($parameters) {
+			$this->redirect('this');
 		};
 		$form = $admin->addForm('provider', 'Provider', $this->providerFormFactory);
 
@@ -205,8 +200,8 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 			->setConfirm(function ($entity) {
 				return array('Really disconnect from \'%s\'?', $entity['name']);
 			});
-		$table->getAction('disconnect')->onClick[] = function ($button, $name) use ($_this) {
-			$_this->handleDisconnect(str_replace('_', ' ', $name));
+		$table->getAction('disconnect')->onClick[] = function ($button, $name) {
+			$this->handleDisconnect(str_replace('_', ' ', $name));
 		};
 		$table->getAction('disconnect')->getElementPrototype()->class[] = 'ajax';
 
@@ -220,26 +215,26 @@ class AccountPresenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentTable()
 	{
-		$session = $this->session;
+		$session = $this->getSession();
 		$admin = $this->adminGridFactory->create($this->loginRepository);
 
 		$table = $admin->getTable();
+		$table->setPrimaryKey('session_id');
 		if ($this->user->identity instanceof User) {
-			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user = :user')->setParameter('user', $this->user->identity)));
+			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user = :user')->orderBy('a.created', 'DESC')->setParameter('user', $this->user->identity)));
 		} else {
-			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user IS NULL')));
+			$table->setModel(new Doctrine($this->loginRepository->createQueryBuilder('a')->andWhere('a.user IS NULL')->orderBy('a.created', 'DESC')));
 		}
 		$table->setTranslator($this->translator);
 		$table->addColumnDate('current', 'Current')
 			->setCustomRender(function (Login $entity) use ($session) {
 				$el = Html::el('span');
-				$el->class[] = 'glyphicon ' . ($session->id == $entity->getSessionId() ? 'glyphicon-ok' : 'glyphicon-remove');
+				$el->class[] = 'glyphicon ' . ($session->getId() === $entity->getSessionId() ? 'glyphicon-ok' : 'glyphicon-remove');
 
 				return $el;
 			})
 			->getCellPrototype()->width = '10%';
 		$table->addColumnDate('created', 'Date')
-			->setSortable()
 			->getCellPrototype()->width = '40%';
 		$table->addColumnText('sessionId', 'Session ID')
 			->getCellPrototype()->width = '50%';

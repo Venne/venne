@@ -18,7 +18,7 @@ trait AjaxControlTrait
 {
 
 	/**
-	 * @param integer|string $code
+	 * @param int|string $code
 	 * @param string|mixed[] $destination
 	 * @param mixed[]|null $args
 	 */
@@ -45,12 +45,6 @@ trait AjaxControlTrait
 
 		$args = (array) $args;
 		$presenter->payload->redirect = $this->link($destination, $args);
-
-		foreach ($this->getPersistentParams() as $name) {
-			if (array_key_exists($name, $args)) {
-				$this->$name = $args[$name];
-			}
-		}
 	}
 
 }

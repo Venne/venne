@@ -14,6 +14,7 @@ namespace Venne\Security;
 use Doctrine\ORM\EntityManager;
 use Nette;
 use Nette\Http\Session;
+use Venne\Security\Role\Role;
 use Venne\System\AdministrationManager;
 
 /**
@@ -73,9 +74,7 @@ class AuthorizatorFactory extends \Nette\Object
 	}
 
 	/**
-	 * Get permission for roles.
-	 *
-	 * @param string $roles
+	 * @param string[] $roles
 	 * @return \Venne\Security\Authorizator
 	 */
 	public function getPermissionsByRoles(array $roles)
@@ -90,8 +89,6 @@ class AuthorizatorFactory extends \Nette\Object
 	}
 
 	/**
-	 * Setup permission by role
-	 *
 	 * @param \Venne\Security\Authorizator $permission
 	 * @param string $role
 	 * @return \Venne\Security\Authorizator

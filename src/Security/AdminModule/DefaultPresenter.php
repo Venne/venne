@@ -13,10 +13,10 @@ namespace Venne\Security\AdminModule;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
-use Venne\Security\DefaultType\AdminFormFactory;
-use Venne\Security\ExtendedUser;
+use Venne\Security\User\DefaultType\AdminFormFactory;
+use Venne\Security\User\ExtendedUser;
 use Venne\Security\SecurityManager;
-use Venne\Security\User;
+use Venne\Security\User\User;
 use Venne\System\Components\AdminGrid\Form;
 use Venne\System\Components\AdminGrid\IAdminGridFactory;
 
@@ -28,24 +28,16 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 
 	use \Venne\System\AdminPresenterTrait;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $page;
+	/** @var string */
+	private $page;
 
-	/**
-	 * @var string
-	 *
-	 * @persistent
-	 */
-	public $type;
+	/** @var string */
+	private $type;
 
 	/** @var \Kdyby\Doctrine\EntityRepository */
 	private $userRepository;
 
-	/** @var \Venne\Security\DefaultType\AdminFormFactory */
+	/** @var \Venne\Security\User\DefaultType\AdminFormFactory */
 	private $form;
 
 	/** @var \Venne\Security\AdminModule\ProvidersFormFactory */
@@ -77,15 +69,6 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 	public function getSecurityManager()
 	{
 		return $this->securityManager;
-	}
-
-	protected function startup()
-	{
-		parent::startup();
-
-		if (!$this->type) {
-			$this->type = key($this->securityManager->getUserTypes());
-		}
 	}
 
 	/**
@@ -140,15 +123,36 @@ class DefaultPresenter extends \Nette\Application\UI\Presenter
 			);
 		}
 
+		$admin->onDelete[] = function () {
+			$this->flashMessage('User has been deleted.', 'success');
+			$this->redrawControl('flashes');
+		};
+
 		return $admin;
 	}
 
 	/**
-	 * @return \Venne\Security\UserType
+	 * @return \Venne\Security\User\UserType
 	 */
 	private function getUserType()
 	{
 		return $this->securityManager->getUserTypeByClass($this->type);
+	}
+
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+
+		$this->page = isset($params['page']) ? $params['page'] : null;
+		$this->type = isset($params['type']) ? $params['type'] : key($this->securityManager->getUserTypes());
+	}
+
+	public function saveState(array & $params, $reflection = null)
+	{
+		parent::saveState($params, $reflection);
+
+		$params['page'] = $this->page;
+		$params['type'] = $this->type;
 	}
 
 }

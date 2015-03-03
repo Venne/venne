@@ -12,12 +12,11 @@
 namespace Venne\System\Components\AdminGrid;
 
 use Nette\ComponentModel\Component;
-use Venne\Forms\IFormFactory;
-use Venne\System\Components\Table\TableControl;
-use Venne\System\UI\IDoctrineFormFactory;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
+ *
+ * @method onSuccess(\Nette\Application\UI\Form $form)
  */
 class Form extends Component
 {

@@ -18,6 +18,7 @@ use Nette\ComponentModel\Component;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\RadioList;
 use Nette\Forms\Controls\SelectBox;
+use Nette\MemberAccessException;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -45,7 +46,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 	 * @param \Doctrine\ORM\Mapping\ClassMetadata $meta
 	 * @param \Nette\ComponentModel\Component $component
 	 * @param mixed $entity
-	 * @return boolean
+	 * @return bool
 	 */
 	public function load(ClassMetadata $meta, Component $component, $entity)
 	{
@@ -143,7 +144,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 	 * @param \Doctrine\ORM\Mapping\ClassMetadata $meta
 	 * @param \Nette\ComponentModel\Component $component
 	 * @param mixed $entity
-	 * @return boolean
+	 * @return bool
 	 */
 	public function save(ClassMetadata $meta, Component $component, $entity)
 	{
@@ -159,7 +160,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 				$this->accessor->setValue($entity, $name, $value);
 
 				return true;
-			} catch (\Kdyby\Doctrine\MemberAccessException $e) {
+			} catch (MemberAccessException $e) {
 			}
 		}
 
@@ -174,7 +175,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 		if ($meta->isCollectionValuedAssociation($name)) {
 			$property = \Doctrine\Common\Util\Inflector::singularize($name);
 			foreach ($repository->findAll() as $associatedEntity) {
-				if (in_array($associatedEntity->id, $value)) {
+				if (in_array($associatedEntity->getId(), $value)) {
 					$hasMethod = 'has' . ucfirst($property);
 					if (!$entity->$hasMethod($associatedEntity)) {
 						$addMethod = 'add' . ucfirst($property);
@@ -191,7 +192,7 @@ class TextControl extends \Nette\Object implements \Kdyby\DoctrineForms\ICompone
 			if ($this->accessor->isWritable($entity, $name)) {
 				try {
 					$this->accessor->setValue($entity, $name, $value);
-				} catch (\Kdyby\Doctrine\MemberAccessException $e) {
+				} catch (MemberAccessException $e) {
 					return false;
 				}
 			}

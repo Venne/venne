@@ -97,18 +97,14 @@ class SideComponentsControl extends \Venne\System\UI\Control
 		$this->sideComponent = array_key_exists('sideComponent', $params)
 			? $params['sideComponent']
 			: $this->sessionSection->sideComponent;
-
-		parent::loadState($params);
 	}
 
 	/**
 	 * @param mixed[] $params
 	 */
-	public function saveState(array & $params, $reflection = null)
+	public function saveState(array & $params)
 	{
 		$this->sessionSection->sideComponent = $this->sideComponent;
-
-		parent::saveState($params, $reflection);
 	}
 
 }
